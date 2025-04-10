@@ -4,9 +4,9 @@
 [![Test and build](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/actions/workflows/ci.yml/badge.svg)](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/AdrianDAlessandro/rse-competencies-toolkit-webapp/graph/badge.svg?token=56K64XN243)](https://codecov.io/gh/AdrianDAlessandro/rse-competencies-toolkit-webapp)
 
-# RSE Competencies Toolkit
+# DIRECT WebApp
 
-A Django webapp for hosting the RSE Competencies Toolkit.
+A Django webapp for hosting the Digital Research Competencies (DIRECT) Framework.
 
 This Django project uses:
 
