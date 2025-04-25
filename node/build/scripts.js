@@ -5,6 +5,8 @@ const { babel } = require('@rollup/plugin-babel')
 const terser = require('@rollup/plugin-terser')
 const { ESLint } = require('eslint')
 const configureLogger = require('./logger')
+const replace = require('@rollup/plugin-replace')
+const commonjs = require('@rollup/plugin-commonjs')
 
 const log = configureLogger('Scripts')
 
@@ -40,6 +42,14 @@ const files_to_compile_meta = [
  */
 `,
   },
+  {
+    id: 'dataviz',
+    banner: `
+/**
+ * Data visualization scripts
+ */
+`,
+  },
 ]
 
 const bundleJS = async (output) => {
@@ -54,6 +64,10 @@ const bundleJS = async (output) => {
         input: `./${path.src_js}/${id}.js`,
         plugins: [
           nodeResolve(),
+          // replace({
+          //   'process.env.NODE_ENV': JSON.stringify('production'),
+          // }),
+          // commonjs(),
           babel({
             babelHelpers: 'bundled',
             exclude: 'node_modules/**',

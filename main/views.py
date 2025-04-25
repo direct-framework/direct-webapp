@@ -20,3 +20,12 @@ def privacy(request: HttpRequest) -> HttpResponse:
       request: A GET request.
     """
     return render(request=request, template_name="main/privacy.html")
+
+
+def demo(request: HttpRequest) -> HttpResponse:
+    """View that renders a demo of the logged in app.
+
+    Args:
+      request: A GET request.
+    """
+    return render(request=request, template_name="main/demo.html")

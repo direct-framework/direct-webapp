@@ -1,0 +1,22 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block title %}
+RSE Competencies Toolkit
+{% endblock title %}
+{% block content %}
+<section class="container pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
+  <h2>Example Competencies DataViz</h2>
+  <p>The data visualisation below presents your core skills and competencies.</p>
+  <div>
+    <div id="dataviz_root">Loading data viz...</div>
+  </div>
+  <hr>
+</section>
+{% endblock content %}
+{% block endscripts %}
+<script src="{% static 'assets/js/dataviz.js' %}"></script>
+<script>
+  dataviz().demo();
+</script>
+{% endblock endscripts %}
