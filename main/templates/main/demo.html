@@ -17,6 +17,34 @@ RSE Competencies Toolkit
 {% block endscripts %}
 <script src="{% static 'assets/js/dataviz.js' %}"></script>
 <script>
-  dataviz().demo();
+
+  // Generate demo locally
+  // const generateRandomData = (n, categoryCount) =>
+  //     Array.from({ length: n }, (_, i) => ({
+  //       skill: `skill-${i}`,
+  //       category: `category-${Math.floor(Math.random() * categoryCount)}`,
+  //       lvl: Math.floor(Math.random() * 10),
+  //     }))
+  // dataviz().renderRadialPlot('dataviz_root',generateRandomData(20, 5));
+
+  // Generate demo from server using Django template
+  dataviz().renderRadialPlot('dataviz_root', {{ data| safe }}, {
+    innerRadius: 0,
+    width: 640,
+    // height: _height:undefined,
+    innerRadius: 80,
+    outerPadding: 100,
+    categoryPadding: 0.1,
+    skillPadding: 0.05,
+    arcPercent: 0.8,
+    arcStartOffset: 0.1,
+    annotationPadding: 10,
+    lineThickness: 2,
+    labelTextColor: "black",
+    lvlTextColor: "#ccc",
+    lvlArcColor: "#121519",
+    // colourList:d3.schemeAccent,
+  });
+
 </script>
 {% endblock endscripts %}
