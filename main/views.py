@@ -44,5 +44,7 @@ def demo(request: HttpRequest) -> HttpResponse:
             for i in range(n)
         ]
 
+    # TODO: Do we show skills with 0 level?
+    # NOTE: skills do not need to be in any order.
     context = {"data": dumps(generateRandomData(20, 5))}
     return render(request=request, template_name="main/demo.html", context=context)
