@@ -1,11 +1,11 @@
 """Views for the main app."""
 
 from json import dumps
-from math import floor
-from random import random
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+
+from .models import UserSkill
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -32,19 +32,17 @@ def demo(request: HttpRequest) -> HttpResponse:
     Args:
       request: A GET request.
     """
-
-    # TODO: Get this from database instead
-    def generateRandomData(n: int, categoryCount: int) -> list[dict[str, str | int]]:
-        return [
-            {
-                "skill": f"skill-{i}",
-                "category": f"category-{floor(random() * categoryCount)}",
-                "skill_level": floor(random() * 10),
-            }
-            for i in range(n)
-        ]
-
+    # TODO: Filter by user
+    userskills = UserSkill.objects.all()
+    userSkillData = [
+        {
+            "skill": userSkill.skill.name,
+            "category": userSkill.skill.category.name,
+            "skill_level": userSkill.skill_level.name,
+        }
+        for userSkill in userskills
+    ]
     # TODO: Do we show skills with 0 level?
     # NOTE: skills do not need to be in any order.
-    context = {"data": dumps(generateRandomData(20, 5))}
+    context = {"data": dumps(userSkillData)}
     return render(request=request, template_name="main/demo.html", context=context)
