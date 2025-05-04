@@ -45,7 +45,7 @@
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
         "simplebar": "^6.2.5",
-        "skills-competencies-dataviz": "^0.0.12",
+        "skills-competencies-dataviz": "^0.0.27",
         "smooth-scroll": "^16.1.3"
     }
 }

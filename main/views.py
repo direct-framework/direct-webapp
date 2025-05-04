@@ -39,7 +39,7 @@ def demo(request: HttpRequest) -> HttpResponse:
             {
                 "skill": f"skill-{i}",
                 "category": f"category-{floor(random() * categoryCount)}",
-                "lvl": floor(random() * 10),
+                "skill_level": floor(random() * 10),
             }
             for i in range(n)
         ]

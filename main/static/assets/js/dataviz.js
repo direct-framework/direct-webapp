@@ -2813,7 +2813,7 @@ var dataviz = (function () {
     arcStartOffset: g = 0.1,
     categoryFocus: h
   }) {
-    const p = Math.min(i, r) / 2 - o, x = p1(u, (B) => B.lvl) ?? 0, M = Array.from({ length: x }, (B, H) => H + 1), R = h1(u, (B) => B.category), K = [...S1(u.map((B) => B.category)).keys()].sort(), at = h ? [h] : K, nt = u.filter(
+    const p = Math.min(i, r) / 2 - o, x = p1(u, (B) => B.skill_level) ?? 0, M = Array.from({ length: x }, (B, H) => H + 1), R = h1(u, (B) => B.category), K = [...S1(u.map((B) => B.category)).keys()].sort(), at = h ? [h] : K, nt = u.filter(
       (B) => at.includes(B.category)
     ), F = ur * m, lt = nt.length, ct = (F - y * (at.length - 1) - v * lt) / lt, ot = at.reduce(
       (B, H) => {
@@ -2833,7 +2833,7 @@ var dataviz = (function () {
         };
       },
       {}
-    ), pt = (B) => Ot[`${B.category}-${B.skill}`], Y = Nd().domain([0, x]).range([c, p]), I = Ju().startAngle((B) => pt(B)).endAngle((B) => pt(B) + ct).innerRadius(c + 1).outerRadius((B) => Y(B.lvl)), L = Ju().startAngle((B) => pt(B)).endAngle((B) => pt(B) + ct).innerRadius(c + 1).outerRadius(p - 1), yt = Ju().startAngle((B) => pt(B)).endAngle((B) => pt(B) + ct).innerRadius((B, H) => Y(H - 1) + 1).outerRadius((B, H) => Y(H + 0) - 1).padRadius(-1).padAngle(0.01), G = Ju().innerRadius(c + 5).outerRadius(c).startAngle((B) => ot[B]).endAngle(
+    ), pt = (B) => Ot[`${B.category}-${B.skill}`], Y = Nd().domain([0, x]).range([c, p]), I = Ju().startAngle((B) => pt(B)).endAngle((B) => pt(B) + ct).innerRadius(c + 1).outerRadius((B) => Y(B.skill_level)), L = Ju().startAngle((B) => pt(B)).endAngle((B) => pt(B) + ct).innerRadius(c + 1).outerRadius(p - 1), yt = Ju().startAngle((B) => pt(B)).endAngle((B) => pt(B) + ct).innerRadius((B, H) => Y(H - 1) + 1).outerRadius((B, H) => Y(H + 0) - 1).padRadius(-1).padAngle(0.01), G = Ju().innerRadius(c + 5).outerRadius(c).startAngle((B) => ot[B]).endAngle(
       (B) => {
         var H, X;
         return ot[B] + ct * (((H = R.get(B)) == null ? void 0 : H.length) ?? 0) + (((X = R.get(B)) == null ? void 0 : X.length) ?? 0) * v;
@@ -2935,7 +2935,7 @@ var dataviz = (function () {
               strokeOpacity: 0
             }
           ),
-          Array.from({ length: W.lvl }, (et, wt) => wt + 1).map((et) => /* @__PURE__ */ St.jsx(
+          Array.from({ length: W.skill_level }, (et, wt) => wt + 1).map((et) => /* @__PURE__ */ St.jsx(
             "path",
             {
               d: L(W, et),
@@ -3036,7 +3036,7 @@ var dataviz = (function () {
       ),
       /* @__PURE__ */ St.jsx("text", { y: "-5", textAnchor: "middle", children: F.category }),
       /* @__PURE__ */ St.jsx("text", { y: "15", textAnchor: "middle", children: F.skill }),
-      /* @__PURE__ */ St.jsx("text", { y: "35", textAnchor: "middle", children: F.lvl })
+      /* @__PURE__ */ St.jsx("text", { y: "35", textAnchor: "middle", children: F.skill_level })
     ] }) : null;
     return /* @__PURE__ */ St.jsxs(
       "svg",
