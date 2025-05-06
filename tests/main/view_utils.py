@@ -32,4 +32,4 @@ class LoginRequiredMixin:
         """Test for redirect to the login page if the user is not logged in."""
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url.startswith(settings.LOGIN_URL)
+        assert response.url == settings.LOGIN_URL + "?next=" + self._get_url()
