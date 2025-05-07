@@ -164,3 +164,8 @@ npm run scripts:minified
 ```bash
 npm run vendor
 ```
+
+## Using the skills data visualisation library
+
+The skills dataviz uses a separate library called `skills-competencies-dataviz`.
+The npm package can be found here: [npm-skills-competencies-dataviz](https://www.npmjs.com/package/skills-competencies-dataviz)
