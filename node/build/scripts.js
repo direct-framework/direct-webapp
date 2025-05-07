@@ -53,47 +53,49 @@ const files_to_compile_meta = [
 const bundleJS = async (output) => {
   log.info('Bundling JavaScript...')
 
-  files_to_compile_meta.forEach(async ({ id, banner }) => {
-    try {
-      const isMinified = output === 'minified'
-      const outputFilename = isMinified ? `${id}.min.js` : `${id}.js`
+  await Promise.all(
+    files_to_compile_meta.map(({ id, banner }) => async () => {
+      try {
+        const isMinified = output === 'minified'
+        const outputFilename = isMinified ? `${id}.min.js` : `${id}.js`
 
-      const inputOptions = {
-        input: `./${path.src_js}/${id}.js`,
-        plugins: [
-          nodeResolve(),
-          babel({
-            babelHelpers: 'bundled',
-            exclude: 'node_modules/**',
-          }),
-          isMinified && terser({ output: { comments: /^!|@author|@version/i } }),
-        ].filter(Boolean),
-        onwarn: (warning, warn) => {
-          // Ignore the 'this' at the top level warning
-          if (warning.code === 'THIS_IS_UNDEFINED') {
-            return
-          }
-          // Show all other warnings
-          warn(warning)
-        },
+        const inputOptions = {
+          input: `./${path.src_js}/${id}.js`,
+          plugins: [
+            nodeResolve(),
+            babel({
+              babelHelpers: 'bundled',
+              exclude: 'node_modules/**',
+            }),
+            isMinified && terser({ output: { comments: /^!|@author|@version/i } }),
+          ].filter(Boolean),
+          onwarn: (warning, warn) => {
+            // Ignore the 'this' at the top level warning
+            if (warning.code === 'THIS_IS_UNDEFINED') {
+              return
+            }
+            // Show all other warnings
+            warn(warning)
+          },
+        }
+
+        const outputOptions = {
+          file: `${path.js}/${outputFilename}`,
+          format: 'iife',
+          sourcemap: true,
+          banner: banner,
+          name: id,
+        }
+
+        const bundle = await rollup.rollup(inputOptions)
+        await bundle.write(outputOptions)
+
+        log.success(`Bundled JavaScript for ${id} (${output})`)
+      } catch (error) {
+        log.error('', error.message)
       }
-
-      const outputOptions = {
-        file: `${path.js}/${outputFilename}`,
-        format: 'iife',
-        sourcemap: true,
-        banner: banner,
-        name: id,
-      }
-
-      const bundle = await rollup.rollup(inputOptions)
-      await bundle.write(outputOptions)
-
-      log.success(`Bundled JavaScript for ${id} (${output})`)
-    } catch (error) {
-      log.error('', error.message)
-    }
-  })
+    })
+  )
 }
 
 const buildScripts = async () => {
