@@ -43,7 +43,7 @@
         "bootstrap": "^5.3.2",
         "imagesloaded": "^5.0.0",
         "simplebar": "^6.2.5",
-        "skills-competencies-dataviz": "^0.0.27",
+        "skills-competencies-dataviz": "^0.0.28",
         "smooth-scroll": "^16.1.3"
     }
 }
