@@ -14,7 +14,10 @@ const excludedDependencies = ['bootstrap', 'smooth-scroll']
 const vendorJsFile = `${path.js}/vendor.bundle.js`
 const vendorCssFile = `${path.css}/vendor.bundle.css`
 
-const externalVendorStyles = ['aos/dist/aos.css']
+const externalVendorStyles = [
+  'aos/dist/aos.css',
+  'skills-competencies-dataviz/styles.css',
+]
 
 const getVendorEntries = () => {
   const dependencies = Object.keys(packageFile.dependencies).filter(
