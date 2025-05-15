@@ -47,3 +47,8 @@ repos:
       - id: codespell
         args: [-I, .codespell_ignore.txt]
         exclude: ^main/static/assets/|^package-lock.json$
+  - repo: https://github.com/djlint/djLint
+    rev: v1.36.4
+    hooks:
+      - id: djlint-django
+      - id: djlint-reformat-django
