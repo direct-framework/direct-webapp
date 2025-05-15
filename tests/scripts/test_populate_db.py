@@ -75,3 +75,36 @@ def test_populate_categories_and_skills() -> None:
     for skill in skills:
         skills_count += 1
     assert skills_count == 5
+
+
+@pytest.mark.django_db
+def test_populate_skill_levels() -> None:
+    """Test the populate_skill_levels function."""
+    from main.models import SkillLevel
+
+    data = [
+        {
+            "Level": 0,
+            "Name": "Name of Level 0",
+            "Description": "Description of Level 0",
+        },
+        {
+            "Level": 1,
+            "Name": "Name of Level 1",
+            "Description": "Description of Level 1",
+        },
+    ]
+
+    initial_skill_levels_count = 0
+    initial_skill_levels = SkillLevel.objects.all()
+    for skill in initial_skill_levels:
+        initial_skill_levels_count += 1
+    assert initial_skill_levels_count == 0
+
+    populate_db.populate_skill_levels(data)
+
+    skill_levels_count = 0
+    skill_levels = SkillLevel.objects.all()
+    for skill in skill_levels:
+        skill_levels_count += 1
+    assert skill_levels_count == 2
