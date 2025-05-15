@@ -1,4 +1,23 @@
 {
   "projectName": "direct-webapp",
-  "projectOwner": "direct-framework"
+  "projectOwner": "direct-framework",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "davehorsfall",
+      "name": "Dave Horsfall",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1079934?v=4",
+      "profile": "http://horsfall.dev",
+      "contributions": [
+        "design",
+        "code",
+        "projectManagement"
+      ]
+    }
+  ]
 }
