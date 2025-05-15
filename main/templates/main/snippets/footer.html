@@ -3,37 +3,33 @@
     <div class="container pt-md-2 pt-lg-3 pt-xl-4">
         <div class="row pb-5 pt-sm-2 mb-lg-2">
             <div class="col-md-4 col-lg-3 pb-2 pb-md-0 mb-4 mb-md-0">
-                <a class="navbar-brand py-0 mb-3 mb-md-4" href="{% url 'index' %}">
+                <a class="navbar-brand py-0 mb-3 mb-md-4"
+                   href="{% static 'index.html' %}">
                     <span class="text-primary flex-shrink-0 me-2">
-                        <svg version="1.1"
-                             width="35"
-                             height="32"
-                             viewBox="0 0 36 33"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path fill="currentColor" d="M35.6,29c-1.1,3.4-5.4,4.4-7.9,1.9c-2.3-2.2-6.1-3.7-9.4-3.7c-3.1,0-7.5,1.8-10,4.1c-2.2,2-5.8,1.5-7.3-1.1c-1-1.8-1.2-4.1,0-6.2l0.6-1.1l0,0c0.6-0.7,4.4-5.2,12.5-5.7c0.5,1.8,2,3.1,3.9,3.1c2.2,0,4.1-1.9,4.1-4.2s-1.8-4.2-4.1-4.2c-2,0-3.6,1.4-4,3.3H7.7c-0.8,0-1.3-0.9-0.9-1.6l5.6-9.8c2.5-4.5,8.8-4.5,11.3,0L35.1,24C36,25.7,36.1,27.5,35.6,29z">
-                            </path>
-                        </svg>
+                        <img src="{% static 'assets/app-icons/logo.svg' %}"
+                             alt="Logo"
+                             height="60"
+                             width="60">
                     </span>
-                    <span class="text-nav">Around</span>
                 </a>
                 <p class="fs-sm pb-2 pb-md-3 mb-3">
-                    Tellus non diam morbi quam vel venenatis proin sed. Dolor elementum nunc dictum interdum amet arcu aenean eu integer
+                    Except where otherwise noted, content on this site is licensed under a <a href="https://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution Non-Commercial 4.0</a> License.
                 </p>
                 <div class="d-flex gap-3">
-                    <a class="btn btn-icon btn-sm btn-secondary btn-facebook rounded-circle"
-                       href="#"
-                       aria-label="Facebook">
-                        <i class="fa-brands fa-facebook-f"></i>
+                    <a class="btn btn-icon btn-sm btn-secondary btn-github rounded-circle"
+                       href="https://github.com/direct-framework/direct-webapp"
+                       aria-label="Github">
+                        <i class="fa-brands fa-github"></i>
                     </a>
-                    <a class="btn btn-icon btn-sm btn-secondary btn-instagram rounded-circle"
-                       href="#"
-                       aria-label="Instagram">
-                        <i class="fa-brands fa-instagram"></i>
+                    <a class="btn btn-icon btn-sm btn-secondary btn-mail rounded-circle"
+                       href="https://groups.google.com/g/rse-competencies-toolkit"
+                       aria-label="Mailing List">
+                        <i class="fa-solid fa-envelope"></i>
                     </a>
-                    <a class="btn btn-icon btn-sm btn-secondary btn-linkedin rounded-circle"
-                       href="#"
-                       aria-label="LinkedIn">
-                        <i class="fa-brands fa-linkedin"></i>
+                    <a class="btn btn-icon btn-sm btn-secondary btn-slack rounded-circle"
+                       href="https://ukrse.slack.com/archives/C05CY0YFWEL"
+                       aria-label="Slack">
+                        <i class="fa-brands fa-slack"></i>
                     </a>
                 </div>
             </div>
@@ -100,11 +96,7 @@
             </div>
         </div>
         <p class="nav fs-sm mb-0">
-            <span class="text-body-secondary">© All rights reserved. Made by</span>
-            <a class="nav-link fw-normal p-0 ms-1"
-               href="https://createx.studio/"
-               target="_blank"
-               rel="noopener">Createx Studio</a>
+            <span class="text-body-secondary">&copy; Digital Research Competencies Framework 2023 - {% now "Y" %}</span>
         </p>
     </div>
 </footer>
