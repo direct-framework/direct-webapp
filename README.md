@@ -87,6 +87,12 @@ To get started:
    python manage.py createsuperuser
    ```
 
+8. To populate the db with Categories and Skills from a yaml or json version of the framework
+
+   ```bash
+   python scripts/populate_db.py [-j data.json]|[-y data.yaml]
+   ```
+
 ### Installation with Docker
 
 The app can be run within a Docker container and a `docker-compose.yml` file is provided to make this easy for development.
