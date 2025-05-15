@@ -185,6 +185,7 @@ npm run vendor
 <table>
   <tbody>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://horsfall.dev"><img src="https://avatars.githubusercontent.com/u/1079934?v=4?s=100" width="100px;" alt="Dave Horsfall"/><br /><sub><b>Dave Horsfall</b></sub></a><br /><a href="#design-davehorsfall" title="Design">🎨</a> <a href="#code-davehorsfall" title="Code">💻</a> <a href="#projectManagement-davehorsfall" title="Project Management">📆</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/AdrianDAlessandro"><img src="https://avatars.githubusercontent.com/u/40875798?v=4?s=100" width="100px;" alt="Adrian D'Alessandro"/><br /><sub><b>Adrian D'Alessandro</b></sub></a><br /><a href="#design-AdrianDAlessandro" title="Design">🎨</a> <a href="#code-AdrianDAlessandro" title="Code">💻</a> <a href="#test-AdrianDAlessandro" title="Tests">⚠️</a> <a href="#projectManagement-AdrianDAlessandro" title="Project Management">📆</a></td>
     </tr>
   </tbody>

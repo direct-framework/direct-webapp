@@ -9,6 +9,17 @@
   "contributorsPerLine": 7,
   "contributors": [
     {
+      "login": "davehorsfall",
+      "name": "Dave Horsfall",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1079934?v=4",
+      "profile": "http://horsfall.dev",
+      "contributions": [
+        "design",
+        "code",
+        "projectManagement"
+      ]
+    },
+    {
       "login": "AdrianDAlessandro",
       "name": "Adrian D'Alessandro",
       "avatar_url": "https://avatars.githubusercontent.com/u/40875798?v=4",
@@ -17,8 +28,6 @@
         "design",
         "code",
         "test",
-        "projectManagement"
-      ]
     }
   ]
 }
