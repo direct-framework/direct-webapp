@@ -4,7 +4,12 @@ import argparse
 import pathlib
 
 
-def parse_args() -> argparse.Namespace:
+def read_args() -> argparse.Namespace:  # pragma: no cover
+    """Read args from the command line."""
+    return get_parser().parse_args()
+
+
+def get_parser() -> argparse.ArgumentParser:
     """Get an instance of our custom command line argument parser."""
     parser = argparse.ArgumentParser(
         description="Populate the database with Category and Skill data."
@@ -26,7 +31,7 @@ def parse_args() -> argparse.Namespace:
         help="Path to a yaml file containing the data to be loaded.",
     )
 
-    return parser.parse_args()
+    return parser
 
 
 def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg]
@@ -92,7 +97,7 @@ def main() -> None:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rse_competencies_toolkit.settings")
     get_wsgi_application()
 
-    args = parse_args()
+    args = read_args()
 
     # Load famework from file
     skill_data = {}
