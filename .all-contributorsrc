@@ -40,6 +40,16 @@
         "infra",
         "tool"
       ]
+    },
+    {
+      "login": "tdjames1",
+      "name": "T D James",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10053102?v=4",
+      "profile": "https://github.com/tdjames1",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ]
 }
