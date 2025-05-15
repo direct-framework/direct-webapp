@@ -5,6 +5,11 @@
     RSE Competencies Toolkit
 {% endblock title %}
 {% block content %}
+{% if user.is_authenticated %}
+    <section class="container pt-5 mt-5">
+        {% include "main/snippets/home.html" %}
+    </section>
+{% else %}
     <!-- Hero -->
     {% include "main/snippets/hero.html" %}
     <!-- Features grid -->
@@ -867,4 +872,5 @@
             </div>
         </div>
     </section>
+{% endif %}
 {% endblock content %}
