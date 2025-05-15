@@ -1,10 +1,14 @@
 """Views for the main app."""
 
+import logging
+
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import FormView
 
 from .forms import CustomUserCreationForm
+
+logger = logging.getLogger("main")
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -13,6 +17,7 @@ def index(request: HttpRequest) -> HttpResponse:
     Args:
       request: A GET request.
     """
+    logger.info("Rendering index page.")
     return render(request=request, template_name="main/index.html")
 
 
@@ -22,6 +27,7 @@ def privacy(request: HttpRequest) -> HttpResponse:
     Args:
       request: A GET request.
     """
+    logger.info("Rendering privacy page.")
     return render(request=request, template_name="main/privacy.html")
 
 
