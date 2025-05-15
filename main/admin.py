@@ -32,7 +32,7 @@ class SkillAdmin(admin.ModelAdmin[Skill]):
 class SkillLevelAdmin(admin.ModelAdmin[SkillLevel]):
     """Admin class for The SkillLevel model."""
 
-    list_display = ("name",)
+    list_display = ("name", "level")
     search_fields = ("name",)
 
 
