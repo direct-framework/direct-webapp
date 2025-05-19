@@ -78,6 +78,15 @@
       "contributions": [
         "tool"
       ]
+    },
+    {
+      "login": "jklebes",
+      "name": "Jason Klebes",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11175421?v=4",
+      "profile": "https://github.com/jklebes",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
