@@ -199,6 +199,9 @@ npm run vendor
       <td align="center" valign="top" width="14.28%"><a href="https://personalpages.manchester.ac.uk/staff/Andrew.Gait/"><img src="https://avatars.githubusercontent.com/u/13529420?v=4?s=100" width="100px;" alt="Andrew Gait"/><br /><sub><b>Andrew Gait</b></sub></a><br /><a href="#ideas-andrewgait" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://brynnoelubald.com/"><img src="https://avatars.githubusercontent.com/u/55503826?v=4?s=100" width="100px;" alt="Bryn Noel Ubald"/><br /><sub><b>Bryn Noel Ubald</b></sub></a><br /><a href="#tool-bnubald" title="Tools">🔧</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jklebes"><img src="https://avatars.githubusercontent.com/u/11175421?v=4?s=100" width="100px;" alt="Jason Klebes"/><br /><sub><b>Jason Klebes</b></sub></a><br /><a href="#bug-jklebes" title="Bug reports">🐛</a></td>
+    </tr>
   </tbody>
 </table>
 
