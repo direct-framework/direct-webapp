@@ -35,7 +35,7 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg]
-    """Populate the database with categories and skills from a file."""
+    """Populate the database with categories and skills from a dictionary."""
     from main.models import Category, Skill
 
     # Loop over categorys and add to db
@@ -83,6 +83,27 @@ def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg
                     skill.save()
 
 
+def populate_skill_levels(levels: list[dict]) -> None:  # type: ignore[type-arg]
+    """Populate the database with skill levels from a dictionary."""
+    from main.models import SkillLevel
+
+    # Loop over skill levels and add to db
+    for lvl in levels:
+        # Check if skill level already exists
+        level = lvl["Level"]
+        name = lvl["Name"]
+        description = lvl["Description"]
+        try:
+            skill_level = SkillLevel.objects.get(level=level)
+        except SkillLevel.DoesNotExist:
+            skill_level = SkillLevel.objects.create(
+                level=level,
+                name=name,
+                description=description,
+            )
+            skill_level.save()
+
+
 def main() -> None:
     """Main function to run the script."""
     import json
@@ -109,6 +130,13 @@ def main() -> None:
             skill_data = json.load(json_file)
 
     populate_categories_and_skills(skill_data)
+
+    # Load skill levels from file
+    levels = []
+    with open("data/levels.json") as json_file:
+        levels = json.load(json_file)
+
+    populate_skill_levels(levels)
 
 
 if __name__ == "__main__":
