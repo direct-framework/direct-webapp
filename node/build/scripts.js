@@ -26,76 +26,46 @@ const lintJS = async () => {
   }
 }
 
-const files_to_compile_meta = [
-  {
-    id: 'theme',
-    banner: `
-/**
- * Around | Multipurpose Bootstrap HTML Template
- * Copyright 2023 Createx Studio
- * Theme scripts
- *
- * @author Createx Studio
- * @version 3.2.0
- */
-`,
-  },
-  {
-    id: 'dataviz',
-    banner: `
-/**
- * Data visualization scripts
- */
-`,
-  },
-]
-
 const bundleJS = async (output) => {
   log.info('Bundling JavaScript...')
+  try {
+    const isMinified = output === 'minified'
+    const outputFilename = isMinified ? 'main.min.js' : 'main.js'
 
-  await Promise.all(
-    files_to_compile_meta.map(({ id, banner }) => async () => {
-      try {
-        const isMinified = output === 'minified'
-        const outputFilename = isMinified ? `${id}.min.js` : `${id}.js`
-
-        const inputOptions = {
-          input: `./${path.src_js}/${id}.js`,
-          plugins: [
-            nodeResolve(),
-            babel({
-              babelHelpers: 'bundled',
-              exclude: 'node_modules/**',
-            }),
-            isMinified && terser({ output: { comments: /^!|@author|@version/i } }),
-          ].filter(Boolean),
-          onwarn: (warning, warn) => {
-            // Ignore the 'this' at the top level warning
-            if (warning.code === 'THIS_IS_UNDEFINED') {
-              return
-            }
-            // Show all other warnings
-            warn(warning)
-          },
+    const inputOptions = {
+      input: `./${path.src_js}/main.js`,
+      plugins: [
+        nodeResolve(),
+        babel({
+          babelHelpers: 'bundled',
+          exclude: 'node_modules/**',
+        }),
+        isMinified && terser({ output: { comments: /^!|@author|@version/i } }),
+      ].filter(Boolean),
+      onwarn: (warning, warn) => {
+        // Ignore the 'this' at the top level warning
+        if (warning.code === 'THIS_IS_UNDEFINED') {
+          return
         }
+        // Show all other warnings
+        warn(warning)
+      },
+    }
 
-        const outputOptions = {
-          file: `${path.js}/${outputFilename}`,
-          format: 'iife',
-          sourcemap: true,
-          banner: banner,
-          name: id,
-        }
+    const outputOptions = {
+      file: `${path.js}/${outputFilename}`,
+      format: 'iife',
+      sourcemap: true,
+      name: 'main',
+    }
 
-        const bundle = await rollup.rollup(inputOptions)
-        await bundle.write(outputOptions)
+    const bundle = await rollup.rollup(inputOptions)
+    await bundle.write(outputOptions)
 
-        log.success(`Bundled JavaScript for ${id} (${output})`)
-      } catch (error) {
-        log.error('', error.message)
-      }
-    })
-  )
+    log.success(`Bundled JavaScript for main.js (${output})`)
+  } catch (error) {
+    log.error('', error.message)
+  }
 }
 
 const buildScripts = async () => {
