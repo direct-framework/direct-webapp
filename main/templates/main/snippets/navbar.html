@@ -4,9 +4,9 @@
         <!-- Navbar brand (Logo) -->
         <a class="navbar-brand pe-sm-3" href="{% url 'index' %}">
             <span class="text-primary flex-shrink-0 me-2">
-              <img src="{% static 'assets/app-icons/logo.svg' %}"
-                   alt="Digital Research Competencies Framework logo"
-                   class="arrow ms-2 d-lg-block d-none">
+                <img src="{% static 'assets/app-icons/logo.svg' %}"
+                     alt="Digital Research Competencies Framework logo"
+                     class="arrow ms-2 d-lg-block d-none">
             </span>
             DIRECT Framework
         </a>
@@ -48,21 +48,27 @@
         </button>
         <!-- Navbar collapse (Main navigation) -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <!-- <a class="navbar-brand" href="#">Navbar</a> -->
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          {% with request.resolver_match.url_name as url_name %}
-          <ul class="navbar-nav">
-            <li class="nav-item {% if url_name == 'index' %}active{% endif %}">
-              <a class="nav-link" href="{% url 'index' %}">Home</a>
-            </li>
-            <li class="nav-item {% if url_name == 'privacy' %}active{% endif %}">
-              <a class="nav-link" href="{% url 'privacy' %}">About</a>
-            </li>
-            <!-- Add more navigation items as necessary -->
-          </ul>
-          {% endwith %}
+            <!-- <a class="navbar-brand" href="#">Navbar</a> -->
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarNav"
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            {% with request.resolver_match.url_name as url_name %}
+                <ul class="navbar-nav">
+                    <li class="nav-item {% if url_name == 'index' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item {% if url_name == 'privacy' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'privacy' %}">About</a>
+                    </li>
+                    <!-- Add more navigation items as necessary -->
+                </ul>
+            {% endwith %}
         </nav>
     </div>
 </header>
