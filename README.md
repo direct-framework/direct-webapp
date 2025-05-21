@@ -20,6 +20,13 @@ This Django project uses:
 
 [`pip-tools`] is chosen as a lightweight dependency manager that adheres to the [latest standards](https://peps.python.org/pep-0621/) using `pyproject.toml`.
 
+## Related links
+
+- [DIRECT framework](https://github.com/direct-framework/digital-research-competencies-framework#about)
+- [History of the project - including competency wheels UI](https://github.com/direct-framework/digital-research-competencies-framework#history)
+- [Skills and competencies - definitions](https://github.com/direct-framework/digital-research-competencies-framework#competency-framework)
+- [Contributors](https://github.com/direct-framework/digital-research-competencies-framework#contributors)
+
 ## Current Status
 
 - [x] Initial research
