@@ -1,5 +1,4 @@
-import { renderRadialPlot } from 'skills-competencies-dataviz'
-import 'skills-competencies-dataviz/styles.css'
+import { RadialBarChart } from '../src/js/dataviz/radial-plot'
 
 const generateRandomData = (n, categoryCount) =>
   Array.from({ length: n }, (_, i) => ({
@@ -13,7 +12,11 @@ export default {
   tags: ['autodocs'],
   render: ({ data, ...args }) => {
     const container = document.createElement('div')
-    renderRadialPlot(container, data, args)
+    RadialBarChart({
+      target: container,
+      data,
+      ...args,
+    })
     return container
   },
   argTypes: {
