@@ -55,6 +55,7 @@ const bundleJS = async (output) => {
     const outputOptions = {
       file: `${path.js}/${outputFilename}`,
       format: 'iife',
+      name: 'main', // Included so we can import the bundle in HTML
       sourcemap: true,
     }
 
