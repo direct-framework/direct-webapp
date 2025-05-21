@@ -51,6 +51,7 @@
         "@fortawesome/fontawesome-free": "^6.7.2",
         "aos": "^2.3.4",
         "bootstrap": "^5.3.2",
+        "d3": "^7.9.0",
         "imagesloaded": "^5.0.0",
         "simplebar": "^6.2.5",
         "smooth-scroll": "^16.1.3"
