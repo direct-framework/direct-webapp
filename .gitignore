@@ -154,3 +154,5 @@ bower_components/
 *.war
 !node/build
 main/static/assets/img2
+
+*storybook.log
