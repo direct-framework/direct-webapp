@@ -34,7 +34,7 @@ django-stubs-ext==5.2.0
     #   rse_competencies_toolkit (pyproject.toml)
 filelock==3.18.0
     # via virtualenv
-identify==2.6.9
+identify==2.6.12
     # via pre-commit
 iniconfig==2.1.0
     # via pytest
