@@ -17634,4 +17634,8 @@ img-comparison-slider:focus {
   animation: blinking 1s infinite;
 }
 
+.bar:focus {
+  outline: none;
+}
+
 /*# sourceMappingURL=theme.css.map */

@@ -14,7 +14,7 @@ const excludedDependencies = ['bootstrap', 'smooth-scroll']
 const vendorJsFile = `${path.js}/vendor.bundle.js`
 const vendorCssFile = `${path.css}/vendor.bundle.css`
 
-const externalVendorStyles = ['aos/dist/aos.css', '../src/js/dataviz/styles.css']
+const externalVendorStyles = ['aos/dist/aos.css']
 
 const getVendorEntries = () => {
   const dependencies = Object.keys(packageFile.dependencies).filter(
@@ -38,6 +38,14 @@ const bundleVendorScripts = async () => {
         commonjs({ include: /node_modules/ }),
         terser(),
       ],
+      onwarn(warning, warn) {
+        // Ignore circular dependency warnings for D3
+        if (warning.code === 'CIRCULAR_DEPENDENCY' && /d3/.test(warning.message)) {
+          return
+        }
+        // Show all other warnings
+        warn(warning)
+      },
     })
 
     await bundle.write({
