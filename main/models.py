@@ -65,7 +65,9 @@ class Skill(models.Model):
 class SkillLevel(models.Model):
     """Model for skill levels."""
 
+    level = models.PositiveSmallIntegerField()
     name = models.CharField(max_length=50)
+    description = models.TextField()
 
     def __str__(self) -> str:
         """Return the name of the skill level."""

@@ -20,6 +20,13 @@ This Django project uses:
 
 [`pip-tools`] is chosen as a lightweight dependency manager that adheres to the [latest standards](https://peps.python.org/pep-0621/) using `pyproject.toml`.
 
+## Related links
+
+- [DIRECT framework](https://github.com/direct-framework/digital-research-competencies-framework#about)
+- [History of the project - including competency wheels UI](https://github.com/direct-framework/digital-research-competencies-framework#history)
+- [Skills and competencies - definitions](https://github.com/direct-framework/digital-research-competencies-framework#competency-framework)
+- [Contributors](https://github.com/direct-framework/digital-research-competencies-framework#contributors)
+
 ## Current Status
 
 - [x] Initial research
@@ -192,7 +199,15 @@ npm run vendor
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://horsfall.dev"><img src="https://avatars.githubusercontent.com/u/1079934?v=4?s=100" width="100px;" alt="Dave Horsfall"/><br /><sub><b>Dave Horsfall</b></sub></a><br /><a href="#design-davehorsfall" title="Design">🎨</a> <a href="#code-davehorsfall" title="Code">💻</a> <a href="#projectManagement-davehorsfall" title="Project Management">📆</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AdrianDAlessandro"><img src="https://avatars.githubusercontent.com/u/40875798?v=4?s=100" width="100px;" alt="Adrian D'Alessandro"/><br /><sub><b>Adrian D'Alessandro</b></sub></a><br /><a href="#design-AdrianDAlessandro" title="Design">🎨</a> <a href="#code-AdrianDAlessandro" title="Code">💻</a> <a href="#test-AdrianDAlessandro" title="Tests">⚠️</a> <a href="#projectManagement-AdrianDAlessandro" title="Project Management">📆</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AdrianDAlessandro"><img src="https://avatars.githubusercontent.com/u/40875798?v=4?s=100" width="100px;" alt="Adrian D'Alessandro"/><br /><sub><b>Adrian D'Alessandro</b></sub></a><br /><a href="#design-AdrianDAlessandro" title="Design">🎨</a> <a href="#code-AdrianDAlessandro" title="Code">💻</a> <a href="#test-AdrianDAlessandro" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TinyMarsh"><img src="https://avatars.githubusercontent.com/u/13540127?v=4?s=100" width="100px;" alt="Ryan"/><br /><sub><b>Ryan</b></sub></a><br /><a href="#code-TinyMarsh" title="Code">💻</a> <a href="#infra-TinyMarsh" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#tool-TinyMarsh" title="Tools">🔧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tdjames1"><img src="https://avatars.githubusercontent.com/u/10053102?v=4?s=100" width="100px;" alt="T D James"/><br /><sub><b>T D James</b></sub></a><br /><a href="#code-tdjames1" title="Code">💻</a> <a href="#test-tdjames1" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/connoraird"><img src="https://avatars.githubusercontent.com/u/61978554?v=4?s=100" width="100px;" alt="Connor Aird"/><br /><sub><b>Connor Aird</b></sub></a><br /><a href="#code-connoraird" title="Code">💻</a> <a href="#test-connoraird" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://personalpages.manchester.ac.uk/staff/Andrew.Gait/"><img src="https://avatars.githubusercontent.com/u/13529420?v=4?s=100" width="100px;" alt="Andrew Gait"/><br /><sub><b>Andrew Gait</b></sub></a><br /><a href="#ideas-andrewgait" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://brynnoelubald.com/"><img src="https://avatars.githubusercontent.com/u/55503826?v=4?s=100" width="100px;" alt="Bryn Noel Ubald"/><br /><sub><b>Bryn Noel Ubald</b></sub></a><br /><a href="#tool-bnubald" title="Tools">🔧</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jklebes"><img src="https://avatars.githubusercontent.com/u/11175421?v=4?s=100" width="100px;" alt="Jason Klebes"/><br /><sub><b>Jason Klebes</b></sub></a><br /><a href="#bug-jklebes" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

@@ -17,12 +17,7 @@ click==8.1.8
     #   djlint
     #   pip-tools
 colorama==0.4.6
-    # via
-    #   build
-    #   click
-    #   djlint
-    #   pytest
-    #   tqdm
+    # via djlint
 coverage[toml]==7.8.0
     # via pytest-cov
 cssbeautifier==1.15.4
@@ -53,7 +48,7 @@ editorconfig==0.17.0
     #   jsbeautifier
 filelock==3.18.0
     # via virtualenv
-identify==2.6.9
+identify==2.6.12
     # via pre-commit
 iniconfig==2.1.0
     # via pytest
@@ -81,7 +76,7 @@ pathspec==0.12.1
     # via djlint
 pip-tools==7.4.1
     # via rse_competencies_toolkit (pyproject.toml)
-platformdirs==4.3.7
+platformdirs==4.3.8
     # via virtualenv
 pluggy==1.5.0
     # via pytest
@@ -131,8 +126,6 @@ typing-extensions==4.13.2
     #   django-stubs
     #   django-stubs-ext
     #   mypy
-tzdata==2025.2
-    # via django
 virtualenv==20.30.0
     # via pre-commit
 werkzeug==3.1.3
