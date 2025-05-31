@@ -16,10 +16,10 @@
         <section class="container pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
             <div class="row pt-2 pt-md-4 pt-lg-3 pt-xl-4 g-4 g-sm-3 g-md-4">
                 <div class="col-lg-8 order-lg-1">
-                    <div class="d-md-flex h-100 bg-primary rounded-5 overflow-hidden px-4 px-sm-5 pt-5">
-                        <div class="d-md-flex px-2 px-sm-0 px-xl-2 px-xxl-4 pt-xl-3">
-                            <div class="text-center text-md-start pe-md-5 pb-3 pb-md-0 me-xxl-3 mb-4 md-0">
-                                <h2 class="h1 text-white pb-2 pb-md-3 mb-lg-4">Track and manage your professional development</h2>
+                    <div class="d-md-flex h-100 bg-primary rounded-5 overflow-hidden px-4 px-sm-5 pt-5 pb-5">
+                        <div class="d-md-flex row">
+                            <div class="text-center text-md-start pe-sm-3 col-5">
+                                <h2 class="h1 text-white pb-2 pb-md-3 mb-lg-4 col-4">Track and manage your professional development</h2>
                                 <a class="btn btn-icon btn-xl btn-warning rounded-circle"
                                    href="https://www.youtube.com/watch?v=NpQFhwqBgg4"
                                    data-bs-toggle="video"
@@ -27,13 +27,8 @@
                                     <i class="ai-play-filled"></i>
                                 </a>
                             </div>
-                            <div class="w-100 flex-md-shrink-0 mx-auto" style="max-width: 372px;">
-                                <img class="d-dark-mode-none"
-                                     src="{% static 'assets/img/landing/static-competency-wheel.png' %}"
-                                     alt="Image">
-                                <img class="d-none d-dark-mode-block"
-                                     src="{% static 'assets/img/landing/static-competency-wheel.png' %}"
-                                     alt="Image">
+                            <div class="col">
+                                <div class="bg-body rounded-5" id="dataviz_root"></div>
                             </div>
                         </div>
                     </div>
@@ -883,5 +878,39 @@
         <!--         </div> -->
         <!--     </div> -->
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const datavizRoot = document.getElementById('dataviz_root');
+
+            // Generate demo locally
+            const generateRandomData = (n, categoryCount) =>
+                Array.from({ length: n }, (_, i) => ({
+                    skill: `skill-${i}`,
+                    category: `category-${Math.floor(Math.random() * categoryCount)}`,
+                    skill_level: Math.floor(Math.random() * 10),
+                }))
+
+            main().RadialBarChart({
+                target: datavizRoot,
+                data: generateRandomData(20, 5),
+                innerRadius: 0,
+                width: 600,
+                // height: _height:undefined,
+                innerRadius: 65,
+                outerPadding: 80,
+                categoryPadding: 0.1,
+                skillPadding: 0.05,
+                arcPercent: 0.8,
+                arcStartOffset: 0.1,
+                annotationPadding: 10,
+                lineThickness: 2,
+                labelTextColor: "white",
+                lvlTextColor: "var(--ar-primary)",
+                lvlArcColor: "var(--ar-primary-text-emphasi)",
+                colourList: ["var(--ar-primary)"],
+            });
+        });
+
+    </script>
 {% endif %}
 {% endblock content %}

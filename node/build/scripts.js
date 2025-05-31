@@ -47,6 +47,10 @@ const bundleJS = async (output) => {
         if (warning.code === 'THIS_IS_UNDEFINED') {
           return
         }
+        // Ignore circular dependency warnings for D3
+        if (warning.code === 'CIRCULAR_DEPENDENCY' && /d3/.test(warning.message)) {
+          return
+        }
         // Show all other warnings
         warn(warning)
       },
@@ -55,6 +59,7 @@ const bundleJS = async (output) => {
     const outputOptions = {
       file: `${path.js}/${outputFilename}`,
       format: 'iife',
+      name: 'main', // Included so we can import the bundle in HTML
       sourcemap: true,
     }
 
