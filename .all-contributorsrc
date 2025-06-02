@@ -87,6 +87,17 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "sbland",
+      "name": "sbland",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4863319?v=4",
+      "profile": "https://github.com/sbland",
+      "contributions": [
+        "code",
+        "design",
+        "ideas"
+      ]
     }
   ]
 }
