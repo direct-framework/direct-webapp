@@ -96,7 +96,7 @@ pytest-cov==6.1.1
     # via rse_competencies_toolkit (pyproject.toml)
 pytest-django==4.11.1
     # via rse_competencies_toolkit (pyproject.toml)
-pytest-mock==3.14.0
+pytest-mock==3.14.1
     # via rse_competencies_toolkit (pyproject.toml)
 python-http-client==3.3.7
     # via sendgrid
