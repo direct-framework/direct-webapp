@@ -88,7 +88,7 @@ mkdocstrings==0.29.1
     #   rse_competencies_toolkit (pyproject.toml)
 mkdocstrings-python==1.16.10
     # via rse_competencies_toolkit (pyproject.toml)
-packaging==24.2
+packaging==25.0
     # via mkdocs
 paginate==0.5.7
     # via mkdocs-material
