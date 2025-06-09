@@ -106,7 +106,7 @@ pyyaml==6.0.2
     #   pre-commit
 regex==2024.11.6
     # via djlint
-ruff==0.11.7
+ruff==0.11.13
     # via rse_competencies_toolkit (pyproject.toml)
 sendgrid==6.12.3
     # via rse_competencies_toolkit (pyproject.toml)
