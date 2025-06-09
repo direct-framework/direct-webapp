@@ -17,7 +17,7 @@ django-stubs-ext==5.2.0
     # via rse_competencies_toolkit (pyproject.toml)
 python-http-client==3.3.7
     # via sendgrid
-sendgrid==6.12.0
+sendgrid==6.12.3
     # via rse_competencies_toolkit (pyproject.toml)
 sqlparse==0.5.3
     # via django
