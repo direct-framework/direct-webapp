@@ -42,7 +42,7 @@ djlint==1.36.4
     # via rse_competencies_toolkit (pyproject.toml)
 ecdsa==0.19.1
     # via sendgrid
-editorconfig==0.17.0
+editorconfig==0.17.1
     # via
     #   cssbeautifier
     #   jsbeautifier
