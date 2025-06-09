@@ -119,7 +119,7 @@ sqlparse==0.5.3
     # via django
 tqdm==4.67.1
     # via djlint
-types-pyyaml==6.0.12.20250402
+types-pyyaml==6.0.12.20250516
     # via django-stubs
 typing-extensions==4.13.2
     # via
