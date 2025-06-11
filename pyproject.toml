@@ -10,8 +10,9 @@ dependencies = [
     "django",
     "django-bootstrap5",
     "django-stubs-ext",
-    "whitenoise",
+    "gunicorn",
     "sendgrid",
+    "whitenoise"
 ]
 
 [project.optional-dependencies]
