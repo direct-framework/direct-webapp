@@ -115,7 +115,7 @@ def main() -> None:
 
     # Set up Django environment for standalone script
     sys.path.append(os.path.dirname(__file__))
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rse_competencies_toolkit.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "direct_webapp.settings")
     get_wsgi_application()
 
     args = read_args()

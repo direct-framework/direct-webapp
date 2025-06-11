@@ -40,7 +40,7 @@ This section guides you through submitting a bug report for the app. Following t
 - :computer: reproduce the behavior
 - :mag_right: find related reports
 
-Before creating bug reports, please check [this list](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/issues) (including the closed issues) as you might find out that you don't need to create one. When you are creating a bug report, please [include as many details as possible](#how-do-i-submit-a-good-bug-report).
+Before creating bug reports, please check [this list](https://github.com/direct-framework/direct-webapp/issues) (including the closed issues) as you might find out that you don't need to create one. When you are creating a bug report, please [include as many details as possible](#how-do-i-submit-a-good-bug-report).
 
 > **Note:** If you find a **Closed** issue that seems like it is the same thing that you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
 
@@ -58,7 +58,7 @@ Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/).
 Provide more context by answering these questions:
 
 - **Did the problem start happening recently** (e.g. after updating to a new version of the app) or was this always a problem?
-- If the problem started happening recently, **can you reproduce the problem in an older version of the app?** What's the most recent version in which the problem doesn't happen? You can download older versions of the app from [the releases page](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/releases).
+- If the problem started happening recently, **can you reproduce the problem in an older version of the app?** What's the most recent version in which the problem doesn't happen? You can download older versions of the app from [the releases page](https://github.com/direct-framework/direct-webapp/releases).
 - **Can you reliably reproduce the issue?** If not, provide details about how often the problem happens and under which conditions it normally happens.
 
 Include details about your configuration and environment:
@@ -71,7 +71,7 @@ Include details about your configuration and environment:
 
 This section guides you through submitting an enhancement suggestion for the app, including completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestion :pencil: and find related suggestions :mag_right:.
 
-Before creating enhancement suggestions, please check [this list](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/issues) (including closed issues) as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please [include as many details as possible](#how-do-i-submit-a-good-enhancement-suggestion).
+Before creating enhancement suggestions, please check [this list](https://github.com/direct-framework/direct-webapp/issues) (including closed issues) as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please [include as many details as possible](#how-do-i-submit-a-good-enhancement-suggestion).
 
 #### How Do I Submit A (Good) Enhancement Suggestion?
 
@@ -88,8 +88,8 @@ Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com
 
 Unsure where to begin contributing to the DIRECT WebApp? You can start by looking through these `beginner` and `help-wanted` issues:
 
-- [Beginner issues](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/labels/good%20first%20issue) - issues which should only require a few lines of code, and a test or two.
-- [Help wanted issues](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/labels/help%20wanted) - issues which should be a bit more involved than `beginner` issues.
+- [Beginner issues](https://github.com/direct-framework/direct-webapp/labels/good%20first%20issue) - issues which should only require a few lines of code, and a test or two.
+- [Help wanted issues](https://github.com/direct-framework/direct-webapp/labels/help%20wanted) - issues which should be a bit more involved than `beginner` issues.
 
 ### Pull Requests
 
