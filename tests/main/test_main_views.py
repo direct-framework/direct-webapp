@@ -5,10 +5,9 @@ This test module includes tests for main views of the app ensuring that:
   - The correct status codes are returned.
 """
 
-import pytest
 from django.urls import reverse
 
-from .view_utils import LoginRequiredMixin, TemplateOkMixin
+from .view_utils import TemplateOkMixin
 
 
 class TestIndex(TemplateOkMixin):
@@ -29,11 +28,10 @@ class TestPrivacy(TemplateOkMixin):
         return reverse("privacy")
 
 
-@pytest.mark.xfail
-class TestCreateUserView(LoginRequiredMixin, TemplateOkMixin):
+class TestCreateUserView(TemplateOkMixin):
     """Test suite for the CreateUserView."""
 
-    _template_name = "main/create_user.html"
+    _template_name = "registration/create_user.html"
 
     def _get_url(self):
         return reverse("create_user")

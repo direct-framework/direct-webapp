@@ -1,3 +1,12 @@
+/** Root of all javascript scripts to be compiled to static assets directory
+ *
+ * This file is the entry point for all JavaScript files in the project.
+ * It imports all the necessary components and libraries required for the project.
+ */
+
+/* Dataviz dependencies */
+import { RadialBarChart } from './dataviz/radial-plot'
+
 /**
  * Around | Multipurpose Bootstrap HTML Template
  * Copyright 2023 Createx Studio
@@ -41,3 +50,12 @@ import './components/subscription-form'
 import './components/toast'
 import './components/tooltip'
 import './components/video-button'
+
+/** export functions accessible in the global scope
+ *
+ * Usage example:  main().RadialBarChart(...args)
+ *
+ */
+export default () => {
+  return { RadialBarChart }
+}

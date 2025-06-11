@@ -1,12 +1,16 @@
 <!-- markdownlint-disable MD041 -->
 
-[![GitHub](https://img.shields.io/github/license/AdrianDAlessandro/rse-competencies-toolkit-webapp)](https://raw.githubusercontent.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/main/LICENSE)
-[![Test and build](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/actions/workflows/ci.yml/badge.svg)](https://github.com/AdrianDAlessandro/rse-competencies-toolkit-webapp/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/AdrianDAlessandro/rse-competencies-toolkit-webapp/graph/badge.svg?token=56K64XN243)](https://codecov.io/gh/AdrianDAlessandro/rse-competencies-toolkit-webapp)
+[![GitHub](https://img.shields.io/github/license/direct-framework/direct-webapp)](https://raw.githubusercontent.com/direct-framework/direct-webapp/main/LICENSE)
+[![Test and build](https://github.com/direct-framework/direct-webapp/actions/workflows/ci.yml/badge.svg)](https://github.com/direct-framework/direct-webapp/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/direct-framework/direct-webapp/graph/badge.svg?token=56K64XN243)](https://codecov.io/gh/direct-framework/direct-webapp)
 
-# DIRECT WebApp
+# DIRECT Framework Webapp
 
-A Django webapp for hosting the Digital Research Competencies (DIRECT) Framework.
+A Django webapp implementing the [DIRECT competencies framework](https://github.com/direct-framework/digital-research-competencies-framework/) as a website that can:
+
+- Allow browsing of all the skills.
+- Allow people to score their own skills and view their skill wheels.
+- Display and link the professional development resources curated for each skill.
 
 This Django project uses:
 
@@ -15,6 +19,21 @@ This Django project uses:
 - [`pytest`](https://pytest.org/) and [GitHub Actions](https://github.com/features/actions).
 
 [`pip-tools`] is chosen as a lightweight dependency manager that adheres to the [latest standards](https://peps.python.org/pep-0621/) using `pyproject.toml`.
+
+## Related links
+
+- [DIRECT framework](https://github.com/direct-framework/digital-research-competencies-framework#about)
+- [History of the project - including competency wheels UI](https://github.com/direct-framework/digital-research-competencies-framework#history)
+- [Skills and competencies - definitions](https://github.com/direct-framework/digital-research-competencies-framework#competency-framework)
+- [Contributors](https://github.com/direct-framework/digital-research-competencies-framework#contributors)
+
+## Current Status
+
+- [x] Initial research
+- [x] Initial development <-- We are here
+- [ ] Minimum viable product
+- [ ] Alpha release
+- [ ] Feature-complete release
 
 ## Installation
 
@@ -73,6 +92,12 @@ To get started:
 
    ```bash
    python manage.py createsuperuser
+   ```
+
+8. To populate the db with Categories and Skills from a yaml or json version of the framework
+
+   ```bash
+   python scripts/populate_db.py [-j data.json]|[-y data.yaml]
    ```
 
 ### Installation with Docker
@@ -140,3 +165,35 @@ The above script performs all the following tasks, which are available as indivi
 - **Build Expanded Scripts**: `npm run scripts:expanded` (builds expanded human-readable javascript files)
 - **Build Minified Scripts**: `npm run scripts:minified` (builds minified javascript files, optimised for production)
 - **Build Vendor Files**: `npm run vendor` (bundles and optimises third-party libraries)
+
+```bash
+npm run styles:expanded
+```
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://horsfall.dev"><img src="https://avatars.githubusercontent.com/u/1079934?v=4?s=100" width="100px;" alt="Dave Horsfall"/><br /><sub><b>Dave Horsfall</b></sub></a><br /><a href="#design-davehorsfall" title="Design">🎨</a> <a href="#code-davehorsfall" title="Code">💻</a> <a href="#projectManagement-davehorsfall" title="Project Management">📆</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AdrianDAlessandro"><img src="https://avatars.githubusercontent.com/u/40875798?v=4?s=100" width="100px;" alt="Adrian D'Alessandro"/><br /><sub><b>Adrian D'Alessandro</b></sub></a><br /><a href="#design-AdrianDAlessandro" title="Design">🎨</a> <a href="#code-AdrianDAlessandro" title="Code">💻</a> <a href="#test-AdrianDAlessandro" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TinyMarsh"><img src="https://avatars.githubusercontent.com/u/13540127?v=4?s=100" width="100px;" alt="Ryan"/><br /><sub><b>Ryan</b></sub></a><br /><a href="#code-TinyMarsh" title="Code">💻</a> <a href="#infra-TinyMarsh" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#tool-TinyMarsh" title="Tools">🔧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tdjames1"><img src="https://avatars.githubusercontent.com/u/10053102?v=4?s=100" width="100px;" alt="T D James"/><br /><sub><b>T D James</b></sub></a><br /><a href="#code-tdjames1" title="Code">💻</a> <a href="#test-tdjames1" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/connoraird"><img src="https://avatars.githubusercontent.com/u/61978554?v=4?s=100" width="100px;" alt="Connor Aird"/><br /><sub><b>Connor Aird</b></sub></a><br /><a href="#code-connoraird" title="Code">💻</a> <a href="#test-connoraird" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://personalpages.manchester.ac.uk/staff/Andrew.Gait/"><img src="https://avatars.githubusercontent.com/u/13529420?v=4?s=100" width="100px;" alt="Andrew Gait"/><br /><sub><b>Andrew Gait</b></sub></a><br /><a href="#ideas-andrewgait" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://brynnoelubald.com/"><img src="https://avatars.githubusercontent.com/u/55503826?v=4?s=100" width="100px;" alt="Bryn Noel Ubald"/><br /><sub><b>Bryn Noel Ubald</b></sub></a><br /><a href="#tool-bnubald" title="Tools">🔧</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jklebes"><img src="https://avatars.githubusercontent.com/u/11175421?v=4?s=100" width="100px;" alt="Jason Klebes"/><br /><sub><b>Jason Klebes</b></sub></a><br /><a href="#bug-jklebes" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sbland"><img src="https://avatars.githubusercontent.com/u/4863319?v=4?s=100" width="100px;" alt="sbland"/><br /><sub><b>sbland</b></sub></a><br /><a href="#code-sbland" title="Code">💻</a> <a href="#design-sbland" title="Design">🎨</a> <a href="#ideas-sbland" title="Ideas, Planning, & Feedback">🤔</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->

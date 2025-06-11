@@ -11,6 +11,7 @@ Fixes # (issue)
 - [ ] Documentation (non-breaking change that adds or improves the documentation)
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Optimization (non-breaking, back-end change that speeds up the code)
+- [ ] Technical work (non-breaking, change which is work as part of a new feature)
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] Breaking change (whatever its nature)
 

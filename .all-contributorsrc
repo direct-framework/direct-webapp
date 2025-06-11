@@ -1,0 +1,103 @@
+{
+  "projectName": "direct-webapp",
+  "projectOwner": "direct-framework",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "davehorsfall",
+      "name": "Dave Horsfall",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1079934?v=4",
+      "profile": "http://horsfall.dev",
+      "contributions": [
+        "design",
+        "code",
+        "projectManagement"
+      ]
+    },
+    {
+      "login": "AdrianDAlessandro",
+      "name": "Adrian D'Alessandro",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40875798?v=4",
+      "profile": "https://github.com/AdrianDAlessandro",
+      "contributions": [
+        "design",
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "TinyMarsh",
+      "name": "Ryan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13540127?v=4",
+      "profile": "https://github.com/TinyMarsh",
+      "contributions": [
+        "code",
+        "infra",
+        "tool"
+      ]
+    },
+    {
+      "login": "tdjames1",
+      "name": "T D James",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10053102?v=4",
+      "profile": "https://github.com/tdjames1",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "connoraird",
+      "name": "Connor Aird",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61978554?v=4",
+      "profile": "https://github.com/connoraird",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "andrewgait",
+      "name": "Andrew Gait",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13529420?v=4",
+      "profile": "https://personalpages.manchester.ac.uk/staff/Andrew.Gait/",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "bnubald",
+      "name": "Bryn Noel Ubald",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55503826?v=4",
+      "profile": "https://brynnoelubald.com/",
+      "contributions": [
+        "tool"
+      ]
+    },
+    {
+      "login": "jklebes",
+      "name": "Jason Klebes",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11175421?v=4",
+      "profile": "https://github.com/jklebes",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "sbland",
+      "name": "sbland",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4863319?v=4",
+      "profile": "https://github.com/sbland",
+      "contributions": [
+        "code",
+        "design",
+        "ideas"
+      ]
+    }
+  ]
+}
