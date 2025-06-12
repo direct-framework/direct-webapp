@@ -1,4 +1,4 @@
-"""ASGI config for rse_competencies_toolkit project.
+"""ASGI config for direct_webapp project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -10,6 +10,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rse_competencies_toolkit.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "direct_webapp.settings")
 
 application = get_asgi_application()

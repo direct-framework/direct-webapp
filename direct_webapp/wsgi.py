@@ -1,4 +1,4 @@
-"""WSGI config for rse_competencies_toolkit project.
+"""WSGI config for direct_webapp project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -10,6 +10,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rse_competencies_toolkit.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "direct_webapp.settings")
 
 application = get_wsgi_application()

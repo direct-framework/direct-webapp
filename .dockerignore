@@ -2,6 +2,6 @@
 !main
 !manage.py
 !requirements.txt
-!rse_competencies_toolkit
+!direct_webapp
 !db
 db/*

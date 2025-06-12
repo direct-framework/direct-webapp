@@ -150,44 +150,24 @@ After cloning the repository, navigate to the project directory and install the 
 npm install
 ```
 
-### Available NPM Scripts
+### Building all frontend assets
 
-Key commands available in the `package.json`:
-
-**_Build All Assets:_** To build all styles, scripts, icon fonts, and vendor files, run:
+To build all styles, scripts, and vendor files, run:
 
 ```bash
 npm run build
 ```
 
-**_Build Expanded Styles:_** To build expanded (human-readable) css files:
+The above script performs all the following tasks, which are available as individual commands:
+
+- **Build Expanded Styles**: `npm run styles:expanded` (builds expanded human-readable css files)
+- **Build Minified Styles**: `npm run styles:minified` (builds minified css files, optimised for production)
+- **Build Expanded Scripts**: `npm run scripts:expanded` (builds expanded human-readable javascript files)
+- **Build Minified Scripts**: `npm run scripts:minified` (builds minified javascript files, optimised for production)
+- **Build Vendor Files**: `npm run vendor` (bundles and optimises third-party libraries)
 
 ```bash
 npm run styles:expanded
-```
-
-**_Build Minified Styles:_** To build minified (optimised for production) css files:
-
-```bash
-npm run styles:minified
-```
-
-**_Build Expanded Scripts:_** To build expanded (human-readable) javascript file:
-
-```bash
-npm run scripts:expanded
-```
-
-**_Build Minified Styles:_** To build minified (optimised for production) javascript file:
-
-```bash
-npm run scripts:minified
-```
-
-**_Build Vendor Files:_** Bundle and optimise third-party libraries:
-
-```bash
-npm run vendor
 ```
 
 ## Contributors
