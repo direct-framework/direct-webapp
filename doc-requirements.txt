@@ -119,7 +119,7 @@ pyyaml-env-tag==1.1
     # via mkdocs
 requests==2.32.4
     # via mkdocs-material
-sendgrid==6.12.3
+sendgrid==6.12.4
     # via direct_webapp (pyproject.toml)
 six==1.17.0
     # via
