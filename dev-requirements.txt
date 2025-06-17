@@ -121,7 +121,7 @@ tqdm==4.67.1
     # via djlint
 types-pyyaml==6.0.12.20250516
     # via django-stubs
-typing-extensions==4.13.2
+typing-extensions==4.14.0
     # via
     #   django-stubs
     #   django-stubs-ext
