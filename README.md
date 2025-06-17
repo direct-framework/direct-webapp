@@ -97,7 +97,7 @@ To get started:
 8. To populate the db with Categories and Skills from a yaml or json version of the framework
 
    ```bash
-   python scripts/populate_db.py [-j data.json]|[-y data.yaml]
+   python -m scripts.populate_db [-j data.json]|[-y data.yaml]
    ```
 
 ### Installation with Docker
