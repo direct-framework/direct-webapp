@@ -108,7 +108,7 @@ regex==2024.11.6
     # via djlint
 ruff==0.11.13
     # via direct_webapp (pyproject.toml)
-sendgrid==6.12.3
+sendgrid==6.12.4
     # via direct_webapp (pyproject.toml)
 six==1.17.0
     # via

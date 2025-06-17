@@ -21,7 +21,7 @@ markupsafe==3.0.2
     # via werkzeug
 python-http-client==3.3.7
     # via sendgrid
-sendgrid==6.12.3
+sendgrid==6.12.4
     # via direct_webapp (pyproject.toml)
 six==1.17.0
     # via ecdsa
