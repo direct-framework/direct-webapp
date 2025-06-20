@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -120,9 +119,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom settings
 INSTALLED_APPS = [
-    "main",
+    "main",  # List main app first so that custom templates override default admin views
     *INSTALLED_APPS,
-]  # List main app first so that custom templates override default admin views
+    "django_bootstrap5",
+    "django_registration",
+]
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 STATIC_ROOT = BASE_DIR / "staticfiles"
 AUTH_USER_MODEL = "main.User"
