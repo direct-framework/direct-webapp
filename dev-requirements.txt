@@ -86,7 +86,7 @@ pyproject-hooks==1.2.0
     # via
     #   build
     #   pip-tools
-pytest==8.3.5
+pytest==8.4.1
     # via
     #   direct_webapp (pyproject.toml)
     #   pytest-cov
