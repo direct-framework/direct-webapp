@@ -1,8 +1,17 @@
 """Forms module for the main app."""
 
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import (
+    CharField,
+    EmailField,
+    FileInput,
+    ImageField,
+    ModelForm,
+    Textarea,
+    TextInput,
+)
 
-from .models import User
+from .models import User, UserProfile
 
 
 class CustomUserCreationForm(UserCreationForm[User]):
@@ -22,3 +31,35 @@ class CustomUserCreationForm(UserCreationForm[User]):
         if commit:
             user.save()
         return user
+
+
+class CustomUpdateUserForm(ModelForm):
+    """Update user."""
+
+    username = CharField(
+        max_length=100, required=True, widget=TextInput(attrs={"class": "form-control"})
+    )
+    email = EmailField(required=True, widget=TextInput(attrs={"class": "form-control"}))
+
+    class Meta:
+        """Form metadata."""
+
+        model = User
+        fields = ["username", "email"]  # noqa: RUF012
+
+
+class CustomUpdateProfileForm(ModelForm):
+    """Update user profile."""
+
+    avatar = ImageField(
+        required=False, widget=FileInput(attrs={"class": "form-control-file"})
+    )
+    bio = CharField(
+        required=False, widget=Textarea(attrs={"class": "form-control", "rows": 5})
+    )
+
+    class Meta:
+        """Form metadata."""
+
+        model = UserProfile
+        fields = ["avatar", "bio"]  # noqa: RUF012

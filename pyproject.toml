@@ -12,6 +12,7 @@ dependencies = [
     "django-stubs-ext",
     "whitenoise",
     "sendgrid",
+    "pillow",
 ]
 
 [project.optional-dependencies]
