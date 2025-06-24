@@ -2,7 +2,10 @@
 {% block content %}
     <section class="container pt-5 mt-5">
         {% if user.is_authenticated %}
-            <p>Profile page for <b>{{ user.username }}</b>{% if user.email %} with email <b>{{ user.email }}</b>{% endif %}</p>
+            <p>
+                Profile page for <b>{{ user.username }}</b>
+                {% if user.email %}with email <b>{{ user.email }}</b>{% endif %}
+            </p>
             {% if user_form.errors %}
                 <div class="alert alert-danger alert-dismissible" role="alert">
                     <div id="form_errors">
@@ -28,12 +31,12 @@
                     </div>
                     <br>
                     <button class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex"
-                        type="submit">
+                            type="submit">
                         <i class="ai-login fs-xl me-2 ms-n1"></i>
                         Save Changes
                     </button>
                     <button class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex"
-                        type="reset">
+                            type="reset">
                         <i class="ai-login fs-xl me-2 ms-n1"></i>
                         Reset
                     </button>

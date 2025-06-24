@@ -4,10 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.forms import (
     CharField,
     EmailField,
-    FileInput,
-    ImageField,
     ModelForm,
-    Textarea,
     TextInput,
 )
 
