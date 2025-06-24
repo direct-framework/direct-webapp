@@ -30,7 +30,7 @@ class CustomUserCreationForm(UserCreationForm[User]):
         return user
 
 
-class CustomUpdateUserForm(ModelForm):
+class CustomUpdateUserForm(ModelForm):  # type: ignore
     """Update user."""
 
     username = CharField(
