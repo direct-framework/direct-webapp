@@ -1,0 +1,13 @@
+name: Add Contributors
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  contributors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: All Contributors Auto Action
+        uses: JoshuaKGoldberg/all-contributors-auto-action@v0.4.3
