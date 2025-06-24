@@ -8,7 +8,7 @@ asgiref==3.8.1
     # via django
 babel==2.17.0
     # via mkdocs-material
-backrefs==5.8
+backrefs==5.9
     # via mkdocs-material
 certifi==2025.6.15
     # via requests
