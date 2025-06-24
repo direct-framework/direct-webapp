@@ -2,13 +2,7 @@
 {% block content %}
     <section class="container pt-5 mt-5">
         {% if user.is_authenticated %}
-            <p>Profile page for, {{ user.username }} with email {{ user.email }}.</p>
-            <div class="row my-3 p-3">
-                <img class="rounded-circle"
-                     src="{{ user.userprofile.avatar.url }}"
-                     style="cursor: pointer;
-                            width: 20%" />
-            </div>
+            <p>Profile page for <b>{{ user.username }}</b>{% if user.email %} with email <b>{{ user.email }}</b>{% endif %}</p>
             {% if user_form.errors %}
                 <div class="alert alert-danger alert-dismissible" role="alert">
                     <div id="form_errors">
@@ -30,20 +24,19 @@
                                 <label class="small mb-1">Email:</label>
                                 {{ user_form.email }}
                             </div>
-                            <div class="form-group">
-                                <a href="#">Change Password</a>
-                                <hr>
-                                <label class="small mb-1">Change Avatar:</label>
-                                {{ profile_form.avatar }}
-                            </div>
-                            <label class="small mb-1">Bio:</label>
-                            {{ profile_form.bio }}
                         </div>
                     </div>
                     <br>
-                    <br>
-                    <button type="submit" class="btn btn-dark btn-lg">Save Changes</button>
-                    <button type="reset" class="btn btn-dark btn-lg">Reset</button>
+                    <button class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex"
+                        type="submit">
+                        <i class="ai-login fs-xl me-2 ms-n1"></i>
+                        Save Changes
+                    </button>
+                    <button class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex"
+                        type="reset">
+                        <i class="ai-login fs-xl me-2 ms-n1"></i>
+                        Reset
+                    </button>
                 </form>
             </div>
         {% else %}

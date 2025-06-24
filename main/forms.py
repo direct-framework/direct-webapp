@@ -11,7 +11,7 @@ from django.forms import (
     TextInput,
 )
 
-from .models import User, UserProfile
+from .models import User
 
 
 class CustomUserCreationForm(UserCreationForm[User]):
@@ -46,20 +46,3 @@ class CustomUpdateUserForm(ModelForm):
 
         model = User
         fields = ["username", "email"]  # noqa: RUF012
-
-
-class CustomUpdateProfileForm(ModelForm):
-    """Update user profile."""
-
-    avatar = ImageField(
-        required=False, widget=FileInput(attrs={"class": "form-control-file"})
-    )
-    bio = CharField(
-        required=False, widget=Textarea(attrs={"class": "form-control", "rows": 5})
-    )
-
-    class Meta:
-        """Form metadata."""
-
-        model = UserProfile
-        fields = ["avatar", "bio"]  # noqa: RUF012
