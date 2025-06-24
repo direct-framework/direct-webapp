@@ -5,6 +5,8 @@ import {
   getCatLabelWidth,
 } from './radial-plot-dataprocessing'
 
+let previousHighlightedSkill = null
+
 export function RadialBarChart({
   target,
   data,
@@ -75,11 +77,13 @@ export function RadialBarChart({
   // D3.js function to render the skill highlight
   function renderSkillHighlightD3(svg, highlightedSkill) {
     // Remove previous highlight if any
+    // TODO: Use select instead of removing each time
     svg.selectAll('.SkillHighlight').remove()
 
     if (!highlightedSkill) return
+    const t = d3.transition().duration(50).ease(d3.easeLinear)
 
-    const group = svg.append('g').attr('class', 'SkillHighlight')
+    const group = svg.append('g').attr('class', 'skill-highlight')
 
     // Renders a circle
     group
@@ -87,6 +91,12 @@ export function RadialBarChart({
       .attr('cx', 0)
       .attr('cy', 0)
       .attr('r', innerRadius - 10)
+      .attr('class', 'skill-highlight-circle')
+      .transition(t)
+      .attr('opacity', 0)
+      .attr('fill', color(previousHighlightedSkill.category))
+      .transition(t) // Transition to the new highlight
+      .attr('opacity', 1)
       .attr('fill', color(highlightedSkill.category))
 
     // Category text
@@ -122,6 +132,7 @@ export function RadialBarChart({
 
   const setHighlightedSkill = (skill) => {
     renderSkillHighlightD3(g, skill)
+    previousHighlightedSkill = skill
   }
 
   /* D3js component to render the radial bar chart bars
@@ -154,7 +165,6 @@ export function RadialBarChart({
     bars
       .append('path')
       .attr('d', (d) => barFullHeightArc(d))
-      .attr('tabindex', 0)
       .attr('class', 'bar')
       .attr('fill-opacity', 0.0001)
 
@@ -224,8 +234,8 @@ export function RadialBarChart({
     // Line from base of category to annotation label
     annotationGroup
       .append('line')
-      .attr('x1', catAnnotationPointInner(cat).x * innerRadius)
-      .attr('y1', catAnnotationPointInner(cat).y * innerRadius)
+      .attr('x1', catAnnotationPointInner(cat).x * (innerRadius - 3))
+      .attr('y1', catAnnotationPointInner(cat).y * (innerRadius - 3))
       .attr('x2', catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding))
       .attr('y2', catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding))
       .attr('stroke', color(cat))
@@ -305,14 +315,15 @@ export function RadialBarChart({
   }
 
   /* add bars to svg */
-  filteredCategories.forEach((cat) => {
-    const dItems = groupedByCategory.get(cat)
-    renderBarsD3(g, cat, dItems)
-  })
+
   renderBackgroundLvlRingsD3(g, 'cat')
   filteredCategories.forEach((cat) => {
     renderAnnotationsD3(g, cat)
   })
   renderSkillHighlightD3(svg, false)
+  filteredCategories.forEach((cat) => {
+    const dItems = groupedByCategory.get(cat)
+    renderBarsD3(g, cat, dItems)
+  })
   return svg
 }
