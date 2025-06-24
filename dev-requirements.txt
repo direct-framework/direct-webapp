@@ -92,7 +92,7 @@ pytest==8.4.1
     #   pytest-cov
     #   pytest-django
     #   pytest-mock
-pytest-cov==6.1.1
+pytest-cov==6.2.1
     # via direct_webapp (pyproject.toml)
 pytest-django==4.11.1
     # via direct_webapp (pyproject.toml)
