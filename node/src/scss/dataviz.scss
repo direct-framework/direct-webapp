@@ -5,7 +5,21 @@
 }
 
 .bar-group {
+  outline: none;
+  .bar {
+    transition: all .2s ease-in-out;
+  }
+  .bar-segment {
+    transition: all .2s ease-in-out;
+  }
+  .bar-outline {
+    stroke-opacity: 0;
+    stroke-width: 3;
+    transition: all .2s ease-in-out;
+  }
+
   &:focus-within {
+    outline: none;
     .bar {
       fill-opacity: .5;
     }
@@ -21,6 +35,7 @@
   }
 
   &:hover {
+    outline: none;
     .bar {
       fill-opacity: .5;
     }

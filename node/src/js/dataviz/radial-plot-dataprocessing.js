@@ -182,8 +182,8 @@ export function radialBarChartPreProcessing({
   /* A d3.js arc generator for the arc that is at the base of the category. */
   const categoryBaseArc = d3
     .arc()
-    .innerRadius(innerRadius + 5)
-    .outerRadius(innerRadius)
+    .innerRadius(innerRadius - 1)
+    .outerRadius(innerRadius - 3)
     .startAngle((category) => categoryStartAngleMap[category])
     .endAngle(
       (category) =>

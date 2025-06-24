@@ -1666,7 +1666,7 @@ var main = (function () {
 
   var constant$1 = x => () => x;
 
-  function linear$1(a, d) {
+  function linear$2(a, d) {
     return function(t) {
       return a + t * d;
     };
@@ -1686,7 +1686,7 @@ var main = (function () {
 
   function nogamma(a, b) {
     var d = b - a;
-    return d ? linear$1(a, d) : constant$1(isNaN(a) ? b : a);
+    return d ? linear$2(a, d) : constant$1(isNaN(a) ? b : a);
   }
 
   var interpolateRgb = (function rgbGamma(y) {
@@ -2868,13 +2868,17 @@ var main = (function () {
     this._id = id;
   }
 
+  function transition(name) {
+    return selection().transition(name);
+  }
+
   function newId() {
     return ++id;
   }
 
   var selection_prototype = selection.prototype;
 
-  Transition.prototype = {
+  Transition.prototype = transition.prototype = {
     constructor: Transition,
     select: transition_select,
     selectAll: transition_selectAll,
@@ -2906,6 +2910,8 @@ var main = (function () {
     end: transition_end,
     [Symbol.iterator]: selection_prototype[Symbol.iterator]
   };
+
+  const linear$1 = t => +t;
 
   function cubicInOut(t) {
     return ((t *= 2) <= 1 ? t * t * t : (t -= 2) * t * t + 2) / 2;
@@ -4212,7 +4218,7 @@ var main = (function () {
     const barSegmentArc = arc().startAngle(d => getSkillAngleStart(d)).endAngle(d => getSkillAngleStart(d) + columnAngle).innerRadius((_, lvl) => lvlHeight(lvl - 1) + 1).outerRadius((_, lvl) => lvlHeight(lvl + 0) - 1).padRadius(-1).padAngle(0.01);
 
     /* A d3.js arc generator for the arc that is at the base of the category. */
-    const categoryBaseArc = arc().innerRadius(innerRadius + 5).outerRadius(innerRadius).startAngle(category => categoryStartAngleMap[category]).endAngle(category => {
+    const categoryBaseArc = arc().innerRadius(innerRadius - 1).outerRadius(innerRadius - 3).startAngle(category => categoryStartAngleMap[category]).endAngle(category => {
       var _groupedByCategory$ge9, _groupedByCategory$ge10, _groupedByCategory$ge11, _groupedByCategory$ge12;
       return categoryStartAngleMap[category] + columnAngle * ((_groupedByCategory$ge9 = (_groupedByCategory$ge10 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge10.length) != null ? _groupedByCategory$ge9 : 0) + ((_groupedByCategory$ge11 = (_groupedByCategory$ge12 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge12.length) != null ? _groupedByCategory$ge11 : 0) * skillPadding;
     });
@@ -4242,6 +4248,7 @@ var main = (function () {
     return cat.length * 10;
   }
 
+  let previousHighlightedSkill = null;
   function RadialBarChart({
     target,
     data,
@@ -4295,12 +4302,15 @@ var main = (function () {
     // D3.js function to render the skill highlight
     function renderSkillHighlightD3(svg, highlightedSkill) {
       // Remove previous highlight if any
+      // TODO: Use select instead of removing each time
       svg.selectAll('.SkillHighlight').remove();
       if (!highlightedSkill) return;
-      const group = svg.append('g').attr('class', 'SkillHighlight');
+      const t = transition().duration(50).ease(linear$1);
+      const group = svg.append('g').attr('class', 'skill-highlight');
 
       // Renders a circle
-      group.append('circle').attr('cx', 0).attr('cy', 0).attr('r', innerRadius - 10).attr('fill', color(highlightedSkill.category));
+      group.append('circle').attr('cx', 0).attr('cy', 0).attr('r', innerRadius - 10).attr('class', 'skill-highlight-circle').transition(t).attr('opacity', 0).attr('fill', color(previousHighlightedSkill.category)).transition(t) // Transition to the new highlight
+      .attr('opacity', 1).attr('fill', color(highlightedSkill.category));
 
       // Category text
       group.append('text').attr('y', -5).attr('text-anchor', 'middle').attr('fill', labelTextColor).text(highlightedSkill.category);
@@ -4319,6 +4329,7 @@ var main = (function () {
     };
     const setHighlightedSkill = skill => {
       renderSkillHighlightD3(g, skill);
+      previousHighlightedSkill = skill;
     };
 
     /* D3js component to render the radial bar chart bars
@@ -4331,7 +4342,7 @@ var main = (function () {
       svg.selectAll(`.Bars-${cat}`).remove();
       const barGroup = svg.append('g').attr('class', `Bars Bars-${cat}`).attr('fill', color(cat));
       const bars = barGroup.selectAll('.bar-group').data(dItems, d => d.skill).join('g').attr('class', 'bar-group').on('click', () => handleSkillSelect()).on('mouseover', (event, d) => setHighlightedSkill(d)).on('mouseout', () => setHighlightedSkill(false)).on('focus', (event, d) => setHighlightedSkill(d)).on('blur', () => setHighlightedSkill(false));
-      bars.append('path').attr('d', d => barFullHeightArc(d)).attr('tabindex', 0).attr('class', 'bar').attr('fill-opacity', 0.0001);
+      bars.append('path').attr('d', d => barFullHeightArc(d)).attr('class', 'bar').attr('fill-opacity', 0.0001);
       bars.append('path').attr('d', d => barFullHeightArc(d)).attr('class', 'bar-outline').attr('fill', 'none').attr('stroke', color(cat)).attr('stroke-opacity', 0);
       bars.each(function (d) {
         const group = select(this);
@@ -4368,7 +4379,7 @@ var main = (function () {
       annotationGroup.append('path').attr('d', categoryBaseArc(cat)).attr('fill', color(cat)).attr('stroke', 'none').attr('stroke-width', lineThickness);
 
       // Line from base of category to annotation label
-      annotationGroup.append('line').attr('x1', catAnnotationPointInner(cat).x * innerRadius).attr('y1', catAnnotationPointInner(cat).y * innerRadius).attr('x2', catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding)).attr('y2', catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding)).attr('stroke', color(cat)).attr('fill', 'none').attr('stroke-width', lineThickness).attr('opacity', 1);
+      annotationGroup.append('line').attr('x1', catAnnotationPointInner(cat).x * (innerRadius - 3)).attr('y1', catAnnotationPointInner(cat).y * (innerRadius - 3)).attr('x2', catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding)).attr('y2', catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding)).attr('stroke', color(cat)).attr('fill', 'none').attr('stroke-width', lineThickness).attr('opacity', 1);
 
       // Line beneath category label
       annotationGroup.append('line').attr('x1', catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding)).attr('y1', catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding)).attr('x2', catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding) + (catAnnotationPointOuter(cat).x > 0 ? getCatLabelWidth(cat) : -getCatLabelWidth(cat))).attr('y2', catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding)).attr('stroke', color(cat)).attr('fill', 'none').attr('stroke-width', lineThickness);
@@ -4387,15 +4398,16 @@ var main = (function () {
     }
 
     /* add bars to svg */
-    filteredCategories.forEach(cat => {
-      const dItems = groupedByCategory.get(cat);
-      renderBarsD3(g, cat, dItems);
-    });
+
     renderBackgroundLvlRingsD3(g);
     filteredCategories.forEach(cat => {
       renderAnnotationsD3(g, cat);
     });
     renderSkillHighlightD3(svg, false);
+    filteredCategories.forEach(cat => {
+      const dItems = groupedByCategory.get(cat);
+      renderBarsD3(g, cat, dItems);
+    });
     return svg;
   }
 
