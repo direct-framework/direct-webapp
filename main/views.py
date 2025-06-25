@@ -2,6 +2,7 @@
 
 import logging
 from typing import TYPE_CHECKING, cast
+from json import dumps
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,6 +12,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
+from .models import UserSkill
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +40,31 @@ def privacy(request: HttpRequest) -> HttpResponse:
     """
     logger.info("Rendering privacy page.")
     return render(request=request, template_name="main/privacy.html")
+
+
+def skill_profile(request: HttpRequest) -> HttpResponse:
+    """View that renders the skill profile page.
+
+    Args:
+      request: A GET request.
+    """
+    logger.info("Rendering skill_profile page.")
+    userskills = UserSkill.objects.all()
+    userSkillData = [
+        {
+            "skill": userSkill.skill.name,
+            "category": userSkill.skill.category.name,
+            "skill_level": userSkill.skill_level.name,
+        }
+        for userSkill in userskills
+    ]
+    # TODO: Do we show skills with 0 level?
+    # NOTE: skills do not need to be in any order.
+    context = {"data": dumps(userSkillData)}
+
+    return render(
+        request=request, template_name="app/skill_profile.html", context=context
+    )
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore[type-arg]
