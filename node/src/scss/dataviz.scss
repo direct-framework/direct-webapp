@@ -13,6 +13,7 @@
     transition: all .2s ease-in-out;
   }
   .bar-outline {
+    outline: none;
     stroke-opacity: 0;
     stroke-width: 3;
     transition: all .2s ease-in-out;
@@ -29,6 +30,7 @@
     }
 
     .bar-outline {
+      outline: none;
       stroke-opacity: 1;
       stroke-width: 3;
     }
@@ -45,6 +47,7 @@
     }
 
     .bar-outline {
+      outline: none;
       stroke-opacity: 1;
       stroke-width: 3;
     }

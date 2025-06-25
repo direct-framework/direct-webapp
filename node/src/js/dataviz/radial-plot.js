@@ -1,29 +1,284 @@
 import * as d3 from 'd3'
 import {
-  getColor,
   radialBarChartPreProcessing,
   getCatLabelWidth,
+  getArcsFn,
 } from './radial-plot-dataprocessing'
 
-export function RadialBarChart({
-  target,
-  data,
-  width = 640,
-  height: _height = undefined,
-  innerRadius = 80,
-  outerPadding = 100,
-  categoryPadding = 0.1,
-  skillPadding = 0.05,
-  arcPercent = 0.8,
-  arcStartOffset = 0.1,
-  annotationPadding = 10,
-  lineThickness = 2,
-  labelTextColor = 'black',
-  lvlTextColor = '#ccc',
-  lvlArcColor = '#444',
-  colourList = d3.schemeAccent,
+/* D3js component to render the radial bar chart bars
+
+  Each bar is made up of a path for the bar itself and a path for each segment
+  where each segment represents a lvl.
+
+  A path is also created to handle the hover events for each bar
+  */
+function refreshBarsD3({
+  svg,
+  sortedCategories,
+  categoryFocus,
+  skillsData,
+  getArcs,
+  groupedByCategory,
+  handleSkillSelect,
+  setHighlightedSkill,
 }) {
+  const filteredCategories = categoryFocus ? [categoryFocus] : sortedCategories
+  const filteredCategoriesIds = filteredCategories.map((c) => c.id)
+  const filteredData = skillsData
+    /* Only show the data in the focus category or all categories */
+    // TODO: Check this
+    .filter((d) => filteredCategoriesIds.includes(d.category))
+
+  const { barFullHeightArc, barSegmentArc } = getArcs({
+    skillsData: filteredData,
+    categories: filteredCategories,
+    groupedByCategory,
+  })
+  svg.selectAll('.Bars').remove()
+
+  filteredCategories.forEach((categoryData) => {
+    const dItems = groupedByCategory.get(categoryData.id)
+
+    const barGroup = svg
+      .append('g')
+      .attr('class', `Bars Bars-${categoryData.id}`)
+      .attr('fill', categoryData.color)
+
+    const bars = barGroup
+      .selectAll('.bar-group')
+      .data(dItems, (d) => d.skill)
+      .join('g')
+      .attr('class', 'bar-group')
+
+    bars
+      .append('path')
+      .attr('d', (d) => barFullHeightArc(d))
+      .attr('class', 'bar')
+      .attr('fill-opacity', 0.0001)
+
+    bars.each(function (d) {
+      const group = d3.select(this)
+      for (let lvl = 1; lvl <= d.skill_level; lvl++) {
+        group
+          .append('path')
+          .attr('d', barSegmentArc(d, lvl))
+          .attr('fill', categoryData.color)
+          .attr('class', 'bar-segment')
+      }
+    })
+
+    bars
+      .append('path')
+      .attr('d', (d) => barFullHeightArc(d))
+      .attr('class', 'bar-outline')
+      .attr('fill', 'rgba(0, 0, 0, 0)')
+      .attr('stroke', categoryData.color)
+      .attr('stroke-opacity', 0)
+      .on('click', () => handleSkillSelect(categoryFocus ? null : categoryData))
+      .on('mouseover', (event, d) => setHighlightedSkill(d))
+      .on('mouseout', () => setHighlightedSkill(false))
+      .on('focus', (event, d) => setHighlightedSkill(d))
+      .on('blur', () => setHighlightedSkill(false))
+  })
+
+  return svg
+}
+
+/* D3 component to render the annotations for each category
+  Each annotation consists of a path for the arc, a line to the outer radius,
+  a line to the label, a box around the label and the label itself.
+  The label is positioned at the outer radius and is centered on the line
+  */
+function renderAnnotationsD3({
+  svg,
+  sortedCategories,
+  categoryFocus,
+  skillsData,
+  getArcs,
+  groupedByCategory,
+  config,
+}) {
+  const {
+    lineThickness,
+    innerRadius,
+    outerRadius,
+    annotationPadding,
+    labelTextColor,
+    lvlTextColor,
+  } = config
+  // Remove previous annotation for this category if any
+  svg.selectAll('.Annotation').remove()
+
+  const filteredCategories = categoryFocus ? [categoryFocus] : sortedCategories
+  const filteredCategoriesIds = filteredCategories.map((c) => c.id)
+  const filteredData = skillsData.filter((d) =>
+    filteredCategoriesIds.includes(d.category)
+  )
+  const {
+    categoryBaseArc,
+    catAnnotationPointInner,
+    catAnnotationPointOuter,
+    lvlsArray,
+    getYPoint,
+  } = getArcs({
+    skillsData: filteredData,
+    categories: filteredCategories,
+    groupedByCategory,
+  })
+
+  filteredCategories.forEach((cat) => {
+    const annotationGroup = svg
+      .append('g')
+      .attr('class', `Annotation Annotation-${cat.id}`)
+      .attr('fill', cat.color)
+
+    // Arc at base of category
+    annotationGroup
+      .append('path')
+      .attr('d', categoryBaseArc(cat.id))
+      .attr('fill', cat.color)
+      .attr('stroke', 'none')
+      .attr('stroke-width', lineThickness)
+
+    // Line from base of category to annotation label
+    annotationGroup
+      .append('line')
+      .attr('x1', catAnnotationPointInner(cat.id).x * (innerRadius - 3))
+      .attr('y1', catAnnotationPointInner(cat.id).y * (innerRadius - 3))
+      .attr('x2', catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding))
+      .attr('y2', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding))
+      .attr('stroke', cat.color)
+      .attr('fill', 'none')
+      .attr('stroke-width', lineThickness)
+      .attr('opacity', 1)
+
+    // Line beneath category label
+    annotationGroup
+      .append('line')
+      .attr('x1', catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding))
+      .attr('y1', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding))
+      .attr(
+        'x2',
+        catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding) +
+          (catAnnotationPointOuter(cat.id).x > 0
+            ? getCatLabelWidth(cat.id)
+            : -getCatLabelWidth(cat.id))
+      )
+      .attr('y2', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding))
+      .attr('stroke', cat.color)
+      .attr('fill', 'none')
+      .attr('stroke-width', lineThickness)
+
+    // Category label text box
+    annotationGroup
+      .append('rect')
+      .attr(
+        'x',
+        (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -getCatLabelWidth(cat.id)) +
+          catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding)
+      )
+      .attr(
+        'y',
+        catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) -
+          (catAnnotationPointOuter(cat.id).y > 0 ? 0 : 30)
+      )
+      .attr('width', getCatLabelWidth(cat.id))
+      .attr('height', 30)
+      .attr('color', labelTextColor)
+      .attr('fill', cat.color)
+
+    // Category label text
+    annotationGroup
+      .append('text')
+      .attr(
+        'x',
+        catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding) +
+          (catAnnotationPointOuter(cat.id).x > 0
+            ? getCatLabelWidth(cat.id) / 2
+            : -getCatLabelWidth(cat.id) / 2)
+      )
+      .attr(
+        'y',
+        catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) +
+          (catAnnotationPointOuter(cat.id).y > 0 ? 20 : -10)
+      )
+      .attr('fill', labelTextColor)
+      .attr('font-weight', 700)
+      .attr('text-anchor', 'middle')
+      .attr('color', labelTextColor)
+      .text(cat.id)
+
+    // Category lvl annotations
+    lvlsArray.forEach((lvl) => {
+      annotationGroup
+        .append('text')
+        .attr('x', 0)
+        .attr('y', -getYPoint(lvl - 0.1))
+        .attr('fill', lvlTextColor)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', 10)
+        .text(lvl)
+    })
+  })
+
+  return svg
+}
+
+const defaultConfig = {
+  width: 640,
+  height: undefined,
+  innerRadius: 80,
+  outerPadding: 100,
+  categoryPadding: 0.1,
+  skillPadding: 0.05,
+  arcPercent: 0.8,
+  arcStartOffset: 0.1,
+  annotationPadding: 10,
+  lineThickness: 2,
+  labelTextColor: 'black',
+  lvlTextColor: '#ccc',
+  lvlArcColor: '#444',
+  colourList: d3.schemeAccent,
+}
+
+/**
+ * RadialBarChart component renders a radial bar chart using D3.js.
+ *
+ * Config Params:
+ *   width = 640,
+ *   height: _height = undefined,
+ *   innerRadius = 80,
+ *   outerPadding = 100,
+ *   categoryPadding = 0.1,
+ *   skillPadding = 0.05,
+ *   arcPercent = 0.8,
+ *   arcStartOffset = 0.1,
+ *   annotationPadding = 10,
+ *   lineThickness = 2,
+ *   labelTextColor = 'black',
+ *   lvlTextColor = '#ccc',
+ *   lvlArcColor = '#444',
+ *   colourList = d3.schemeAccent,
+ */
+export function RadialBarChart({ target, data, config: configIn }) {
+  const config = { ...defaultConfig, ...configIn }
+  const {
+    width = 640,
+    height: _height = undefined,
+    innerRadius = 80,
+    outerPadding = 200,
+    categoryPadding = 0.1,
+    skillPadding = 0.05,
+    arcPercent = 0.8,
+    arcStartOffset = 0.1,
+    labelTextColor = 'black',
+    lvlArcColor = '#444',
+    colourList = d3.schemeAccent,
+  } = config
   const height = _height ?? width * 0.8 // Width needs to be larger than height to fit cat labels
+  const outerRadius = Math.min(width, height) / 2 - outerPadding
+  config.height = height // Update config with calculated height
+  config.outerRadius = config.outerRadius || outerRadius
 
   const svg = d3
     .select(target)
@@ -42,38 +297,35 @@ export function RadialBarChart({
     .attr('role', 'img')
     .attr('aria-describedby', 'radial-bar-chart-description')
 
-  const {
-    sortedCategories,
-    filteredCategories,
-    groupedByCategory,
-    catAnnotationPointInner,
-    catAnnotationPointOuter,
-    barFullHeightArc,
-    barSegmentArc,
-    categoryBaseArc,
-    lvlRing,
-    lvlsArray,
-    outerRadius,
-    getYPoint,
-  } = radialBarChartPreProcessing({
-    data,
+  const { skillsData, sortedCategories, groupedByCategory } =
+    radialBarChartPreProcessing({
+      data,
+      colourList,
+    })
+
+  const getArcs = getArcsFn({
     width,
     height,
     innerRadius,
+    outerRadius,
     outerPadding,
     categoryPadding,
     skillPadding,
     arcPercent,
     arcStartOffset,
-    // categoryFocus,
+  })
+  console.info({
+    skillsData,
+    sortedCategories,
+  })
+  const { lvlRing, lvlsArray } = getArcs({
+    skillsData,
+    categories: sortedCategories,
+    groupedByCategory,
   })
 
-  const color = sortedCategories
-    ? getColor(sortedCategories, colourList)
-    : () => 'black'
-
   // D3.js function to render the skill highlight
-  function renderSkillHighlightBaseD3(svg) {
+  function renderSkillHighlightD3(svg) {
     const group = svg.append('g').attr('class', 'skill-highlight')
 
     // Circle for skill highlight
@@ -114,7 +366,7 @@ export function RadialBarChart({
   }
 
   // D3.js function to render the skill highlight
-  function renderSkillHighlightD3(svg, highlightedSkill) {
+  function refreshSkillHighlightD3(svg, highlightedSkill) {
     const group = svg.select('.skill-highlight')
 
     if (!highlightedSkill) {
@@ -152,7 +404,7 @@ export function RadialBarChart({
         .select('.skill-highlight-circle')
         .transition(t) // Transition to the new highlight
         .attr('opacity', 1)
-        .attr('fill', color(highlightedSkill.category))
+        .attr('fill', highlightedSkill.color)
 
       // Category text
       group
@@ -177,69 +429,31 @@ export function RadialBarChart({
     }
   }
 
-  // eslint-disable-next-line no-unused-vars
-  const handleSkillSelect = (_category) => {
-    // TODO: handle skill selection
-    // renderBarsD3
-  }
-
   const setHighlightedSkill = (skill) => {
-    renderSkillHighlightD3(g, skill)
+    refreshSkillHighlightD3(g, skill)
   }
 
-  /* D3js component to render the radial bar chart bars
-
-  Each bar is made up of a path for the bar itself and a path for each segment
-  where each segment represents a lvl.
-
-  A path is also created to handle the hover events for each bar
-  */
-  function renderBarsD3(svg, cat, dItems) {
-    // Remove previous bars for this category if any
-    svg.selectAll(`.Bars-${cat}`).remove()
-
-    const barGroup = svg
-      .append('g')
-      .attr('class', `Bars Bars-${cat}`)
-      .attr('fill', color(cat))
-
-    const bars = barGroup
-      .selectAll('.bar-group')
-      .data(dItems, (d) => d.skill)
-      .join('g')
-      .attr('class', 'bar-group')
-
-    bars
-      .append('path')
-      .attr('d', (d) => barFullHeightArc(d))
-      .attr('class', 'bar')
-      .attr('fill-opacity', 0.0001)
-
-    bars.each(function (d) {
-      const group = d3.select(this)
-      for (let lvl = 1; lvl <= d.skill_level; lvl++) {
-        group
-          .append('path')
-          .attr('d', barSegmentArc(d, lvl))
-          .attr('fill', color(cat))
-          .attr('class', 'bar-segment')
-      }
+  // eslint-disable-next-line no-unused-vars
+  const handleSkillSelect = (categoryFocus) => {
+    refreshBarsD3({
+      svg: g,
+      sortedCategories,
+      categoryFocus,
+      skillsData,
+      getArcs,
+      groupedByCategory,
+      handleSkillSelect,
+      setHighlightedSkill,
     })
-
-    bars
-      .append('path')
-      .attr('d', (d) => barFullHeightArc(d))
-      .attr('class', 'bar-outline')
-      .attr('fill', 'rgba(0, 0, 0, 0)')
-      .attr('stroke', color(cat))
-      .attr('stroke-opacity', 0)
-      .on('click', () => handleSkillSelect(cat))
-      .on('mouseover', (event, d) => setHighlightedSkill(d))
-      .on('mouseout', () => setHighlightedSkill(false))
-      .on('focus', (event, d) => setHighlightedSkill(d))
-      .on('blur', () => setHighlightedSkill(false))
-
-    return svg
+    renderAnnotationsD3({
+      svg: g,
+      sortedCategories,
+      categoryFocus,
+      skillsData,
+      getArcs,
+      groupedByCategory,
+      config,
+    })
   }
 
   /* React component to render the rings indicating each level */
@@ -262,121 +476,28 @@ export function RadialBarChart({
     return svg
   }
 
-  /* D3 component to render the annotations for each category
-  Each annotation consists of a path for the arc, a line to the outer radius,
-  a line to the label, a box around the label and the label itself.
-  The label is positioned at the outer radius and is centered on the line
-  */
-  function renderAnnotationsD3(svg, cat) {
-    // Remove previous annotation for this category if any
-    svg.selectAll(`.Annotation-${cat}`).remove()
-
-    const annotationGroup = svg
-      .append('g')
-      .attr('class', `Annotation Annotation-${cat}`)
-      .attr('fill', color(cat))
-
-    // Arc at base of category
-    annotationGroup
-      .append('path')
-      .attr('d', categoryBaseArc(cat))
-      .attr('fill', color(cat))
-      .attr('stroke', 'none')
-      .attr('stroke-width', lineThickness)
-
-    // Line from base of category to annotation label
-    annotationGroup
-      .append('line')
-      .attr('x1', catAnnotationPointInner(cat).x * (innerRadius - 3))
-      .attr('y1', catAnnotationPointInner(cat).y * (innerRadius - 3))
-      .attr('x2', catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding))
-      .attr('y2', catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding))
-      .attr('stroke', color(cat))
-      .attr('fill', 'none')
-      .attr('stroke-width', lineThickness)
-      .attr('opacity', 1)
-
-    // Line beneath category label
-    annotationGroup
-      .append('line')
-      .attr('x1', catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding))
-      .attr('y1', catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding))
-      .attr(
-        'x2',
-        catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding) +
-          (catAnnotationPointOuter(cat).x > 0
-            ? getCatLabelWidth(cat)
-            : -getCatLabelWidth(cat))
-      )
-      .attr('y2', catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding))
-      .attr('stroke', color(cat))
-      .attr('fill', 'none')
-      .attr('stroke-width', lineThickness)
-
-    // Category label text box
-    annotationGroup
-      .append('rect')
-      .attr(
-        'x',
-        (catAnnotationPointOuter(cat).x > 0 ? 0 : -getCatLabelWidth(cat)) +
-          catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding)
-      )
-      .attr(
-        'y',
-        catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding) -
-          (catAnnotationPointOuter(cat).y > 0 ? 0 : 30)
-      )
-      .attr('width', getCatLabelWidth(cat))
-      .attr('height', 30)
-      .attr('color', labelTextColor)
-      .attr('fill', color(cat))
-
-    // Category label text
-    annotationGroup
-      .append('text')
-      .attr(
-        'x',
-        catAnnotationPointOuter(cat).x * (outerRadius + annotationPadding) +
-          (catAnnotationPointOuter(cat).x > 0
-            ? getCatLabelWidth(cat) / 2
-            : -getCatLabelWidth(cat) / 2)
-      )
-      .attr(
-        'y',
-        catAnnotationPointOuter(cat).y * (outerRadius + annotationPadding) +
-          (catAnnotationPointOuter(cat).y > 0 ? 20 : -10)
-      )
-      .attr('fill', labelTextColor)
-      .attr('font-weight', 700)
-      .attr('text-anchor', 'middle')
-      .attr('color', labelTextColor)
-      .text(cat)
-
-    // Category lvl annotations
-    lvlsArray.forEach((lvl) => {
-      annotationGroup
-        .append('text')
-        .attr('x', 0)
-        .attr('y', -getYPoint(lvl - 0.1))
-        .attr('fill', lvlTextColor)
-        .attr('text-anchor', 'middle')
-        .attr('font-size', 10)
-        .text(lvl)
-    })
-
-    return svg
-  }
-
   /* add bars to svg */
 
   renderBackgroundLvlRingsD3(g, 'cat')
-  filteredCategories.forEach((cat) => {
-    renderAnnotationsD3(g, cat)
+  renderAnnotationsD3({
+    svg: g,
+    sortedCategories,
+    categoryFocus: null,
+    skillsData,
+    getArcs,
+    groupedByCategory,
+    config,
   })
-  renderSkillHighlightBaseD3(g, false)
-  filteredCategories.forEach((cat) => {
-    const dItems = groupedByCategory.get(cat)
-    renderBarsD3(g, cat, dItems)
+  renderSkillHighlightD3(g, false)
+  refreshBarsD3({
+    svg: g,
+    sortedCategories,
+    categoryFocus: false,
+    skillsData,
+    getArcs,
+    groupedByCategory,
+    handleSkillSelect,
+    setHighlightedSkill,
   })
   return svg
 }

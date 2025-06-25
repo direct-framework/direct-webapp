@@ -1,5 +1,5 @@
 import { RadialBarChart } from '../src/js/dataviz/radial-plot'
-import '../src/js/dataviz/styles.css'
+import '../src/scss/dataviz.scss'
 
 const generateRandomData = (n, categoryCount) =>
   Array.from({ length: n }, (_, i) => ({
@@ -16,7 +16,7 @@ export default {
     RadialBarChart({
       target: container,
       data,
-      ...args,
+      config: args,
     })
     return container
   },
