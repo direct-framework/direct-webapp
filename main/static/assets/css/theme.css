@@ -17648,6 +17648,7 @@ img-comparison-slider:focus {
   transition: all 0.2s ease-in-out;
 }
 .bar-group .bar-outline {
+  outline: none;
   stroke-opacity: 0;
   stroke-width: 3;
   transition: all 0.2s ease-in-out;
@@ -17662,6 +17663,7 @@ img-comparison-slider:focus {
   fill-opacity: 0.5;
 }
 .bar-group:focus-within .bar-outline {
+  outline: none;
   stroke-opacity: 1;
   stroke-width: 3;
 }
@@ -17675,6 +17677,7 @@ img-comparison-slider:focus {
   fill-opacity: 0.8;
 }
 .bar-group:hover .bar-outline {
+  outline: none;
   stroke-opacity: 1;
   stroke-width: 3;
 }
