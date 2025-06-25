@@ -5,8 +5,6 @@ import {
   getCatLabelWidth,
 } from './radial-plot-dataprocessing'
 
-let previousHighlightedSkill = null
-
 export function RadialBarChart({
   target,
   data,
@@ -75,29 +73,17 @@ export function RadialBarChart({
     : () => 'black'
 
   // D3.js function to render the skill highlight
-  function renderSkillHighlightD3(svg, highlightedSkill) {
-    // Remove previous highlight if any
-    // TODO: Use select instead of removing each time
-    svg.selectAll('.SkillHighlight').remove()
-
-    if (!highlightedSkill) return
-    const t = d3.transition().duration(50).ease(d3.easeLinear)
-
+  function renderSkillHighlightBaseD3(svg) {
     const group = svg.append('g').attr('class', 'skill-highlight')
 
-    // Renders a circle
+    // Circle for skill highlight
     group
       .append('circle')
       .attr('cx', 0)
       .attr('cy', 0)
       .attr('r', innerRadius - 10)
       .attr('class', 'skill-highlight-circle')
-      .transition(t)
       .attr('opacity', 0)
-      .attr('fill', color(previousHighlightedSkill.category))
-      .transition(t) // Transition to the new highlight
-      .attr('opacity', 1)
-      .attr('fill', color(highlightedSkill.category))
 
     // Category text
     group
@@ -105,7 +91,8 @@ export function RadialBarChart({
       .attr('y', -5)
       .attr('text-anchor', 'middle')
       .attr('fill', labelTextColor)
-      .text(highlightedSkill.category)
+      .attr('class', 'skill-highlight-text-cat')
+      .text('')
 
     // Skill text
     group
@@ -113,7 +100,8 @@ export function RadialBarChart({
       .attr('y', 15)
       .attr('text-anchor', 'middle')
       .attr('fill', labelTextColor)
-      .text(highlightedSkill.skill)
+      .attr('class', 'skill-highlight-text-skill')
+      .text('')
 
     // Skill level text
     group
@@ -121,7 +109,72 @@ export function RadialBarChart({
       .attr('y', 35)
       .attr('text-anchor', 'middle')
       .attr('fill', labelTextColor)
-      .text(highlightedSkill.skill_level)
+      .attr('class', 'skill-highlight-text-lvl')
+      .text('')
+  }
+
+  // D3.js function to render the skill highlight
+  function renderSkillHighlightD3(svg, highlightedSkill) {
+    const group = svg.select('.skill-highlight')
+
+    if (!highlightedSkill) {
+      const t = d3.transition().delay(200).duration(200).ease(d3.easeLinear)
+      // Renders a circle
+      group
+        .select('.skill-highlight-circle')
+        .transition(t) // Transition to the new highlight
+        .attr('opacity', 0)
+
+      // Category text
+      group
+        .select('.skill-highlight-text-cat')
+        .transition(t)
+        .attr('opacity', 0)
+        .text('')
+
+      // Skill text
+      group
+        .select('.skill-highlight-text-skill')
+        .transition(t)
+        .attr('opacity', 0)
+        .text('')
+
+      // Skill level text
+      group
+        .select('.skill-highlight-text-lvl')
+        .transition(t)
+        .attr('opacity', 0)
+        .text('')
+    } else {
+      const t = d3.transition().duration(200).ease(d3.easeLinear)
+      // Circle for skill highlight
+      group
+        .select('.skill-highlight-circle')
+        .transition(t) // Transition to the new highlight
+        .attr('opacity', 1)
+        .attr('fill', color(highlightedSkill.category))
+
+      // Category text
+      group
+        .select('.skill-highlight-text-cat')
+        .transition(t)
+        .attr('opacity', 1)
+        .text(highlightedSkill.category)
+
+      // Skill text
+      group
+        .select('.skill-highlight-text-skill')
+        .transition(t)
+        .attr('opacity', 1)
+        .text(highlightedSkill.skill)
+
+      // Skill level text
+      group
+        .select('.skill-highlight-text-lvl')
+        .transition(t)
+        .attr('opacity', 1)
+        .text(highlightedSkill.skill_level)
+    }
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -132,7 +185,6 @@ export function RadialBarChart({
 
   const setHighlightedSkill = (skill) => {
     renderSkillHighlightD3(g, skill)
-    previousHighlightedSkill = skill
   }
 
   /* D3js component to render the radial bar chart bars
@@ -156,25 +208,12 @@ export function RadialBarChart({
       .data(dItems, (d) => d.skill)
       .join('g')
       .attr('class', 'bar-group')
-      .on('click', () => handleSkillSelect(cat))
-      .on('mouseover', (event, d) => setHighlightedSkill(d))
-      .on('mouseout', () => setHighlightedSkill(false))
-      .on('focus', (event, d) => setHighlightedSkill(d))
-      .on('blur', () => setHighlightedSkill(false))
 
     bars
       .append('path')
       .attr('d', (d) => barFullHeightArc(d))
       .attr('class', 'bar')
       .attr('fill-opacity', 0.0001)
-
-    bars
-      .append('path')
-      .attr('d', (d) => barFullHeightArc(d))
-      .attr('class', 'bar-outline')
-      .attr('fill', 'none')
-      .attr('stroke', color(cat))
-      .attr('stroke-opacity', 0)
 
     bars.each(function (d) {
       const group = d3.select(this)
@@ -186,6 +225,20 @@ export function RadialBarChart({
           .attr('class', 'bar-segment')
       }
     })
+
+    bars
+      .append('path')
+      .attr('d', (d) => barFullHeightArc(d))
+      .attr('class', 'bar-outline')
+      .attr('fill', 'rgba(0, 0, 0, 0)')
+      .attr('stroke', color(cat))
+      .attr('stroke-opacity', 0)
+      .on('click', () => handleSkillSelect(cat))
+      .on('mouseover', (event, d) => setHighlightedSkill(d))
+      .on('mouseout', () => setHighlightedSkill(false))
+      .on('focus', (event, d) => setHighlightedSkill(d))
+      .on('blur', () => setHighlightedSkill(false))
+
     return svg
   }
 
@@ -320,7 +373,7 @@ export function RadialBarChart({
   filteredCategories.forEach((cat) => {
     renderAnnotationsD3(g, cat)
   })
-  renderSkillHighlightD3(svg, false)
+  renderSkillHighlightBaseD3(g, false)
   filteredCategories.forEach((cat) => {
     const dItems = groupedByCategory.get(cat)
     renderBarsD3(g, cat, dItems)
