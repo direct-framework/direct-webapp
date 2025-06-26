@@ -32,7 +32,7 @@ django==5.2.2
     #   django-stubs-ext
 django-bootstrap5==25.1
     # via direct_webapp (pyproject.toml)
-django-stubs[compatible-mypy]==5.2.0
+django-stubs[compatible-mypy]==5.2.1
     # via direct_webapp (pyproject.toml)
 django-stubs-ext==5.2.1
     # via
@@ -60,7 +60,7 @@ json5==0.12.0
     # via djlint
 markupsafe==3.0.2
     # via werkzeug
-mypy==1.15.0
+mypy==1.16.1
     # via
     #   direct_webapp (pyproject.toml)
     #   django-stubs
