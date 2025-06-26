@@ -1,12 +1,6 @@
 """Forms module for the main app."""
 
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import (
-    CharField,
-    EmailField,
-    ModelForm,
-    TextInput,
-)
 
 from .models import User
 
@@ -28,18 +22,3 @@ class CustomUserCreationForm(UserCreationForm[User]):
         if commit:
             user.save()
         return user
-
-
-class UpdateUserForm(ModelForm[User]):
-    """Update user."""
-
-    username = CharField(
-        max_length=100, required=True, widget=TextInput(attrs={"class": "form-control"})
-    )
-    email = EmailField(required=True, widget=TextInput(attrs={"class": "form-control"}))
-
-    class Meta:
-        """Form metadata."""
-
-        model = User
-        fields = ["username", "email"]  # noqa: RUF012

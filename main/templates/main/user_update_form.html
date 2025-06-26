@@ -2,8 +2,7 @@
 {% block content %}
     <section class="container pt-5 mt-5">
         <p>
-            Profile page for <b>{{ user.username }}</b>
-            {% if user.email %}with email <b>{{ user.email }}</b>{% endif %}
+            <b>View or update your profile</b>
         </p>
         <form method="post">
             {% csrf_token %}
