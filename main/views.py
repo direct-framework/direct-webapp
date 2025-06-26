@@ -2,13 +2,14 @@
 
 import logging
 
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
-from django.views.generic.edit import FormView
+from django.shortcuts import render
+from django.urls import reverse
+from django.views.generic.edit import FormView, UpdateView
 
-from .forms import CustomUserCreationForm, UpdateUserForm
+from .forms import CustomUserCreationForm
+from .models import User
 
 logger = logging.getLogger("main")
 
@@ -47,25 +48,17 @@ class CreateUserView(FormView[CustomUserCreationForm]):
         return super().form_valid(form)
 
 
-@login_required
-def profile(request: HttpRequest) -> HttpResponse:
-    """View that renders the profile page."""
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            user_form = UpdateUserForm(request.POST, instance=request.user)
+class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore
+    """View that renders the user update form page."""
 
-            if user_form.is_valid():
-                user_form.save()
-                messages.success(request, "Your profile is updated successfully")
-                return redirect(to="users-profile")
-        else:
-            user_form = UpdateUserForm(instance=request.user)
-    else:
-        messages.error(request, "You must be logged in to update your profile.")
-        return redirect(to="login")
+    model = User
+    fields = ["username", "email"]  # noqa
+    template_name_suffix = "_update_form"
 
-    return render(
-        request,
-        "main/profile.html",
-        {"user_form": user_form},
-    )
+    def get_object(self, queryset=None) -> User:  # type: ignore
+        """Remove the need for url args by returning the current user."""
+        return self.request.user  # type: ignore
+
+    def get_success_url(self) -> str:
+        """Ensure submitting the form redirects to the same page."""
+        return reverse("profile")

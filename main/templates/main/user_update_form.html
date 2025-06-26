@@ -1,0 +1,14 @@
+{% extends "./base.html" %}
+{% block content %}
+    <section class="container pt-5 mt-5">
+        <p>
+            Profile page for <b>{{ user.username }}</b>
+            {% if user.email %}with email <b>{{ user.email }}</b>{% endif %}
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Update">
+        </form>
+    </section>
+{% endblock content %}

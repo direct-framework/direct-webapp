@@ -9,5 +9,5 @@ urlpatterns = [
     path("privacy/", views.privacy, name="privacy"),
     path("accounts/", include("django.contrib.auth.urls")),
     path("register/", views.CreateUserView.as_view(), name="create_user"),
-    path("profile/", views.profile, name="users-profile"),
+    path("profile/", views.UserUpdateView.as_view(), name="profile"),
 ]
