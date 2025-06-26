@@ -157,3 +157,71 @@ class TestPasswordChangeDone(LoginRequiredMixin, TemplateOkMixin):
 
     def _get_url(self):
         return reverse("password_change_done")
+
+
+class TestRegisterUser(TemplateOkMixin):
+    """Test suite for the CreateUserView."""
+
+    _template_name = "django_registration/registration_form.html"
+
+    def _get_url(self):
+        return reverse("django_registration_register")
+
+    def test_post(self, client, django_user_model):
+        """Test the view POST request creates a user and redirects correctly."""
+        from django.contrib import auth
+
+        user = django_user_model(
+            email="test.user@mail.com",
+            password="l0ng-Enough-wItH-characters",
+            username="testuser",
+        )
+
+        # Confirm no user is logged in and user does not exist
+        assert not auth.get_user(client).is_authenticated
+        with pytest.raises(django_user_model.DoesNotExist):
+            django_user_model.objects.get(email=user.email)
+
+        response = client.post(
+            self._get_url(),
+            data=dict(
+                email=user.email,
+                username=user.username,
+                password1=user.password,
+                password2=user.password,
+            ),
+        )
+
+        # Assert redirects to django_registration_complete
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("django_registration_complete")
+
+        # Confirm user is created and logged in
+        logged_in_user = auth.get_user(client)
+        assert logged_in_user.is_authenticated
+        assert logged_in_user == django_user_model.objects.get(email=user.email)
+
+    def test_closed(self, client, settings):
+        """Test the view when registration is closed."""
+        settings.REGISTRATION_OPEN = False
+        response = client.get(self._get_url())
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("django_registration_disallowed")
+
+
+class TestRegistrationComplete(TemplateOkMixin):
+    """Test suite for the registration complete view."""
+
+    _template_name = "django_registration/registration_complete.html"
+
+    def _get_url(self):
+        return reverse("django_registration_complete")
+
+
+class TestRegistrationClosed(TemplateOkMixin):
+    """Test suite for the registration closed view."""
+
+    _template_name = "django_registration/registration_closed.html"
+
+    def _get_url(self):
+        return reverse("django_registration_disallowed")

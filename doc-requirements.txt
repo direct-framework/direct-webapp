@@ -20,12 +20,17 @@ colorama==0.4.6
     # via
     #   griffe
     #   mkdocs-material
+confusable-homoglyphs==3.3.1
+    # via django-registration
 django==5.2.2
     # via
     #   direct_webapp (pyproject.toml)
     #   django-bootstrap5
+    #   django-registration
     #   django-stubs-ext
 django-bootstrap5==25.1
+    # via direct_webapp (pyproject.toml)
+django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
 django-stubs-ext==5.2.1
     # via direct_webapp (pyproject.toml)
@@ -99,7 +104,7 @@ pathspec==0.12.1
     # via mkdocs
 platformdirs==4.3.8
     # via mkdocs-get-deps
-pygments==2.19.1
+pygments==2.19.2
     # via mkdocs-material
 pymdown-extensions==10.15
     # via
