@@ -8,7 +8,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic.edit import FormView
 
-from .forms import CustomUpdateUserForm, CustomUserCreationForm
+from .forms import CustomUserCreationForm, UpdateUserForm
 
 logger = logging.getLogger("main")
 
@@ -50,18 +50,22 @@ class CreateUserView(FormView[CustomUserCreationForm]):
 @login_required
 def profile(request: HttpRequest) -> HttpResponse:
     """View that renders the profile page."""
-    if request.method == "POST":
-        user_form = CustomUpdateUserForm(request.POST, instance=request.user)
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user_form = UpdateUserForm(request.POST, instance=request.user)
 
-        if user_form.is_valid():
-            user_form.save()
-            messages.success(request, "Your profile is updated successfully")
-            return redirect(to="users-profile")
+            if user_form.is_valid():
+                user_form.save()
+                messages.success(request, "Your profile is updated successfully")
+                return redirect(to="users-profile")
+        else:
+            user_form = UpdateUserForm(instance=request.user)
     else:
-        user_form = CustomUpdateUserForm(instance=request.user)
+        messages.error(request, "You must be logged in to update your profile.")
+        return redirect(to="login")
 
     return render(
         request,
-        "users/profile.html",
+        "main/profile.html",
         {"user_form": user_form},
     )
