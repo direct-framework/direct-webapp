@@ -29,7 +29,8 @@
         "design",
         "code",
         "test",
-        "maintenance"
+        "maintenance",
+        "projectManagement"
       ]
     },
     {
