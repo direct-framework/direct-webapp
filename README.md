@@ -192,6 +192,7 @@ npm run styles:expanded
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/barneydobson"><img src="https://avatars.githubusercontent.com/u/29261471?v=4?s=100" width="100px;" alt="barneydobson"/><br /><sub><b>barneydobson</b></sub></a><br /><a href="#code-barneydobson" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/anenadic/professional-cv"><img src="https://avatars.githubusercontent.com/u/631719?v=4?s=100" width="100px;" alt="Aleksandra Nenadic"/><br /><sub><b>Aleksandra Nenadic</b></sub></a><br /><a href="#code-anenadic" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/SaranjeetKaur"><img src="https://avatars.githubusercontent.com/u/28556616?v=4?s=100" width="100px;" alt="Saranjeet Kaur"/><br /><sub><b>Saranjeet Kaur</b></sub></a><br /><a href="#maintenance-saranjeetkaur" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/apps/github-actions"><img src="https://avatars.githubusercontent.com/in/15368?v=4?s=100" width="100px;" alt="github-actions[bot]"/><br /><sub><b>github-actions[bot]</b></sub></a><br /><a href="#maintenance-github-actions[bot]" title="Maintenance">🚧</a></td>
     </tr>
   </tbody>
 </table>
