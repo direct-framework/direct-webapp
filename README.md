@@ -189,6 +189,7 @@ npm run styles:expanded
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jklebes"><img src="https://avatars.githubusercontent.com/u/11175421?v=4?s=100" width="100px;" alt="Jason Klebes"/><br /><sub><b>Jason Klebes</b></sub></a><br /><a href="#bug-jklebes" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/sbland"><img src="https://avatars.githubusercontent.com/u/4863319?v=4?s=100" width="100px;" alt="sbland"/><br /><sub><b>sbland</b></sub></a><br /><a href="#code-sbland" title="Code">💻</a> <a href="#design-sbland" title="Design">🎨</a> <a href="#ideas-sbland" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/anenadic/professional-cv"><img src="https://avatars.githubusercontent.com/u/631719?v=4?s=100" width="100px;" alt="Aleksandra Nenadic"/><br /><sub><b>Aleksandra Nenadic</b></sub></a><br /><a href="#code-anenadic" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/barneydobson"><img src="https://avatars.githubusercontent.com/u/29261471?v=4?s=100" width="100px;" alt="barneydobson"/><br /><sub><b>barneydobson</b></sub></a><br /><a href="#code-barneydobson" title="Code">💻</a></td>
     </tr>
   </tbody>
