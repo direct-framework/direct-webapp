@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .models import User as UserType
 
 User = get_user_model()
