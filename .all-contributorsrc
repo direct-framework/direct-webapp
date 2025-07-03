@@ -16,7 +16,8 @@
       "contributions": [
         "design",
         "code",
-        "projectManagement"
+        "projectManagement",
+        "maintenance"
       ]
     },
     {
@@ -27,7 +28,8 @@
       "contributions": [
         "design",
         "code",
-        "test"
+        "test",
+        "maintenance"
       ]
     },
     {
@@ -48,7 +50,8 @@
       "profile": "https://github.com/tdjames1",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "maintenance"
       ]
     },
     {
@@ -58,7 +61,8 @@
       "profile": "https://github.com/connoraird",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "maintenance"
       ]
     },
     {
@@ -76,7 +80,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/55503826?v=4",
       "profile": "https://brynnoelubald.com/",
       "contributions": [
-        "tool"
+        "tool",
+        "code"
       ]
     },
     {
@@ -97,6 +102,24 @@
         "code",
         "design",
         "ideas"
+      ]
+    },
+    {
+      "login": "barneydobson",
+      "name": "barneydobson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29261471?v=4",
+      "profile": "https://github.com/barneydobson",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "anenadic",
+      "name": "Aleksandra Nenadic",
+      "avatar_url": "https://avatars.githubusercontent.com/u/631719?v=4",
+      "profile": "https://github.com/anenadic/professional-cv",
+      "contributions": [
+        "code"
       ]
     },
     {
