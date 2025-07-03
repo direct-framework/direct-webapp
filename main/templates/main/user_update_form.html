@@ -1,0 +1,13 @@
+{% extends "./base.html" %}
+{% block content %}
+    <section class="container pt-5 mt-5">
+        <p>
+            <b>View or update your profile</b>
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Update">
+        </form>
+    </section>
+{% endblock content %}
