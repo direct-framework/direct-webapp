@@ -16,7 +16,8 @@
       "contributions": [
         "design",
         "code",
-        "projectManagement"
+        "projectManagement",
+        "maintenance"
       ]
     },
     {
@@ -27,7 +28,9 @@
       "contributions": [
         "design",
         "code",
-        "test"
+        "test",
+        "maintenance",
+        "projectManagement"
       ]
     },
     {
@@ -48,7 +51,8 @@
       "profile": "https://github.com/tdjames1",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "maintenance"
       ]
     },
     {
@@ -58,7 +62,8 @@
       "profile": "https://github.com/connoraird",
       "contributions": [
         "code",
-        "test"
+        "test",
+        "maintenance"
       ]
     },
     {
@@ -67,7 +72,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/13529420?v=4",
       "profile": "https://personalpages.manchester.ac.uk/staff/Andrew.Gait/",
       "contributions": [
-        "ideas"
+        "ideas",
+        "code"
       ]
     },
     {
@@ -76,7 +82,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/55503826?v=4",
       "profile": "https://brynnoelubald.com/",
       "contributions": [
-        "tool"
+        "tool",
+        "code"
       ]
     },
     {
@@ -96,7 +103,44 @@
       "contributions": [
         "code",
         "design",
-        "ideas"
+        "ideas",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "barneydobson",
+      "name": "barneydobson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29261471?v=4",
+      "profile": "https://github.com/barneydobson",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "anenadic",
+      "name": "Aleksandra Nenadic",
+      "avatar_url": "https://avatars.githubusercontent.com/u/631719?v=4",
+      "profile": "https://github.com/anenadic/professional-cv",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "saranjeetkaur",
+      "name": "Saranjeet Kaur",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28556616?v=4",
+      "profile": "https://github.com/SaranjeetKaur",
+      "contributions": [
+        "maintenance"
+      ]
+    },
+    {
+      "login": "github-actions[bot]",
+      "name": "github-actions[bot]",
+      "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4",
+      "profile": "https://github.com/apps/github-actions",
+      "contributions": [
+        "maintenance"
       ]
     }
   ]
