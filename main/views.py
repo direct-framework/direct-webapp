@@ -43,3 +43,13 @@ class CreateUserView(FormView[CustomUserCreationForm]):
         if form.is_valid():
             form.save()
         return super().form_valid(form)
+
+
+def about(request: HttpRequest) -> HttpResponse:
+    """View that renders the about page.
+
+    Args:
+      request: A GET request.
+    """
+    logger.info("Rendering about page.")
+    return render(request=request, template_name="main/about.html")
