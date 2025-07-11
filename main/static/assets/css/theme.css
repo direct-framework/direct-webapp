@@ -17638,4 +17638,48 @@ img-comparison-slider:focus {
   outline: none;
 }
 
+.bar-group {
+  outline: none;
+}
+.bar-group .bar {
+  transition: all 0.2s ease-in-out;
+}
+.bar-group .bar-segment {
+  transition: all 0.2s ease-in-out;
+}
+.bar-group .bar-outline {
+  outline: none;
+  stroke-opacity: 0;
+  stroke-width: 3;
+  transition: all 0.2s ease-in-out;
+}
+.bar-group:focus-within {
+  outline: none;
+}
+.bar-group:focus-within .bar {
+  fill-opacity: 0.5;
+}
+.bar-group:focus-within .bar-segment {
+  fill-opacity: 0.5;
+}
+.bar-group:focus-within .bar-outline {
+  outline: none;
+  stroke-opacity: 1;
+  stroke-width: 3;
+}
+.bar-group:hover {
+  outline: none;
+}
+.bar-group:hover .bar {
+  fill-opacity: 0.5;
+}
+.bar-group:hover .bar-segment {
+  fill-opacity: 0.8;
+}
+.bar-group:hover .bar-outline {
+  outline: none;
+  stroke-opacity: 1;
+  stroke-width: 3;
+}
+
 /*# sourceMappingURL=theme.css.map */
