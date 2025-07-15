@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>{% include "main/snippets/head.html" %}</head>
+    <body>
+        <div class="page-loading active">
+            <div class="page-loading-inner">
+                <div class="page-spinner"></div>
+                <span>Loading...</span>
+            </div>
+        </div>
+        <main class="page-wrapper">
+            {% block content %}
+            {% endblock content %}
+        </main>
+    </body>
+</html>
