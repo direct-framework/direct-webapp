@@ -35,8 +35,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_bootstrap5",
-    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -121,14 +119,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom settings
 INSTALLED_APPS = [
-    "main",
+    "main",  # List main app first so that custom templates override default admin views
     *INSTALLED_APPS,
-]  # List main app first so that custom templates override default admin views
+    "django_bootstrap5",
+    "django_registration",
+    "crispy_forms",
+    "crispy_bootstrap5",
+]
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 STATIC_ROOT = BASE_DIR / "staticfiles"
 AUTH_USER_MODEL = "main.User"
 LOGIN_REDIRECT_URL = "/"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Ensure the logs directory exists
 LOGS_DIR = BASE_DIR / "logs"

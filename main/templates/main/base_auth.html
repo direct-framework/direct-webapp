@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
     <head>{% include "main/snippets/head.html" %}</head>
@@ -9,8 +10,27 @@
             </div>
         </div>
         <main class="page-wrapper">
-            {% block content %}
-            {% endblock content %}
+            <div class="d-flex flex-column flex-lg-row position-relative h-100">
+                <div class="d-flex flex-column align-items-center w-lg-50 h-100 px-3 px-lg-5 pt-5">
+                    <a class="text-nav btn btn-icon bg-light border rounded-circle position-absolute top-0 end-0 p-0 mt-3 me-3 mt-sm-4 me-sm-4"
+                       href="{% url 'index' %}"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="left"
+                       title="Back to home"
+                       aria-label="Back to home">
+                        <i class="fa-solid fa-house fs-lg"></i>
+                    </a>
+                    <div class="w-100 mt-auto" style="max-width: 526px;">
+                        {% block content %}
+                        {% endblock content %}
+                    </div>
+                    <p class="nav w-100 fs-sm pt-5 mt-auto mb-5" style="max-width: 526px;">
+                        <span class="text-body-secondary">© DIRECT Framework 2023 - {% now "Y" %}</span>
+                    </p>
+                </div>
+                <div class="w-50 bg-size-cover bg-repeat-0 bg-position-center d-none d-lg-block"
+                     style="background-image: url({% static 'assets/img/auth/cover.webp' %})"></div>
+            </div>
         </main>
     </body>
 </html>

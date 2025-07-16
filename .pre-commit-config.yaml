@@ -36,7 +36,9 @@ repos:
           - django-stubs[compatible-mypy]
           - django-stubs-ext
           - django-bootstrap5
-          - django-widget-tweaks
+          - django-registration
+          - django-crispy-forms
+          - crispy-bootstrap5
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.45.0
     hooks:

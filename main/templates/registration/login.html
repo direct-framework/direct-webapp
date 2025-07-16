@@ -1,71 +1,24 @@
 {% extends "main/base_auth.html" %}
-{% load widget_tweaks %}
+{% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
-    <div class="d-flex flex-column flex-lg-row position-relative h-100">
-        <div class="d-flex flex-column align-items-center w-lg-50 h-100 px-3 px-lg-5 pt-5">
-            <a class="text-nav btn btn-icon bg-light border rounded-circle position-absolute top-0 end-0 p-0 mt-3 me-3 mt-sm-4 me-sm-4"
-               href="{% url 'index' %}"
-               data-bs-toggle="tooltip"
-               data-bs-placement="left"
-               title="Back to home"
-               aria-label="Back to home">
-                <i class="fa-solid fa-house fs-lg"></i>
-            </a>
-            <div class="w-100 mt-auto" style="max-width: 526px;">
-                <h1>Sign in to DIRECT</h1>
-                <p class="pb-3 mb-3 mb-lg-4">
-                    Don't have an account yet?&nbsp;&nbsp;
-                    <a href="{% url 'create_user' %}">Register here!</a>
-                </p>
-                {% if form.errors %}
-                    <div class="alert alert-danger">Your username and password didn't match. Please try again.</div>
-                {% endif %}
-                {% if next and not user.is_authenticated %}
-                    <div class="alert alert-info">
-                        <p>Please login to see this page.</p>
-                    </div>
-                {% endif %}
-                <form method="post"
-                      action="{% url 'login' %}"
-                      class="needs-validation"
-                      novalidate>
-                    {% csrf_token %}
-                    <div class="pb-3 mb-3">
-                        <div class="position-relative">
-                            <i class="fa-solid fa-user text-muted fs-lg position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                            {{ form.username|add_class:"form-control form-control-lg ps-5" }}
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <div class="position-relative">
-                            <i class="fa-solid fa-lock text-muted fs-lg position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                            <div class="password-toggle">
-                                {{ form.password|add_class:"form-control form-control-lg ps-5" }}
-                                <label class="password-toggle-btn" aria-label="Show/hide password">
-                                    <input class="password-toggle-check" type="checkbox">
-                                    <span class="password-toggle-indicator"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex flex-wrap align-items-center justify-content-between pb-4">
-                        <div class="form-check my-1">
-                            <input class="form-check-input" type="checkbox" id="keep-signedin">
-                            <label class="form-check-label ms-1" for="keep-signedin">Keep me signed in</label>
-                        </div>
-                        <a class="fs-sm fw-semibold text-decoration-none my-1"
-                           href="{% url 'password_reset' %}">Forgot password?</a>
-                    </div>
-                    <button class="btn btn-lg btn-primary w-100 mb-4" type="submit">Sign in</button>
-                    <input type="hidden" name="next" value="{{ next }}">
-                </form>
-            </div>
-            <p class="nav w-100 fs-sm pt-5 mt-auto mb-5" style="max-width: 526px;">
-                <span class="text-body-secondary">© DIRECT Framework 2023 - {% now "Y" %}</span>
-            </p>
+    <h1>Sign in to DIRECT</h1>
+    <p class="pb-3 mb-3 mb-lg-4">
+        Don't have an account yet?&nbsp;&nbsp;
+        <a href="{% url 'django_registration_register' %}">Register here!</a>
+    </p>
+    {% if next and not user.is_authenticated %}
+        <div class="alert alert-info">
+            <p>Please login to see this page.</p>
         </div>
-        <div class="w-50 bg-size-cover bg-repeat-0 bg-position-center d-none d-lg-block"
-             style="background-image: url({% static 'assets/img/auth/cover.webp' %})"></div>
-    </div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-lg btn-primary w-100 mb-4">Sign in</button>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    <p class="pb-3 mb-3 mb-lg-4">
+        <a href="{% url 'password_reset' %}">Lost password?</a>
+    </p>
 {% endblock content %}
