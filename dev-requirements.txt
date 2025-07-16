@@ -20,19 +20,27 @@ confusable-homoglyphs==3.3.1
     # via django-registration
 coverage[toml]==7.9.2
     # via pytest-cov
+crispy-bootstrap5==2025.6
+    # via direct_webapp (pyproject.toml)
 cssbeautifier==1.15.4
     # via djlint
 distlib==0.3.9
     # via virtualenv
 django==5.2.4
     # via
+    #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
     #   django-bootstrap5
+    #   django-crispy-forms
     #   django-registration
     #   django-stubs
     #   django-stubs-ext
 django-bootstrap5==25.1
     # via direct_webapp (pyproject.toml)
+django-crispy-forms==2.4
+    # via
+    #   crispy-bootstrap5
+    #   direct_webapp (pyproject.toml)
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
 django-stubs[compatible-mypy]==5.2.1

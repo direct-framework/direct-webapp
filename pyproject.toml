@@ -11,6 +11,8 @@ dependencies = [
     "django-bootstrap5",
     "django-registration",
     "django-stubs-ext",
+    "django-crispy-forms",
+    "crispy-bootstrap5",
     "whitenoise",
     "sendgrid",
 ]

@@ -123,12 +123,17 @@ INSTALLED_APPS = [
     *INSTALLED_APPS,
     "django_bootstrap5",
     "django_registration",
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 STATIC_ROOT = BASE_DIR / "staticfiles"
 AUTH_USER_MODEL = "main.User"
 LOGIN_REDIRECT_URL = "/"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Ensure the logs directory exists
 LOGS_DIR = BASE_DIR / "logs"
