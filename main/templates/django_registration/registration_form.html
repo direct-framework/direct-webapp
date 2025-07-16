@@ -1,12 +1,12 @@
-{% extends "../main/base.html" %}
+{% extends "main/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
     <section class="container pt-5 mt-5">
-        <p>Please enter (and confirm) your new password.</p>
+        <h2>Register your account</h2>
         <form method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <input type="submit" class="btn btn-primary" value="Change my password">
+            <input type="submit" class="btn btn-primary" value="Sign up">
         </form>
     </section>
 {% endblock content %}
