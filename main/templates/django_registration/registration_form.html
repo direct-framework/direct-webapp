@@ -1,0 +1,14 @@
+{% extends "main/base_auth.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h2>Register your account</h2>
+    <p class="pb-3 mb-3 mb-lg-4">
+        Already have an account?&nbsp;&nbsp;
+        <a href="{% url 'login' %}">Login now</a>
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-lg btn-primary w-100 mb-4">Sign up</button>
+    </form>
+{% endblock content %}

@@ -1,6 +1,8 @@
-{% extends "main/base.html" %}
+{% extends "main/base_auth.html" %}
 {% block content %}
-    <section class="container pt-5 mt-5">
-        <p>You are now logged out.</p>
-    </section>
+    <h1>Signed out</h1>
+    <p class="pb-3 mb-3 mb-lg-4">You are now logged out.</p>
+    <p class="pb-3 mb-3 mb-lg-4">
+        Back to <a href="{% url 'index' %}">home</a>
+    </p>
 {% endblock content %}
