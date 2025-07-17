@@ -66,6 +66,9 @@
                     <li class="nav-item {% if url_name == 'privacy' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'privacy' %}">About</a>
                     </li>
+                    <li class="nav-item {% if url_name == 'profile' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                    </li>
                     <!-- Add more navigation items as necessary -->
                 </ul>
             {% endwith %}

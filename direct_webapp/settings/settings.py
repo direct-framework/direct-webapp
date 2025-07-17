@@ -126,7 +126,7 @@ INSTALLED_APPS = [
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 STATIC_ROOT = BASE_DIR / "staticfiles"
 AUTH_USER_MODEL = "main.User"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/profile"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Ensure the logs directory exists

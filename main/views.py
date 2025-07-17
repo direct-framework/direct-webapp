@@ -1,12 +1,21 @@
 """Views for the main app."""
 
 import logging
+from typing import TYPE_CHECKING
 
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from django.views.generic.edit import FormView
+from django.urls import reverse
+from django.views.generic.edit import FormView, UpdateView
 
 from .forms import CustomUserCreationForm
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .models import User as UserType
+
+User = get_user_model()
 
 logger = logging.getLogger("main")
 
@@ -43,3 +52,19 @@ class CreateUserView(FormView[CustomUserCreationForm]):
         if form.is_valid():
             form.save()
         return super().form_valid(form)
+
+
+class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore
+    """View that renders the user update form page."""
+
+    model = User
+    fields = ["username", "email"]  # noqa
+    template_name_suffix = "_update_form"
+
+    def get_object(self, queryset=None) -> "UserType":  # type: ignore
+        """Remove the need for url args by returning the current user."""
+        return self.request.user  # type: ignore
+
+    def get_success_url(self) -> str:
+        """Ensure submitting the form redirects to the same page."""
+        return reverse("profile")
