@@ -28,15 +28,6 @@ class TestPrivacy(TemplateOkMixin):
         return reverse("privacy")
 
 
-class TestCreateUserView(TemplateOkMixin):
-    """Test suite for the CreateUserView."""
-
-    _template_name = "registration/create_user.html"
-
-    def _get_url(self):
-        return reverse("create_user")
-
-
 class TestUserUpdateView(TemplateOkMixin):
     """Test suite for the UserUpdateView."""
 

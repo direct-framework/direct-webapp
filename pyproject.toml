@@ -9,7 +9,10 @@ requires-python = ">=3.12"
 dependencies = [
     "django",
     "django-bootstrap5",
+    "django-registration",
     "django-stubs-ext",
+    "django-crispy-forms",
+    "crispy-bootstrap5",
     "whitenoise",
     "sendgrid",
 ]
