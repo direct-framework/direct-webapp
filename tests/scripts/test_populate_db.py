@@ -1,5 +1,8 @@
 """Unit tests for the populate_db.py script."""
 
+import json
+from pathlib import Path
+
 import pytest
 
 import scripts.populate_db as populate_db
@@ -30,51 +33,40 @@ def test_populate_categories_and_skills() -> None:
     """Test the populate_categories_and_skills function."""
     from main.models import Category, Skill
 
-    data = {
-        "Category 1": {
-            "Sub Category 1": {
-                "Skill 1": {"name": "Skill 1", "description": "Description of Skill 1"},
-                "Skill 2": {"name": "Skill 2", "description": "Description of Skill 2"},
-            },
-            "Sub Category 2": {
-                "Skill 3": {"name": "Skill 3", "description": "Description of Skill 3"}
-            },
-        },
-        "Category 2": {
-            "Sub Category 3": {
-                "Skill 4": {"name": "Skill 4", "description": "Description of Skill 4"}
-            },
-            "Sub Category 4": {
-                "Skill 5": {"name": "Skill 5", "description": "Description of Skill 5"}
-            },
-        },
-    }
+    data_path = Path(__file__).parent.parent / "data" / "framework.json"
 
-    initial_categories_count = 0
-    initial_categories = Category.objects.all()
-    for cat in initial_categories:
-        initial_categories_count += 1
-    assert initial_categories_count == 0
+    with open(data_path) as f:
+        data = json.load(f)
 
-    initial_skills_count = 0
-    initial_skills = Skill.objects.all()
-    for skill in initial_skills:
-        initial_skills_count += 1
-    assert initial_skills_count == 0
+    assert Category.objects.all().count() == 0
+    assert Skill.objects.all().count() == 0
 
     populate_db.populate_categories_and_skills(data)
 
-    categories_count = 0
-    categories = Category.objects.all()
-    for cat in categories:
-        categories_count += 1
-    assert categories_count == 6
+    assert Category.objects.all().count() == 5
+    all_parent_categories = Category.objects.filter(parent_category=None)
+    all_subcategories = Category.objects.filter(
+        parent_category__in=all_parent_categories
+    )
+    assert all_parent_categories.count() == 2
+    assert all_subcategories.count() == 3
+    assert (
+        Category.objects.filter(
+            parent_category__name="Category 1",
+            parent_category__description="Description of Category 1",
+        ).count()
+        == 2
+    )
 
-    skills_count = 0
-    skills = Skill.objects.all()
-    for skill in skills:
-        skills_count += 1
-    assert skills_count == 5
+    assert Skill.objects.all().count() == 4
+    assert Skill.objects.filter(category__parent_category=None).count() == 0
+    assert (
+        Skill.objects.filter(
+            category__name="Subcategory 1",
+            category__description="Description of Subcategory 1",
+        ).count()
+        == 2
+    )
 
 
 @pytest.mark.django_db
@@ -95,16 +87,8 @@ def test_populate_skill_levels() -> None:
         },
     ]
 
-    initial_skill_levels_count = 0
-    initial_skill_levels = SkillLevel.objects.all()
-    for skill in initial_skill_levels:
-        initial_skill_levels_count += 1
-    assert initial_skill_levels_count == 0
+    assert SkillLevel.objects.all().count() == 0
 
     populate_db.populate_skill_levels(data)
 
-    skill_levels_count = 0
-    skill_levels = SkillLevel.objects.all()
-    for skill in skill_levels:
-        skill_levels_count += 1
-    assert skill_levels_count == 2
+    assert SkillLevel.objects.all().count() == 2

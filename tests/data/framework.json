@@ -1,0 +1,58 @@
+{
+    "categories": [
+        {
+            "title": "Category 1",
+            "description": "Description of Category 1",
+            "subcategories": [
+                {
+                    "title": "Subcategory 1",
+                    "description": "Description of Subcategory 1",
+                    "skills": [
+                        {
+                            "title": "Skill 1",
+                            "description": "Description of Skill 1",
+                            "tools_languages_methods_behaviours": [],
+                            "training_resources": []
+                        },
+                        {
+                            "title": "Skill 2",
+                            "description": "Description of Skill 2",
+                            "tools_languages_methods_behaviours": [],
+                            "training_resources": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Subcategory 2",
+                    "description": "Description of Subcategory 2",
+                    "skills": [
+                        {
+                            "title": "Skill 3",
+                            "description": "Description of Skill 3",
+                            "tools_languages_methods_behaviours": [],
+                            "training_resources": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Category 2",
+            "description": "Description of Category 2",
+            "subcategories": [
+                {
+                    "title": "Subcategory 3",
+                    "description": "Description of Subcategory 3",
+                    "skills": [
+                        {
+                            "title": "Skill 4",
+                            "description": "Description of Skill 4",
+                            "tools_languages_methods_behaviours": [],
+                            "training_resources": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
