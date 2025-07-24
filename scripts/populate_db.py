@@ -38,9 +38,11 @@ def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg
     """Populate the database with categories and skills from a dictionary."""
     from main.models import Category, Skill
 
-    # Loop over categorys and add to db
-    for cat_name in data:
-        new_parent_cat = data[cat_name]
+    # Loop over categories and add to db
+    for category in data["categories"]:
+        cat_name = category["title"]
+        cat_description = category["description"]
+
         # Check if category already exists
         parent_cat = None
         try:
@@ -48,13 +50,15 @@ def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg
         except Category.DoesNotExist:
             parent_cat = Category.objects.create(
                 name=cat_name,
-                description=cat_name,  # Is description required?
+                description=cat_description,
             )
             parent_cat.save()
 
         # Loop over sub-categorys and add to db
-        for sub_cat_name in new_parent_cat:
-            new_sub_cat = new_parent_cat[sub_cat_name]
+        for subcategory in category["subcategories"]:
+            sub_cat_name = subcategory["title"]
+            sub_cat_description = subcategory["description"]
+
             # Check if sub-category already exists
             sub_cat = None
             try:
@@ -62,22 +66,23 @@ def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg
             except Category.DoesNotExist:
                 sub_cat = Category.objects.create(
                     name=sub_cat_name,
-                    description=sub_cat_name,
+                    description=sub_cat_description,
                     parent_category=parent_cat,
                 )
                 sub_cat.save()
 
             # Loop over skills and add to db
-            for skill_name in new_sub_cat:
+            for skill in subcategory["skills"]:
+                skill_name = skill["title"]
+                skill_description = skill["description"]
                 # Check if skill already exists
                 skill = None
                 try:
                     skill = Skill.objects.get(name=skill_name)
                 except Skill.DoesNotExist:
-                    new_skill = new_sub_cat[skill_name]
                     skill = Skill.objects.create(
                         name=skill_name,
-                        description=new_skill["description"],
+                        description=skill_description,
                         category=sub_cat,
                     )
                     skill.save()
