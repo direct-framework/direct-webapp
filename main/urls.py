@@ -9,4 +9,5 @@ urlpatterns = [
     path("privacy/", views.privacy, name="privacy"),
     path("accounts/", include("django_registration.backends.one_step.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
+    path("profile/", views.UserUpdateView.as_view(), name="profile"),
 ]
