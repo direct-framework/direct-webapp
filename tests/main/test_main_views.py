@@ -35,3 +35,12 @@ class TestUserUpdateView(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("profile")
+
+
+class TestAboutPageView(TemplateOkMixin):
+    """Test suite for the AboutPageView."""
+
+    _template_name = "main/about.html"
+
+    def _get_url(self):
+        return reverse("about")

@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 
 logger = logging.getLogger(__name__)
@@ -52,3 +53,9 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore
     def get_success_url(self) -> str:
         """Ensure submitting the form redirects to the same page."""
         return reverse("profile")
+
+
+class AboutPageView(TemplateView):
+    """View that renders the about page."""
+
+    template_name = "main/about.html"
