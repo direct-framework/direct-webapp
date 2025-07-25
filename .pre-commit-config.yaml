@@ -22,13 +22,13 @@ repos:
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.3
+    rev: v0.12.4
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.16.1
+    rev: v1.17.0
     hooks:
       - id: mypy
         exclude: manage.py
@@ -36,6 +36,9 @@ repos:
           - django-stubs[compatible-mypy]
           - django-stubs-ext
           - django-bootstrap5
+          - django-registration
+          - django-crispy-forms
+          - crispy-bootstrap5
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.45.0
     hooks:
