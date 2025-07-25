@@ -23,5 +23,5 @@ from main import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("main.urls")),
-    path("about/", views.about, name="about"),
+    path("about/", views.AboutPageView.as_view(), name="about"),
 ]

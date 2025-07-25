@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 
 logger = logging.getLogger(__name__)
@@ -54,11 +55,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore
         return reverse("profile")
 
 
-def about(request: HttpRequest) -> HttpResponse:
-    """View that renders the about page.
+class AboutPageView(TemplateView):
+    """View that renders the about page."""
 
-    Args:
-      request: A GET request.
-    """
-    logger.info("Rendering about page.")
-    return render(request=request, template_name="main/about.html")
+    template_name = "main/about.html"
