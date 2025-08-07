@@ -1,8 +1,6 @@
-{% extends "main/base.html" %}
+{% extends "main/base_auth.html" %}
 {% block content %}
-    <section class="container pt-5 mt-5">
-        <h2>Oops!</h2>
-        <p>User Registration is not currently enabled</p>
-        <a class="btn btn-lg btn-primary" href="{% url 'index' %}">Return Home</a>
-    </section>
+    <h2>Oops!</h2>
+    <p>User Registration is not currently enabled</p>
+    <a class="btn btn-lg btn-primary" href="{% url 'index' %}">Return Home</a>
 {% endblock content %}
