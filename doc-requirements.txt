@@ -42,8 +42,6 @@ django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
 django-stubs-ext==5.2.2
     # via direct_webapp (pyproject.toml)
-django-widget-tweaks==1.5.0
-    # via direct_webapp (pyproject.toml)
 ecdsa==0.19.1
     # via sendgrid
 ghp-import==2.1.0

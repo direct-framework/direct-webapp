@@ -49,8 +49,6 @@ django-stubs-ext==5.2.2
     # via
     #   direct_webapp (pyproject.toml)
     #   django-stubs
-django-widget-tweaks==1.5.0
-    # via direct_webapp (pyproject.toml)
 djlint==1.36.4
     # via direct_webapp (pyproject.toml)
 ecdsa==0.19.1

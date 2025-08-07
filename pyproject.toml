@@ -15,7 +15,6 @@ dependencies = [
     "crispy-bootstrap5",
     "whitenoise",
     "sendgrid",
-    "whitenoise",
 ]
 
 [project.optional-dependencies]
