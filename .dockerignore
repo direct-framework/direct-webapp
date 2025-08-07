@@ -1,4 +1,5 @@
 *
+!entrypoint.sh
 !main
 !manage.py
 !requirements.txt
