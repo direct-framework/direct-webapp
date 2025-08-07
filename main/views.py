@@ -59,3 +59,9 @@ class AboutPageView(TemplateView):
     """View that renders the about page."""
 
     template_name = "main/about.html"
+
+
+class TermsPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/terms.html"

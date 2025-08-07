@@ -44,3 +44,12 @@ class TestAboutPageView(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("about")
+
+
+class TestTermsPageView(TemplateOkMixin):
+    """Test suite for the TermsPageView."""
+
+    _template_name = "main/terms.html"
+
+    def _get_url(self):
+        return reverse("terms")
