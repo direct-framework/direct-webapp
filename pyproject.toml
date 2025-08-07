@@ -1,7 +1,7 @@
 [project]
-name = "rse_competencies_toolkit"
+name = "direct_webapp"
 dynamic = ["version"]
-description = "A Django webapp for hosting the RSE Competencies Toolkit"
+description = "A Django webapp for hosting the Digital Research Competencies Framework"
 authors = [
     { name = "Adrian D'Alessandro", email = "a.dalessandro@imperial.ac.uk" },
 ]
@@ -9,9 +9,13 @@ requires-python = ">=3.12"
 dependencies = [
     "django",
     "django-bootstrap5",
+    "django-crispy-forms",
+    "django-registration",
     "django-stubs-ext",
+    "crispy-bootstrap5",
     "gunicorn",
     "sendgrid",
+    "whitenoise",
     "whitenoise"
 ]
 
@@ -61,8 +65,8 @@ module = "tests.*"
 disallow_untyped_defs = false
 
 [tool.pytest.ini_options]
-addopts = "-v -p no:warnings --cov=. --cov-report=html --doctest-modules --ignore=rse_competencies_toolkit/__main__.py --ignore=docs --ignore=rse_competencies_toolkit/settings/"
-DJANGO_SETTINGS_MODULE = "rse_competencies_toolkit.settings"
+addopts = "-v -p no:warnings --cov=. --cov-report=html --doctest-modules --ignore=direct_webapp/__main__.py --ignore=docs --ignore=direct_webapp/settings/"
+DJANGO_SETTINGS_MODULE = "direct_webapp.settings"
 FAIL_INVALID_TEMPLATE_VARS = true
 
 [tool.ruff]
@@ -84,7 +88,7 @@ pydocstyle.convention = "google"
 "tests/*" = ["D104"] # Missing docstring in public package
 
 [tool.django-stubs]
-django_settings_module = "rse_competencies_toolkit.settings"
+django_settings_module = "direct_webapp.settings"
 
 [tool.coverage.run]
 omit = ["tests/*"]

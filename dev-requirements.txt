@@ -4,42 +4,53 @@
 #
 #    pip-compile --extra=dev --output-file=dev-requirements.txt
 #
-asgiref==3.8.1
-    # via
-    #   django
-    #   django-stubs
+asgiref==3.9.1
+    # via django
 build==1.2.2.post1
     # via pip-tools
 cfgv==3.4.0
     # via pre-commit
-click==8.1.8
+click==8.2.1
     # via
     #   djlint
     #   pip-tools
 colorama==0.4.6
     # via djlint
-coverage[toml]==7.8.2
+confusable-homoglyphs==3.3.1
+    # via django-registration
+coverage[toml]==7.10.1
     # via pytest-cov
+crispy-bootstrap5==2025.6
+    # via direct_webapp (pyproject.toml)
 cssbeautifier==1.15.4
     # via djlint
-distlib==0.3.9
+distlib==0.4.0
     # via virtualenv
-django==5.2.2
+django==5.2.4
     # via
+    #   crispy-bootstrap5
+    #   direct_webapp (pyproject.toml)
     #   django-bootstrap5
+    #   django-crispy-forms
+    #   django-registration
     #   django-stubs
     #   django-stubs-ext
-    #   rse_competencies_toolkit (pyproject.toml)
-django-bootstrap5==25.1
-    # via rse_competencies_toolkit (pyproject.toml)
-django-stubs[compatible-mypy]==5.1.3
-    # via rse_competencies_toolkit (pyproject.toml)
-django-stubs-ext==5.2.0
+django-bootstrap5==25.2
+    # via direct_webapp (pyproject.toml)
+django-crispy-forms==2.4
     # via
+    #   crispy-bootstrap5
+    #   direct_webapp (pyproject.toml)
+django-registration==5.2.1
+    # via direct_webapp (pyproject.toml)
+django-stubs[compatible-mypy]==5.2.2
+    # via direct_webapp (pyproject.toml)
+django-stubs-ext==5.2.2
+    # via
+    #   direct_webapp (pyproject.toml)
     #   django-stubs
-    #   rse_competencies_toolkit (pyproject.toml)
 djlint==1.36.4
-    # via rse_competencies_toolkit (pyproject.toml)
+    # via direct_webapp (pyproject.toml)
 ecdsa==0.19.1
     # via sendgrid
 editorconfig==0.17.1
@@ -48,6 +59,8 @@ editorconfig==0.17.1
     #   jsbeautifier
 filelock==3.18.0
     # via virtualenv
+gunicorn==23.0.0
+    # via direct_webapp (pyproject.toml)
 identify==2.6.12
     # via pre-commit
 iniconfig==2.1.0
@@ -60,10 +73,10 @@ json5==0.12.0
     # via djlint
 markupsafe==3.0.2
     # via werkzeug
-mypy==1.15.0
+mypy==1.17.1
     # via
+    #   direct_webapp (pyproject.toml)
     #   django-stubs
-    #   rse_competencies_toolkit (pyproject.toml)
 mypy-extensions==1.1.0
     # via mypy
 nodeenv==1.9.1
@@ -71,45 +84,52 @@ nodeenv==1.9.1
 packaging==25.0
     # via
     #   build
+    #   gunicorn
     #   pytest
 pathspec==0.12.1
-    # via djlint
-pip-tools==7.4.1
-    # via rse_competencies_toolkit (pyproject.toml)
+    # via
+    #   djlint
+    #   mypy
+pip-tools==7.5.0
+    # via direct_webapp (pyproject.toml)
 platformdirs==4.3.8
     # via virtualenv
 pluggy==1.6.0
-    # via pytest
+    # via
+    #   pytest
+    #   pytest-cov
 pre-commit==4.2.0
-    # via rse_competencies_toolkit (pyproject.toml)
+    # via direct_webapp (pyproject.toml)
+pygments==2.19.2
+    # via pytest
 pyproject-hooks==1.2.0
     # via
     #   build
     #   pip-tools
-pytest==8.3.5
+pytest==8.4.1
     # via
+    #   direct_webapp (pyproject.toml)
     #   pytest-cov
     #   pytest-django
     #   pytest-mock
-    #   rse_competencies_toolkit (pyproject.toml)
-pytest-cov==6.1.1
-    # via rse_competencies_toolkit (pyproject.toml)
+pytest-cov==6.2.1
+    # via direct_webapp (pyproject.toml)
 pytest-django==4.11.1
-    # via rse_competencies_toolkit (pyproject.toml)
+    # via direct_webapp (pyproject.toml)
 pytest-mock==3.14.1
-    # via rse_competencies_toolkit (pyproject.toml)
+    # via direct_webapp (pyproject.toml)
 python-http-client==3.3.7
     # via sendgrid
 pyyaml==6.0.2
     # via
     #   djlint
     #   pre-commit
-regex==2024.11.6
+regex==2025.7.34
     # via djlint
-ruff==0.11.13
-    # via rse_competencies_toolkit (pyproject.toml)
-sendgrid==6.12.3
-    # via rse_competencies_toolkit (pyproject.toml)
+ruff==0.12.7
+    # via direct_webapp (pyproject.toml)
+sendgrid==6.12.4
+    # via direct_webapp (pyproject.toml)
 six==1.17.0
     # via
     #   cssbeautifier
@@ -121,19 +141,19 @@ tqdm==4.67.1
     # via djlint
 types-pyyaml==6.0.12.20250516
     # via django-stubs
-typing-extensions==4.13.2
+typing-extensions==4.14.1
     # via
     #   django-stubs
     #   django-stubs-ext
     #   mypy
-virtualenv==20.30.0
+virtualenv==20.32.0
     # via pre-commit
 werkzeug==3.1.3
     # via sendgrid
 wheel==0.45.1
     # via pip-tools
 whitenoise==6.9.0
-    # via rse_competencies_toolkit (pyproject.toml)
+    # via direct_webapp (pyproject.toml)
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

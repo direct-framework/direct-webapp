@@ -1,14 +1,22 @@
 """Views for the main app."""
 
 import logging
+from typing import TYPE_CHECKING
 
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from django.views.generic.edit import FormView
+from django.urls import reverse
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import UpdateView
 
-from .forms import CustomUserCreationForm
+logger = logging.getLogger(__name__)
 
-logger = logging.getLogger("main")
+if TYPE_CHECKING:  # pragma: no cover
+    from .models import User as UserType
+
+User = get_user_model()
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -31,15 +39,23 @@ def privacy(request: HttpRequest) -> HttpResponse:
     return render(request=request, template_name="main/privacy.html")
 
 
-class CreateUserView(FormView[CustomUserCreationForm]):
-    """View that renders the user creation form page."""
+class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore
+    """View that renders the user update form page."""
 
-    template_name = "registration/create_user.html"
-    form_class = CustomUserCreationForm
-    success_url = "/accounts/login"
+    model = User
+    fields = ["username", "email"]  # noqa
+    template_name_suffix = "_update_form"
 
-    def form_valid(self, form: CustomUserCreationForm) -> HttpResponse:
-        """Method called when valid form data has been POSTed."""
-        if form.is_valid():
-            form.save()
-        return super().form_valid(form)
+    def get_object(self, queryset=None) -> "UserType":  # type: ignore
+        """Remove the need for url args by returning the current user."""
+        return self.request.user  # type: ignore
+
+    def get_success_url(self) -> str:
+        """Ensure submitting the form redirects to the same page."""
+        return reverse("profile")
+
+
+class AboutPageView(TemplateView):
+    """View that renders the about page."""
+
+    template_name = "main/about.html"

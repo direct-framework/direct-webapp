@@ -1,4 +1,4 @@
-"""Django settings for rse_competencies_toolkit project."""
+"""Django settings for direct_webapp project."""
 
 import django_stubs_ext
 
