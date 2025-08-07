@@ -144,6 +144,12 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item {% if url_name == 'profile' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                    </li>
                 </ul>
             {% endwith %}
         </nav>
