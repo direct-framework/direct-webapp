@@ -15,7 +15,6 @@ dependencies = [
     "crispy-bootstrap5",
     "gunicorn",
     "sendgrid",
-    "whitenoise",
     "whitenoise"
 ]
 
