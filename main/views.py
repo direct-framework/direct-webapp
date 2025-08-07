@@ -71,3 +71,9 @@ class ContactPageView(TemplateView):
     """View that renders the contact page."""
 
     template_name = "main/contact.html"
+
+
+class QuestionPageView(TemplateView):
+    """View that renders the self-assessment questionnaire page."""
+
+    template_name = "main/question.html"

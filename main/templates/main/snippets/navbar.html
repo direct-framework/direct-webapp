@@ -66,6 +66,9 @@
                     <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'about' %}">About</a>
                     </li>
+                    <li class="nav-item {% if url_name == 'question' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'question' %}">Self Assessment Questionnaire</a>
+                    </li>
                     <li class="nav-item {% if url_name == 'terms' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'terms' %}">Terms & Conditions</a>
                     </li>
