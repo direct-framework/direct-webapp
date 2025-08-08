@@ -1,29 +1,24 @@
-{% extends "main/base.html" %}
+{% extends "main/base_auth.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block content %}
-    <section class="container pt-5 mt-5">
-        {% if next %}
-            {% if user.is_authenticated %}
-                <p>
-                    Your account doesn't have access to this page. To proceed,
-                    please login with an account that has access.
-                </p>
-            {% else %}
-                <p>Please login to see this page.</p>
-            {% endif %}
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <input type="submit" class="btn btn-primary" value="Log in">
-            <input type="hidden" name="next" value="{{ next }}">
-        </form>
-        <p>&nbsp;</p>
-        <p>
-            <a href="{% url 'password_reset' %}">Lost password?</a>
-        </p>
-        <p>
-            <a href="{% url 'django_registration_register' %}">Register</a>
-        </p>
-    </section>
+    <h1>Sign in to DIRECT</h1>
+    <p class="pb-3 mb-3 mb-lg-4">
+        Don't have an account yet?&nbsp;&nbsp;
+        <a href="{% url 'django_registration_register' %}">Register here!</a>
+    </p>
+    {% if next and not user.is_authenticated %}
+        <div class="alert alert-info">
+            <p>Please login to see this page.</p>
+        </div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-lg btn-primary w-100 mb-4">Sign in</button>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    <p class="pb-3 mb-3 mb-lg-4">
+        <a href="{% url 'password_reset' %}">Lost password?</a>
+    </p>
 {% endblock content %}
