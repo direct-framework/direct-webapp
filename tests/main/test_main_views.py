@@ -59,3 +59,11 @@ class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
         # Assert redirects to profile
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == self._get_url()
+
+class TestAboutPageView(TemplateOkMixin):
+    """Test suite for the AboutPageView."""
+
+    _template_name = "main/about.html"
+
+    def _get_url(self):
+        return reverse("about")

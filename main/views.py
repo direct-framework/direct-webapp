@@ -9,6 +9,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 
 logger = logging.getLogger(__name__)
@@ -50,3 +51,9 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore[type-arg]
     def get_object(self, queryset: QuerySet["UserType"] | None = None) -> "UserType":
         """Remove the need for url args by returning the current user."""
         return cast("UserType", self.request.user)
+
+
+class AboutPageView(TemplateView):
+    """View that renders the about page."""
+
+    template_name = "main/about.html"
