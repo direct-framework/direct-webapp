@@ -60,6 +60,7 @@ class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == self._get_url()
 
+
 class TestAboutPageView(TemplateOkMixin):
     """Test suite for the AboutPageView."""
 
