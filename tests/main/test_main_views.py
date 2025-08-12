@@ -64,10 +64,10 @@ class TestContactPageView(TemplateOkMixin):
         return reverse("contact")
 
 
-class TestQuestionPageView(TemplateOkMixin):
-    """Test suite for the QuestionPageView."""
+class TestSelfAssessPageView(TemplateOkMixin):
+    """Test suite for the SelfAssessPageView."""
 
-    _template_name = "main/question.html"
+    _template_name = "main/self-assess.html"
 
     def _get_url(self):
-        return reverse("question")
+        return reverse("self-assess")
