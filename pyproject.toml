@@ -3,7 +3,7 @@ name = "direct_webapp"
 dynamic = ["version"]
 description = "A Django webapp for hosting the Digital Research Competencies Framework"
 authors = [
-    { name = "Adrian D'Alessandro", email = "a.dalessandro@imperial.ac.uk" },
+    { name = "DIRECT Framework Group", email = "direct-framework@googlegroups.com" },
 ]
 requires-python = ">=3.12"
 dependencies = [
