@@ -11,4 +11,7 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("profile/", views.UserUpdateView.as_view(), name="profile"),
     path("about/", views.AboutPageView.as_view(), name="about"),
+    path("terms/", views.TermsPageView.as_view(), name="terms"),
+    path("contact/", views.ContactPageView.as_view(), name="contact"),
+    path("self-assess/", views.SelfAssessPageView.as_view(), name="self-assess"),
 ]

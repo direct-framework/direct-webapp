@@ -57,3 +57,21 @@ class AboutPageView(TemplateView):
     """View that renders the about page."""
 
     template_name = "main/about.html"
+
+
+class TermsPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/terms.html"
+
+
+class ContactPageView(TemplateView):
+    """View that renders the contact page."""
+
+    template_name = "main/contact.html"
+
+
+class SelfAssessPageView(TemplateView):
+    """View that renders the self-assessment questionnaire page."""
+
+    template_name = "main/self-assess.html"
