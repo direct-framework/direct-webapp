@@ -6,11 +6,14 @@ from typing import TYPE_CHECKING, cast
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query import QuerySet
+from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import CreateView, UpdateView
+
+from .models import UserSkill
 
 logger = logging.getLogger(__name__)
 
@@ -75,3 +78,18 @@ class SelfAssessPageView(TemplateView):
     """View that renders the self-assessment questionnaire page."""
 
     template_name = "main/self-assess.html"
+
+
+class UserSkillCreateView(
+    LoginRequiredMixin, CreateView[UserSkill, ModelForm[UserSkill]]
+):
+    """View that renders the user skill creation form page."""
+
+    model = UserSkill
+    fields = ("skill", "skill_level")
+    success_url = reverse_lazy("add_skill")
+
+    def form_valid(self, form: ModelForm[UserSkill]) -> HttpResponse:
+        """Save the form and redirect to the profile page."""
+        form.instance.user = cast("UserType", self.request.user)
+        return super().form_valid(form)
