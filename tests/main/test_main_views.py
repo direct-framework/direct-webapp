@@ -68,3 +68,30 @@ class TestAboutPageView(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("about")
+
+
+class TestTermsPageView(TemplateOkMixin):
+    """Test suite for the TermsPageView."""
+
+    _template_name = "main/terms.html"
+
+    def _get_url(self):
+        return reverse("terms")
+
+
+class TestContactPageView(TemplateOkMixin):
+    """Test suite for the ContactPageView."""
+
+    _template_name = "main/contact.html"
+
+    def _get_url(self):
+        return reverse("contact")
+
+
+class TestSelfAssessPageView(TemplateOkMixin):
+    """Test suite for the SelfAssessPageView."""
+
+    _template_name = "main/self-assess.html"
+
+    def _get_url(self):
+        return reverse("self-assess")
