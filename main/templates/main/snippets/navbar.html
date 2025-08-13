@@ -66,6 +66,15 @@
                     <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'about' %}">About</a>
                     </li>
+                    <li class="nav-item {% if url_name == 'self-assess' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'self-assess' %}">Self Assessment Questionnaire</a>
+                    </li>
+                    <li class="nav-item {% if url_name == 'terms' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'terms' %}">Terms & Conditions</a>
+                    </li>
+                    <li class="nav-item {% if url_name == 'contact' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                    </li>
                     <li class="nav-item {% if url_name == 'profile' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                     </li>
