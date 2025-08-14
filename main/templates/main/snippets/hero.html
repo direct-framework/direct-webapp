@@ -26,15 +26,100 @@
          data-bs-theme="dark">
         <div class="row justify-content-center text-center pt-md-2 pt-lg-0 pt-xl-2 pb-5 mb-md-2">
             <div class="col-lg-10 col-xl-9 col-xxl-8">
-                <span class="badge bg-light bg-opacity-10 fs-sm text-white px-3 mb-4"></span>
                 <h1 class="display-3 mb-sm-4">Digital Research Competencies Framework</h1>
                 <p class="text-body pb-3 mb-3 mb-lg-4">
-                    Identify skills, define development pathways and progress your career in research software.
+                    Identify skills, define development pathways and progress your career in research software
                 </p>
                 <a class="btn btn-lg btn-warning"
                    href="{% url 'django_registration_register' %}">Create Account</a>
+                <a class="btn btn-lg btn-warning" href="{% url 'login' %}">Assess your Skills</a>
             </div>
         </div>
-        <br />
+        <div class="bg-light rounded-4 p-4 mx-auto">
+            <div class="row">
+                <!-- Left column: Avatar grid and video intro -->
+                <div class="col-lg-6 mb-4 mb-lg-0 d-flex flex-column justify-content-center">
+                    <div class="row g-3">
+                        {% comment %} Replace with actual case study links and avatars {% endcomment %}
+                        {% for i in "1234"|make_list %}
+                            <div class="col-6 col-md-4 text-center">
+                                <a href="#case-study-{{ i }}">
+                                    <img src="{% static 'path/to/avatar.jpg' %}"
+                                         class="rounded-circle img-fluid"
+                                         alt="Case Study {{ i }}">
+                                    <p class="small mt-2">Case Study {{ i }}</p>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <!-- Video intro button -->
+                    <div class="text-center mt-4">
+                        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                           class="btn btn-outline-secondary rounded-circle p-3"
+                           target="_blank">
+                            <i class="bi bi-play-circle-fill fs-3"></i>
+                        </a>
+                        <p class="small mt-2">Watch introduction</p>
+                    </div>
+                </div>
+                <!-- Right column: Skills wheel visualisation -->
+                <div class="col-lg-6 d-flex justify-content-center align-items-center">
+                    <div id="dataviz_hero"></div>
+                </div>
+            </div>
+        </div>
     </div>
+    <br />
 </section>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const datavizRoot = document.getElementById('dataviz_hero');
+
+        const categories = [
+    "Information and data technologies",
+    "Software engineering and development",
+    "ICT infrastructures",
+    "Professional skills",
+    "Leadership & management",
+    "Domain expertise & research",
+    "Communication"
+];
+
+        // Generate demo locally
+        const generateRandomData = (n, categoryCount) =>
+            Array.from({ length: n }, (_, i) => ({
+                skill: `skill-${i}`,
+                category: categories[Math.floor(Math.random() * categories.length)],
+                skill_level: Math.floor(Math.random() * 6),
+            }))
+
+        main().RadialBarChart({
+            target: datavizRoot,
+            data: generateRandomData(20, 5),
+            innerRadius: 0,
+            width: 600,
+            // height: _height:undefined,
+            innerRadius: 65,
+            outerPadding: 80,
+            categoryPadding: 0.1,
+            skillPadding: 0.05,
+            arcPercent: 0.8,
+            arcStartOffset: 0.1,
+            annotationPadding: 10,
+            lineThickness: 2,
+            labelTextColor: "white",
+            lvlTextColor: "var(--ar-primary)",
+            lvlArcColor: "#333",
+            colourList:[
+  "#44bbe3", // light blue
+  "#88c979", // green
+  "#ff6b6b", // red
+  "#f4c93c", // yellow
+  "#19638a", // dark blue
+  "#c084e6", // purple
+  "#ff9f40"  // orange
+             ],
+        });
+    });
+
+</script>

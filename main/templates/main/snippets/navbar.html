@@ -1,14 +1,14 @@
 {% load static %}
 <header class="navbar navbar-expand-lg fixed-top bg-light">
     <div class="container">
-        <!-- Navbar brand (Logo) -->
+        <!-- Navbar brand -->
         <a class="navbar-brand pe-sm-3" href="{% url 'index' %}">
-            <span class="text-primary flex-shrink-0 me-2">
+            <span class="text-primary flex-shrink-0 me-3">
                 <img src="{% static 'assets/app-icons/logo.svg' %}"
-                     alt="Digital Research Competencies Framework logo"
-                     class="arrow ms-2 d-lg-block d-none">
+                     alt="DIRECT"
+                     width="40">
             </span>
-            DIRECT Framework
+            DIRECT
         </a>
         <!-- Theme switcher -->
         <div class="form-check form-switch mode-switch order-lg-2 me-3 me-lg-4 ms-auto"
@@ -38,7 +38,7 @@
                 Login
             </a>
         {% endif %}
-        <!-- Mobile menu toggler (Hamburger) -->
+        <!-- Mobile menu toggler -->
         <button class="navbar-toggler ms-sm-3"
                 type="button"
                 data-bs-toggle="collapse"
@@ -46,22 +46,103 @@
                 aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <!-- Navbar collapse (Main navigation) -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <!-- <a class="navbar-brand" href="#">Navbar</a> -->
-            <button class="navbar-toggler"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <!-- Navbar collapse -->
+        <nav class="collapse navbar-collapse" id="navbarNav">
             {% with request.resolver_match.url_name as url_name %}
-                <ul class="navbar-nav">
+                <ul class="navbar-nav navbar-nav-scroll me-auto"
+                    style="--ar-scroll-height: 520px">
                     <li class="nav-item {% if url_name == 'index' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           data-bs-toggle="dropdown"
+                           data-bs-auto-close="outside"
+                           aria-expanded="false">Framework</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           data-bs-toggle="dropdown"
+                           data-bs-auto-close="outside"
+                           aria-expanded="false">Resources</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           data-bs-toggle="dropdown"
+                           data-bs-auto-close="outside"
+                           aria-expanded="false">Community</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'about' %}">About</a>
@@ -78,7 +159,6 @@
                     <li class="nav-item {% if url_name == 'profile' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                     </li>
-                    <!-- Add more navigation items as necessary -->
                 </ul>
             {% endwith %}
         </nav>

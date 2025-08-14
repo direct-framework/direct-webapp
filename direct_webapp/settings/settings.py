@@ -60,6 +60,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "direct_webapp.context_processors.site_title",
             ],
         },
     },
@@ -131,6 +132,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 AUTH_USER_MODEL = "main.User"
 LOGIN_REDIRECT_URL = "/profile"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+SITE_TITLE = "DIRECT Framework"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
