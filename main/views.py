@@ -1,19 +1,19 @@
 """Views for the main app."""
 
 import logging
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query import QuerySet
-from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import FormView, UpdateView
 
-from .models import UserSkill
+from .forms import UserSkillsForm
 
 logger = logging.getLogger(__name__)
 
@@ -74,22 +74,34 @@ class ContactPageView(TemplateView):
     template_name = "main/contact.html"
 
 
-class SelfAssessPageView(TemplateView):
+class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
     """View that renders the self-assessment questionnaire page."""
 
     template_name = "main/self-assess.html"
+    form_class = UserSkillsForm
+    success_url = reverse_lazy("self-assess")
 
+    def get_form_kwargs(self) -> dict[str, Any]:
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
-class UserSkillCreateView(
-    LoginRequiredMixin, CreateView[UserSkill, ModelForm[UserSkill]]
-):
-    """View that renders the user skill creation form page."""
+    def form_valid(self, form: UserSkillsForm) -> HttpResponse:
+        """Handle valid form submission."""
+        created_skills, updated_skills = form.save(cast("UserType", self.request.user))
 
-    model = UserSkill
-    fields = ("skill", "skill_level")
-    success_url = reverse_lazy("add_skill")
+        # Add success messages
+        if created_skills:
+            messages.success(
+                self.request,
+                f"Successfully created {len(created_skills)} new skill assessments.",
+            )
+        if updated_skills:
+            messages.success(
+                self.request,
+                f"Successfully updated {len(updated_skills)} "
+                f"existing skill assessments.",
+            )
 
-    def form_valid(self, form: ModelForm[UserSkill]) -> HttpResponse:
-        """Save the form and redirect to the profile page."""
-        form.instance.user = cast("UserType", self.request.user)
         return super().form_valid(form)

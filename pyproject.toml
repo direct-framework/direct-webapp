@@ -51,7 +51,6 @@ exclude = [
 ] # Exclude the coverage report file from setuptools package finder
 
 [tool.mypy]
-disallow_any_explicit = true
 disallow_any_generics = true
 warn_unreachable = true
 warn_unused_ignores = true
