@@ -1,17 +1,15 @@
-{% extends "main/base.html" %}
+{% extends "main/base_auth.html" %}
 {% block content %}
-    <section class="container pt-5 mt-5">
-        {% if user.is_authenticated %}
-            <h2>Success!</h2>
-            <p>Welcome {{ user }}! You have registered and are now logged in.</p>
-            <p>
-                <a class="btn btn-lg btn-primary" href="{% url 'index' %}">Start exploring.</a>
-            </p>
-        {% else %}
-            <h2>Oops!</h2>
-            <p>You are not currently logged in. Are you looking to register?</p>
-            <a class="btn btn-lg btn-primary"
-               href="{% url 'django_registration_register' %}">Register</a>
-        {% endif %}
-    </section>
+    {% if user.is_authenticated %}
+        <h2>Success!</h2>
+        <p>Welcome {{ user }}! You have registered and are now logged in.</p>
+        <p>
+            <a class="btn btn-lg btn-primary" href="{% url 'index' %}">Start exploring</a>
+        </p>
+    {% else %}
+        <h2>Oops!</h2>
+        <p>You are not currently logged in. Are you looking to register?</p>
+        <a class="btn btn-lg btn-primary"
+           href="{% url 'django_registration_register' %}">Register</a>
+    {% endif %}
 {% endblock content %}
