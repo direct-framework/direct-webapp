@@ -156,3 +156,7 @@ bower_components/
 main/static/assets/img2
 
 *storybook.log
+
+# Data
+data/
+!data/levels.json
