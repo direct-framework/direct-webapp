@@ -100,3 +100,4 @@ ignore="H021,H006"
 
 [tool.djlint.per-file-ignores]
 "main/templates/main/base.html"= "H030, H031, H016" # meta tags and title is in head.html
+"main/templates/main/base_auth.html"= "H030, H031, H016" # meta tags and title is in head.html
