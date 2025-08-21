@@ -115,7 +115,6 @@ def main() -> None:
     import os
     import sys
 
-    import yaml
     from django.core.wsgi import get_wsgi_application
 
     # Set up Django environment for standalone script
@@ -128,6 +127,8 @@ def main() -> None:
     # Load famework from file
     skill_data = {}
     if args.yaml_file:
+        import yaml
+
         with open(args.yaml_file) as yaml_file:
             skill_data = yaml.safe_load(yaml_file)
     elif args.json_file:

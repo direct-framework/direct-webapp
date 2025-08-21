@@ -102,15 +102,29 @@ To get started:
 
 ### Installation with Docker
 
-The app can be run within a Docker container and a `docker-compose.yml` file is provided to make this easy for development.
+The app can be run within a Docker container and a `docker-compose.yml` file is provided
+to make this easy for development.
 
-Ensure you have [Docker](https://docs.docker.com/desktop/) installed and simply run:
+Requirements:
+
+1. You have a modern version of [Docker](https://docs.docker.com/desktop/) installed.
+2. You have a JSON version of the framework saved at `data/skills-competencies-framework.json`.
+
+To launch the server run:
 
 ```bash
 docker compose up
 ```
 
 The app will be available at <http://127.0.0.1:8000/> <!-- markdown-link-check-disable-line -->
+
+As above, create a superuser with
+
+```bash
+docker compose exec app python manage.py createsuperuser
+```
+
+The framework should be automatically loaded into the database.
 
 ## Updating Dependencies
 
