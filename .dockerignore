@@ -6,3 +6,5 @@
 !direct_webapp
 !db
 db/*
+!scripts
+!data/*.json
