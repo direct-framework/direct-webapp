@@ -1,8 +1,8 @@
 """Views for the main app."""
 
 import logging
-from typing import TYPE_CHECKING, cast
 from json import dumps
+from typing import TYPE_CHECKING, cast
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,7 +12,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
-from .models import UserSkill
+
+from .models import SkillLevel, UserSkill
 
 logger = logging.getLogger(__name__)
 
@@ -54,16 +55,26 @@ def skill_profile(request: HttpRequest) -> HttpResponse:
         {
             "skill": userSkill.skill.name,
             "category": userSkill.skill.category.name,
-            "skill_level": userSkill.skill_level.name,
+            "skill_level": userSkill.skill_level.level,
         }
         for userSkill in userskills
     ]
-    # TODO: Do we show skills with 0 level?
-    # NOTE: skills do not need to be in any order.
-    context = {"data": dumps(userSkillData)}
+    skillLevels = SkillLevel.objects.all()
+    skillLevelsData = [
+        {
+            "level": skillLevel.level,
+            "name": skillLevel.name,
+            "description": skillLevel.description,
+        }
+        for skillLevel in skillLevels
+    ]
+    context = {
+        "user_data": dumps(userSkillData),
+        "skill_levels": dumps(skillLevelsData),
+    }
 
     return render(
-        request=request, template_name="app/skill_profile.html", context=context
+        request=request, template_name="main/user_skill_profile.html", context=context
     )
 
 

@@ -73,9 +73,12 @@ export const getArcsFn =
     arcStartOffset = 0.1,
   }) =>
   // eslint-disable-next-line indent
-  ({ skillsData, categories, groupedByCategory }) => {
-    const maxLvl = d3.max(skillsData, (d) => d.skill_level) ?? 0
-    const lvlsArray = Array.from({ length: maxLvl }, (_, k) => k + 1)
+  ({ skillsData, levels, categories, groupedByCategory }) => {
+    const maxLvl = d3.max(levels, (d) => d.level) ?? 0
+    const minLvl = d3.min(levels, (d) => d.level) ?? 0
+
+    const lvlsArray = levels.sort((a, b) => a.level - b.level)
+
     /* Total angle used by skills. Remaining is left blank */
     const totalArcAngle = fullCircleAngle * arcPercent
     const totalSkillCount = skillsData.length
@@ -143,11 +146,11 @@ export const getArcsFn =
     const getSkillAngleStart = (d) => skillAngleStart[`${d.category}-${d.skill}`]
 
     /* Function to get the distance from the center of the circle to a y value
-        using the radial scale */
+        at the bottom of the level */
     const lvlHeight = d3
       // .scaleRadial() // Disabled so each level is the same depth
       .scaleLinear()
-      .domain([0, maxLvl])
+      .domain([minLvl, maxLvl + 1]) // Use max lvl + 1 as we need the top and bottom of each lvl
       .range([innerRadius, outerRadius])
 
     /* A d3.js arc generator for the skill bar where height = skill level  */
@@ -172,8 +175,8 @@ export const getArcsFn =
       .arc()
       .startAngle((d) => getSkillAngleStart(d))
       .endAngle((d) => getSkillAngleStart(d) + columnAngle)
-      .innerRadius((_, lvl) => lvlHeight(lvl - 1) + 1)
-      .outerRadius((_, lvl) => lvlHeight(lvl + 0) - 1)
+      .innerRadius((_, lvl) => lvlHeight(lvl))
+      .outerRadius((_, lvl) => lvlHeight(lvl + 1)) // + 1 as top of level
       .padRadius(-1)
       .padAngle(0.01)
 
@@ -190,11 +193,12 @@ export const getArcsFn =
           (groupedByCategory.get(category)?.length ?? 0) * skillPadding
       )
 
+    const thicknessOfLvlRing = 0.5
     /* A d3.js arc generator for the ring that shows each level for the entire plot */
     const lvlRing = d3
       .arc()
-      .innerRadius((lvl) => lvlHeight(lvl) - 0.5)
-      .outerRadius((lvl) => lvlHeight(lvl) + 0)
+      .innerRadius((lvl) => lvlHeight(lvl + 1) - thicknessOfLvlRing) // use + 1 as ring at top of lvl
+      .outerRadius((lvl) => lvlHeight(lvl + 1)) // use + 1 as ring at top of lvl
       .startAngle(0)
       .endAngle(totalArcAngle + (fullCircleAngle - totalArcAngle) / 2)
 

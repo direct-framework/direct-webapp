@@ -36,11 +36,13 @@
                 "var(--ar-info-text-emphasis)",
             ],
         }
-        const dataLoadedFromContext = {{ data|safe }};
-
+        const userDataLoadedFromContext = {{ user_data|safe }};
+        const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
+        console.info("Data loaded from context:", userDataLoadedFromContext, skillLevelsLoadedFromContext);
         main().RadialBarChart({
             target: datavizRoot,
-            data:  dataLoadedFromContext,
+            data:  userDataLoadedFromContext,
+            levels: skillLevelsLoadedFromContext,
             config: radialBarChartConfig,
         });
     });

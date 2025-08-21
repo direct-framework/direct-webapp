@@ -18,6 +18,7 @@ function refreshBarsD3({
   categoryFocus,
   skillsData,
   getArcs,
+  levels,
   groupedByCategory,
   handleSkillSelect,
   setHighlightedSkill,
@@ -30,6 +31,7 @@ function refreshBarsD3({
     .filter((d) => filteredCategoriesIds.includes(d.category))
 
   const { barFullHeightArc, barSegmentArc } = getArcs({
+    levels: levels,
     skillsData: filteredData,
     categories: filteredCategories,
     groupedByCategory,
@@ -94,9 +96,11 @@ function renderAnnotationsD3({
   sortedCategories,
   categoryFocus,
   skillsData,
+  levels,
   getArcs,
   groupedByCategory,
   config,
+  fontSize = 10,
 }) {
   const {
     lineThickness,
@@ -121,6 +125,7 @@ function renderAnnotationsD3({
     lvlsArray,
     getYPoint,
   } = getArcs({
+    levels,
     skillsData: filteredData,
     categories: filteredCategories,
     groupedByCategory,
@@ -200,7 +205,7 @@ function renderAnnotationsD3({
       .attr(
         'y',
         catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) +
-          (catAnnotationPointOuter(cat.id).y > 0 ? 20 : -10)
+          (catAnnotationPointOuter(cat.id).y > 0 ? 20 : -fontSize)
       )
       .attr('fill', labelTextColor)
       .attr('font-weight', 700)
@@ -213,11 +218,12 @@ function renderAnnotationsD3({
       annotationGroup
         .append('text')
         .attr('x', 0)
-        .attr('y', -getYPoint(lvl - 0.1))
+
+        .attr('y', -getYPoint(lvl.level + 1) + fontSize / 2) // level + 1 as we want this at the top of the level
         .attr('fill', lvlTextColor)
         .attr('text-anchor', 'middle')
-        .attr('font-size', 10)
-        .text(lvl)
+        .attr('font-size', fontSize)
+        .text(lvl.name)
     })
   })
 
@@ -244,6 +250,23 @@ const defaultConfig = {
 /**
  * RadialBarChart component renders a radial bar chart using D3.js.
  *
+ * @param {Object} target - The target DOM element to append the chart to.
+ * @param {Array} data - The data to be visualized in the radial bar chart as array of objects.
+ * Each data item should have the following structure:
+ * {
+ *   skill: 'Skill Name',
+ *   category: 'Category Name',
+ *   skill_level: number
+ * }
+ * @param {Array} levels - Array of skill levels to be used in the chart.
+ * Each level should have the following structure:
+ * {
+ *   level: number,
+ *   name: 'Level Name',
+ *   description: 'Level Description'
+ * }
+ * @param {Object} config - Configuration parameters for the chart.
+ *
  * Config Params:
  *   width = 640,
  *   height: _height = undefined,
@@ -259,8 +282,10 @@ const defaultConfig = {
  *   lvlTextColor = '#ccc',
  *   lvlArcColor = '#444',
  *   colourList = d3.schemeAccent,
+ *
+ *
  */
-export function RadialBarChart({ target, data, config: configIn }) {
+export function RadialBarChart({ target, data, levels, config: configIn }) {
   const config = { ...defaultConfig, ...configIn }
   const {
     width = 640,
@@ -314,12 +339,9 @@ export function RadialBarChart({ target, data, config: configIn }) {
     arcPercent,
     arcStartOffset,
   })
-  console.info({
-    skillsData,
-    sortedCategories,
-  })
   const { lvlRing, lvlsArray } = getArcs({
     skillsData,
+    levels,
     categories: sortedCategories,
     groupedByCategory,
   })
@@ -425,7 +447,7 @@ export function RadialBarChart({ target, data, config: configIn }) {
         .select('.skill-highlight-text-lvl')
         .transition(t)
         .attr('opacity', 1)
-        .text(highlightedSkill.skill_level)
+        .text(lvlsArray.find((lvl) => lvl.level === highlightedSkill.skill_level)?.name)
     }
   }
 
@@ -441,6 +463,7 @@ export function RadialBarChart({ target, data, config: configIn }) {
       categoryFocus,
       skillsData,
       getArcs,
+      levels,
       groupedByCategory,
       handleSkillSelect,
       setHighlightedSkill,
@@ -450,6 +473,7 @@ export function RadialBarChart({ target, data, config: configIn }) {
       sortedCategories,
       categoryFocus,
       skillsData,
+      levels,
       getArcs,
       groupedByCategory,
       config,
@@ -467,7 +491,7 @@ export function RadialBarChart({ target, data, config: configIn }) {
     lvlsArray.forEach((lvl) => {
       ringGroup
         .append('path')
-        .attr('d', lvlRing(lvl))
+        .attr('d', lvlRing(lvl.level))
         .attr('fill', lvlArcColor)
         .attr('stroke', 'none')
         .attr('stroke-width', 1)
@@ -484,6 +508,7 @@ export function RadialBarChart({ target, data, config: configIn }) {
     sortedCategories,
     categoryFocus: null,
     skillsData,
+    levels,
     getArcs,
     groupedByCategory,
     config,
@@ -494,6 +519,7 @@ export function RadialBarChart({ target, data, config: configIn }) {
     sortedCategories,
     categoryFocus: false,
     skillsData,
+    levels,
     getArcs,
     groupedByCategory,
     handleSkillSelect,

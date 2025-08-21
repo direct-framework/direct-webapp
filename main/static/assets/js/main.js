@@ -241,6 +241,27 @@ var main = (function () {
     return max;
   }
 
+  function min$1(values, valueof) {
+    let min;
+    if (valueof === undefined) {
+      for (const value of values) {
+        if (value != null
+            && (min > value || (min === undefined && value >= value))) {
+          min = value;
+        }
+      }
+    } else {
+      let index = -1;
+      for (let value of values) {
+        if ((value = valueof(value, ++index, values)) != null
+            && (min > value || (min === undefined && value >= value))) {
+          min = value;
+        }
+      }
+    }
+    return min;
+  }
+
   function union(...others) {
     const set = new InternSet();
     for (const other of others) {
@@ -4107,6 +4128,37 @@ var main = (function () {
       y
     };
   };
+
+  /* Get the arcs for the radial bar chart. This includes the skill bars, category
+    base, and level rings. It also includes the start angles for each skill and
+    category, and the height of each level.
+
+    The function takes in the following parameters:
+      width: number;
+      height: number;
+      innerRadius: number;
+      outerRadius: number;
+      categoryPadding: number;
+      skillPadding: number;
+      arcPercent: number;
+      arcStartOffset: number;
+
+    The function returns a function that takes in the following parameters:
+      skillsData: IDataItem[];
+      categories: Category[];
+      groupedByCategory: Map<Category, IDataItem[]>;
+
+      where IDataItem is an object with the following properties:
+        skill: string;
+        category: string;
+        skill_level: number;
+        color: string;
+
+      Category is an object with the following properties:
+        id: string;
+        skills: IDataItem[];
+        color: string;
+  */
   const getArcsFn = ({
     width,
     height,
@@ -4120,14 +4172,15 @@ var main = (function () {
   // eslint-disable-next-line indent
   ({
     skillsData,
+    levels,
     categories,
     groupedByCategory
   }) => {
-    var _d3$max;
-    const maxLvl = (_d3$max = max$1(skillsData, d => d.skill_level)) != null ? _d3$max : 0;
-    const lvlsArray = Array.from({
-      length: maxLvl
-    }, (_, k) => k + 1);
+    var _d3$max, _d3$min;
+    const maxLvl = (_d3$max = max$1(levels, d => d.level)) != null ? _d3$max : 0;
+    const minLvl = (_d3$min = min$1(levels, d => d.level)) != null ? _d3$min : 0;
+    const lvlsArray = levels.sort((a, b) => a.level - b.level);
+
     /* Total angle used by skills. Remaining is left blank */
     const totalArcAngle = fullCircleAngle * arcPercent;
     const totalSkillCount = skillsData.length;
@@ -4156,7 +4209,6 @@ var main = (function () {
         [(_categories$i = categories[i]) == null ? void 0 : _categories$i.id]: v
       };
     }, {});
-    console.info('categoryStartAngleMap', categoryStartAngleMap);
     /* Calculate the start angle for each skill based on the category start angle
         and the position of previous skills.
         Stored as a map where key = category-skill
@@ -4179,8 +4231,9 @@ var main = (function () {
     const getSkillAngleStart = d => skillAngleStart[`${d.category}-${d.skill}`];
 
     /* Function to get the distance from the center of the circle to a y value
-        using the radial scale */
-    const lvlHeight = linear().domain([0, maxLvl]).range([innerRadius, outerRadius]);
+        at the bottom of the level */
+    const lvlHeight = linear().domain([minLvl, maxLvl + 1]) // Use max lvl + 1 as we need the top and bottom of each lvl
+    .range([innerRadius, outerRadius]);
 
     /* A d3.js arc generator for the skill bar where height = skill level  */
     const barArc = arc().startAngle(d => getSkillAngleStart(d)).endAngle(d => getSkillAngleStart(d) + columnAngle).innerRadius(innerRadius + 1).outerRadius(d => lvlHeight(d.skill_level));
@@ -4189,16 +4242,19 @@ var main = (function () {
     /* A d3.js arc generator for each segment of a skills bar where a single bar
       is split into segments per level.
       */
-    const barSegmentArc = arc().startAngle(d => getSkillAngleStart(d)).endAngle(d => getSkillAngleStart(d) + columnAngle).innerRadius((_, lvl) => lvlHeight(lvl - 1) + 1).outerRadius((_, lvl) => lvlHeight(lvl + 0) - 1).padRadius(-1).padAngle(0.01);
+    const barSegmentArc = arc().startAngle(d => getSkillAngleStart(d)).endAngle(d => getSkillAngleStart(d) + columnAngle).innerRadius((_, lvl) => lvlHeight(lvl)).outerRadius((_, lvl) => lvlHeight(lvl + 1)) // + 1 as top of level
+    .padRadius(-1).padAngle(0.01);
 
     /* A d3.js arc generator for the arc that is at the base of the category. */
     const categoryBaseArc = arc().innerRadius(innerRadius - 1).outerRadius(innerRadius - 3).startAngle(category => categoryStartAngleMap[category]).endAngle(category => {
       var _groupedByCategory$ge9, _groupedByCategory$ge10, _groupedByCategory$ge11, _groupedByCategory$ge12;
       return categoryStartAngleMap[category] + columnAngle * ((_groupedByCategory$ge9 = (_groupedByCategory$ge10 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge10.length) != null ? _groupedByCategory$ge9 : 0) + ((_groupedByCategory$ge11 = (_groupedByCategory$ge12 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge12.length) != null ? _groupedByCategory$ge11 : 0) * skillPadding;
     });
-
+    const thicknessOfLvlRing = 0.5;
     /* A d3.js arc generator for the ring that shows each level for the entire plot */
-    const lvlRing = arc().innerRadius(lvl => lvlHeight(lvl) - 0.5).outerRadius(lvl => lvlHeight(lvl) + 0).startAngle(0).endAngle(totalArcAngle + (fullCircleAngle - totalArcAngle) / 2);
+    const lvlRing = arc().innerRadius(lvl => lvlHeight(lvl + 1) - thicknessOfLvlRing) // use + 1 as ring at top of lvl
+    .outerRadius(lvl => lvlHeight(lvl + 1)) // use + 1 as ring at top of lvl
+    .startAngle(0).endAngle(totalArcAngle + (fullCircleAngle - totalArcAngle) / 2);
     return {
       catAnnotationPointInner: catAnnotationPointInner(categoryStartAngleMap),
       catAnnotationPointOuter: catAnnotationPointOuter(categoryStartAngleMap),
@@ -4221,15 +4277,6 @@ var main = (function () {
 
     The function takes in the following parameters:
       data: IDataItem[];
-      width: number;
-      height: number;
-      categoryPadding?: number;
-      skillPadding?: number;
-      innerRadius?: number;
-      outerPadding?: number;
-      arcPercent?: number;
-      arcStartOffset?: number;
-      categoryFocus: Category | false;
 
     Where IDataItem is an object with the following properties:
       skill: string;
@@ -4258,9 +4305,6 @@ var main = (function () {
     });
     return {
       sortedCategories: categoriesData,
-      // filteredCategories,
-      // categoriesData,
-      // filteredData,
       groupedByCategory,
       skillsData: augmentedData
     };
@@ -4284,6 +4328,7 @@ var main = (function () {
     categoryFocus,
     skillsData,
     getArcs,
+    levels,
     groupedByCategory,
     handleSkillSelect,
     setHighlightedSkill
@@ -4298,6 +4343,7 @@ var main = (function () {
       barFullHeightArc,
       barSegmentArc
     } = getArcs({
+      levels: levels,
       skillsData: filteredData,
       categories: filteredCategories,
       groupedByCategory
@@ -4329,9 +4375,11 @@ var main = (function () {
     sortedCategories,
     categoryFocus,
     skillsData,
+    levels,
     getArcs,
     groupedByCategory,
-    config
+    config,
+    fontSize = 10
   }) {
     const {
       lineThickness,
@@ -4341,15 +4389,11 @@ var main = (function () {
       labelTextColor,
       lvlTextColor
     } = config;
-    console.info('annot config', config);
     // Remove previous annotation for this category if any
     svg.selectAll('.Annotation').remove();
     const filteredCategories = categoryFocus ? [categoryFocus] : sortedCategories;
     const filteredCategoriesIds = filteredCategories.map(c => c.id);
-    const filteredData = skillsData
-    /* Only show the data in the focus category or all categories */
-    // TODO: Check this
-    .filter(d => filteredCategoriesIds.includes(d.category));
+    const filteredData = skillsData.filter(d => filteredCategoriesIds.includes(d.category));
     const {
       categoryBaseArc,
       catAnnotationPointInner,
@@ -4357,6 +4401,7 @@ var main = (function () {
       lvlsArray,
       getYPoint
     } = getArcs({
+      levels,
       skillsData: filteredData,
       categories: filteredCategories,
       groupedByCategory
@@ -4377,11 +4422,12 @@ var main = (function () {
       annotationGroup.append('rect').attr('x', (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -getCatLabelWidth(cat.id)) + catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding)).attr('y', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) - (catAnnotationPointOuter(cat.id).y > 0 ? 0 : 30)).attr('width', getCatLabelWidth(cat.id)).attr('height', 30).attr('color', labelTextColor).attr('fill', cat.color);
 
       // Category label text
-      annotationGroup.append('text').attr('x', catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding) + (catAnnotationPointOuter(cat.id).x > 0 ? getCatLabelWidth(cat.id) / 2 : -getCatLabelWidth(cat.id) / 2)).attr('y', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) + (catAnnotationPointOuter(cat.id).y > 0 ? 20 : -10)).attr('fill', labelTextColor).attr('font-weight', 700).attr('text-anchor', 'middle').attr('color', labelTextColor).text(cat.id);
+      annotationGroup.append('text').attr('x', catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding) + (catAnnotationPointOuter(cat.id).x > 0 ? getCatLabelWidth(cat.id) / 2 : -getCatLabelWidth(cat.id) / 2)).attr('y', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) + (catAnnotationPointOuter(cat.id).y > 0 ? 20 : -fontSize)).attr('fill', labelTextColor).attr('font-weight', 700).attr('text-anchor', 'middle').attr('color', labelTextColor).text(cat.id);
 
       // Category lvl annotations
       lvlsArray.forEach(lvl => {
-        annotationGroup.append('text').attr('x', 0).attr('y', -getYPoint(lvl - 0.1)).attr('fill', lvlTextColor).attr('text-anchor', 'middle').attr('font-size', 10).text(lvl);
+        annotationGroup.append('text').attr('x', 0).attr('y', -getYPoint(lvl.level + 1) + fontSize / 2) // level + 1 as we want this at the top of the level
+        .attr('fill', lvlTextColor).attr('text-anchor', 'middle').attr('font-size', fontSize).text(lvl.name);
       });
     });
     return svg;
@@ -4404,6 +4450,24 @@ var main = (function () {
   };
 
   /**
+   * RadialBarChart component renders a radial bar chart using D3.js.
+   *
+   * @param {Object} target - The target DOM element to append the chart to.
+   * @param {Array} data - The data to be visualized in the radial bar chart as array of objects.
+   * Each data item should have the following structure:
+   * {
+   *   skill: 'Skill Name',
+   *   category: 'Category Name',
+   *   skill_level: number
+   * }
+   * @param {Array} levels - Array of skill levels to be used in the chart.
+   * Each level should have the following structure:
+   * {
+   *   level: number,
+   *   name: 'Level Name',
+   *   description: 'Level Description'
+   * }
+   * @param {Object} config - Configuration parameters for the chart.
    *
    * Config Params:
    *   width = 640,
@@ -4420,10 +4484,13 @@ var main = (function () {
    *   lvlTextColor = '#ccc',
    *   lvlArcColor = '#444',
    *   colourList = d3.schemeAccent,
+   *
+   *
    */
   function RadialBarChart({
     target,
     data,
+    levels,
     config: configIn
   }) {
     const config = {
@@ -4457,13 +4524,6 @@ var main = (function () {
       data,
       colourList
     });
-
-    // // const filteredCategories = categoryFocus ? [categoryFocus] : sortedCategories
-
-    // const filteredData = augmentedData
-    //   /* Only show the data in the focus category or all categories */
-    //   .filter((d) => filteredCategories.includes(d.category))
-
     const getArcs = getArcsFn({
       width,
       height,
@@ -4474,15 +4534,12 @@ var main = (function () {
       arcPercent,
       arcStartOffset
     });
-    console.info({
-      skillsData,
-      sortedCategories
-    });
     const {
       lvlRing,
       lvlsArray
     } = getArcs({
       skillsData,
+      levels,
       categories: sortedCategories,
       groupedByCategory
     });
@@ -4522,6 +4579,7 @@ var main = (function () {
         // Skill level text
         group.select('.skill-highlight-text-lvl').transition(t).attr('opacity', 0).text('');
       } else {
+        var _lvlsArray$find;
         const t = transition().duration(200).ease(linear$1);
         // Circle for skill highlight
         group.select('.skill-highlight-circle').transition(t) // Transition to the new highlight
@@ -4534,7 +4592,7 @@ var main = (function () {
         group.select('.skill-highlight-text-skill').transition(t).attr('opacity', 1).text(highlightedSkill.skill);
 
         // Skill level text
-        group.select('.skill-highlight-text-lvl').transition(t).attr('opacity', 1).text(highlightedSkill.skill_level);
+        group.select('.skill-highlight-text-lvl').transition(t).attr('opacity', 1).text((_lvlsArray$find = lvlsArray.find(lvl => lvl.level === highlightedSkill.skill_level)) == null ? void 0 : _lvlsArray$find.name);
       }
     }
     const setHighlightedSkill = skill => {
@@ -4549,6 +4607,7 @@ var main = (function () {
         categoryFocus,
         skillsData,
         getArcs,
+        levels,
         groupedByCategory,
         handleSkillSelect,
         setHighlightedSkill
@@ -4558,6 +4617,7 @@ var main = (function () {
         sortedCategories,
         categoryFocus,
         skillsData,
+        levels,
         getArcs,
         groupedByCategory,
         config
@@ -4571,7 +4631,7 @@ var main = (function () {
       svg.selectAll('.LvlRings').remove();
       const ringGroup = svg.append('g').attr('class', 'LvlRings');
       lvlsArray.forEach(lvl => {
-        ringGroup.append('path').attr('d', lvlRing(lvl)).attr('fill', lvlArcColor).attr('stroke', 'none').attr('stroke-width', 1);
+        ringGroup.append('path').attr('d', lvlRing(lvl.level)).attr('fill', lvlArcColor).attr('stroke', 'none').attr('stroke-width', 1);
       });
       return svg;
     }
@@ -4584,6 +4644,7 @@ var main = (function () {
       sortedCategories,
       categoryFocus: null,
       skillsData,
+      levels,
       getArcs,
       groupedByCategory,
       config
@@ -4594,6 +4655,7 @@ var main = (function () {
       sortedCategories,
       categoryFocus: false,
       skillsData,
+      levels,
       getArcs,
       groupedByCategory,
       handleSkillSelect,
