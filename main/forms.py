@@ -82,8 +82,7 @@ class UserSkillsForm(forms.Form):
                 choices=[("", "--- Select Level ---"), *skill_level_choices],
                 required=False,
                 initial=initial_value,
-                label=skill.name,
-                help_text=skill.description,
+                label="Skill Level",
             )
 
         # Set up crispy forms helper
@@ -112,7 +111,15 @@ class UserSkillsForm(forms.Form):
 
                 for skill in skills_list:
                     skill_card = Div(
-                        Div(Field(f"skill_{skill.id}"), css_class="card-body"),
+                        Div(
+                            HTML(f'<h6 class="card-title">{skill.name}</h6>'),
+                            HTML(f'<p class="card-text">{skill.description}</p>'),
+                            css_class="card-body",
+                        ),
+                        Div(
+                            Field(f"skill_{skill.id}"),
+                            css_class="card-footer",
+                        ),
                         css_class="card h-100 bg-light border-1",
                     )
                     skills_grid.append(Div(skill_card, css_class="col"))
