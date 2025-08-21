@@ -95,3 +95,19 @@ class TestSelfAssessPageView(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("self-assess")
+
+
+class TestSkillProfile(TemplateOkMixin):
+    """Test suite for the index view."""
+
+    _template_name = "app/skill_profile.html"
+
+    def _get_url(self):
+        return reverse("skill_profile")
+
+    def test_renders_dataviz_with_skills(self, admin_client):
+        """Test that the skill profile view renders the data visualization."""
+        response = admin_client.get(self._get_url())
+        assert response.status_code == 200
+        assert "data" in response.context
+        assert isinstance(response.context["data"], str)
