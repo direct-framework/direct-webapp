@@ -50,27 +50,27 @@ def skill_profile(request: HttpRequest) -> HttpResponse:
       request: A GET request.
     """
     logger.info("Rendering skill_profile page.")
-    userskills = UserSkill.objects.all()
-    userSkillData = [
+    user_skills = UserSkill.objects.filter(user=request.user.pk)
+    user_skills_data = [
         {
-            "skill": userSkill.skill.name,
-            "category": userSkill.skill.category.name,
-            "skill_level": userSkill.skill_level.level,
+            "skill": user_skill.skill.name,
+            "category": user_skill.skill.category.name,
+            "skill_level": user_skill.skill_level.level,
         }
-        for userSkill in userskills
+        for user_skill in user_skills
     ]
-    skillLevels = SkillLevel.objects.all()
-    skillLevelsData = [
+    skill_levels = SkillLevel.objects.all()
+    skill_levels_data = [
         {
-            "level": skillLevel.level,
-            "name": skillLevel.name,
-            "description": skillLevel.description,
+            "level": skill_level.level,
+            "name": skill_level.name,
+            "description": skill_level.description,
         }
-        for skillLevel in skillLevels
+        for skill_level in skill_levels
     ]
     context = {
-        "user_data": dumps(userSkillData),
-        "skill_levels": dumps(skillLevelsData),
+        "user_data": dumps(user_skills_data),
+        "skill_levels": dumps(skill_levels_data),
     }
 
     return render(
