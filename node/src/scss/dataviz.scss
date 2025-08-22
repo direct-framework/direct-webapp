@@ -5,7 +5,22 @@
 }
 
 .bar-group {
+  outline: none;
+  .bar {
+    transition: all .2s ease-in-out;
+  }
+  .bar-segment {
+    transition: all .2s ease-in-out;
+  }
+  .bar-outline {
+    outline: none;
+    stroke-opacity: 0;
+    stroke-width: 3;
+    transition: all .2s ease-in-out;
+  }
+
   &:focus-within {
+    outline: none;
     .bar {
       fill-opacity: .5;
     }
@@ -15,12 +30,14 @@
     }
 
     .bar-outline {
+      outline: none;
       stroke-opacity: 1;
       stroke-width: 3;
     }
   }
 
   &:hover {
+    outline: none;
     .bar {
       fill-opacity: .5;
     }
@@ -30,6 +47,7 @@
     }
 
     .bar-outline {
+      outline: none;
       stroke-opacity: 1;
       stroke-width: 3;
     }
