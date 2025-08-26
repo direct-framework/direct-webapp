@@ -1,12 +1,12 @@
 """Views for the main app."""
 
 import logging
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models.query import QuerySet
+from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -20,7 +20,14 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:  # pragma: no cover
     from .models import User as UserType
 
+
 User = get_user_model()
+
+
+class AuthenticatedHttpRequest(HttpRequest):
+    """Custom HttpRequest type for authenticated users."""
+
+    user: "UserType"
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -43,17 +50,18 @@ def privacy(request: HttpRequest) -> HttpResponse:
     return render(request=request, template_name="main/privacy.html")
 
 
-class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore[type-arg]
+class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserType"]]):
     """View that renders the user update form page."""
 
+    request: AuthenticatedHttpRequest
     model = User
     fields = ("username", "email")
     template_name_suffix = "_update_form"
     success_url = reverse_lazy("profile")
 
-    def get_object(self, queryset: QuerySet["UserType"] | None = None) -> "UserType":
+    def get_object(self, queryset: Any | None = None) -> "UserType":
         """Remove the need for url args by returning the current user."""
-        return cast("UserType", self.request.user)
+        return self.request.user
 
 
 class AboutPageView(TemplateView):
@@ -77,6 +85,7 @@ class ContactPageView(TemplateView):
 class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
     """View that renders the self-assessment questionnaire page."""
 
+    request: AuthenticatedHttpRequest
     template_name = "main/self-assess.html"
     form_class = UserSkillsForm
     success_url = reverse_lazy("self-assess")
@@ -89,7 +98,7 @@ class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
 
     def form_valid(self, form: UserSkillsForm) -> HttpResponse:
         """Handle valid form submission."""
-        created_skills, updated_skills = form.save(cast("UserType", self.request.user))
+        created_skills, updated_skills = form.save(self.request.user)
 
         # Add success messages
         if created_skills:
