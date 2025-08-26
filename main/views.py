@@ -1,6 +1,7 @@
 """Views for the main app."""
 
 import logging
+from json import dumps
 from typing import TYPE_CHECKING, Any
 
 from django.contrib import messages
@@ -14,6 +15,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, UpdateView
 
 from .forms import UserSkillsForm
+from .models import SkillLevel, UserSkill
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,41 @@ def privacy(request: HttpRequest) -> HttpResponse:
     """
     logger.info("Rendering privacy page.")
     return render(request=request, template_name="main/privacy.html")
+
+
+def skill_profile(request: HttpRequest) -> HttpResponse:
+    """View that renders the skill profile page.
+
+    Args:
+      request: A GET request.
+    """
+    logger.info("Rendering skill_profile page.")
+    user_skills = UserSkill.objects.filter(user=request.user.pk)
+    user_skills_data = [
+        {
+            "skill": user_skill.skill.name,
+            "category": user_skill.skill.category.name,
+            "skill_level": user_skill.skill_level.level,
+        }
+        for user_skill in user_skills
+    ]
+    skill_levels = SkillLevel.objects.all()
+    skill_levels_data = [
+        {
+            "level": skill_level.level,
+            "name": skill_level.name,
+            "description": skill_level.description,
+        }
+        for skill_level in skill_levels
+    ]
+    context = {
+        "user_data": dumps(user_skills_data),
+        "skill_levels": dumps(skill_levels_data),
+    }
+
+    return render(
+        request=request, template_name="main/user_skill_profile.html", context=context
+    )
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserType"]]):

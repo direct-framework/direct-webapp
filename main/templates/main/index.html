@@ -890,9 +890,7 @@
                     skill_level: Math.floor(Math.random() * 10),
                 }))
 
-            main().RadialBarChart({
-                target: datavizRoot,
-                data: generateRandomData(20, 5),
+            const radialBarChartConfig = {
                 innerRadius: 0,
                 width: 600,
                 // height: _height:undefined,
@@ -906,8 +904,19 @@
                 lineThickness: 2,
                 labelTextColor: "white",
                 lvlTextColor: "var(--ar-primary)",
-                lvlArcColor: "var(--ar-primary-text-emphasi)",
-                colourList: ["var(--ar-primary)"],
+                lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
+                colourList: [
+                    "var(--ar-warning-text-emphasis)",
+                    "var(--ar-primary)",
+                    "var(--ar-success-text-emphasis)",
+                    "var(--ar-info-text-emphasis)",
+                ],
+            }
+
+            main().RadialBarChart({
+                target: datavizRoot,
+                data: generateRandomData(20, 5),
+                config: radialBarChartConfig,
             });
         });
 
