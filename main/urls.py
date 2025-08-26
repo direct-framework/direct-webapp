@@ -15,4 +15,9 @@ urlpatterns = [
     path("contact/", views.ContactPageView.as_view(), name="contact"),
     path("self-assess/", views.SelfAssessPageView.as_view(), name="self-assess"),
     path("skills/", views.skill_profile, name="skill_profile"),
+    path(
+        "example/",
+        views.ExampleSkillProfileView.as_view(),
+        name="example_skill_profile",
+    ),
 ]
