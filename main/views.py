@@ -30,7 +30,19 @@ def index(request: HttpRequest) -> HttpResponse:
       request: A GET request.
     """
     logger.info("Rendering index page.")
-    return render(request=request, template_name="main/index.html")
+    skill_levels = SkillLevel.objects.all()
+    skill_levels_data = [
+        {
+            "level": skill_level.level,
+            "name": skill_level.name,
+            "description": skill_level.description,
+        }
+        for skill_level in skill_levels
+    ]
+    context = {
+        "skill_levels": dumps(skill_levels_data),
+    }
+    return render(request=request, template_name="main/index.html", context=context)
 
 
 def privacy(request: HttpRequest) -> HttpResponse:
