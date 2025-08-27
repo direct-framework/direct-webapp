@@ -114,3 +114,29 @@ class TestUserSkillProfile(TemplateOkMixin):
         assert "skill_levels" in response.context
         assert isinstance(response.context["skill_levels"], str)
         # TODO: Improve this test
+
+
+class TestExampleSkillProfileView(TemplateOkMixin):
+    """Test suite for the ExampleSkillProfileView."""
+
+    _template_name = "main/example_skill_profile.html"
+
+    def _get_url(self):
+        return reverse("example_skill_profile")
+
+    def test_provides_required_context(self, admin_client):
+        """Test that the skill profile view renders the data visualization."""
+        response = admin_client.get(self._get_url())
+        assert response.status_code == 200
+        assert "user_data" in response.context
+        assert isinstance(response.context["users_data"], str)
+        assert len(response.context["users_data"]) > 0
+        assert "skill_levels" in response.context
+        assert isinstance(response.context["skill_levels"], str)
+        assert len(response.context["skill_levels"]) > 0
+
+    def test_shows_a_radial_plot_for_each_example_profile(self, admin_client):
+        """Test that a radial plot is shown for each example profile."""
+        response = admin_client.get(self._get_url())
+        assert response.status_code == 200
+        raise AssertionError("Test not implemented")

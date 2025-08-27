@@ -2,7 +2,7 @@
 
 import logging
 from json import dumps
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,7 +13,7 @@ from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 
-from .models import SkillLevel, UserSkill
+from .models import ExampleUser, ExampleUserSkill, SkillLevel, UserSkill
 
 logger = logging.getLogger(__name__)
 
@@ -113,3 +113,50 @@ class SelfAssessPageView(TemplateView):
     """View that renders the self-assessment questionnaire page."""
 
     template_name = "main/self-assess.html"
+
+
+class ExampleSkillProfileView(TemplateView):
+    """View that renders the example skill profile page."""
+
+    model = ExampleUser
+    fields = ("name",)
+    template_name = "main/example_skill_profile.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:  # type: ignore
+        """Override the get context data to get example user and skill data."""
+        context = super().get_context_data(**kwargs)
+        example_users = ExampleUser.objects.all()
+        example_users_data = [
+            {
+                "name": example_user.name,
+                "id": example_user.id,
+                "skills": [
+                    {
+                        "name": example_skill.skill.name,
+                        "category": example_skill.skill.category.name,
+                        "level": example_skill.skill_level.level,
+                    }
+                    for example_skill in ExampleUserSkill.objects.filter(
+                        example_user=example_user
+                    )
+                ],
+            }
+            for example_user in example_users
+        ]
+
+        skill_levels = SkillLevel.objects.all()
+        skill_levels_data = [
+            {
+                "level": skill_level.level,
+                "name": skill_level.name,
+                "description": skill_level.description,
+            }
+            for skill_level in skill_levels
+        ]
+        # TODO: Reduce repetition of data here.
+        context = {
+            "users_data_raw": example_users,
+            "users_data": dumps(example_users_data),
+            "skill_levels": dumps(skill_levels_data),
+        }
+        return context

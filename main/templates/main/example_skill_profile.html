@@ -1,0 +1,67 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block content %}
+    <!-- Features grid -->
+    <h1>Example Skill Profiles</h1>
+    <section class="container-fluid pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
+        <div class="bg-body rounded-5 d-flex justify-content-center align-items-center"
+             id="dataviz_root"
+             style="width:100%"></div>
+    </section>
+    <ul>
+        {% for user_example in users_data_raw %}
+            <li>{{ user_example.name }}</li>
+            <section class="container-fluid pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
+                <!-- A placeholder div for each radial plot -->
+                <div class="bg-body rounded-5 d-flex justify-content-center align-items-center"
+                     id="dataviz_root_{{ user_example.id }}"
+                     style="width:100%"></div>
+            </section>
+        {% endfor %}
+    </ul>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
+      const usersData = {{ users_data|safe }};
+      console.info("Data loaded from context:", usersData);
+        usersData.forEach(user => {
+          console.info("Rendering user:", user);
+            const datavizRoot = document.getElementById('dataviz_root_' + user.id);
+            const radialBarChartConfig = {
+                innerRadius: 0,
+                width: 900,
+                // height: _height:undefined,
+                innerRadius: 200,
+                outerPadding: 80,
+                categoryPadding: 0.1,
+                skillPadding: 0.05,
+                arcPercent: 0.8,
+                arcStartOffset: 0.1,
+                annotationPadding: 10,
+                lineThickness: 2,
+                labelTextColor: "white",
+                lvlTextColor: "var(--ar-primary)",
+                lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
+                colourList: [
+                    "var(--ar-warning-text-emphasis)",
+                    "var(--ar-primary)",
+                    "var(--ar-success-text-emphasis)",
+                    "var(--ar-info-text-emphasis)",
+                ],
+            }
+            const userDataLoadedFromContext = user;
+            main().RadialBarChart({
+                target: datavizRoot,
+                data:  userDataLoadedFromContext.skills,
+                levels: skillLevelsLoadedFromContext,
+                config: radialBarChartConfig,
+            });
+        });
+    });
+
+    </script>
+{% endblock content %}

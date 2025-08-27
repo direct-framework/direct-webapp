@@ -11,6 +11,12 @@ class User(AbstractUser):
     """Custom user model for this project."""
 
 
+class ExampleUser(models.Model):
+    """Model for example users."""
+
+    name = models.CharField(max_length=100)
+
+
 class Category(models.Model):
     """Model for categories."""
 
@@ -79,5 +85,13 @@ class UserSkill(models.Model):
     """Model for mapping users to skills and skill levels."""
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    skill_level = models.ForeignKey(SkillLevel, on_delete=models.CASCADE)
+
+
+class ExampleUserSkill(models.Model):
+    """Model for mapping example users to skills and skill levels."""
+
+    example_user = models.ForeignKey(ExampleUser, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     skill_level = models.ForeignKey(SkillLevel, on_delete=models.CASCADE)
