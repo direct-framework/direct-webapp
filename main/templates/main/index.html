@@ -6,9 +6,15 @@
 {% endblock title %}
 {% block content %}
     {% if user.is_authenticated %}
-        <section class="container pt-5 mt-5">
-            {% include "main/snippets/home.html" %}
-        </section>
+        {% if user_has_skills %}
+            <section class="container pt-5 mt-5">
+                {% include "main/snippets/skill-dashboard.html" %}
+            </section>
+        {% else %}
+            <section class="container pt-5 mt-5">
+                {% include "main/snippets/new-user.html" %}
+            </section>
+        {% endif %}
     {% else %}
         <!-- Hero -->
         {% include "main/snippets/hero.html" %}
