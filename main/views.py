@@ -94,7 +94,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserT
     model = User
     fields = ("username", "email")
     template_name_suffix = "_update_form"
-    success_url = reverse_lazy("profile")
+    success_url = reverse_lazy("account")
 
     def get_object(self, queryset: Any | None = None) -> "UserType":
         """Remove the need for url args by returning the current user."""

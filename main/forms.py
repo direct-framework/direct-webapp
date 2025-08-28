@@ -132,7 +132,7 @@ class UserSkillsForm(forms.Form):
 
         # Add submit button
         cancel_link = (
-            "<a href=\"{% url 'profile' %}\" "
+            "<a href=\"{% url 'app' %}\" "
             'class="btn btn-secondary btn-lg ms-2">Cancel</a>'
         )
         layout_elements.append(
