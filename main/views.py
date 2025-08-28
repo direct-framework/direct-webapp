@@ -107,6 +107,24 @@ class AboutPageView(TemplateView):
     template_name = "main/about.html"
 
 
+class FrameworkPageView(TemplateView):
+    """View that renders the framework page."""
+
+    template_name = "main/framework.html"
+
+
+class TrainingPageView(TemplateView):
+    """View that renders the training page."""
+
+    template_name = "main/training.html"
+
+
+class DocsPageView(TemplateView):
+    """View that renders the docs page."""
+
+    template_name = "main/docs.html"
+
+
 class TermsPageView(TemplateView):
     """View that renders the terms and conditions page."""
 

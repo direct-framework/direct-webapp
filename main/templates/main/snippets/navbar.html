@@ -51,39 +51,30 @@
             {% with request.resolver_match.url_name as url_name %}
                 <ul class="navbar-nav navbar-nav-scroll me-auto"
                     style="--ar-scroll-height: 520px">
-                    <li class="nav-item {% if url_name == 'index' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'index' %}">Home</a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle"
                            href="#"
                            data-bs-toggle="dropdown"
                            data-bs-auto-close="outside"
-                           aria-expanded="false">Framework</a>
+                           aria-expanded="false">Support</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
+                                <a class="dropdown-item" href="{% url 'docs' %}">Docs</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
+                                <a class="dropdown-item" href="{% url 'framework' %}">Direct Framework</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
+                                <a class="dropdown-item" href="{% url 'contact' %}">Contact</a>
                             </li>
                         </ul>
                     </li>
+                    {% if user.is_authenticated %}
+                    {% else %}
+                        <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
+                            <a class="nav-link" href="{% url 'about' %}">About</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle"
                            href="#"
@@ -92,25 +83,7 @@
                            aria-expanded="false">Resources</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
+                                <a class="dropdown-item" href="{% url 'training' %}">Training</a>
                             </li>
                         </ul>
                     </li>
@@ -119,45 +92,15 @@
                            href="#"
                            data-bs-toggle="dropdown"
                            data-bs-auto-close="outside"
-                           aria-expanded="false">Community</a>
+                           aria-expanded="false">Update Skills</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
+                                <a class="dropdown-item" href="{% url 'self-assess' %}">Self Assessment Questionnaire</a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'about' %}">About</a>
-                    </li>
-                    <li class="nav-item {% if url_name == 'self-assess' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'self-assess' %}">Self Assessment Questionnaire</a>
-                    </li>
-                    <li class="nav-item {% if url_name == 'terms' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'terms' %}">Terms & Conditions</a>
-                    </li>
-                    <li class="nav-item {% if url_name == 'contact' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-                    </li>
                     <li class="nav-item {% if url_name == 'profile' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                        <a class="nav-link" href="{% url 'profile' %}">Account</a>
                     </li>
                 </ul>
             {% endwith %}
