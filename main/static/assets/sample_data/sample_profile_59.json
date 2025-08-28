@@ -1,0 +1,313 @@
+{
+  "user_id": 59,
+  "name": "User 59",
+  "role": "Community Manager",
+  "user_data": [
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Analysing / analytical skills / problem solving",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Being inquisitive",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Positive engagement",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Adaptability",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Resilience",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Business acumen",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Being ethical and having integrity",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Goal-setting",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Innovation and creativity",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Time management / balancing competing project demands",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Switching between projects / context switching",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Understanding of mental health, stress and burnout",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Personal skills",
+      "skill": "Self-reflection",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Interpersonal skills",
+      "skill": "Cultural awareness & sensitivity",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Interpersonal skills",
+      "skill": "Emotional intelligence & empathy",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Interpersonal skills",
+      "skill": "EDIA awareness & methodologies",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Interpersonal skills",
+      "skill": "Conflict prevention & resolution",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Teamwork & collaboration",
+      "skill": "Influencing, persuasion and negotiation",
+      "skill_level": "2"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Teamwork & collaboration",
+      "skill": "Asking for help / asking to understand / asking questions",
+      "skill_level": "3"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Teamwork & collaboration",
+      "skill": "Using collaborative apps/tools for remote work/collaboration",
+      "skill_level": "4"
+    },
+    {
+      "category": "Professional skills",
+      "subcategory": "Teamwork & collaboration",
+      "skill": "Understanding, extracting and documenting other people's ideas/knowledge",
+      "skill_level": "3"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "People & team management",
+      "skill": "Understanding others’ goals and motivations",
+      "skill_level": "3"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Project management methodologies",
+      "skill_level": "2"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Risk management",
+      "skill_level": "1"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Crisis & change management",
+      "skill_level": "1"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Event management",
+      "skill_level": "4"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Stakeholder management",
+      "skill_level": "3"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Content and knowledge management",
+      "skill_level": "4"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Meeting chairing and management",
+      "skill_level": "4"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Process documentation & improvement",
+      "skill_level": "4"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Understanding bureaucracy/politics",
+      "skill_level": "2"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Gathering and understanding (user, funder, stakeholder) requirements",
+      "skill_level": "3"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Converting requirements to tasks ",
+      "skill_level": "4"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Customer engagement",
+      "skill_level": "4"
+    },
+    {
+      "category": "Leadership & management",
+      "subcategory": "Project management",
+      "skill": "Searching for the best solution for the job",
+      "skill_level": "3"
+    },
+    {
+      "category": "Domain expertise & research",
+      "subcategory": "Domain knowledge",
+      "skill": "Domain-specific background knowledge",
+      "skill_level": "3"
+    },
+    {
+      "category": "Domain expertise & research",
+      "subcategory": "Domain knowledge",
+      "skill": "Translating between software engineering language and stakeholders",
+      "skill_level": "1"
+    },
+    {
+      "category": "Domain expertise & research",
+      "subcategory": "Domain knowledge",
+      "skill": "Application/adaptability of technical skills in the domain",
+      "skill_level": "1"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Verbal & written communication",
+      "skill": "Public speaking and presentation",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Verbal & written communication",
+      "skill": "Information synthesis/concise written communication",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Verbal & written communication",
+      "skill": "Technical writing",
+      "skill_level": "3"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Verbal & written communication",
+      "skill": "Multimedia & social content production",
+      "skill_level": "3"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Verbal & written communication",
+      "skill": "Note taking",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Verbal & written communication",
+      "skill": "Active listening",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Verbal & written communication",
+      "skill": "Providing positive and constructive feedback",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Verbal & written communication",
+      "skill": "Assertive declination",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Community & outreach",
+      "skill": "Peer support",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Community & outreach",
+      "skill": "Networking & relationship building",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Community & outreach",
+      "skill": "Raising awareness of issues",
+      "skill_level": "4"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Community & outreach",
+      "skill": "Community building & leadership",
+      "skill_level": "3"
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Community & outreach",
+      "skill": "Community governance & management",
+      "skill_level": "4"
+    }
+  ]
+}
