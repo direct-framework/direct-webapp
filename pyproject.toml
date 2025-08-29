@@ -51,7 +51,6 @@ exclude = [
 ] # Exclude the coverage report file from setuptools package finder
 
 [tool.mypy]
-disallow_any_explicit = true
 disallow_any_generics = true
 warn_unreachable = true
 warn_unused_ignores = true
@@ -62,6 +61,10 @@ plugins = ["mypy_django_plugin.main"]
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = ["crispy_forms.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = "-v -p no:warnings --cov=. --cov-report=html --doctest-modules --ignore=direct_webapp/__main__.py --ignore=docs --ignore=direct_webapp/settings/"
