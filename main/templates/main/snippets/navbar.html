@@ -34,7 +34,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end my-1">
                     <h6 class="dropdown-header fs-xs fw-medium text-body-secondary text-uppercase pb-1">Account</h6>
-                    <a class="dropdown-item" href="{% url 'profile' %}">
+                    <a class="dropdown-item" href="{% url 'account-overview' %}">
                         <i class="fa-solid fa-user fa-fw opacity-70 me-2 icon-width"></i>
                         Overview
                     </a>
@@ -46,14 +46,20 @@
                         <i class="fa-solid fa-lock fa-fw opacity-70 me-2 icon-width"></i>
                         Change Password
                     </a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{% url 'self-assess' %}">
                         <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
-                        My Skills
+                        Assess Skills
+                    </a>
+                    <a class="dropdown-item" href="{% url 'skill_profile' %}">
+                        <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
+                        View Skills
                     </a>
                     <div class="dropdown-divider"></div>
-                    <form method="post" action="{% url 'logout' %}" class="dropdown-item">
+                    <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-link py-2 px-0">
+                        <button type="submit"
+                                class="btn btn-link dropdown-item d-flex align-items-center justify-content-start py-2 px-4">
                             <i class="fa-solid fa-sign-out fa-fw opacity-70 me-2 icon-width"></i>
                             Sign out
                         </button>

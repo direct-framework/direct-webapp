@@ -36,33 +36,43 @@ class AuthenticatedHttpRequest(HttpRequest):
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    """View that renders the index/home page.
-
-    Args:
-        request: A GET request.
-    """
+    """View that renders the index/home page."""
     logger.info("Rendering index page.")
 
     # Skill levels from the database
     skill_levels = SkillLevel.objects.all()
     skill_levels_data = [
         {
-            "level": skill_level.level,
-            "name": skill_level.name,
-            "description": skill_level.description,
+            "level": sl.level,
+            "name": sl.name,
+            "description": sl.description,
         }
-        for skill_level in skill_levels
+        for sl in skill_levels
     ]
 
-    # Load sample JSON data
-    json_path = Path("main/static/assets/sample_data/sample_profile_1.json")
-    with open(json_path) as f:
-        sample_data = json.load(f)
+    # Combine multiple sample JSON files
+    sample_data_files = [
+        "main/static/assets/sample_data/sample_profile_1.json",
+        "main/static/assets/sample_data/sample_profile_41.json",
+        "main/static/assets/sample_data/sample_profile_59.json",
+    ]
+
+    combined_sample_data = []
+    for file_path in sample_data_files:
+        json_path = Path(file_path)
+        if json_path.exists():
+            with open(json_path) as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    combined_sample_data.extend(data)
+                else:
+                    combined_sample_data.append(data)
 
     context = {
         "skill_levels": dumps(skill_levels_data),
-        "sample_data": dumps(sample_data),  # pass JSON as string for JS
+        "sample_data": dumps(combined_sample_data),
     }
+
     return render(request=request, template_name="main/index.html", context=context)
 
 
@@ -140,7 +150,7 @@ class TermsPageView(TemplateView):
 class AccountOverviewPageView(TemplateView):
     """View that renders the account overview page."""
 
-    template_name = "main/account/terms.html"
+    template_name = "main/user_overview.html"
 
 
 class CompetenciesPageView(TemplateView):
