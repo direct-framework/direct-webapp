@@ -147,6 +147,36 @@ class TermsPageView(TemplateView):
     template_name = "main/pages/terms.html"
 
 
+class SkillLevelsPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/pages/skill-levels.html"
+
+
+class TrainingPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/pages/training.html"
+
+
+class RolesPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/pages/roles.html"
+
+
+class GetInvolvedPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/pages/get-involved.html"
+
+
+class EventsPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/pages/events.html"
+
+
 class AccountOverviewPageView(TemplateView):
     """View that renders the account overview page."""
 

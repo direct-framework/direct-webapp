@@ -94,13 +94,13 @@
                            aria-expanded="false">About</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">What is DIRECT</a>
+                                <a class="dropdown-item" href="{% url 'about' %}#what-is-direct">What is DIRECT</a>
                             </li>
-                            <li class="{% if url_name == 'about' %}active{% endif %}">
-                                <a class="dropdown-item" href="{% url 'about' %}">How to use DIRECT</a>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'about' %}#how-to-use-direct">How to use DIRECT</a>
                             </li>
-                            <li class="{% if url_name == 'about' %}active{% endif %}">
-                                <a class="dropdown-item" href="{% url 'about' %}">History of DIRECT</a>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'about' %}#history-of-direct">History of DIRECT</a>
                             </li>
                         </ul>
                     </li>
@@ -111,17 +111,17 @@
                            data-bs-auto-close="outside"
                            aria-expanded="false">Framework</a>
                         <ul class="dropdown-menu">
-                            <li class="{% if url_name == 'competencies' %}active{% endif %}">
+                            <li>
                                 <a class="dropdown-item" href="{% url 'competencies' %}">Competencies framework</a>
                             </li>
-                            <li class="{% if url_name == 'about' %}active{% endif %}">
-                                <a class="dropdown-item" href="{% url 'about' %}">Skill levels</a>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'skill-levels' %}">Skill levels</a>
                             </li>
-                            <li class="{% if url_name == 'index' %}active{% endif %}">
-                                <a class="dropdown-item" href="{% url 'about' %}">Training resources</a>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'training' %}">Training resources</a>
                             </li>
-                            <li class="{% if url_name == 'index' %}active{% endif %}">
-                                <a class="dropdown-item" href="{% url 'about' %}">Roles and job profiles</a>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'roles' %}">Roles and job profiles</a>
                             </li>
                         </ul>
                     </li>
@@ -133,10 +133,10 @@
                            aria-expanded="false">Community</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Get involved</a>
+                                <a class="dropdown-item" href="{% url 'get-involved' %}">Get involved</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Events</a>
+                                <a class="dropdown-item" href="{% url 'events' %}">Events</a>
                             </li>
                         </ul>
                     </li>
