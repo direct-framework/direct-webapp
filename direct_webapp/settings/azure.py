@@ -20,6 +20,7 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 # -----------------------------------------------------------------------------
 # Set allowed hosts explicitly for production
 ALLOWED_HOSTS = [
+    "directframework.com",
     "direct-c8ctfkd4btcecqde.ukwest-01.azurewebsites.net",
 ]
 
