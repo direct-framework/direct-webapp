@@ -117,7 +117,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserT
     model = User
     fields = ("username", "email")
     template_name_suffix = "_update_form"
-    success_url = reverse_lazy("profile")
+    success_url = reverse_lazy("account")
 
     def get_object(self, queryset: Any | None = None) -> "UserType":
         """Remove the need for url args by returning the current user."""
@@ -128,6 +128,24 @@ class AboutPageView(TemplateView):
     """View that renders the about page."""
 
     template_name = "main/about.html"
+
+
+class FrameworkPageView(TemplateView):
+    """View that renders the framework page."""
+
+    template_name = "main/framework.html"
+
+
+class TrainingPageView(TemplateView):
+    """View that renders the training page."""
+
+    template_name = "main/training.html"
+
+
+class DocsPageView(TemplateView):
+    """View that renders the docs page."""
+
+    template_name = "main/docs.html"
 
 
 class TermsPageView(TemplateView):

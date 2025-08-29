@@ -36,7 +36,7 @@ class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
     _template_name = "main/user_update_form.html"
 
     def _get_url(self):
-        return reverse("profile")
+        return reverse("account")
 
     def test_post(self, client, user, django_user_model):
         """Test the view POST request updates the user and redirects correctly."""
