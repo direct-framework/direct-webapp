@@ -1,7 +1,10 @@
 """Views for the main app."""
 
+import json
 import logging
+from collections.abc import Mapping
 from json import dumps
+from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from django.contrib.auth import get_user_model
@@ -40,7 +43,7 @@ def privacy(request: HttpRequest) -> HttpResponse:
       request: A GET request.
     """
     logger.info("Rendering privacy page.")
-    return render(request=request, template_name="main/privacy.html")
+    return render(request=request, template_name="main/pages/privacy.html")
 
 
 def skill_profile(request: HttpRequest) -> HttpResponse:
@@ -94,19 +97,47 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore[type-arg]
 class AboutPageView(TemplateView):
     """View that renders the about page."""
 
-    template_name = "main/about.html"
+    template_name = "main/pages/about.html"
 
 
 class TermsPageView(TemplateView):
     """View that renders the terms and conditions page."""
 
-    template_name = "main/terms.html"
+    template_name = "main/pages/terms.html"
+
+
+class AccountOverviewPageView(TemplateView):
+    """View that renders the account overview page."""
+
+    template_name = "main/account/terms.html"
+
+
+class CompetenciesPageView(TemplateView):
+    """View that renders the competencies page."""
+
+    template_name = "main/pages/competencies.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add the competencies framework data to the template context."""
+        context = super().get_context_data(**kwargs)
+        json_path = Path("data/skills-competencies-framework.json")
+        with open(json_path) as f:
+            framework = json.load(f)
+
+        for category in framework.get("categories", []):
+            category["competency_count"] = len(category.get("subcategories", []))
+            category["skill_count"] = sum(
+                len(sub.get("skills", [])) for sub in category.get("subcategories", [])
+            )
+
+        context["framework"] = framework
+        return context
 
 
 class ContactPageView(TemplateView):
     """View that renders the contact page."""
 
-    template_name = "main/contact.html"
+    template_name = "main/pages/contact.html"
 
 
 class SelfAssessPageView(TemplateView):

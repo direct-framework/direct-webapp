@@ -1,0 +1,83 @@
+{% extends "main/base.page.html" %}
+{% load static %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block content %}
+    <section id="about">
+        <nav aria-label="breadcrumb">
+            <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'privacy' %}">Framework</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Competencies</li>
+            </ol>
+        </nav>
+        <h1 class="mb-4">Competencies Framework</h1>
+        <div class="accordion accordion-competancies" id="categoryAccordion">
+            {% for category in framework.categories %}
+                <div class="accordion-item">
+                    <div class="accordion-header" id="headingCat{{ forloop.counter }}">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapseCat{{ forloop.counter }}"
+                                aria-expanded="false"
+                                aria-controls="collapseCat{{ forloop.counter }}">
+                            <div class="w-100">
+                                <div class="category-header d-flex align-items-center">
+                                    <div class="category-title me-2">{{ category.title }}</div>
+                                    <div class="category-badges">
+                                        <span class="badge bg-primary me-1">{{ category.competency_count }} Competencies</span>
+                                        <span class="badge bg-secondary">{{ category.skill_count }} Skills</span>
+                                    </div>
+                                </div>
+                                <div class="category-description text-muted small mt-1">{{ category.description }}</div>
+                            </div>
+                        </button>
+                    </div>
+                    <div id="collapseCat{{ forloop.counter }}"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="headingCat{{ forloop.counter }}"
+                         data-bs-parent="#categoryAccordion">
+                        <div class="accordion-body">
+                            {% for sub in category.subcategories %}
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title d-flex align-items-center">
+                                            <span class="me-2">{{ sub.title }}</span>
+                                        </h5>
+                                        {% if sub.description %}<p class="card-text text-muted small">{{ sub.description }}</p>{% endif %}
+                                        {% if sub.skills %}
+                                            <table class="table table-sm table-striped align-middle mt-2">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Skill</th>
+                                                        <th scope="col">Description</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for skill in sub.skills %}
+                                                        <tr>
+                                                            <td class="fw-semibold">{{ skill.title }}</td>
+                                                            <td>{{ skill.description }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        {% else %}
+                                            <p class="text-muted">No skills available.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock content %}

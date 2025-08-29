@@ -17682,4 +17682,49 @@ img-comparison-slider:focus {
   stroke-width: 3;
 }
 
+.accordion-competancies {
+  --ar-accordion-btn-font-size: 1.75rem;
+}
+.accordion-competancies .category-header {
+  font-weight: 400;
+}
+.accordion-competancies .category-header .category-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.accordion-competancies .category-header .category-badges {
+  font-size: 1rem;
+}
+.accordion-competancies .category-description {
+  font-size: 1rem;
+  font-weight: 400;
+}
+.accordion-competancies .accordion-item {
+  background: none !important;
+  border-radius: 0 !important;
+}
+.accordion-competancies .accordion-item:not(:last-child) {
+  margin-bottom: 0;
+}
+@media (min-width: 576px) {
+  .accordion-competancies .accordion-item:not(:last-child) {
+    margin-bottom: calc(var(--ar-accordion-spacer) * 0.25);
+  }
+}
+.accordion-competancies .accordion-button {
+  padding-top: calc(var(--ar-accordion-spacer) * 0.75);
+  padding-right: 0;
+  padding-bottom: var(--ar-accordion-spacer);
+  padding-left: 0;
+}
+.accordion-competancies .accordion-button::after {
+  width: 0.5em;
+  height: 0.5em;
+  background-size: 0.5em;
+}
+.accordion-competancies .accordion-body {
+  padding-right: 0;
+  padding-left: 0;
+}
+
 /*# sourceMappingURL=theme.css.map */

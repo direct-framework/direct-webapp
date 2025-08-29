@@ -1,103 +1,32 @@
 {% load static %}
-<footer class="footer py-5">
-    <div class="container pt-md-2 pt-lg-3 pt-xl-4">
-        <div class="row pb-5 pt-sm-2 mb-lg-2">
-            <div class="col-md-4 col-lg-3 pb-2 pb-md-0 mb-4 mb-md-0">
-                <a class="navbar-brand py-0 mb-3 mb-md-4"
-                   href="{% static 'index.html' %}">
-                    <span class="text-primary flex-shrink-0 me-2">
-                        <img src="{% static 'assets/app-icons/logo.svg' %}"
-                             alt="Logo"
-                             height="60"
-                             width="60">
-                    </span>
-                </a>
-                <p class="fs-sm pb-2 pb-md-3 mb-3">
-                    Except where otherwise noted, content on this site is licensed under a <a href="https://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution Non-Commercial 4.0</a> License.
-                </p>
-                <div class="d-flex gap-3">
-                    <a class="btn btn-icon btn-sm btn-secondary btn-github rounded-circle"
-                       href="https://github.com/direct-framework/direct-webapp"
-                       aria-label="Github">
-                        <i class="fa-brands fa-github"></i>
-                    </a>
-                    <a class="btn btn-icon btn-sm btn-secondary btn-mail rounded-circle"
-                       href="https://groups.google.com/g/direct-framework"
-                       aria-label="Mailing List">
-                        <i class="fa-solid fa-envelope"></i>
-                    </a>
-                    <a class="btn btn-icon btn-sm btn-secondary btn-slack rounded-circle"
-                       href="https://ukrse.slack.com/archives/C05CY0YFWEL"
-                       aria-label="Slack">
-                        <i class="fa-brands fa-slack"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-md-8 col-lg-7 col-xl-6 offset-lg-2 offset-xl-3">
-                <div class="row row-cols-1 row-cols-sm-3">
-                    <div class="col mb-4 mb-md-0">
-                        <h4 class="h6 fw-bold pb-lg-1">Company</h4>
-                        <ul class="nav flex-column">
-                            <li>
-                                <a class="nav-link fw-normal py-1 px-0" href="#">Features</a>
-                            </li>
-                            <li>
-                                <a class="nav-link fw-normal py-1 px-0" href="#">Reviews</a>
-                            </li>
-                            <li>
-                                <a class="nav-link fw-normal py-1 px-0" href="#">How it works</a>
-                            </li>
-                            <li>
-                                <a class="nav-link fw-normal py-1 px-0" href="#">Pricing</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col mb-4 mb-md-0">
-                        <h4 class="h6 fw-bold pb-lg-1">Support</h4>
-                        <ul class="nav flex-column">
-                            <li>
-                                <a class="nav-link fw-normal py-1 px-0" href="#">Help center</a>
-                            </li>
-                            <li>
-                                <a class="nav-link fw-normal py-1 px-0" href="#">Terms of service</a>
-                            </li>
-                            <li>
-                                <a class="nav-link fw-normal py-1 px-0" href="#">Legal</a>
-                            </li>
-                            <li>
-                                <a class="nav-link fw-normal py-1 px-0" href="#">Privacy policy</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col">
-                        <h4 class="h6 fw-bold pb-2 mb-0 mb-lg-1">Install App</h4>
-                        <a class="btn btn-secondary px-3 py-2 mt-3 me-3 me-md-0" href="#">
-                            <img class="mx-1 d-dark-mode-none"
-                                 src="{% static 'assets/img/market/appstore-dark.svg' %}"
-                                 width="120"
-                                 alt="App Store">
-                            <img class="mx-1 d-none d-dark-mode-block"
-                                 src="{% static 'assets/img/market/appstore-light.svg' %}"
-                                 width="120"
-                                 alt="App Store">
-                        </a>
-                        <a class="btn btn-secondary px-3 py-2 mt-3 me-3 me-md-0" href="#">
-                            <img class="mx-1 d-dark-mode-none"
-                                 src="{% static 'assets/img/market/googleplay-dark.svg' %}"
-                                 width="119"
-                                 alt="Google Play">
-                            <img class="mx-1 d-none d-dark-mode-block"
-                                 src="{% static 'assets/img/market/googleplay-light.svg' %}"
-                                 width="119"
-                                 alt="Google Play">
-                        </a>
-                    </div>
-                </div>
-            </div>
+<footer class="footer bg-secondary py-3 py-md-4 mt-2">
+    <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center pt-1 py-sm-2 py-lg-4 py-xl-5">
+        <div class="d-flex gap-3 mb-3 mb-sm-4 mb-lg-0">
+            <a class="btn btn-icon btn-sm btn-secondary btn-github rounded-circle"
+               href="https://github.com/direct-framework/direct-webapp"
+               aria-label="Github">
+                <i class="fa-brands fa-github"></i>
+            </a>
+            <a class="btn btn-icon btn-sm btn-secondary btn-mail rounded-circle"
+               href="https://groups.google.com/g/direct-framework"
+               aria-label="Mailing List">
+                <i class="fa-solid fa-envelope"></i>
+            </a>
+            <a class="btn btn-icon btn-sm btn-secondary btn-slack rounded-circle"
+               href="https://ukrse.slack.com/archives/C05CY0YFWEL"
+               aria-label="Slack">
+                <i class="fa-brands fa-slack"></i>
+            </a>
         </div>
-        <p class="nav fs-sm mb-0">
-            <span class="text-body-secondary">© DIRECT Framework 2023 - {% now "Y" %}</span>
-        </p>
+        <div class="nav flex-sm-nowrap justify-content-center mb-3 mb-sm-4 mb-lg-0">
+            <a class="nav-link fw-normal border-end-lg px-2 px-sm-3 px-lg-4 py-1 py-sm-0 mx-0"
+               href="{% url 'contact' %}">Get in Touch</a>
+            <a class="nav-link fw-normal border-end-lg px-2 px-sm-3 px-lg-4 py-1 py-sm-0 mx-0"
+               href="{% url 'privacy' %}">Privacy Policy</a>
+            <a class="nav-link fw-normal px-2 px-sm-3 px-lg-4 py-1 py-sm-0 mx-0"
+               href="{% url 'terms' %}">Terms &amp; Conditions</a>
+        </div>
+        <p class="text-body-secondary mb-0">© All rights reserved</p>
     </div>
 </footer>
 <!-- Back to top button -->
