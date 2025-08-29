@@ -33,7 +33,7 @@ class TestPrivacy(TemplateOkMixin):
 class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the UserUpdateView."""
 
-    _template_name = "main/account/user_update_form.html"
+    _template_name = "main/user_update_form.html"
 
     def _get_url(self):
         return reverse("profile")
