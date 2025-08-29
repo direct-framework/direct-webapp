@@ -74,32 +74,19 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const datavizRoot = document.getElementById('dataviz_hero');
+        const sampleData = {{ sample_data|safe }};
 
-        const categories = [
-    "Information and data technologies",
-    "Software engineering and development",
-    "ICT infrastructures",
-    "Professional skills",
-    "Leadership & management",
-    "Domain expertise & research",
-    "Communication"
-];
-
-        // Generate demo locally
-        const generateRandomData = (n, categoryCount) =>
-            Array.from({ length: n }, (_, i) => ({
-                skill: `skill-${i}`,
-                category: categories[Math.floor(Math.random() * categories.length)],
-                skill_level: Math.floor(Math.random() * 6),
-            }))
-
-        main().RadialBarChart({
-            target: datavizRoot,
-            data: generateRandomData(20, 5),
+        // Load sample data locally
+        const loadSampleData = function(userId=1) {
+            sampleUser = sampleData.find((user) => user['user_id'] == userId);
+            return sampleUser['user_data'];
+        };
+        const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
+        const radialBarChartConfig = {
             innerRadius: 0,
-            width: 600,
+            width: 900,
             // height: _height:undefined,
-            innerRadius: 65,
+            innerRadius: 200,
             outerPadding: 80,
             categoryPadding: 0.1,
             skillPadding: 0.05,
@@ -109,16 +96,19 @@
             lineThickness: 2,
             labelTextColor: "white",
             lvlTextColor: "var(--ar-primary)",
-            lvlArcColor: "#333",
-            colourList:[
-  "#44bbe3", // light blue
-  "#88c979", // green
-  "#ff6b6b", // red
-  "#f4c93c", // yellow
-  "#19638a", // dark blue
-  "#c084e6", // purple
-  "#ff9f40"  // orange
-             ],
+            lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
+            colourList: [
+                "var(--ar-warning-text-emphasis)",
+                "var(--ar-primary)",
+                "var(--ar-success-text-emphasis)",
+                "var(--ar-info-text-emphasis)",
+            ],
+        };
+        main().RadialBarChart({
+            target: datavizRoot,
+            data: loadSampleData(),
+            levels: skillLevelsLoadedFromContext,
+            config: radialBarChartConfig,
         });
     });
 
