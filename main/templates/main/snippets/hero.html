@@ -75,7 +75,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const datavizRoot = document.getElementById('dataviz_hero');
         const sampleData = {{ sample_data|safe }};
-        console.log(sampleData)
+
         // Load sample data locally
         const loadSampleData = function(userId=1) {
             sampleUser = sampleData.find((user) => user['user_id'] == userId);
