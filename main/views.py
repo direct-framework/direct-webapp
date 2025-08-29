@@ -32,16 +32,6 @@ class AuthenticatedHttpRequest(HttpRequest):
     user: "UserType"
 
 
-def index(request: HttpRequest) -> HttpResponse:
-    """View that renders the index/home page.
-
-    Args:
-      request: A GET request.
-    """
-    logger.info("Rendering index page.")
-    return render(request=request, template_name="main/index.html")
-
-
 def privacy(request: HttpRequest) -> HttpResponse:
     """View that renders the privacy page.
 
@@ -52,39 +42,41 @@ def privacy(request: HttpRequest) -> HttpResponse:
     return render(request=request, template_name="main/privacy.html")
 
 
-def skill_profile(request: HttpRequest) -> HttpResponse:
-    """View that renders the skill profile page.
+class IndexView(TemplateView):
+    """View that renders the index/home page."""
 
-    Args:
-      request: A GET request.
-    """
-    logger.info("Rendering skill_profile page.")
-    user_skills = UserSkill.objects.filter(user=request.user.pk)
-    user_skills_data = [
-        {
-            "skill": user_skill.skill.name,
-            "category": user_skill.skill.category.name,
-            "skill_level": user_skill.skill_level.level,
-        }
-        for user_skill in user_skills
-    ]
-    skill_levels = SkillLevel.objects.all()
-    skill_levels_data = [
-        {
-            "level": skill_level.level,
-            "name": skill_level.name,
-            "description": skill_level.description,
-        }
-        for skill_level in skill_levels
-    ]
-    context = {
-        "user_data": dumps(user_skills_data),
-        "skill_levels": dumps(skill_levels_data),
-    }
+    template_name = "main/index.html"
 
-    return render(
-        request=request, template_name="main/user_skill_profile.html", context=context
-    )
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Add custom context data to the template."""
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["user_has_skills"] = UserSkill.objects.filter(
+                user=self.request.user.pk
+            ).exists()
+
+            user_skills = UserSkill.objects.filter(user=self.request.user.pk)
+            user_skills_data = [
+                {
+                    "skill": user_skill.skill.name,
+                    "category": user_skill.skill.category.name,
+                    "skill_level": user_skill.skill_level.level,
+                }
+                for user_skill in user_skills
+            ]
+            skill_levels = SkillLevel.objects.all()
+            skill_levels_data = [
+                {
+                    "level": skill_level.level,
+                    "name": skill_level.name,
+                    "description": skill_level.description,
+                }
+                for skill_level in skill_levels
+            ]
+            context["skill_levels"] = dumps(skill_levels_data)
+            context["user_data"] = dumps(user_skills_data)
+
+        return context
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserType"]]):
@@ -94,7 +86,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserT
     model = User
     fields = ("username", "email")
     template_name_suffix = "_update_form"
-    success_url = reverse_lazy("profile")
+    success_url = reverse_lazy("account")
 
     def get_object(self, queryset: Any | None = None) -> "UserType":
         """Remove the need for url args by returning the current user."""
@@ -105,6 +97,24 @@ class AboutPageView(TemplateView):
     """View that renders the about page."""
 
     template_name = "main/about.html"
+
+
+class FrameworkPageView(TemplateView):
+    """View that renders the framework page."""
+
+    template_name = "main/framework.html"
+
+
+class TrainingPageView(TemplateView):
+    """View that renders the training page."""
+
+    template_name = "main/training.html"
+
+
+class DocsPageView(TemplateView):
+    """View that renders the docs page."""
+
+    template_name = "main/docs.html"
 
 
 class TermsPageView(TemplateView):

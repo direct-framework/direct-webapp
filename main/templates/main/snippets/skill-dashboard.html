@@ -1,0 +1,46 @@
+<h1>Skills and Competencies Dashboard</h1>
+<a class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex"
+   href="{% url 'self-assess' %}">Add and modify your skills</a>
+<!-- Skill Wheel -->
+<section class="container-fluid pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
+    <div class="bg-body rounded-5 d-flex justify-content-center align-items-center"
+         id="dataviz_root"
+         style="width:100%"></div>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const datavizRoot = document.getElementById('dataviz_root');
+    const radialBarChartConfig = {
+        innerRadius: 0,
+        width: 900,
+        // height: _height:undefined,
+        innerRadius: 200,
+        outerPadding: 40,
+        categoryPadding: 0.1,
+        skillPadding: 0.05,
+        arcPercent: 0.8,
+        arcStartOffset: 0.1,
+        annotationPadding: 10,
+        lineThickness: 2,
+        labelTextColor: "white",
+        lvlTextColor: "var(--ar-primary)",
+        lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
+        colourList: [
+            "var(--ar-warning-text-emphasis)",
+            "var(--ar-primary)",
+            "var(--ar-success-text-emphasis)",
+            "var(--ar-info-text-emphasis)",
+        ],
+    }
+    const userDataLoadedFromContext = {{ user_data|safe }};
+    const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
+    console.info("Data loaded from context:", userDataLoadedFromContext, skillLevelsLoadedFromContext);
+    main().RadialBarChart({
+        target: datavizRoot,
+        data:  userDataLoadedFromContext,
+        levels: skillLevelsLoadedFromContext,
+        config: radialBarChartConfig,
+    });
+});
+
+</script>
