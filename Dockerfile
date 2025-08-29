@@ -20,4 +20,4 @@ USER nobody
 EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["gunicorn", "rse_competencies_toolkit.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "direct_webapp.wsgi:application", "--bind", "0.0.0.0:8000"]

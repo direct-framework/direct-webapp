@@ -81,3 +81,10 @@ class UserSkill(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     skill_level = models.ForeignKey(SkillLevel, on_delete=models.CASCADE)
+
+    class Meta:
+        """Meta options for UserSkill model."""
+
+        constraints = (
+            models.UniqueConstraint(fields=["user", "skill"], name="unique_user_skill"),
+        )
