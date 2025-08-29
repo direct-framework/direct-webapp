@@ -1,18 +1,22 @@
 """Views for the main app."""
 
+import json
 import logging
 from json import dumps
-from typing import TYPE_CHECKING, cast
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models.query import QuerySet
+from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import FormView, UpdateView
 
+from .forms import UserSkillsForm
 from .models import SkillLevel, UserSkill
 
 logger = logging.getLogger(__name__)
@@ -20,17 +24,45 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:  # pragma: no cover
     from .models import User as UserType
 
+
 User = get_user_model()
+
+
+class AuthenticatedHttpRequest(HttpRequest):
+    """Custom HttpRequest type for authenticated users."""
+
+    user: "UserType"
 
 
 def index(request: HttpRequest) -> HttpResponse:
     """View that renders the index/home page.
 
     Args:
-      request: A GET request.
+        request: A GET request.
     """
     logger.info("Rendering index page.")
-    return render(request=request, template_name="main/index.html")
+
+    # Skill levels from the database
+    skill_levels = SkillLevel.objects.all()
+    skill_levels_data = [
+        {
+            "level": skill_level.level,
+            "name": skill_level.name,
+            "description": skill_level.description,
+        }
+        for skill_level in skill_levels
+    ]
+
+    # Load sample JSON data
+    json_path = Path("main/static/assets/sample_data/sample_profile_1.json")
+    with open(json_path) as f:
+        sample_data = json.load(f)
+
+    context = {
+        "skill_levels": dumps(skill_levels_data),
+        "sample_data": dumps(sample_data),  # pass JSON as string for JS
+    }
+    return render(request=request, template_name="main/index.html", context=context)
 
 
 def privacy(request: HttpRequest) -> HttpResponse:
@@ -78,17 +110,18 @@ def skill_profile(request: HttpRequest) -> HttpResponse:
     )
 
 
-class UserUpdateView(LoginRequiredMixin, UpdateView):  # type: ignore[type-arg]
+class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserType"]]):
     """View that renders the user update form page."""
 
+    request: AuthenticatedHttpRequest
     model = User
     fields = ("username", "email")
     template_name_suffix = "_update_form"
     success_url = reverse_lazy("profile")
 
-    def get_object(self, queryset: QuerySet["UserType"] | None = None) -> "UserType":
+    def get_object(self, queryset: Any | None = None) -> "UserType":
         """Remove the need for url args by returning the current user."""
-        return cast("UserType", self.request.user)
+        return self.request.user
 
 
 class AboutPageView(TemplateView):
@@ -109,7 +142,35 @@ class ContactPageView(TemplateView):
     template_name = "main/contact.html"
 
 
-class SelfAssessPageView(TemplateView):
+class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
     """View that renders the self-assessment questionnaire page."""
 
+    request: AuthenticatedHttpRequest
     template_name = "main/self-assess.html"
+    form_class = UserSkillsForm
+    success_url = reverse_lazy("self-assess")
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form: UserSkillsForm) -> HttpResponse:
+        """Handle valid form submission."""
+        created_skills, updated_skills = form.save(self.request.user)
+
+        # Add success messages
+        if created_skills:
+            messages.success(
+                self.request,
+                f"Successfully created {len(created_skills)} new skill assessments.",
+            )
+        if updated_skills:
+            messages.success(
+                self.request,
+                f"Successfully updated {len(updated_skills)} "
+                f"existing skill assessments.",
+            )
+
+        return super().form_valid(form)
