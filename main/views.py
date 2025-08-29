@@ -1,7 +1,9 @@
 """Views for the main app."""
 
+import json
 import logging
 from json import dumps
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from django.contrib import messages
@@ -36,10 +38,31 @@ def index(request: HttpRequest) -> HttpResponse:
     """View that renders the index/home page.
 
     Args:
-      request: A GET request.
+        request: A GET request.
     """
     logger.info("Rendering index page.")
-    return render(request=request, template_name="main/index.html")
+
+    # Skill levels from the database
+    skill_levels = SkillLevel.objects.all()
+    skill_levels_data = [
+        {
+            "level": skill_level.level,
+            "name": skill_level.name,
+            "description": skill_level.description,
+        }
+        for skill_level in skill_levels
+    ]
+
+    # Load sample JSON data
+    json_path = Path("main/static/assets/sample_data/sample_profile_1.json")
+    with open(json_path) as f:
+        sample_data = json.load(f)
+
+    context = {
+        "skill_levels": dumps(skill_levels_data),
+        "sample_data": dumps(sample_data),  # pass JSON as string for JS
+    }
+    return render(request=request, template_name="main/index.html", context=context)
 
 
 def privacy(request: HttpRequest) -> HttpResponse:
