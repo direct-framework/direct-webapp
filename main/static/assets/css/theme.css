@@ -17682,4 +17682,18 @@ img-comparison-slider:focus {
   stroke-width: 3;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+[id^=header-] {
+  scroll-margin-top: 138px;
+}
+
+.competencies-sticky {
+  top: 100px; /* adjust for your header offset */
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
 /*# sourceMappingURL=theme.css.map */

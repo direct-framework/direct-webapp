@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
     <head>{% include "main/snippets/head.html" %}</head>
-    <body class="{% block body_class %}{% endblock body_class %}">
+    <body>
         <div class="page-loading active">
             <div class="page-loading-inner">
                 <div class="page-spinner"></div>
@@ -10,8 +10,10 @@
         </div>
         <main class="page-wrapper">
             {% include "main/snippets/navbar.html" %}
-            {% block content %}
-            {% endblock content %}
+            <div class="container my-5 pt-5">
+                {% block content %}
+                {% endblock content %}
+            </div>
         </main>
         {% include "main/snippets/footer.html" %}
     </body>

@@ -30,41 +30,61 @@
                 <p class="text-body pb-3 mb-3 mb-lg-4">
                     Identify skills, define development pathways and progress your career in research software
                 </p>
-                <a class="btn btn-lg btn-warning"
-                   href="{% url 'django_registration_register' %}">Create Account</a>
-                <a class="btn btn-lg btn-warning" href="{% url 'login' %}">Assess your Skills</a>
+                {% if user.is_authenticated %}
+                    <a class="btn btn-lg btn-warning" href="{% url 'self-assess' %}">Assess your Skills</a>
+                {% else %}
+                    <a class="btn btn-lg btn-warning"
+                       href="{% url 'django_registration_register' %}">Create Account</a>
+                    <a class="btn btn-lg btn-warning" href="{% url 'login' %}">Login</a>
+                {% endif %}
             </div>
         </div>
-        <div class="bg-light rounded-4 p-4 mx-auto">
+        <div class="bg-dark text-light rounded-4 p-4 mx-auto">
             <div class="row">
-                <!-- Left column: Avatar grid and video intro -->
-                <div class="col-lg-6 mb-4 mb-lg-0 d-flex flex-column justify-content-center">
-                    <div class="row g-3">
-                        {% comment %} Replace with actual case study links and avatars {% endcomment %}
-                        {% for i in "1234"|make_list %}
-                            <div class="col-6 col-md-4 text-center">
-                                <a href="#case-study-{{ i }}">
-                                    <img src="{% static 'path/to/avatar.jpg' %}"
-                                         class="rounded-circle img-fluid"
-                                         alt="Case Study {{ i }}">
-                                    <p class="small mt-2">Case Study {{ i }}</p>
-                                </a>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <!-- Video intro button -->
-                    <div class="text-center mt-4">
-                        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                           class="btn btn-outline-secondary rounded-circle p-3"
-                           target="_blank">
-                            <i class="bi bi-play-circle-fill fs-3"></i>
-                        </a>
-                        <p class="small mt-2">Watch introduction</p>
-                    </div>
-                </div>
-                <!-- Right column: Skills wheel visualisation -->
-                <div class="col-lg-6 d-flex justify-content-center align-items-center">
+                <!-- Left column: Skills wheel visualisation -->
+                <div class="col-lg-7 d-flex flex-column align-items-center mb-4 mb-lg-0">
+                    <h3 id="dataviz_role_title">Research Software Engineer</h3>
                     <div id="dataviz_hero"></div>
+                </div>
+                <!-- Right column: 4-profile grid -->
+                <div class="col-lg-5">
+                    <div class="row g-4">
+                        <div class="col-6 text-center">
+                            <img src="{% static 'assets/img/auth/cover.webp' %}"
+                                 class="img-fluid mb-2"
+                                 alt="Profile 3">
+                            <p class="fw-bold mb-1">RSE Developer</p>
+                            <p class="small mb-2">Develops software solutions to support research workflows and experiments.</p>
+                            <button class="btn btn-primary btn-sm mb-1" onclick="loadSkillWheel(1)">View Skills Wheel</button>
+                        </div>
+                        <!-- Profile 1 -->
+                        <div class="col-6 text-center">
+                            <img src="{% static 'assets/img/auth/cover.webp' %}"
+                                 class="img-fluid mb-2"
+                                 alt="Profile 1">
+                            <p class="fw-bold mb-1">RSE Team Lead</p>
+                            <p class="small mb-2">Leads the research software team and coordinates projects across departments.</p>
+                            <button class="btn btn-primary btn-sm mb-1" onclick="loadSkillWheel(41)">View Skills Wheel</button>
+                        </div>
+                        <!-- Profile 2 -->
+                        <div class="col-6 text-center">
+                            <img src="{% static 'assets/img/auth/cover.webp' %}"
+                                 class="img-fluid mb-2"
+                                 alt="Profile 2">
+                            <p class="fw-bold mb-1">Community Manager</p>
+                            <p class="small mb-2">Manages engagement with the research software community and outreach programs.</p>
+                            <button class="btn btn-primary btn-sm mb-1" onclick="loadSkillWheel(59)">View Skills Wheel</button>
+                        </div>
+                        <!-- Profile 4 -->
+                        <div class="col-6 text-center">
+                            <img src="{% static 'assets/img/auth/cover.webp' %}"
+                                 class="img-fluid mb-2"
+                                 alt="Profile 4">
+                            <p class="fw-bold mb-1">Research Infrastructure Engineer</p>
+                            <p class="small mb-2">Oversees projects, timelines, and deliverables for the research software team.</p>
+                            <button class="btn btn-primary btn-sm mb-1" onclick="loadSkillWheel(41)">View Skills Wheel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,20 +92,23 @@
     <br />
 </section>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const datavizRoot = document.getElementById('dataviz_hero');
-        const sampleData = {{ sample_data|safe }};
+document.addEventListener('DOMContentLoaded', function () {
+    const datavizRoot = document.getElementById('dataviz_hero');
+    const roleTitleEl = document.getElementById('dataviz_role_title');
+    const sampleData = {{ sample_data|safe }};
+    const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
 
-        // Load sample data locally
-        const loadSampleData = function(userId=1) {
-            sampleUser = sampleData.find((user) => user['user_id'] == userId);
-            return sampleUser['user_data'];
-        };
-        const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
+    // Function to load sample data for a given user
+    function loadProfileData(userId) {
+        const profile = sampleData.find(u => u.user_id === userId);
+        return profile || { user_data: [], role: 'Unknown Role' };
+    }
+
+    // Function to render the radial bar chart
+    function renderSkillWheel(userData) {
         const radialBarChartConfig = {
             innerRadius: 0,
             width: 900,
-            // height: _height:undefined,
             innerRadius: 200,
             outerPadding: 80,
             categoryPadding: 0.1,
@@ -104,12 +127,30 @@
                 "var(--ar-info-text-emphasis)",
             ],
         };
+
+        // Clear existing chart
+        datavizRoot.innerHTML = '';
+
         main().RadialBarChart({
             target: datavizRoot,
-            data: loadSampleData(),
+            data: userData,
             levels: skillLevelsLoadedFromContext,
             config: radialBarChartConfig,
         });
-    });
+    }
 
+    // Expose function globally for button onclick
+    window.loadSkillWheel = function(profileId) {
+        const profile = loadProfileData(profileId);
+
+        // Update the role title
+        roleTitleEl.textContent = profile.role || 'Unknown Role';
+
+        // Render the skill wheel
+        renderSkillWheel(profile.user_data);
+    };
+
+    // Initially render first profile
+    loadSkillWheel(1);
+});
 </script>
