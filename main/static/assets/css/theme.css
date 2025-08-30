@@ -17682,49 +17682,18 @@ img-comparison-slider:focus {
   stroke-width: 3;
 }
 
-.accordion-competencies {
-  --ar-accordion-btn-font-size: 1.75rem;
+html {
+  scroll-behavior: smooth;
 }
-.accordion-competencies .category-header {
-  font-weight: 400;
+
+[id^=header-] {
+  scroll-margin-top: 138px;
 }
-.accordion-competencies .category-header .category-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-.accordion-competencies .category-header .category-badges {
-  font-size: 1rem;
-}
-.accordion-competencies .category-description {
-  font-size: 1rem;
-  font-weight: 400;
-}
-.accordion-competencies .accordion-item {
-  background: none !important;
-  border-radius: 0 !important;
-}
-.accordion-competencies .accordion-item:not(:last-child) {
-  margin-bottom: 0;
-}
-@media (min-width: 576px) {
-  .accordion-competencies .accordion-item:not(:last-child) {
-    margin-bottom: calc(var(--ar-accordion-spacer) * 0.25);
-  }
-}
-.accordion-competencies .accordion-button {
-  padding-top: calc(var(--ar-accordion-spacer) * 0.75);
-  padding-right: 0;
-  padding-bottom: var(--ar-accordion-spacer);
-  padding-left: 0;
-}
-.accordion-competencies .accordion-button::after {
-  width: 0.5em;
-  height: 0.5em;
-  background-size: 0.5em;
-}
-.accordion-competencies .accordion-body {
-  padding-right: 0;
-  padding-left: 0;
+
+.competencies-sticky {
+  top: 100px; /* adjust for your header offset */
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
 }
 
 /*# sourceMappingURL=theme.css.map */

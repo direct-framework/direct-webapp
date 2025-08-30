@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
     <head>{% include "main/snippets/head.html" %}</head>
-    <body>
+    <body class="{% block body_class %}{% endblock body_class %}">
         <div class="page-loading active">
             <div class="page-loading-inner">
                 <div class="page-spinner"></div>
