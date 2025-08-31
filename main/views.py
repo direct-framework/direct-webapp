@@ -1,5 +1,6 @@
 """Views for the main app."""
 
+import csv
 import json
 import logging
 from collections.abc import Mapping
@@ -13,6 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, UpdateView
@@ -172,9 +174,37 @@ class GetInvolvedPageView(TemplateView):
 
 
 class EventsPageView(TemplateView):
-    """View that renders the terms and conditions page."""
+    """View that renders the events page."""
 
     template_name = "main/pages/events.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add events from CSV to the template context."""
+        context = super().get_context_data(**kwargs)
+        csv_path = Path("data/events.csv")
+        events = []
+
+        if csv_path.exists():
+            with open(csv_path, newline="", encoding="utf-8") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    events.append(
+                        {
+                            "title": row.get("Title", ""),
+                            "start_date": row.get("Start Date", ""),
+                            "end_date": row.get("End Date", ""),
+                            "description": row.get("Description", ""),
+                            "contributors": row.get("Contributors", ""),
+                            "image": static(
+                                row.get("Image", "assets/img/blog/single/image.jpg")
+                            ),
+                        }
+                    )
+
+        events.sort(key=lambda e: e["start_date"], reverse=True)
+
+        context["events"] = events
+        return context
 
 
 class AccountOverviewPageView(TemplateView):
@@ -203,12 +233,6 @@ class CompetenciesPageView(TemplateView):
 
         context["framework"] = framework
         return context
-
-
-class ContactPageView(TemplateView):
-    """View that renders the contact page."""
-
-    template_name = "main/pages/contact.html"
 
 
 class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):

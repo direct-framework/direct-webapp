@@ -86,23 +86,8 @@
             {% with request.resolver_match.url_name as url_name %}
                 <ul class="navbar-nav navbar-nav-scroll me-auto"
                     style="--ar-scroll-height: 520px">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle"
-                           href="#"
-                           data-bs-toggle="dropdown"
-                           data-bs-auto-close="outside"
-                           aria-expanded="false">About</a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'about' %}#what-is-direct">What is DIRECT</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'about' %}#how-to-use-direct">How to use DIRECT</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'about' %}#history-of-direct">History of DIRECT</a>
-                            </li>
-                        </ul>
+                    <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle"
