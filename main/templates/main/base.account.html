@@ -47,7 +47,7 @@
                                                 Change Password
                                             </a>
                                         </nav>
-                                        <nav class="nav flex-column pb-2 pb-lg-4 mb-1">
+                                        <nav class="nav flex-column pb-2 pb-lg-4 mb-3">
                                             <h4 class="fs-xs fw-medium text-body-secondary text-uppercase pb-1 mb-2">Dashboard</h4>
                                             <a class="nav-link fw-semibold py-2 px-0 {% if url_name == 'self-assess' %}active{% endif %}"
                                                href="{% url 'self-assess' %}">
@@ -61,7 +61,7 @@
                                             </a>
                                         </nav>
                                     {% endwith %}
-                                    <nav class="nav flex-column">
+                                    <nav class="nav flex-column pb-2 pb-lg-4 mb-3">
                                         <form method="post" action="{% url 'logout' %}">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-link nav-link fw-semibold py-0 px-2">Sign out</button>

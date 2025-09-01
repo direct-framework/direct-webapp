@@ -63,7 +63,7 @@
                     {% with cat_id=forloop.counter %}
                         <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
                             <div class="card-body">
-                                <h2 id="header-{{ cat_id }}" class="card-title">{{ category.title }}</h2>
+                                <h2 id="header-{{ cat_id }}" class="card-title text-primary">{{ category.title }}</h2>
                                 <p class="card-text">{{ category.description }}</p>
                                 <p class="card-text">
                                     <span class="badge bg-secondary me-1">{{ category.competency_count }} Competencies</span>
