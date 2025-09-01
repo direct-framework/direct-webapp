@@ -4,100 +4,126 @@
     DIRECT Framework - Skill Levels
 {% endblock title %}
 {% block content %}
-    <section id="skill-levels" class="py-5">
-        <div class="container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb pt-3 pb-4">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'index' %}">Home</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">Skill Levels</li>
-                </ol>
-            </nav>
-            <div class="row mb-4">
-                <div class="col-lg-8">
-                    <h1 class="display-4">Skill Levels</h1>
-                </div>
+    <section id="about">
+        <nav aria-label="breadcrumb">
+            <ol class="pt-lg-2 pb-lg-3 pb-1 breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'competencies' %}">Framework</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Skill Levels</li>
+            </ol>
+        </nav>
+        <div class="row">
+            <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
+                <h1 class="pb-2 pb-lg-3">Skill levels</h1>
+                <p class="fs-lg mb-5">
+                    This page describes a 5-level skill scale for assessing competencies in the Digital Research Competencies Framework.
+                    Each level outlines what an individual can do and the main focus for development. The scale is informed by NIH Competencies and Bloom's Taxonomy.
+                </p>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 20%;">Skill Level</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="text-muted d-block">Level 0</span>
+                                <strong>None</strong>
+                            </td>
+                            <td>You do not possess this skill or it is not applicable to your role.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="text-muted d-block">Level 1</span>
+                                <strong>Fundamental Awareness</strong>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Understand basic concepts and techniques</li>
+                                    <li>Focus on learning and remembering</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="text-muted d-block">Level 2</span>
+                                <strong>Novice</strong>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Gain experience in classroom or on-the-job</li>
+                                    <li>Understand terminology, principles, and concepts</li>
+                                    <li>Use reference and resource materials</li>
+                                    <li>Focus on understanding and on-the-job development</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="text-muted d-block">Level 3</span>
+                                <strong>Intermediate Practitioner</strong>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Perform tasks with minimal guidance</li>
+                                    <li>Occasionally apply skill independently</li>
+                                    <li>Understand application and implications of changes</li>
+                                    <li>Focus on applying known solutions and enhancing knowledge</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="text-muted d-block">Level 4</span>
+                                <strong>Advanced Practitioner</strong>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Perform skill independently and consistently</li>
+                                    <li>Mentor others and translate complex concepts</li>
+                                    <li>Contribute to reference materials</li>
+                                    <li>Focus on designing solutions and evaluating impact</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="text-muted d-block">Level 5</span>
+                                <strong>Expert</strong>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Provide guidance and troubleshoot complex problems</li>
+                                    <li>Recognised authority within and outside the organisation</li>
+                                    <li>Create or lead development of reference materials</li>
+                                    <li>Focus on strategy and shaping organisational or national policies</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="row mb-5">
-                <div class="col-lg-10">
-                    <p>
-                        This page describes a 5-level skill scale for assessing competencies in the Digital Research Competencies Framework.
-                        Each level outlines what an individual can do and the main focus for development. The scale is informed by NIH Competencies and Bloom's Taxonomy.
-                    </p>
+            <aside class="col-lg-3 offset-xl-1">
+                <div class="offcanvas-lg offcanvas-end" id="sidebar">
+                    <div class="offcanvas-header">
+                        <h4 class="offcanvas-title">Sidebar</h4>
+                        <button class="btn-close ms-auto"
+                                type="button"
+                                data-bs-dismiss="offcanvas"
+                                data-bs-target="#sidebar"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <h4 class="pt-1 pt-lg-0 mt-lg-n2"></h4>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-10">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th scope="col" style="width: 20%;">Skill Level</th>
-                                <th scope="col">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Level 0 - None</td>
-                                <td>You do not possess this skill or it is not applicable to your role.</td>
-                            </tr>
-                            <tr>
-                                <td>Level 1 - Fundamental Awareness</td>
-                                <td>
-                                    <ul>
-                                        <li>Understand basic concepts and techniques</li>
-                                        <li>Focus on learning and remembering</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Level 2 - Novice</td>
-                                <td>
-                                    <ul>
-                                        <li>Gain experience in classroom or on-the-job</li>
-                                        <li>Understand terminology, principles, and concepts</li>
-                                        <li>Use reference and resource materials</li>
-                                        <li>Focus on understanding and on-the-job development</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Level 3 - Intermediate Practitioner</td>
-                                <td>
-                                    <ul>
-                                        <li>Perform tasks with minimal guidance</li>
-                                        <li>Occasionally apply skill independently</li>
-                                        <li>Understand application and implications of changes</li>
-                                        <li>Focus on applying known solutions and enhancing knowledge</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Level 4 - Advanced Practitioner</td>
-                                <td>
-                                    <ul>
-                                        <li>Perform skill independently and consistently</li>
-                                        <li>Mentor others and translate complex concepts</li>
-                                        <li>Contribute to reference materials</li>
-                                        <li>Focus on designing solutions and evaluating impact</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Level 5 - Expert</td>
-                                <td>
-                                    <ul>
-                                        <li>Provide guidance and troubleshoot complex problems</li>
-                                        <li>Recognised authority within and outside the organisation</li>
-                                        <li>Create or lead development of reference materials</li>
-                                        <li>Focus on strategy and shaping organisational or national policies</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            </aside>
         </div>
     </section>
 {% endblock content %}
