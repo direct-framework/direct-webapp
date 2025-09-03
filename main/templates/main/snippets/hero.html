@@ -39,50 +39,27 @@
                 {% endif %}
             </div>
         </div>
-        <div class="bg-dark text-light rounded-4 p-4 mx-auto">
-            <div class="row">
-                <!-- Left column: Skills wheel visualisation -->
-                <div class="col-lg-7 d-flex flex-column align-items-center mb-4 mb-lg-0">
-                    <h3 id="dataviz_role_title">Research Software Engineer</h3>
-                    <div id="dataviz_hero"></div>
+        <div class="p-4 mx-auto">
+            <div class="row g-4 mb-3 mb-xl-0 pb-sm-2 pb-md-4 pb-xl-5">
+                <div class="col-md-5 col-lg-4 order-md-1">
+                    <div class="card border-0 rounded-2 bg-hero-role-desc h-100 px-xl-4 pb-sm-2 pb-xl-4">
+                        <div class="card-body">
+                            <h3>Skill Wheels give a visual overview of role profiles</h3>
+                            <p class="card-text">
+                                The skills wheel shows the range of competencies that make up the role of a
+                                Research Software Engineer. It helps you see how technical, research, and
+                                professional skills fit together, and where you might want to focus your
+                                development. Use the skill wheel to reflect on your own strengths, plan learning, and
+                                understand how your role connects to wider research careers.
+                            </p>
+                            <a class="btn btn-outline-warning mt-2" href="{% url 'roles' %}">More Role Profiles</a>
+                        </div>
+                    </div>
                 </div>
-                <!-- Right column: 4-profile grid -->
-                <div class="col-lg-5">
-                    <div class="row g-4">
-                        <div class="col-6 text-center">
-                            <img src="{% static 'assets/img/auth/cover.webp' %}"
-                                 class="img-fluid mb-2"
-                                 alt="Profile 3">
-                            <p class="fw-bold mb-1">RSE Developer</p>
-                            <p class="small mb-2">Develops software solutions to support research workflows and experiments.</p>
-                            <button class="btn btn-primary btn-sm mb-1" onclick="loadSkillWheel(1)">View Skills Wheel</button>
-                        </div>
-                        <!-- Profile 1 -->
-                        <div class="col-6 text-center">
-                            <img src="{% static 'assets/img/auth/cover.webp' %}"
-                                 class="img-fluid mb-2"
-                                 alt="Profile 1">
-                            <p class="fw-bold mb-1">RSE Team Lead</p>
-                            <p class="small mb-2">Leads the research software team and coordinates projects across departments.</p>
-                            <button class="btn btn-primary btn-sm mb-1" onclick="loadSkillWheel(41)">View Skills Wheel</button>
-                        </div>
-                        <!-- Profile 2 -->
-                        <div class="col-6 text-center">
-                            <img src="{% static 'assets/img/auth/cover.webp' %}"
-                                 class="img-fluid mb-2"
-                                 alt="Profile 2">
-                            <p class="fw-bold mb-1">Community Manager</p>
-                            <p class="small mb-2">Manages engagement with the research software community and outreach programs.</p>
-                            <button class="btn btn-primary btn-sm mb-1" onclick="loadSkillWheel(59)">View Skills Wheel</button>
-                        </div>
-                        <!-- Profile 4 -->
-                        <div class="col-6 text-center">
-                            <img src="{% static 'assets/img/auth/cover.webp' %}"
-                                 class="img-fluid mb-2"
-                                 alt="Profile 4">
-                            <p class="fw-bold mb-1">Research Infrastructure Engineer</p>
-                            <p class="small mb-2">Oversees projects, timelines, and deliverables for the research software team.</p>
-                            <button class="btn btn-primary btn-sm mb-1" onclick="loadSkillWheel(41)">View Skills Wheel</button>
+                <div class="col-md-7 col-lg-8 order-md-2">
+                    <div class="card border-0 rounded-2 bg-hero-role-profile h-100 px-xl-4 pb-sm-2 pb-xl-4">
+                        <div class="card-body">
+                            <div id="dataviz_hero"></div>
                         </div>
                     </div>
                 </div>
@@ -94,7 +71,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const datavizRoot = document.getElementById('dataviz_hero');
-    const roleTitleEl = document.getElementById('dataviz_role_title');
     const sampleData = {{ sample_data|safe }};
     const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
 
@@ -121,10 +97,16 @@ document.addEventListener('DOMContentLoaded', function () {
             lvlTextColor: "var(--ar-primary)",
             lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
             colourList: [
-                "var(--ar-warning-text-emphasis)",
-                "var(--ar-primary)",
-                "var(--ar-success-text-emphasis)",
-                "var(--ar-info-text-emphasis)",
+                "#4E79A7", // blue
+                "#F28E2B", // orange
+                "#E15759", // red
+                "#76B7B2", // teal
+                "#59A14F", // green
+                "#EDC948", // yellow
+                "#B07AA1", // purple
+                "#FF9DA7", // pink
+                "#9C755F", // brown
+                "#BAB0AC", // grey
             ],
         };
 
@@ -142,9 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Expose function globally for button onclick
     window.loadSkillWheel = function(profileId) {
         const profile = loadProfileData(profileId);
-
-        // Update the role title
-        roleTitleEl.textContent = profile.role || 'Unknown Role';
 
         // Render the skill wheel
         renderSkillWheel(profile.user_data);

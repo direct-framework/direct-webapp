@@ -17691,9 +17691,14 @@ html {
 }
 
 .competencies-sticky {
-  top: 100px; /* adjust for your header offset */
+  top: 100px;
   max-height: calc(100vh - 100px);
   overflow-y: auto;
+}
+
+.bg-hero-role-profile,
+.bg-hero-role-desc {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 /*# sourceMappingURL=theme.css.map */
