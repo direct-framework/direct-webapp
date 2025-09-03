@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>{% include "main/snippets/head.html" %}</head>
+    <body class="bg-secondary">
+        <div class="page-loading active">
+            <div class="page-loading-inner">
+                <div class="page-spinner"></div>
+                <span>Loading...</span>
+            </div>
+        </div>
+        <main class="page-wrapper">
+            {% include "main/snippets/navbar.html" %}
+            <!-- Page container -->
+            <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+                <div class="row pt-sm-2 pt-lg-0">
+                    <!-- Sidebar (offcanvas on screens < 992px) -->
+                    <aside class="col-lg-3 pe-lg-4 pe-xl-5 mt-n3">
+                        <div class="position-lg-sticky top-0">
+                            <div class="d-none d-lg-block" style="padding-top: 80px;"></div>
+                            <div class="offcanvas-lg offcanvas-start" id="sidebarAccount">
+                                <button class="btn-close position-absolute top-0 end-0 mt-3 me-3 d-lg-none"
+                                        type="button"
+                                        data-bs-dismiss="offcanvas"
+                                        data-bs-target="#sidebarAccount"
+                                        aria-label="Close"></button>
+                                <div class="offcanvas-body">
+                                    <div class="pb-2 pb-lg-0 mb-4 mb-lg-5">
+                                        <h3 class="h5 mb-1">{{ request.user.username }}</h3>
+                                        <p class="fs-sm text-body-secondary mb-0">{{ request.user.email }}</p>
+                                    </div>
+                                    {% with request.resolver_match.url_name as url_name %}
+                                        <nav class="nav flex-column pb-2 pb-lg-4 mb-3">
+                                            <h4 class="fs-xs fw-medium text-body-secondary text-uppercase pb-1 mb-2">Account</h4>
+                                            <a class="nav-link fw-semibold py-2 px-0 {% if url_name == 'account-overview' %}active{% endif %}"
+                                               href="{% url 'account-overview' %}">
+                                                <i class="ai-user-check fs-5 opacity-60 me-2"></i>
+                                                Overview
+                                            </a>
+                                            <a class="nav-link fw-semibold py-2 px-0 {% if url_name == 'profile' %}active{% endif %}"
+                                               href="{% url 'profile' %}">
+                                                <i class="ai-settings fs-5 opacity-60 me-2"></i>
+                                                Update Profile
+                                            </a>
+                                            <a class="nav-link fw-semibold py-2 px-0 disabled {% if url_name == 'change-password' %}active{% endif %}"
+                                               href="{% url 'account-overview' %}">
+                                                <i class="ai-wallet fs-5 opacity-60 me-2"></i>
+                                                Change Password
+                                            </a>
+                                        </nav>
+                                        <nav class="nav flex-column pb-2 pb-lg-4 mb-3">
+                                            <h4 class="fs-xs fw-medium text-body-secondary text-uppercase pb-1 mb-2">Dashboard</h4>
+                                            <a class="nav-link fw-semibold py-2 px-0 {% if url_name == 'self-assess' %}active{% endif %}"
+                                               href="{% url 'self-assess' %}">
+                                                <i class="ai-cart fs-5 opacity-60 me-2"></i>
+                                                Assess Skills
+                                            </a>
+                                            <a class="nav-link fw-semibold py-2 px-0 {% if url_name == 'skill_profile' %}active{% endif %}"
+                                               href="{% url 'skill_profile' %}">
+                                                <i class="ai-activity fs-5 opacity-60 me-2"></i>
+                                                View Skills
+                                            </a>
+                                        </nav>
+                                    {% endwith %}
+                                    <nav class="nav flex-column pb-2 pb-lg-4 mb-3">
+                                        <form method="post" action="{% url 'logout' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-link nav-link fw-semibold py-0 px-2">Sign out</button>
+                                        </form>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                    <!-- Page content -->
+                    <div class="col-lg-9 pt-4 pb-2 pb-sm-4">
+                        <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                            <div class="card-body">
+                                {% block content %}
+                                {% endblock content %}
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <!-- Divider for dark mode only -->
+            <hr class="d-none d-dark-mode-block">
+            <!-- Sidebar toggle button -->
+            <button class="d-lg-none btn btn-sm fs-sm btn-primary w-100 rounded-0 fixed-bottom"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#sidebarAccount">
+                <i class="ai-menu me-2"></i>
+                Account menu
+            </button>
+        </main>
+        {% include "main/snippets/footer.html" %}
+    </body>
+</html>

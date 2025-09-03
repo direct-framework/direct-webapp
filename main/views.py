@@ -1,7 +1,9 @@
 """Views for the main app."""
 
+import csv
 import json
 import logging
+from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -12,6 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, UpdateView
@@ -35,33 +38,43 @@ class AuthenticatedHttpRequest(HttpRequest):
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    """View that renders the index/home page.
-
-    Args:
-        request: A GET request.
-    """
+    """View that renders the index/home page."""
     logger.info("Rendering index page.")
 
     # Skill levels from the database
     skill_levels = SkillLevel.objects.all()
     skill_levels_data = [
         {
-            "level": skill_level.level,
-            "name": skill_level.name,
-            "description": skill_level.description,
+            "level": sl.level,
+            "name": sl.name,
+            "description": sl.description,
         }
-        for skill_level in skill_levels
+        for sl in skill_levels
     ]
 
-    # Load sample JSON data
-    json_path = Path("main/static/assets/sample_data/sample_profile_1.json")
-    with open(json_path) as f:
-        sample_data = json.load(f)
+    # Combine multiple sample JSON files
+    sample_data_files = [
+        "main/static/assets/sample_data/sample_profile_1.json",
+        "main/static/assets/sample_data/sample_profile_41.json",
+        "main/static/assets/sample_data/sample_profile_59.json",
+    ]
+
+    combined_sample_data = []
+    for file_path in sample_data_files:
+        json_path = Path(file_path)
+        if json_path.exists():
+            with open(json_path) as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    combined_sample_data.extend(data)
+                else:
+                    combined_sample_data.append(data)
 
     context = {
         "skill_levels": dumps(skill_levels_data),
-        "sample_data": dumps(sample_data),  # pass JSON as string for JS
+        "sample_data": dumps(combined_sample_data),
     }
+
     return render(request=request, template_name="main/index.html", context=context)
 
 
@@ -72,7 +85,7 @@ def privacy(request: HttpRequest) -> HttpResponse:
       request: A GET request.
     """
     logger.info("Rendering privacy page.")
-    return render(request=request, template_name="main/privacy.html")
+    return render(request=request, template_name="main/pages/privacy.html")
 
 
 def skill_profile(request: HttpRequest) -> HttpResponse:
@@ -127,19 +140,99 @@ class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserT
 class AboutPageView(TemplateView):
     """View that renders the about page."""
 
-    template_name = "main/about.html"
+    template_name = "main/pages/about.html"
 
 
 class TermsPageView(TemplateView):
     """View that renders the terms and conditions page."""
 
-    template_name = "main/terms.html"
+    template_name = "main/pages/terms.html"
 
 
-class ContactPageView(TemplateView):
-    """View that renders the contact page."""
+class SkillLevelsPageView(TemplateView):
+    """View that renders the terms and conditions page."""
 
-    template_name = "main/contact.html"
+    template_name = "main/pages/skill-levels.html"
+
+
+class TrainingPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/pages/training.html"
+
+
+class RolesPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/pages/roles.html"
+
+
+class GetInvolvedPageView(TemplateView):
+    """View that renders the terms and conditions page."""
+
+    template_name = "main/pages/get-involved.html"
+
+
+class EventsPageView(TemplateView):
+    """View that renders the events page."""
+
+    template_name = "main/pages/events.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add events from CSV to the template context."""
+        context = super().get_context_data(**kwargs)
+        csv_path = Path("data/events.csv")
+        events = []
+
+        if csv_path.exists():
+            with open(csv_path, newline="", encoding="utf-8") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    events.append(
+                        {
+                            "title": row.get("Title", ""),
+                            "start_date": row.get("Start Date", ""),
+                            "end_date": row.get("End Date", ""),
+                            "description": row.get("Description", ""),
+                            "contributors": row.get("Contributors", ""),
+                            "image": static(
+                                row.get("Image", "assets/img/blog/single/image.jpg")
+                            ),
+                        }
+                    )
+
+        events.sort(key=lambda e: e["start_date"], reverse=True)
+
+        context["events"] = events
+        return context
+
+
+class AccountOverviewPageView(TemplateView):
+    """View that renders the account overview page."""
+
+    template_name = "main/user_overview.html"
+
+
+class CompetenciesPageView(TemplateView):
+    """View that renders the competencies page."""
+
+    template_name = "main/pages/competencies.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add the competencies framework data to the template context."""
+        context = super().get_context_data(**kwargs)
+        json_path = Path("data/skills-competencies-framework.json")
+        with open(json_path) as f:
+            framework = json.load(f)
+
+        for category in framework.get("categories", []):
+            category["competency_count"] = len(category.get("subcategories", []))
+            category["skill_count"] = sum(
+                len(sub.get("skills", [])) for sub in category.get("subcategories", [])
+            )
+
+        context["framework"] = framework
+        return context
 
 
 class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
@@ -149,6 +242,22 @@ class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
     template_name = "main/self-assess.html"
     form_class = UserSkillsForm
     success_url = reverse_lazy("self-assess")
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add the competencies framework data to the template context."""
+        context = super().get_context_data(**kwargs)
+        json_path = Path("data/skills-competencies-framework.json")
+        with open(json_path) as f:
+            framework = json.load(f)
+
+        for category in framework.get("categories", []):
+            category["competency_count"] = len(category.get("subcategories", []))
+            category["skill_count"] = sum(
+                len(sub.get("skills", [])) for sub in category.get("subcategories", [])
+            )
+
+        context["framework"] = framework
+        return context
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """Return the keyword arguments for instantiating the form."""

@@ -1,5 +1,5 @@
 {% load static %}
-<header class="navbar navbar-expand-lg fixed-top bg-light">
+<header class="navbar navbar-expand-lg fixed-top bg-secondary">
     <div class="container">
         <!-- Navbar brand -->
         <a class="navbar-brand pe-sm-3" href="{% url 'index' %}">
@@ -22,15 +22,50 @@
             </label>
         </div>
         {% if user.is_authenticated %}
-            <form action="{% url 'logout' %}"
-                  method="post"
-                  class="order-lg-3 d-none d-sm-inline-flex">
-                {% csrf_token %}
-                <button class="btn btn-primary btn-sm fs-sm" type="submit">
-                    <i class="ai-logout fs-xl me-2 ms-n1"></i>
-                    Log Out
-                </button>
-            </form>
+            <div class="dropdown nav d-none d-sm-block order-lg-3">
+                <a class="nav-link d-flex align-items-center p-0"
+                   href="{% url 'profile' %}"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <div class="ps-2">
+                        <div class="fs-xs lh-1 opacity-60">Hello,</div>
+                        <div class="fs-sm dropdown-toggle">{{ user.username }}</div>
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end my-1">
+                    <h6 class="dropdown-header fs-xs fw-medium text-body-secondary text-uppercase pb-1">Account</h6>
+                    <a class="dropdown-item" href="{% url 'account-overview' %}">
+                        <i class="fa-solid fa-user fa-fw opacity-70 me-2 icon-width"></i>
+                        Overview
+                    </a>
+                    <a class="dropdown-item" href="{% url 'profile' %}">
+                        <i class="fa-solid fa-address-card fa-fw opacity-70 me-2 icon-width"></i>
+                        Update Profile
+                    </a>
+                    <a class="dropdown-item disabled" href="{% url 'profile' %}">
+                        <i class="fa-solid fa-lock fa-fw opacity-70 me-2 icon-width"></i>
+                        Change Password
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'self-assess' %}">
+                        <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
+                        Assess Skills
+                    </a>
+                    <a class="dropdown-item" href="{% url 'skill_profile' %}">
+                        <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
+                        View Skills
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-link dropdown-item d-flex align-items-center justify-content-start py-2 px-4">
+                            <i class="fa-solid fa-sign-out fa-fw opacity-70 me-2 icon-width"></i>
+                            Sign out
+                        </button>
+                    </form>
+                </div>
+            </div>
         {% else %}
             <a class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex"
                href="{% url 'login' %}">
@@ -51,8 +86,8 @@
             {% with request.resolver_match.url_name as url_name %}
                 <ul class="navbar-nav navbar-nav-scroll me-auto"
                     style="--ar-scroll-height: 520px">
-                    <li class="nav-item {% if url_name == 'index' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle"
@@ -62,55 +97,16 @@
                            aria-expanded="false">Framework</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
+                                <a class="dropdown-item" href="{% url 'competencies' %}">Competencies framework</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
+                                <a class="dropdown-item" href="{% url 'skill-levels' %}">Skill levels</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
+                                <a class="dropdown-item" href="{% url 'training' %}">Training resources</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle"
-                           href="#"
-                           data-bs-toggle="dropdown"
-                           data-bs-auto-close="outside"
-                           aria-expanded="false">Resources</a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
+                                <a class="dropdown-item" href="{% url 'roles' %}">Roles and job profiles</a>
                             </li>
                         </ul>
                     </li>
@@ -122,42 +118,18 @@
                            aria-expanded="false">Community</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Overview</a>
+                                <a class="dropdown-item" href="{% url 'get-involved' %}">Get involved</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Settings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Billing</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Orders</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Earnings</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Chat (Messages)</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'index' %}">Favorites (Wishlist)</a>
+                                <a class="dropdown-item" href="{% url 'events' %}">Events</a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item {% if url_name == 'about' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'about' %}">About</a>
-                    </li>
                     <li class="nav-item {% if url_name == 'self-assess' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'self-assess' %}">Self Assessment Questionnaire</a>
-                    </li>
-                    <li class="nav-item {% if url_name == 'terms' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'terms' %}">Terms & Conditions</a>
-                    </li>
-                    <li class="nav-item {% if url_name == 'contact' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-                    </li>
-                    <li class="nav-item {% if url_name == 'profile' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                        <a class="nav-link" href="{% url 'self-assess' %}">
+                            <i class="fa-solid fa-bolt fs-lg me-2"></i>
+                            Start Using
+                        </a>
                     </li>
                 </ul>
             {% endwith %}

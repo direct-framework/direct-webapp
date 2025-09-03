@@ -1,0 +1,61 @@
+{% extends "main/base.page.html" %}
+{% load static %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block content %}
+    <section id="terms">
+        <nav aria-label="breadcrumb">
+            <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Terms and Conditions</li>
+            </ol>
+        </nav>
+        <h1 class="display-4 text-center pb-2 pb-lg-3">Terms and Conditions</h1>
+    </section>
+    <section class="container pt-5 mt-md-2 mt-lg-3 mt-xl-4">
+        <div class="row justify-content-center pt-xxl-2">
+            <div class="col-lg-9 col-xl-8">
+                <p class="fs-lg">
+                    By using the Digital Research Competencies Framework website (<a href="https://directframework.com">directframework.com</a>) you agree to these terms.
+                </p>
+                <h2 class="h4 pt-3 pt-md-4 pt-xl-5">Use of the site</h2>
+                <p class="fs-lg">
+                    You may use this website for personal or professional purposes connected to research and digital skills.
+                    You must not misuse the site, attempt to disrupt its services, or use it in a way that harms others.
+                </p>
+                <h2 class="h4 pt-3 pt-md-4 pt-xl-5">Accounts</h2>
+                <p class="fs-lg">
+                    If you register an account, you are responsible for keeping your login details secure and for any activity that takes place under your account.
+                    We may suspend or remove accounts that are used inappropriately.
+                </p>
+                <h2 class="h4 pt-3 pt-md-4 pt-xl-5">Content and contributions</h2>
+                <p class="fs-lg">
+                    The framework is an open project and many contributions are made through public platforms such as GitHub, Slack and Google Groups.
+                    Anything you share in those spaces is visible to others. Please only post content you are comfortable making public and respectful of the community.
+                </p>
+                <h2 class="h4 pt-3 pt-md-4 pt-xl-5">Accuracy and availability</h2>
+                <p class="fs-lg">
+                    We aim to keep the website accurate and available, but we cannot guarantee it will always be free from errors or downtime.
+                    The information provided is for general use and comes without any warranty.
+                </p>
+                <h2 class="h4 pt-3 pt-md-4 pt-xl-5">Liability</h2>
+                <p class="fs-lg">
+                    We are not responsible for any loss or damage arising from the use of this website or reliance on its content.
+                    Links to external sites are provided for convenience and we are not responsible for their content or policies.
+                </p>
+                <h2 class="h4 pt-3 pt-md-4 pt-xl-5">Changes to these terms</h2>
+                <p class="fs-lg">
+                    We may update these terms from time to time. Your continued use of the website will be taken as acceptance of the revised terms.
+                </p>
+                <h2 class="h4 pt-3 pt-md-4 pt-xl-5">Contact us</h2>
+                <p class="fs-lg">
+                    If you have any questions about these terms, please contact us at
+                    <a href="mailto:direct-framework@googlegroups.com">direct-framework@googlegroups.com</a>.
+                </p>
+            </div>
+        </div>
+    </section>
+{% endblock content %}
