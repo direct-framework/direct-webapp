@@ -24,7 +24,7 @@ class TestIndex(TemplateOkMixin):
 class TestPrivacy(TemplateOkMixin):
     """Test suite for the privacy view."""
 
-    _template_name = "main/privacy.html"
+    _template_name = "main/pages/privacy.html"
 
     def _get_url(self):
         return reverse("privacy")
@@ -64,7 +64,7 @@ class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
 class TestAboutPageView(TemplateOkMixin):
     """Test suite for the AboutPageView."""
 
-    _template_name = "main/about.html"
+    _template_name = "main/pages/about.html"
 
     def _get_url(self):
         return reverse("about")
@@ -73,19 +73,10 @@ class TestAboutPageView(TemplateOkMixin):
 class TestTermsPageView(TemplateOkMixin):
     """Test suite for the TermsPageView."""
 
-    _template_name = "main/terms.html"
+    _template_name = "main/pages/terms.html"
 
     def _get_url(self):
         return reverse("terms")
-
-
-class TestContactPageView(TemplateOkMixin):
-    """Test suite for the ContactPageView."""
-
-    _template_name = "main/contact.html"
-
-    def _get_url(self):
-        return reverse("contact")
 
 
 class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):

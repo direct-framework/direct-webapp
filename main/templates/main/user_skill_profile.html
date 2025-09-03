@@ -1,17 +1,74 @@
 {% extends "main/base.html" %}
+{% block body_class %}
+    bg-secondary
+{% endblock body_class %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% load django_bootstrap5 %}
 {% block title %}
     Digital Research Competencies Framework
 {% endblock title %}
 {% block content %}
-    <!-- Features grid -->
-    <section class="container-fluid pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
-        <div class="bg-body rounded-5 d-flex justify-content-center align-items-center"
-             id="dataviz_root"
-             style="width:100%"></div>
-    </section>
-    <script>
+    <!-- Page container -->
+    <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+        <nav aria-label="breadcrumb">
+            <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'privacy' %}">Framework</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Competencies</li>
+            </ol>
+        </nav>
+        <div class="row pt-sm-2 pt-lg-0">
+            <!-- Sidebar (offcanvas on screens < 992px) -->
+            <aside class="col-lg-3">
+                <div class="position-lg-sticky competencies-sticky">
+                    <div class="offcanvas-lg offcanvas-start" id="sidebarAccount">
+                        <button class="btn-close position-absolute top-0 end-0 mt-3 me-3 d-lg-none"
+                                type="button"
+                                data-bs-dismiss="offcanvas"
+                                data-bs-target="#sidebarAccount"
+                                aria-label="Close"></button>
+                        <div class="offcanvas-body">
+                            <div class="mb-3">
+                                <h3 class="h5 mb-1">{{ request.user.username }}</h3>
+                                <p class="fs-sm text-body-secondary mb-0">{{ request.user.email }}</p>
+                            </div>
+                            {% with request.resolver_match.url_name as url_name %}
+                                <div class="d-flex gap-2 mb-4">
+                                    <a href="{% url 'self-assess' %}"
+                                       class="btn {% if url_name == 'self-assess' %}btn-primary{% else %}btn-secondary{% endif %}">
+                                        Assessment
+                                    </a>
+                                    <a href="{% url 'skill_profile' %}"
+                                       class="btn {% if url_name == 'skill_profile' %}btn-primary{% else %}btn-secondary{% endif %}">
+                                        Skills Wheel
+                                    </a>
+                                </div>
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <!-- Page content -->
+            <div class="col-lg-9 pb-2 pb-sm-4">
+                <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                    <div class="card-body">
+                        <h1>Skills Wheel Visualisation</h1>
+                        <p class="lead">
+                            Explore your skill levels in the Digital Research Competencies Framework
+                            using the interactive Skills Wheel. Each segment represents a competency,
+                            with size according to your self-assessed level.
+                        </p>
+                        <section class="container-fluid pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
+                            <div class="bg-body rounded-5 d-flex justify-content-center align-items-center"
+                                 id="dataviz_root"
+                                 style="width:100%"></div>
+                        </section>
+                        <script>
     document.addEventListener('DOMContentLoaded', function () {
         const datavizRoot = document.getElementById('dataviz_root');
         const radialBarChartConfig = {
@@ -47,5 +104,20 @@
         });
     });
 
-    </script>
+                        </script>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- Divider for dark mode only -->
+    <hr class="d-none d-dark-mode-block">
+    <!-- Sidebar toggle button -->
+    <button class="d-lg-none btn btn-sm fs-sm btn-primary w-100 rounded-0 fixed-bottom"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarAccount">
+        <i class="ai-menu me-2"></i>
+        Account menu
+    </button>
 {% endblock content %}

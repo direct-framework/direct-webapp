@@ -2,3 +2,23 @@
 // user.scss
 // Use this to write your custom SCSS
 //
+// Alternative style
+
+html {
+  scroll-behavior: smooth;
+}
+
+[id^="header-"] {
+  scroll-margin-top: 138px;
+}
+
+.competencies-sticky {
+  top: 100px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.bg-hero-role-profile,
+.bg-hero-role-desc {
+  background-color: rgba(0, 0, 0, .8);
+}

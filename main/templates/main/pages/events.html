@@ -1,0 +1,61 @@
+{% extends "main/base.page.html" %}
+{% load static %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block content %}
+    <section id="events">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Events</li>
+            </ol>
+        </nav>
+        <!-- Page title -->
+        <div class="row align-items-center gy-2 mb-4 pb-1 pb-sm-2 pb-lg-3">
+            <div class="col-lg-6">
+                <h1 class="mb-lg-0">Events</h1>
+            </div>
+        </div>
+        <!-- Introductory text -->
+        <div class="row mb-4">
+            <div class="col-lg-10">
+                <p>
+                    This page highlights key events such as conferences, workshops, community calls, and other collaborative activities
+                    where the Digital Research Competencies Framework has been presented, discussed, or developed further.
+                    These events provide opportunities to gather feedback, share progress, and engage with the wider community.
+                </p>
+            </div>
+        </div>
+        <!-- Events list -->
+        <div class="row gy-4">
+            <!-- Event item -->
+            {% for event in events %}
+                <div class="col-12">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0 me-3">
+                            <img src="{{ event.image }}"
+                                 alt="Event image"
+                                 class="rounded-2"
+                                 width="150">
+                        </div>
+                        <div>
+                            <h4 class="mb-1">{{ event.title }}</h4>
+                            <p class="mb-2">{{ event.description }}</p>
+                            <p class="text-muted mb-1 small">
+                                <strong>Date:</strong> {{ event.start_date }}
+                                {% if event.end_date and event.end_date != event.start_date %}– {{ event.end_date }}{% endif %}
+                            </p>
+                            <p class="text-muted mb-2 small">
+                                <strong>Contributors:</strong> {{ event.contributors }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock content %}
