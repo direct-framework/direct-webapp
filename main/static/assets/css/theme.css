@@ -17682,4 +17682,23 @@ img-comparison-slider:focus {
   stroke-width: 3;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+[id^=header-] {
+  scroll-margin-top: 138px;
+}
+
+.competencies-sticky {
+  top: 100px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.bg-hero-role-profile,
+.bg-hero-role-desc {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
 /*# sourceMappingURL=theme.css.map */

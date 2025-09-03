@@ -30,41 +30,38 @@
                 <p class="text-body pb-3 mb-3 mb-lg-4">
                     Identify skills, define development pathways and progress your career in research software
                 </p>
-                <a class="btn btn-lg btn-warning"
-                   href="{% url 'django_registration_register' %}">Create Account</a>
-                <a class="btn btn-lg btn-warning" href="{% url 'login' %}">Assess your Skills</a>
+                {% if user.is_authenticated %}
+                    <a class="btn btn-lg btn-warning" href="{% url 'self-assess' %}">Assess your Skills</a>
+                {% else %}
+                    <a class="btn btn-lg btn-warning"
+                       href="{% url 'django_registration_register' %}">Create Account</a>
+                    <a class="btn btn-lg btn-warning" href="{% url 'login' %}">Login</a>
+                {% endif %}
             </div>
         </div>
-        <div class="bg-light rounded-4 p-4 mx-auto">
-            <div class="row">
-                <!-- Left column: Avatar grid and video intro -->
-                <div class="col-lg-6 mb-4 mb-lg-0 d-flex flex-column justify-content-center">
-                    <div class="row g-3">
-                        {% comment %} Replace with actual case study links and avatars {% endcomment %}
-                        {% for i in "1234"|make_list %}
-                            <div class="col-6 col-md-4 text-center">
-                                <a href="#case-study-{{ i }}">
-                                    <img src="{% static 'path/to/avatar.jpg' %}"
-                                         class="rounded-circle img-fluid"
-                                         alt="Case Study {{ i }}">
-                                    <p class="small mt-2">Case Study {{ i }}</p>
-                                </a>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <!-- Video intro button -->
-                    <div class="text-center mt-4">
-                        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                           class="btn btn-outline-secondary rounded-circle p-3"
-                           target="_blank">
-                            <i class="bi bi-play-circle-fill fs-3"></i>
-                        </a>
-                        <p class="small mt-2">Watch introduction</p>
+        <div class="p-4 mx-auto">
+            <div class="row g-4 mb-3 mb-xl-0 pb-sm-2 pb-md-4 pb-xl-5">
+                <div class="col-md-5 col-lg-4 order-md-1">
+                    <div class="card border-0 rounded-2 bg-hero-role-desc h-100 px-xl-4 pb-sm-2 pb-xl-4">
+                        <div class="card-body">
+                            <h3>Skill Wheels give a visual overview of role profiles</h3>
+                            <p class="card-text">
+                                The skills wheel shows the range of competencies that make up the role of a
+                                Research Software Engineer. It helps you see how technical, research, and
+                                professional skills fit together, and where you might want to focus your
+                                development. Use the skill wheel to reflect on your own strengths, plan learning, and
+                                understand how your role connects to wider research careers.
+                            </p>
+                            <a class="btn btn-outline-warning mt-2" href="{% url 'roles' %}">More Role Profiles</a>
+                        </div>
                     </div>
                 </div>
-                <!-- Right column: Skills wheel visualisation -->
-                <div class="col-lg-6 d-flex justify-content-center align-items-center">
-                    <div id="dataviz_hero"></div>
+                <div class="col-md-7 col-lg-8 order-md-2">
+                    <div class="card border-0 rounded-2 bg-hero-role-profile h-100 px-xl-4 pb-sm-2 pb-xl-4">
+                        <div class="card-body">
+                            <div id="dataviz_hero"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,20 +69,22 @@
     <br />
 </section>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const datavizRoot = document.getElementById('dataviz_hero');
-        const sampleData = {{ sample_data|safe }};
+document.addEventListener('DOMContentLoaded', function () {
+    const datavizRoot = document.getElementById('dataviz_hero');
+    const sampleData = {{ sample_data|safe }};
+    const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
 
-        // Load sample data locally
-        const loadSampleData = function(userId=1) {
-            sampleUser = sampleData.find((user) => user['user_id'] == userId);
-            return sampleUser['user_data'];
-        };
-        const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
+    // Function to load sample data for a given user
+    function loadProfileData(userId) {
+        const profile = sampleData.find(u => u.user_id === userId);
+        return profile || { user_data: [], role: 'Unknown Role' };
+    }
+
+    // Function to render the radial bar chart
+    function renderSkillWheel(userData) {
         const radialBarChartConfig = {
             innerRadius: 0,
             width: 900,
-            // height: _height:undefined,
             innerRadius: 200,
             outerPadding: 80,
             categoryPadding: 0.1,
@@ -98,18 +97,39 @@
             lvlTextColor: "var(--ar-primary)",
             lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
             colourList: [
-                "var(--ar-warning-text-emphasis)",
-                "var(--ar-primary)",
-                "var(--ar-success-text-emphasis)",
-                "var(--ar-info-text-emphasis)",
+                "#4E79A7", // blue
+                "#F28E2B", // orange
+                "#E15759", // red
+                "#76B7B2", // teal
+                "#59A14F", // green
+                "#EDC948", // yellow
+                "#B07AA1", // purple
+                "#FF9DA7", // pink
+                "#9C755F", // brown
+                "#BAB0AC", // grey
             ],
         };
+
+        // Clear existing chart
+        datavizRoot.innerHTML = '';
+
         main().RadialBarChart({
             target: datavizRoot,
-            data: loadSampleData(),
+            data: userData,
             levels: skillLevelsLoadedFromContext,
             config: radialBarChartConfig,
         });
-    });
+    }
 
+    // Expose function globally for button onclick
+    window.loadSkillWheel = function(profileId) {
+        const profile = loadProfileData(profileId);
+
+        // Render the skill wheel
+        renderSkillWheel(profile.user_data);
+    };
+
+    // Initially render first profile
+    loadSkillWheel(1);
+});
 </script>

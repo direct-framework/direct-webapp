@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING, Any
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Div, Field, Layout, Submit
+from crispy_forms.layout import HTML, Div, Layout, Submit
 from django import forms
 from django.forms import ModelForm
 
@@ -83,6 +83,7 @@ class UserSkillsForm(forms.Form):
                 required=False,
                 initial=initial_value,
                 label="Skill Level",
+                widget=forms.Select(attrs={"class": "form-select form-select-sm"}),
             )
 
         # Set up crispy forms helper
@@ -95,7 +96,7 @@ class UserSkillsForm(forms.Form):
         for parent_category, subcategories in skill_organization.items():
             # Add parent category heading
             parent_heading = (
-                f'<h3 class="h3 text-primary border-bottom">{parent_category}</h3>'
+                f'<h2 class="card-title text-primary mt-5">{parent_category}</h2>'
             )
             parent_div = Div(HTML(parent_heading), css_class="mb-5")
 
@@ -103,31 +104,63 @@ class UserSkillsForm(forms.Form):
             for subcategory, skills_list in subcategories.items():
                 # Add subcategory heading
                 subcategory_heading = f"<h4>{subcategory}</h4>"
-                subcategory_div = Div(HTML(subcategory_heading), css_class="ms-3 mb-4")
 
-                # Create skills grid
-                grid_classes = "row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 ms-3"
-                skills_grid = Div(css_class=grid_classes)
+                # Outer card div
+                subcategory_div = Div(css_class="mt-5 card rounded-1")
 
+                # Card body div with heading and table
+                card_body_div = Div(css_class="card-body")
+
+                # Add subcategory heading inside card body
+                card_body_div.append(HTML(subcategory_heading))
+
+                # Build the table for skills
+                table_html = """
+                <table class="table mt-2">
+                    <thead>
+                        <tr>
+                            <th scope="col">Skill</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Your Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                """
                 for skill in skills_list:
-                    skill_card = Div(
-                        Div(
-                            HTML(f'<h6 class="card-title">{skill.name}</h6>'),
-                            HTML(f'<p class="card-text">{skill.description}</p>'),
-                            css_class="card-body",
-                        ),
-                        Div(
-                            Field(f"skill_{skill.id}"),
-                            css_class="card-footer",
-                        ),
-                        css_class="card h-100 bg-light border-1",
-                    )
-                    skills_grid.append(Div(skill_card, css_class="col"))
+                    table_html += f"""
+                        <tr>
+                            <td class="fw-semibold">{skill.name}</td>
+                            <td>{skill.description}</td>
+                            <td>{{{{ form.skill_{skill.id} }}}}</td>
+                        </tr>
+                    """
+                table_html += """
+                    </tbody>
+                </table>
+                """
 
-                subcategory_div.append(skills_grid)
+                # Append table to card body
+                card_body_div.append(HTML(table_html))
+
+                # Add a submit button for this subcategory
+                subcategory_submit = Div(
+                    Submit(
+                        f"submit_{subcategory.replace(' ', '_')}",
+                        "Save",
+                        css_class="btn btn-primary mt-3",
+                    ),
+                    css_class="mt-3",
+                )
+                card_body_div.append(subcategory_submit)
+
+                # Append card body to the card
+                subcategory_div.append(card_body_div)
+
+                # Add the subcategory div to elements
                 subcategory_elements.append(subcategory_div)
 
             parent_div.extend(subcategory_elements)
+
             layout_elements.append(parent_div)
 
         # Add submit button
