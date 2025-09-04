@@ -19,12 +19,24 @@
         <div class="row">
             <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
                 <h1 class="pb-2 pb-lg-3">Roles and job profiles</h1>
-                <p class="fs-lg pt-2 pt-sm-3">
-                    Dolor laoreet fermentum lectus praesent aenean molestie mollis integer. Sem ullamcorper montes, lorem ullamcorper orci, pellentesque ipsum malesuada gravida. Donec imperdiet nulla suscipit in. Dignissim ornare ac lorem consectetur massa a. Pellentesque urna pharetra, quis maecenas. Sit dolor amet nulla aenean eu, ac. Nisl mi tempus, iaculis viverra vestibulum scelerisque imperdiet montes. Mauris massa elit pretium elementum eget tortor quis. Semper interdum lectus odio diam.
-                </p>
-                <p class="fs-lg mb-3">
-                    Ut pellentesque bibendum dignissim a molestie. Ultrices diam ut vel neque tincidunt eget. Sed ut quis sit semper nunc at etiam lacinia. Quam laoreet eget id sapien a pharetra, ornare diam dignissim. Lorem amet nisl, enim mi aenean mauris. Porta nisl a ultrices ut libero id. Gravida a mi neque, tristique justo, et pharetra. Laoreet nulla est nulla cras ac arcu sed mattis tristique. Morbi convallis suspendisse enim blandit massa. Cursus augue dui mattis morbi velit.
-                </p>
+                <p class="fs-lg pt-2 pt-sm-3">The following profiles represent samples for a number of different dRTP roles.</p>
+                {% if sample_data %}
+                    {% for profile in sample_data %}
+                        <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                            <div class="card-body">
+                                <h2 id="header-{{ profile.user_id }}" class="card-title text-primary">{{ profile.role }}</h2>
+                                <p class="card-text">{{ profile.description }}</p>
+                                <div class="card rounded-1 mt-5">
+                                    <div class="card-body">
+                                        <div id="dataviz_{{ profile.user_id }}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    {% endfor %}
+                {% else %}
+                    No profiles.
+                {% endif %}
             </div>
             <aside class="col-lg-3 offset-xl-1">
                 <div class="offcanvas-lg offcanvas-end" id="sidebar">
@@ -43,4 +55,62 @@
             </aside>
         </div>
     </section>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sampleData = {{ sample_data|safe }};
+    const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
+
+    // Function to render the radial bar chart
+    function renderSkillWheel(userData, userId) {
+        const radialBarChartConfig = {
+            innerRadius: 0,
+            width: 900,
+            innerRadius: 200,
+            outerPadding: 80,
+            categoryPadding: 0.1,
+            skillPadding: 0.05,
+            arcPercent: 0.8,
+            arcStartOffset: 0.1,
+            annotationPadding: 10,
+            lineThickness: 2,
+            labelTextColor: "white",
+            lvlTextColor: "var(--ar-primary)",
+            lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
+            colourList: [
+                "#4E79A7", // blue
+                "#F28E2B", // orange
+                "#E15759", // red
+                "#76B7B2", // teal
+                "#59A14F", // green
+                "#EDC948", // yellow
+                "#B07AA1", // purple
+                "#FF9DA7", // pink
+                "#9C755F", // brown
+                "#BAB0AC", // grey
+            ],
+        };
+
+        const datavizRoot = document.getElementById('dataviz_'+userId);
+
+        // Clear existing chart
+        datavizRoot.innerHTML = '';
+
+        main().RadialBarChart({
+            target: datavizRoot,
+            data: userData,
+            levels: skillLevelsLoadedFromContext,
+            config: radialBarChartConfig,
+        });
+    }
+
+    window.loadSkillWheels = function() {
+        for (let i = 0; i < sampleData.length; i++) {
+            // Render the skill wheel
+            renderSkillWheel(sampleData[i].user_data, sampleData[i].user_id);
+        }
+    };
+
+    loadSkillWheels();
+});
+    </script>
 {% endblock content %}
