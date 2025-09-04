@@ -122,7 +122,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/631719?v=4",
       "profile": "https://github.com/anenadic/professional-cv",
       "contributions": [
-        "code"
+        "code",
+        "maintenance"
       ]
     },
     {
@@ -151,6 +152,15 @@
       "profile": "https://github.com/apps/pre-commit-ci",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "amangoel185",
+      "name": "Aman Goel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10528392?v=4",
+      "profile": "https://github.com/amangoel185",
+      "contributions": [
+        "maintenance"
       ]
     }
   ]
