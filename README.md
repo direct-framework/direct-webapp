@@ -211,6 +211,7 @@ npm run styles:expanded
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/amangoel185"><img src="https://avatars.githubusercontent.com/u/10528392?v=4?s=100" width="100px;" alt="Aman Goel"/><br /><sub><b>Aman Goel</b></sub></a><br /><a href="#maintenance-amangoel185" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/PhilReedData"><img src="https://avatars.githubusercontent.com/u/25770348?v=4?s=100" width="100px;" alt="Phil Reed"/><br /><sub><b>Phil Reed</b></sub></a><br /><a href="#maintenance-philreeddata" title="Maintenance">🚧</a></td>
     </tr>
   </tbody>
 </table>
