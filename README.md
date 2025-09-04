@@ -209,6 +209,9 @@ npm run styles:expanded
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/apps/github-actions"><img src="https://avatars.githubusercontent.com/in/15368?v=4?s=100" width="100px;" alt="github-actions[bot]"/><br /><sub><b>github-actions[bot]</b></sub></a><br /><a href="#maintenance-github-actions[bot]" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/apps/pre-commit-ci"><img src="https://avatars.githubusercontent.com/in/68672?v=4?s=100" width="100px;" alt="pre-commit-ci[bot]"/><br /><sub><b>pre-commit-ci[bot]</b></sub></a><br /><a href="#code-pre-commit-ci[bot]" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/amangoel185"><img src="https://avatars.githubusercontent.com/u/10528392?v=4?s=100" width="100px;" alt="Aman Goel"/><br /><sub><b>Aman Goel</b></sub></a><br /><a href="#maintenance-amangoel185" title="Maintenance">🚧</a></td>
+    </tr>
   </tbody>
 </table>
 
