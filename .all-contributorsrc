@@ -162,6 +162,15 @@
       "contributions": [
         "maintenance"
       ]
+    },
+    {
+      "login": "philreeddata",
+      "name": "Phil Reed",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25770348?v=4",
+      "profile": "https://github.com/PhilReedData",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ]
 }
