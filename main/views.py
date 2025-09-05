@@ -162,7 +162,7 @@ class TrainingPageView(TemplateView):
 
 
 class RolesPageView(TemplateView):
-    """View that renders the terms and conditions page."""
+    """View that renders the role profiles page."""
 
     template_name = "main/pages/roles.html"
 
