@@ -3,6 +3,10 @@
         "user_id": 59,
         "name": "User 59",
         "role": "Community Manager",
+        "description": [
+            "Riley is the Community Manager for the Research Software Engineering (RSE) group at Kingsmere University. With a background in digital communications and research support, Riley specialises in building and sustaining communities around research software. They focus on connecting researchers, developers, and technical staff, ensuring knowledge flows effectively and that the RSE team’s work is visible, accessible, and impactful.",
+            "Riley’s role blends facilitation, communication, and advocacy. They design engagement strategies, run events and workshops, and create resources that help researchers adopt best practices in software development and reproducibility. Riley also acts as a bridge between the RSE team, research groups, and external partners, promoting collaboration and inclusivity across projects."
+        ],
         "user_data": [
             {
             "category": "Professional skills",
