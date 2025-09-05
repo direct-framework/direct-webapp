@@ -17698,7 +17698,11 @@ html {
 
 .bg-hero-role-profile,
 .bg-hero-role-desc {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.alert p {
+  margin: 0;
 }
 
 /*# sourceMappingURL=theme.css.map */
