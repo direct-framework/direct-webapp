@@ -17,22 +17,26 @@
             </ol>
         </nav>
         <div class="row">
-            <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
+            <div class="col-lg-11 col-xl-10 pe-lg-4 pe-xl-0">
                 <h1 class="pb-2 pb-lg-3">Roles and job profiles</h1>
                 <p class="fs-lg pt-2 pt-sm-3">The following profiles represent samples for a number of different dRTP roles.</p>
                 {% if sample_data %}
                     {% for profile in sample_data %}
-                        <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
-                            <div class="card-body">
-                                <h2 id="header-{{ profile.user_id }}" class="card-title text-primary">{{ profile.role }}</h2>
-                                <p class="card-text">{{ profile.description }}</p>
-                                <div class="card rounded-1 mt-5">
-                                    <div class="card-body">
-                                        <div id="dataviz_{{ profile.user_id }}"></div>
+                        <h2 id="header-{{ profile.user_id }}" class="card-title text-primary">{{ profile.role }}</h2>
+                        <div class="container mx-0 my-5 px-0">
+                            <div class="row">
+                                <div class="col-4">
+                                    {% for para in profile.description %}<p class="card-text">{{ para }}</p>{% endfor %}
+                                </div>
+                                <div class="col-8">
+                                    <div class="card rounded-1">
+                                        <div class="card-body">
+                                            <div id="dataviz_{{ profile.user_id }}"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </section>
+                        </div>
                     {% endfor %}
                 {% else %}
                     No profiles.
