@@ -1,5 +1,5 @@
 {% load static %}
-<header class="navbar navbar-expand-lg fixed-top bg-secondary">
+<header class="navbar navbar-expand-lg fixed-top bg-light">
     <div class="container">
         <!-- Navbar brand -->
         <a class="navbar-brand pe-sm-3" href="{% url 'index' %}">
@@ -67,11 +67,10 @@
                 </div>
             </div>
         {% else %}
+            <a class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex me-2"
+               href="{% url 'login' %}">Login</a>
             <a class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex"
-               href="{% url 'login' %}">
-                <i class="ai-login fs-xl me-2 ms-n1"></i>
-                Login
-            </a>
+               href="{% url 'django_registration_register' %}">Register</a>
         {% endif %}
         <!-- Mobile menu toggler -->
         <button class="navbar-toggler ms-sm-3"
