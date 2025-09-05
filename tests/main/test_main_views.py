@@ -159,3 +159,22 @@ class TestUserSkillProfile(TemplateOkMixin):
         assert "skill_levels" in response.context
         assert isinstance(response.context["skill_levels"], str)
         # TODO: Improve this test
+
+
+class TestRolesPageView(TemplateOkMixin):
+    """Test suite for the role profiles page view."""
+
+    _template_name = "main/pages/roles.html"
+
+    def _get_url(self):
+        return reverse("roles")
+
+    def test_provides_required_context(self, admin_client):
+        """Test that the role profiles view renders the data visualization."""
+        response = admin_client.get(self._get_url())
+        assert response.status_code == 200
+        assert "sample_data" in response.context
+        assert isinstance(response.context["sample_data"], list)
+        assert "skill_levels" in response.context
+        assert isinstance(response.context["skill_levels"], list)
+        # TODO: Improve this test
