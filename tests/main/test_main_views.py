@@ -82,7 +82,7 @@ class TestTermsPageView(TemplateOkMixin):
 class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the SelfAssessPageView."""
 
-    _template_name = "main/self-assess.html"
+    _template_name = "main/user_self_assess.html"
 
     def _get_url(self):
         return reverse("self-assess")
