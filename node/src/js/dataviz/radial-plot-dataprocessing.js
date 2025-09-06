@@ -31,6 +31,33 @@ export const catAnnotationPointOuter = (categoryStartAngleMap) => (categoryId) =
   return { x, y }
 }
 
+export const catAnnotationPointOuterLabel =
+  (categoryStartAngleMap, xPadding, yPadding) => (categoryId) => {
+    const angle = categoryStartAngleMap[categoryId] % fullCircleAngle
+    const xSide = Math.sin(angle) > 0 ? 1 : -1
+    const ySide = -Math.cos(angle) > 0 ? 1 : -1
+
+    const catsOnThisSide = Object.keys(categoryStartAngleMap)
+      .filter((catId) => {
+        const inXSide = Math.sin(categoryStartAngleMap[catId]) > 0 ? 1 : -1
+        const inYSide = -Math.cos(categoryStartAngleMap[catId]) > 0 ? 1 : -1
+        return inXSide === xSide && inYSide === ySide
+      })
+      .sort((a, b) =>
+        (ySide === -1 && xSide === -1) || (ySide === 1 && xSide === 1)
+          ? categoryStartAngleMap[a] > categoryStartAngleMap[b]
+            ? 1
+            : -1
+          : categoryStartAngleMap[a] > categoryStartAngleMap[b]
+          ? -1
+          : 1
+      )
+    const thisCatIndex = catsOnThisSide.indexOf(categoryId)
+    const x = xSide * xPadding
+    const y = ySide * ((thisCatIndex + 1) / catsOnThisSide.length) * yPadding
+    return { x, y }
+  }
+
 /* Get the arcs for the radial bar chart. This includes the skill bars, category
   base, and level rings. It also includes the start angles for each skill and
   category, and the height of each level.
@@ -71,6 +98,8 @@ export const getArcsFn =
     skillPadding = 0.05,
     arcPercent = 0.8,
     arcStartOffset = 0.1,
+    labelXOffset = 1.1,
+    labelYSpacing = 1,
   }) =>
   // eslint-disable-next-line indent
   ({ skillsData, levels, categories, groupedByCategory }) => {
@@ -99,10 +128,11 @@ export const getArcsFn =
     const categoryStartAngle = categories.reduce(
       (acc, category) => [
         ...acc,
-        acc[acc.length - 1] +
+        (acc[acc.length - 1] +
           ((groupedByCategory.get(category.id)?.length ?? 0) * columnAngle +
             (groupedByCategory.get(category.id)?.length ?? 0) * skillPadding +
-            categoryPadding),
+            categoryPadding)) %
+          (Math.PI * 2),
       ],
       [fullCircleAngle * arcStartOffset]
     )
@@ -205,6 +235,11 @@ export const getArcsFn =
     return {
       catAnnotationPointInner: catAnnotationPointInner(categoryStartAngleMap),
       catAnnotationPointOuter: catAnnotationPointOuter(categoryStartAngleMap),
+      catAnnotationPointOuterLabel: catAnnotationPointOuterLabel(
+        categoryStartAngleMap,
+        labelXOffset,
+        labelYSpacing
+      ),
       barArc,
       barFullHeightArc,
       barSegmentArc,
@@ -255,6 +290,6 @@ export function radialBarChartPreProcessing({ data, colourList }) {
 }
 
 /* Get the width of the category label based on the length of the category string */
-export function getCatLabelWidth(cat) {
-  return cat.length * 10
+export const getCatLabelWidthFn = (fontSize) => (cat) => {
+  return cat.length * fontSize
 }
