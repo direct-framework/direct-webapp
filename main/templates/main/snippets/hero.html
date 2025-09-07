@@ -35,25 +35,22 @@
         <div class="mx-auto">
             <div class="row g-4 mb-3 mb-xl-0">
                 <div class="col-md-5 col-lg-4 order-md-1">
-                    <div class="card border-0 bg-hero-role-desc h-100 px-xl-4 pb-sm-2 pb-xl-4">
+                    <div class="card border-0 rounded-2 bg-dark h-100 px-xl-4 pb-sm-2 pb-xl-4">
                         <div class="card-body">
-                            <h3>Skill Wheels give a visual overview of role profiles</h3>
+                            <h3>Explore Roles with the Skills Wheel</h3>
                             <p class="card-text">
-                                The skills wheel shows the range of competencies that make up the role of a
-                                Research Software Engineer. It helps you see how technical, research, and
-                                professional skills fit together, and where you might want to focus your
-                                development. Use the skill wheel to reflect on your own strengths, plan learning, and
-                                understand how your role connects to wider research careers.
+                                The Skills Wheel provides a clear, visual overview of the competencies that make up a digital research role.
+                                It shows how technical expertise, research knowledge, and professional skills come together, helping you
+                                identify strengths, spot areas for growth, and plan your development. Use the wheel to reflect on your own skills
+                                and understand how your role contributes to the wider research landscape.
                             </p>
-                            <a class="btn btn-outline-warning mt-2" href="{% url 'roles' %}">More Role Profiles</a>
+                            <a class="btn btn-primary mt-2" href="{% url 'roles' %}">View Sample Roles</a>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-7 col-lg-8 order-md-2">
-                    <div class="card border-0 bg-hero-role-profile h-100 px-xl-4 pb-sm-2 pb-xl-4">
-                        <div class="card-body">
-                            <div id="dataviz_hero"></div>
-                        </div>
+                    <div class="card border-0 rounded-2 h-100 bg-skill-wheel">
+                        <div id="dataviz_hero"></div>
                     </div>
                 </div>
             </div>

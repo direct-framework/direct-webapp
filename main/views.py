@@ -183,9 +183,46 @@ class TrainingPageView(TemplateView):
 
 
 class RolesPageView(TemplateView):
-    """View that renders the terms and conditions page."""
+    """View that renders the role profiles page."""
 
     template_name = "main/pages/roles.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add sample profile data to the template context."""
+        context = super().get_context_data(**kwargs)
+
+        # Skill levels from the database
+        skill_levels = SkillLevel.objects.all()
+        skill_levels_data = [
+            {
+                "level": sl.level,
+                "name": sl.name,
+                "description": sl.description,
+            }
+            for sl in skill_levels
+        ]
+
+        # Combine multiple sample JSON files
+        sample_data_files = [
+            "main/static/assets/sample_data/sample_profile_1.json",
+            "main/static/assets/sample_data/sample_profile_41.json",
+            "main/static/assets/sample_data/sample_profile_59.json",
+        ]
+
+        combined_sample_data = []
+        for file_path in sample_data_files:
+            json_path = Path(file_path)
+            if json_path.exists():
+                with open(json_path) as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        combined_sample_data.extend(data)
+                    else:
+                        combined_sample_data.append(data)
+
+        context["skill_levels"] = skill_levels_data
+        context["sample_data"] = combined_sample_data
+        return context
 
 
 class GetInvolvedPageView(TemplateView):
