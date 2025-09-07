@@ -15,7 +15,7 @@ class Category(models.Model):
     """Model for categories."""
 
     name = models.CharField(max_length=50)
-    description = models.CharField(max_length=200)
+    description = models.TextField()
     parent_category = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
@@ -48,7 +48,7 @@ class Skill(models.Model):
     """Model for skills."""
 
     name = models.CharField(max_length=50)
-    description = models.CharField(max_length=200)
+    description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
