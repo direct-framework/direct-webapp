@@ -10,7 +10,7 @@ confusable-homoglyphs==3.3.1
     # via django-registration
 crispy-bootstrap5==2025.6
     # via direct_webapp (pyproject.toml)
-django==5.2.4
+django==5.2.5
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
@@ -36,7 +36,7 @@ packaging==25.0
     # via gunicorn
 sqlparse==0.5.3
     # via django
-typing-extensions==4.14.1
+typing-extensions==4.15.0
     # via django-stubs-ext
 whitenoise==6.9.0
     # via direct_webapp (pyproject.toml)
