@@ -30,17 +30,10 @@
                 <p class="text-body pb-3 mb-3 mb-lg-4">
                     Identify skills, define development pathways and progress your career in research software
                 </p>
-                {% if user.is_authenticated %}
-                    <a class="btn btn-lg btn-warning" href="{% url 'self-assess' %}">Assess your Skills</a>
-                {% else %}
-                    <a class="btn btn-lg btn-warning"
-                       href="{% url 'django_registration_register' %}">Create Account</a>
-                    <a class="btn btn-lg btn-warning" href="{% url 'login' %}">Login</a>
-                {% endif %}
             </div>
         </div>
-        <div class="p-4 mx-auto">
-            <div class="row g-4 mb-3 mb-xl-0 pb-sm-2 pb-md-4 pb-xl-5">
+        <div class="mx-auto">
+            <div class="row g-4 mb-3 mb-xl-0">
                 <div class="col-md-5 col-lg-4 order-md-1">
                     <div class="card border-0 rounded-2 bg-dark h-100 px-xl-4 pb-sm-2 pb-xl-4">
                         <div class="card-body">

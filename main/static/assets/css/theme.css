@@ -17691,7 +17691,7 @@ html {
 }
 
 [id^=role-] {
-  scroll-margin-top: 300px;
+  scroll-margin-top: 138px;
 }
 
 .competencies-sticky {
@@ -17719,6 +17719,10 @@ html {
 .bg-skill-wheel > * {
   position: relative;
   z-index: 1;
+}
+
+.alert p {
+  margin: 0;
 }
 
 /*# sourceMappingURL=theme.css.map */

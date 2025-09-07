@@ -21,7 +21,7 @@ urlpatterns = [
     path("account/profile/", views.UserUpdateView.as_view(), name="profile"),
     path(
         "account/overview/",
-        views.AccountOverviewPageView.as_view(),
+        views.account_overview,
         name="account-overview",
     ),
     path(

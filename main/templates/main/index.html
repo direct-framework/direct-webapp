@@ -16,15 +16,16 @@
                         <div class="text-center text-md-start pe-sm-3 col-5">
                             <h2 class="h1 text-white pb-2 pb-md-3 mb-lg-4 col-4">Track and manage your professional development</h2>
                             <a class="btn btn-icon btn-xl btn-warning rounded-circle"
-                               href="https://www.youtube.com/watch?v=NpQFhwqBgg4"
-                               data-bs-toggle="video"
+                               href="#"
+                               data-bs-toggle="modal"
+                               data-bs-target="#videoModal"
                                aria-label="Play video">
                                 <i class="fa-solid fa-play fs-lg"></i>
                             </a>
                         </div>
                         <div class="col">
-                            <img src="{% static 'assets/img/auth/cover.webp' %}"
-                                 alt="Skills wheel visualisation"
+                            <img src="{% static 'assets/img/landing/workshop-breakout.webp' %}"
+                                 alt="Workshop photo"
                                  class="img-fluid w-100 h-100"
                                  style="object-fit: cover;
                                         border-radius: 1rem">
@@ -65,4 +66,35 @@
             </div>
         </div>
     </section>
+    <!-- Bootstrap modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark" style="border-radius: 0;">
+                <div class="modal-body p-0">
+                    <div class="ratio ratio-16x9">
+                        <iframe id="videoFrame"
+                                src=""
+                                title="YouTube video"
+                                allow="autoplay; encrypted-media"
+                                allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    const videoModal = document.getElementById('videoModal');
+    const iframe = document.getElementById('videoFrame');
+    const videoUrl = "https://www.youtube.com/embed/NpQFhwqBgg4?autoplay=1";
+
+    // Load video when modal opens
+    videoModal.addEventListener('shown.bs.modal', function () {
+        iframe.src = videoUrl;
+    });
+
+    // Stop video when modal closes
+    videoModal.addEventListener('hidden.bs.modal', function () {
+        iframe.src = "";
+    });
+    </script>
 {% endblock content %}
