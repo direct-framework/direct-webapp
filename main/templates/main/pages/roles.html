@@ -16,48 +16,40 @@
                 <li class="breadcrumb-item active" aria-current="page">Roles</li>
             </ol>
         </nav>
-        <div class="row">
-            <div class="col-lg-11 col-xl-10 pe-lg-4 pe-xl-0">
-                <h1 class="pb-2 pb-lg-3">Roles and job profiles</h1>
-                <p class="fs-lg pt-2 pt-sm-3">The following profiles represent samples for a number of different dRTP roles.</p>
-                {% if sample_data %}
-                    {% for profile in sample_data %}
-                        <h2 id="header-{{ profile.user_id }}" class="card-title text-primary">{{ profile.role }}</h2>
-                        <div class="container mx-0 my-5 px-0">
-                            <div class="row">
-                                <div class="col-4">
-                                    {% for para in profile.description %}<p class="card-text">{{ para }}</p>{% endfor %}
+        {% if sample_data %}
+            {% for profile in sample_data %}
+                <section id="role-{{ profile.user_id }}" class="overflow-hidden pb-5">
+                    <div class="pb-sm-3 mb-md-2 mb-lg-3">
+                        <div class="row g-4">
+                            <div class="col-md-7 {% if forloop.counter|divisibleby:"2" %}order-md-2{% endif %}"
+                                 data-aos="{% if forloop.counter|divisibleby:"2" %}fade-left{% else %}fade-right{% endif %}"
+                                 data-aos-duration="600"
+                                 data-aos-offset="280"
+                                 data-disable-parallax-down="md">
+                                <div class="h-100 bg-skill-wheel rounded-3">
+                                    <div id="dataviz_{{ profile.user_id }}"></div>
                                 </div>
-                                <div class="col-8">
-                                    <div class="card rounded-1">
-                                        <div class="card-body">
-                                            <div id="dataviz_{{ profile.user_id }}"></div>
-                                        </div>
+                            </div>
+                            <div class="col-md-5 {% if forloop.counter|divisibleby:"2" %}order-md-1{% endif %}"
+                                 data-aos="{% if forloop.counter|divisibleby:"2" %}fade-right{% else %}fade-left{% endif %}"
+                                 data-aos-duration="600"
+                                 data-aos-offset="280"
+                                 data-disable-parallax-down="md">
+                                <div class="d-flex flex-column h-100 bg-secondary rounded-3 py-5 px-4 px-lg-5">
+                                    <h2 class="mb-xl-4">{{ profile.role }}</h2>
+                                    <p class="mb-4 mb-xl-5">{{ profile.description }}</p>
+                                    <div class="mt-auto">
+                                        <a class="btn btn-outline-primary" href="#role-{{ profile.user_id }}">Learn more</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    {% endfor %}
-                {% else %}
-                    No profiles.
-                {% endif %}
-            </div>
-            <aside class="col-lg-3 offset-xl-1">
-                <div class="offcanvas-lg offcanvas-end" id="sidebar">
-                    <div class="offcanvas-header">
-                        <h4 class="offcanvas-title">Sidebar</h4>
-                        <button class="btn-close ms-auto"
-                                type="button"
-                                data-bs-dismiss="offcanvas"
-                                data-bs-target="#sidebar"
-                                aria-label="Close"></button>
                     </div>
-                    <div class="offcanvas-body">
-                        <h4 class="pt-1 pt-lg-0 mt-lg-n2"></h4>
-                    </div>
-                </div>
-            </aside>
-        </div>
+                </section>
+            {% endfor %}
+        {% else %}
+            No profiles
+        {% endif %}
     </section>
     <script>
 document.addEventListener('DOMContentLoaded', function () {

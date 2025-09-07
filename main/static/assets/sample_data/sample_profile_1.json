@@ -3,6 +3,7 @@
         "user_id": 1,
         "name": "User 1",
         "role": "Research Software Engineer",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id consequat mauris. Aenean id lacus eleifend, porttitor dolor sed, dapibus dui. Quisque tincidunt leo vel magna facilisis feugiat quis ac elit. Sed eget purus posuere, pellentesque mi non, faucibus magna. Ut sollicitudin sagittis risus, at rutrum nisl vulputate non. Nunc luctus lobortis iaculis. Aenean suscipit orci nibh, at dapibus elit eleifend id. Sed in bibendum dui, id sollicitudin enim. Cras eget erat nec diam dictum fermentum at vitae ex. Morbi eget mauris laoreet, varius nisl vel, euismod ipsum. Vestibulum a congue tellus. In sed ligula dui.",
         "user_data": [
             {
             "skill": "Writing code & knowledge of programming languages",

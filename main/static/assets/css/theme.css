@@ -17690,15 +17690,35 @@ html {
   scroll-margin-top: 138px;
 }
 
+[id^=role-] {
+  scroll-margin-top: 300px;
+}
+
 .competencies-sticky {
   top: 100px;
   max-height: calc(100vh - 100px);
   overflow-y: auto;
 }
 
-.bg-hero-role-profile,
-.bg-hero-role-desc {
-  background-color: rgba(0, 0, 0, 0.8);
+.bg-skill-wheel {
+  position: relative;
+  background-image: url("/static/assets/img/landing/grunge-black-concrete-textured-background.webp");
+  background-position: center;
+  background-size: cover;
+}
+
+.bg-skill-wheel::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background-color: rgba(18, 21, 25, 0.5);
+  border-radius: inherit;
+}
+
+.bg-skill-wheel > * {
+  position: relative;
+  z-index: 1;
 }
 
 /*# sourceMappingURL=theme.css.map */
