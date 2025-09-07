@@ -10,7 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     libffi-dev \
     python3-dev \
+    ca-certificates \
+    curl \
  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -o /etc/ssl/certs/DigiCertGlobalRootCA.crt.pem \
+    https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
