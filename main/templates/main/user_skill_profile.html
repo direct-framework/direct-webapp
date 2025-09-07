@@ -55,7 +55,7 @@
             </aside>
             <!-- Page content -->
             <div class="col-lg-9 pb-2 pb-sm-4">
-                <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                <section class="card border-0 mb-4">
                     <div class="card-body">
                         <h1>Skills Wheel Visualisation</h1>
                         <p class="lead">
@@ -63,11 +63,7 @@
                             using the interactive Skills Wheel. Each segment represents a competency,
                             with size according to your self-assessed level.
                         </p>
-                        <section class="container-fluid pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
-                            <div class="bg-body rounded-5 d-flex justify-content-center align-items-center"
-                                 id="dataviz_root"
-                                 style="width:100%"></div>
-                        </section>
+                        <div id="dataviz_root" style="width:100%"></div>
                         <script>
     document.addEventListener('DOMContentLoaded', function () {
         const datavizRoot = document.getElementById('dataviz_root');
@@ -87,10 +83,16 @@
             lvlTextColor: "var(--ar-primary)",
             lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
             colourList: [
-                "var(--ar-warning-text-emphasis)",
-                "var(--ar-primary)",
-                "var(--ar-success-text-emphasis)",
-                "var(--ar-info-text-emphasis)",
+                "#4E79A7", // blue
+                "#F28E2B", // orange
+                "#E15759", // red
+                "#76B7B2", // teal
+                "#59A14F", // green
+                "#EDC948", // yellow
+                "#B07AA1", // purple
+                "#FF9DA7", // pink
+                "#9C755F", // brown
+                "#BAB0AC", // grey
             ],
         }
         const userDataLoadedFromContext = {{ user_data|safe }};
