@@ -7,4 +7,4 @@
 !db
 db/*
 !scripts
-!data/*.json
+!data
