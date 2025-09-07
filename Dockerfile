@@ -5,8 +5,10 @@ WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
-    libffi-dev \
+    pkg-config \
+    default-libmysqlclient-dev \
     libssl-dev \
+    libffi-dev \
     python3-dev \
  && rm -rf /var/lib/apt/lists/*
 
