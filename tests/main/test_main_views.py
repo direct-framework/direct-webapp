@@ -85,7 +85,7 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
     _template_name = "main/user_self_assess.html"
 
     def _get_url(self):
-        return reverse("self-assess")
+        return reverse("self_assess")
 
     def test_post(self, client, user, django_user_model):
         """Test the view POST request creates new user skills and redirects."""
@@ -137,9 +137,9 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
         for user_skill in user_skills:
             assert user_skill.skill_level == skill_level
 
-        # Assert redirects to self-assess (success_url)
+        # Assert redirects to self_assess (success_url)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("self-assess")
+        assert response.url == reverse("self_assess")
 
 
 class TestUserSkillProfile(TemplateOkMixin):
