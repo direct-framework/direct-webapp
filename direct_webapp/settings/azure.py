@@ -5,7 +5,7 @@ import os
 from ._production import *  # noqa: F403
 
 # -----------------------------------------------------------------------------
-# Email settings (SendGrid)
+# Email settings (MailerSend)
 # -----------------------------------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.mailersend.net"
