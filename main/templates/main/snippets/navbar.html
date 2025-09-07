@@ -47,7 +47,7 @@
                         Change Password
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'self-assess' %}">
+                    <a class="dropdown-item" href="{% url 'self_assess' %}">
                         <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
                         Assess Skills
                     </a>
@@ -99,7 +99,7 @@
                                 <a class="dropdown-item" href="{% url 'competencies' %}">Competencies framework</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'skill-levels' %}">Skill levels</a>
+                                <a class="dropdown-item" href="{% url 'skill_levels' %}">Skill levels</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'training' %}">Training resources</a>
@@ -117,15 +117,15 @@
                            aria-expanded="false">Community</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'get-involved' %}">Get involved</a>
+                                <a class="dropdown-item" href="{% url 'get_involved' %}">Get involved</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'events' %}">Events</a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item {% if url_name == 'self-assess' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'self-assess' %}">
+                    <li class="nav-item {% if url_name == 'self_assess' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'self_assess' %}">
                             <i class="fa-solid fa-bolt fs-lg me-2"></i>
                             Start Using
                         </a>

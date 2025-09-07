@@ -293,7 +293,7 @@ class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
     request: AuthenticatedHttpRequest
     template_name = "main/user_self_assess.html"
     form_class = UserSkillsForm
-    success_url = reverse_lazy("self-assess")
+    success_url = reverse_lazy("self_assess")
 
     def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
         """Add the competencies framework data to the template context."""
