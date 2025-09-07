@@ -22,7 +22,7 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@directframework.co
 ALLOWED_HOSTS = [
     "directframework.com",
     "direct-c8ctfkd4btcecqde.ukwest-01.azurewebsites.net",
-    "169.254.130.2",
+    "169.254.130.2",  # Internal testing / staging addresses
     "169.254.130.3",
     "169.254.130.4",
     "169.254.130.5",
@@ -68,6 +68,9 @@ LOGGING = {
     },
 }
 
+# -----------------------------------------------------------------------------
+# Database settings (MySQL)
+# -----------------------------------------------------------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
