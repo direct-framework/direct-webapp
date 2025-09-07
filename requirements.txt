@@ -34,6 +34,8 @@ gunicorn==23.0.0
     # via direct_webapp (pyproject.toml)
 markupsafe==3.0.2
     # via werkzeug
+mysqlclient==2.2.7
+    # via direct_webapp (pyproject.toml)
 packaging==25.0
     # via gunicorn
 python-http-client==3.3.7
