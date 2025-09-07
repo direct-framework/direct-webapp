@@ -3,7 +3,11 @@
         "user_id": 41,
         "name": "User 41",
         "role": "RSE Team Lead",
-        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id consequat mauris. Aenean id lacus eleifend, porttitor dolor sed, dapibus dui. Quisque tincidunt leo vel magna facilisis feugiat quis ac elit. Sed eget purus posuere, pellentesque mi non, faucibus magna. Ut sollicitudin sagittis risus, at rutrum nisl vulputate non. Nunc luctus lobortis iaculis. Aenean suscipit orci nibh, at dapibus elit eleifend id. Sed in bibendum dui, id sollicitudin enim. Cras eget erat nec diam dictum fermentum at vitae ex. Morbi eget mauris laoreet, varius nisl vel, euismod ipsum. Vestibulum a congue tellus. In sed ligula dui.",
+        "description": [
+            "Maya leads the Research Software Engineering group at Northbridge Discovery Centre, specialising in cloud-native and high-performance computing (HPC) solutions for research. With a PhD in computational physics and extensive experience architecting scalable research workflows, she helps researchers harness both on-premises HPC resources and cloud platforms for cutting-edge science.",
+            "Her team supports projects spanning genomics, climate modelling, digital humanities, and AI, ensuring that computational research is efficient, reproducible, and sustainable. Maya is passionate about helping researchers adopt best practices in cloud/HPC use, while also advocating for recognition of RSEs as vital contributors to the research ecosystem.",
+            "As RSE Team Lead, Maya provides strategic direction for the group, ensuring that their work aligns with institutional research priorities while promoting sustainable and scalable computing practices. She oversees the delivery of HPC and cloud-based projects, guiding teams to develop optimised, cost-efficient, and reproducible workflows. Alongside project management, she mentors both RSEs and researchers, helping them build expertise in containers, workflow automation, and advanced computing methods. Maya works closely with principal investigators, IT services, and national computing centres to design and implement research solutions at scale, and she actively advocates for the adoption of FAIR, open, and environmentally responsible approaches to cloud and HPC technologies."
+        ],
         "user_data": [
             {
             "category": "Professional skills",
