@@ -37,7 +37,7 @@
                                  data-disable-parallax-down="md">
                                 <div class="d-flex flex-column h-100 bg-secondary rounded-3 py-5 px-4 px-lg-5">
                                     <h2 class="mb-xl-4">{{ profile.role }}</h2>
-                                    <p class="mb-4 mb-xl-5">{{ profile.description }}</p>
+                                    {% for para in profile.description %}<p>{{ para }}</p>{% endfor %}
                                     <div class="mt-auto">
                                         <a class="btn btn-outline-primary" href="#role-{{ profile.user_id }}">Learn more</a>
                                     </div>
