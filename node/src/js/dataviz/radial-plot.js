@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import { radialBarChartPreProcessing, getArcsFn } from './radial-plot-dataprocessing'
+import { splitTextToFitWidth } from './utils'
 
 /* D3js component to render the radial bar chart bars
 
@@ -135,7 +136,7 @@ function renderAnnotationsD3({
   filteredCategories.forEach((cat) => {
     const annotationGroup = svg
       .append('g')
-      .attr('class', `Annotation Annotation-${cat.id}`)
+      .attr('class', `Annotation Annotation-${cat.id.replaceAll(' ', '-')}`)
       .attr('fill', cat.color)
 
     const labelXDir = catAnnotationPointOuterLabel(cat.id).x > 0 ? 1 : -1
@@ -213,30 +214,44 @@ function renderAnnotationsD3({
     // Category label text box
     annotationGroup
       .append('rect')
+      .attr('class', 'label-box')
       .attr('x', labelAnchorPoint.x)
       .attr('y', labelAnchorPoint.y + (labelYDir === 1 ? 0 : -labelHeight))
       .attr('width', labelWidth)
       .attr('height', labelHeight)
       .attr('color', labelTextColor)
+      .attr('opacity', 0.8) // increased on hover
       .attr('fill', cat.color)
+
+    console.info(cat.id, { labelAnchorPoint, labelXDir })
+
+    const highlightLineThickness = 10
+    // Line On Side of category label
+    annotationGroup
+      .append('line')
+      .attr('class', 'highlight-line')
+      .attr(
+        'x1',
+        labelAnchorPoint.x +
+          labelXDir * highlightLineThickness +
+          (labelXDir === 1 ? labelWidth : 0)
+      )
+      .attr('y1', labelAnchorPoint.y)
+      .attr(
+        'x2',
+        labelAnchorPoint.x +
+          labelXDir * highlightLineThickness +
+          (labelXDir === 1 ? labelWidth : 0)
+      )
+      .attr('y2', labelAnchorPoint.y + labelHeight * labelYDir)
+      .attr('stroke', cat.color)
+      .attr('opacity', 0) // only shown on hover
+      .attr('fill', 'none')
+      .attr('stroke-width', highlightLineThickness)
 
     // Category label text
     // Split the text into blocks of maxLabelWidth
-
-    const newLabel = cat.id.split(' ').reduce((acc, word) => {
-      const testLine = acc.length === 0 ? word : `${acc[acc.length - 1]} ${word}`
-      const testLineWidth = testLine.length * (fontSize * 0.6) // Approximate width of text in pixels
-      if (testLineWidth > config.maxLabelWidth) {
-        acc.push(word)
-      } else {
-        if (acc.length > 0) acc[acc.length - 1] = testLine
-        else {
-          acc.push(testLine)
-        }
-      }
-      return acc
-    }, [])
-
+    const newLabel = splitTextToFitWidth(cat.id, config.maxLabelWidth, fontSize)
     const labelDirected = labelYDir === 1 ? newLabel : newLabel.reverse()
     labelDirected.forEach((line, i) => {
       annotationGroup
@@ -348,6 +363,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
     labelXOffset = 1.1,
     labelYSpacing = 10,
     plotYOffset = 0,
+    fontSize = 14,
   } = config
 
   const height = _height ?? width * 0.8 // Width needs to be larger than height to fit cat labels
@@ -422,26 +438,41 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
       .text('')
 
     // Skill text
-    group
-      .append('text')
-      .attr('y', 15)
-      .attr('text-anchor', 'middle')
-      .attr('fill', labelTextColor)
-      .attr('class', 'skill-highlight-text-skill')
-      .text('')
+    // group
+    //   .append('text')
+    //   .attr('y', 0)
+    //   .attr('text-anchor', 'middle')
+    //   .attr('fill', labelTextColor)
+    //   .attr('class', 'skill-highlight-text-skill')
+    //   .text('')
 
+    group.append('g').attr('class', 'skill-highlight-text-skill')
     // Skill level text
     group
+      .append('line')
+      .attr('class', 'skill-highlight-text-lvl-line')
+      .attr('x1', -innerRadius * 0.7)
+      .attr('y1', 50 - fontSize / 1.3)
+      .attr('x2', innerRadius * 0.7)
+      .attr('y2', 50 - fontSize / 1.3)
+      .attr('stroke', '#FFF')
+      .attr('fill', 'none')
+      .attr('stroke-width', 2)
+      .attr('opacity', 0)
+
+    group
       .append('text')
-      .attr('y', 35)
+      .attr('y', 60)
       .attr('text-anchor', 'middle')
-      .attr('fill', labelTextColor)
+      .attr('fill', '#FFF')
+      .attr('font-size', fontSize)
+      // .attr('fill', labelTextColor)
       .attr('class', 'skill-highlight-text-lvl')
       .text('')
   }
 
   // D3.js function to render the skill highlight
-  function refreshSkillHighlightD3(svg, highlightedSkill) {
+  function refreshSkillHighlightD3(svg, highlightedSkill, innerCircleWidth, fontSize) {
     const group = svg.select('.skill-highlight')
 
     if (!highlightedSkill) {
@@ -452,12 +483,12 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
         .transition(t) // Transition to the new highlight
         .attr('opacity', 0)
 
-      // Category text
-      group
-        .select('.skill-highlight-text-cat')
-        .transition(t)
-        .attr('opacity', 0)
-        .text('')
+      // Category text TEMPORARILY DISABLED
+      // group
+      //   .select('.skill-highlight-text-cat')
+      //   .transition(t)
+      //   .attr('opacity', 0)
+      //   .text('')
 
       // Skill text
       group
@@ -472,6 +503,13 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
         .transition(t)
         .attr('opacity', 0)
         .text('')
+
+      group.select('.skill-highlight-text-lvl-line').transition(t).attr('opacity', 0)
+
+      svg.selectAll('.highlight-line').transition(t).attr('opacity', 0)
+      svg.selectAll('.label-box').transition(t).attr('opacity', 0.8)
+
+      group.selectAll('.skill-highlight-text-skill-central').remove()
     } else {
       const t = d3.transition().duration(200).ease(d3.easeLinear)
       // Circle for skill highlight
@@ -481,19 +519,51 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
         .attr('opacity', 1)
         .attr('fill', highlightedSkill.color)
 
-      // Category text
-      group
-        .select('.skill-highlight-text-cat')
-        .transition(t)
-        .attr('opacity', 1)
-        .text(highlightedSkill.category)
+      // Category text TEMPORARILY DISABLED
+      // group
+      //   .select('.skill-highlight-text-cat')
+      //   .transition(t)
+      //   .attr('opacity', 1)
+      //   .text(highlightedSkill.category)
 
       // Skill text
+
+      const skillTextSplit = splitTextToFitWidth(
+        highlightedSkill.skill,
+        innerCircleWidth * 2.5,
+        fontSize
+      )
+      group.select('.skill-highlight-text-skill').transition(t).attr('opacity', 1)
+      // .text(highlightedSkill.skill)
+      // const annotationSkillTextGroup = group.select('.skill-highlight-text-skill')
+      // console.info(skillTextSplit)
+      // skillTextSplit.forEach((skillTextRow, i) =>
+      //   annotationSkillTextGroup
+      //     .append('text')
+      //     .attr('x', 0)
+      //     .attr('y', i * 1)
+      //     .attr('text-anchor', 'middle')
+      //     .attr('fill', labelTextColor)
+      //     .attr('class', 'skill-highlight-text-skill-central')
+      //     .text(skillTextRow)
+      // )
+      // console.info("annotationSkillTextGroup", annotationSkillTextGroup)
       group
         .select('.skill-highlight-text-skill')
-        .transition(t)
-        .attr('opacity', 1)
-        .text(highlightedSkill.skill)
+        .selectAll('skill-highlight-text-skill-central')
+        .data(skillTextSplit)
+        .enter()
+        .append('text')
+        .attr('x', 0)
+        .attr('font-size', fontSize)
+        .attr(
+          'y',
+          (_, i) => -((0.5 * fontSize * skillTextSplit.length) / 2) + i * fontSize * 1.2
+        )
+        .attr('class', 'skill-highlight-text-skill-central')
+        .attr('text-anchor', 'middle')
+        .attr('fill', labelTextColor)
+        .text((skillText) => skillText)
 
       // Skill level text
       group
@@ -501,11 +571,26 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
         .transition(t)
         .attr('opacity', 1)
         .text(lvlsArray.find((lvl) => lvl.level === highlightedSkill.skill_level)?.name)
+
+      group.select('.skill-highlight-text-lvl-line').transition(t).attr('opacity', 1)
+
+      svg
+        .select(`.Annotation-${highlightedSkill.category.replaceAll(' ', '-')}`)
+        .selectAll('.highlight-line')
+        .transition(t)
+        // .attr('fill', "#333")
+        .attr('opacity', 1)
+
+      svg
+        .select(`.Annotation-${highlightedSkill.category.replaceAll(' ', '-')}`)
+        .selectAll('.label-box')
+        .transition(t)
+        .attr('opacity', 1)
     }
   }
 
   const setHighlightedSkill = (skill) => {
-    refreshSkillHighlightD3(g, skill)
+    refreshSkillHighlightD3(g, skill, innerRadius, fontSize)
   }
 
   // eslint-disable-next-line no-unused-vars

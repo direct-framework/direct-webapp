@@ -1,4 +1,5 @@
 import * as d3 from 'd3'
+import { splitTextToFitWidth } from './utils'
 
 const fullCircleAngle = Math.PI * 2
 
@@ -282,20 +283,7 @@ export const getArcsFn =
     const getCatLabelWidth = getCatLabelWidthFn(fontSize)
     const catLabelWidthHeightMap = categories.reduce((acc, cat) => {
       // TODO: This is repeated
-      const newLabel = cat.id.split(' ').reduce((acc, word) => {
-        const testLine = acc.length === 0 ? word : `${acc[acc.length - 1]} ${word}`
-        const testLineWidth = testLine.length * (fontSize * 0.6) // Approximate width of text in pixels
-        if (testLineWidth > maxLabelWidth) {
-          acc.push(word)
-        } else {
-          if (acc.length > 0) acc[acc.length - 1] = testLine
-          else {
-            acc.push(testLine)
-          }
-        }
-        return acc
-      }, [])
-
+      const newLabel = splitTextToFitWidth(cat.id, maxLabelWidth, fontSize)
       const labelWidthCalced = getCatLabelWidth(cat.id)
       const labelWidth = Math.min(labelWidthCalced, maxLabelWidth)
       // If the label width is greater than the max label width, wrap the text
