@@ -88,6 +88,18 @@ export default {
       control: { type: 'select' },
       options: ['none', 'name', 'level'],
     },
+    fontSize: {
+      control: 'number',
+    },
+    labelYSpacing: {
+      control: 'number',
+    },
+    maxLabelWidth: {
+      control: 'number',
+    },
+    useSmartLabelPositioning: {
+      control: 'boolean',
+    },
   },
 }
 
@@ -107,6 +119,17 @@ export const Primary = {
   },
 }
 
+export const StressTest = {
+  args: {
+    data: generateRandomData(80, 30, 4),
+    levels: defaultLevels,
+    arcPercent: 0.99,
+    arcStartOffset: 0.01,
+    categoryPadding: 0.1,
+    skillPadding: 0.01,
+  },
+}
+
 export const Option1 = {
   args: {
     data: generateRandomData(50, 10, 4),
@@ -115,6 +138,7 @@ export const Option1 = {
     arcStartOffset: 0.01,
     categoryPadding: 0.1,
     skillPadding: 0.01,
+    useSmartLabelPositioning: false,
   },
 }
 
@@ -147,8 +171,9 @@ export const TestFontSize = {
     levels: defaultLevels,
     height: 474,
     arcPercent: 0.98,
-    arcStartOffset: 0,
+    arcStartOffset: 0.01,
     lvlLabelType: 'none',
     fontSize: 24,
+    labelYSpacing: 1.2, // Sets the spacing of the category labels from each other as a multiple of the font size
   },
 }

@@ -31,8 +31,45 @@ export const catAnnotationPointOuter = (categoryStartAngleMap) => (categoryId) =
   return { x, y }
 }
 
+/* Calculates label position based on offset from y centre */
+// NOTE: This is an alternate method. Delete once confirmed using the other one
+// export const catAnnotationPointOuterLabel =
+//   (categoryStartAngleMap, catLabelWidthHeightMap, xPadding, yPadding) =>
+//   (categoryId) => {
+//     const angle = categoryStartAngleMap[categoryId] % fullCircleAngle
+//     const xSide = Math.sin(angle) > 0 ? 1 : -1
+//     const ySide = -Math.cos(angle) > 0 ? 1 : -1
+
+//     const catsOnThisSide = Object.keys(categoryStartAngleMap)
+//       .filter((catId) => {
+//         const inXSide = Math.sin(categoryStartAngleMap[catId]) > 0 ? 1 : -1
+//         const inYSide = -Math.cos(categoryStartAngleMap[catId]) > 0 ? 1 : -1
+//         return inXSide === xSide && inYSide === ySide
+//       })
+//       .sort((a, b) =>
+//         (ySide === -1 && xSide === -1) || (ySide === 1 && xSide === 1)
+//           ? categoryStartAngleMap[a] > categoryStartAngleMap[b]
+//             ? 1
+//             : -1
+//           : categoryStartAngleMap[a] > categoryStartAngleMap[b]
+//           ? -1
+//           : 1
+//       )
+
+//     const thisCatIndex = catsOnThisSide.indexOf(categoryId)
+//     const preCatHeights = catsOnThisSide
+//       .slice(0, thisCatIndex)
+//       .reduce((acc, catId) => acc + catLabelWidthHeightMap[catId].height, 0)
+//     const x = xSide * xPadding
+//     const y = ySide * (preCatHeights + (thisCatIndex + 3) * yPadding)
+
+//     return { x, y }
+//   }
+
+/* Calculates label position based on offset from y top/bottom */
 export const catAnnotationPointOuterLabel =
-  (categoryStartAngleMap, xPadding, yPadding) => (categoryId) => {
+  (categoryStartAngleMap, catLabelWidthHeightMap, xPadding, yPadding, plotHeight) =>
+  (categoryId) => {
     const angle = categoryStartAngleMap[categoryId] % fullCircleAngle
     const xSide = Math.sin(angle) > 0 ? 1 : -1
     const ySide = -Math.cos(angle) > 0 ? 1 : -1
@@ -52,9 +89,17 @@ export const catAnnotationPointOuterLabel =
           ? -1
           : 1
       )
-    const thisCatIndex = catsOnThisSide.indexOf(categoryId)
+
+    const thisCatIndex = catsOnThisSide.length - catsOnThisSide.indexOf(categoryId) - 1
+    const preCatHeights = catsOnThisSide
+      .slice(0, thisCatIndex)
+      .reduce((acc, catId) => acc + catLabelWidthHeightMap[catId].height, 0)
+
+    const topPadding = 2.8 // TODO: Make this clearer and configurable
     const x = xSide * xPadding
-    const y = ySide * ((thisCatIndex + 1) / catsOnThisSide.length) * yPadding
+    const y =
+      ySide * (plotHeight / topPadding - preCatHeights - thisCatIndex * yPadding)
+
     return { x, y }
   }
 
@@ -99,7 +144,9 @@ export const getArcsFn =
     arcPercent = 0.8,
     arcStartOffset = 0.1,
     labelXOffset = 1.1,
-    labelYSpacing = 1,
+    labelYSpacing = 10,
+    maxLabelWidth = 150,
+    fontSize = 14,
   }) =>
   // eslint-disable-next-line indent
   ({ skillsData, levels, categories, groupedByCategory }) => {
@@ -232,13 +279,47 @@ export const getArcsFn =
       .startAngle(0)
       .endAngle(totalArcAngle + (fullCircleAngle - totalArcAngle) / 2)
 
+    const getCatLabelWidth = getCatLabelWidthFn(fontSize)
+    const catLabelWidthHeightMap = categories.reduce((acc, cat) => {
+      // TODO: This is repeated
+      const newLabel = cat.id.split(' ').reduce((acc, word) => {
+        const testLine = acc.length === 0 ? word : `${acc[acc.length - 1]} ${word}`
+        const testLineWidth = testLine.length * (fontSize * 0.6) // Approximate width of text in pixels
+        if (testLineWidth > maxLabelWidth) {
+          acc.push(word)
+        } else {
+          if (acc.length > 0) acc[acc.length - 1] = testLine
+          else {
+            acc.push(testLine)
+          }
+        }
+        return acc
+      }, [])
+
+      const labelWidthCalced = getCatLabelWidth(cat.id)
+      const labelWidth = Math.min(labelWidthCalced, maxLabelWidth)
+      // If the label width is greater than the max label width, wrap the text
+      // by increasing the labelHeight to be a multiple of the font size
+      // TODO: Move label padding to config
+      const labelPadding = 5 // Padding between lines
+      const labelHeight = fontSize * newLabel.length + labelPadding
+
+      acc[cat.id] = {
+        width: labelWidth,
+        height: labelHeight,
+      }
+      return acc
+    }, {})
+
     return {
       catAnnotationPointInner: catAnnotationPointInner(categoryStartAngleMap),
       catAnnotationPointOuter: catAnnotationPointOuter(categoryStartAngleMap),
       catAnnotationPointOuterLabel: catAnnotationPointOuterLabel(
         categoryStartAngleMap,
+        catLabelWidthHeightMap,
         labelXOffset,
-        labelYSpacing
+        labelYSpacing,
+        height
       ),
       barArc,
       barFullHeightArc,
@@ -249,6 +330,7 @@ export const getArcsFn =
       outerRadius,
       innerRadius,
       getYPoint: lvlHeight,
+      catLabelWidthHeightMap,
     }
   }
 
@@ -291,5 +373,6 @@ export function radialBarChartPreProcessing({ data, colourList }) {
 
 /* Get the width of the category label based on the length of the category string */
 export const getCatLabelWidthFn = (fontSize) => (cat) => {
-  return cat.length * fontSize
+  const width = cat.length * fontSize
+  return width
 }

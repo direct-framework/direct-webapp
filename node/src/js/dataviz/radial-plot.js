@@ -1,9 +1,5 @@
 import * as d3 from 'd3'
-import {
-  radialBarChartPreProcessing,
-  getCatLabelWidthFn,
-  getArcsFn,
-} from './radial-plot-dataprocessing'
+import { radialBarChartPreProcessing, getArcsFn } from './radial-plot-dataprocessing'
 
 /* D3js component to render the radial bar chart bars
 
@@ -110,6 +106,7 @@ function renderAnnotationsD3({
     lvlTextColor,
     lvlLabelType = 'name', // 'none' | 'name' | 'level' - Whether to show the lvl name or lvl number in the lvl annotation
     fontSize = 10,
+    useSmartLabelPositioning = true,
   } = config
 
   // Remove previous annotation for this category if any
@@ -127,14 +124,13 @@ function renderAnnotationsD3({
     catAnnotationPointOuterLabel,
     lvlsArray,
     getYPoint,
+    catLabelWidthHeightMap,
   } = getArcs({
     levels,
     skillsData: filteredData,
     categories: filteredCategories,
     groupedByCategory,
   })
-
-  const getCatLabelWidth = getCatLabelWidthFn(fontSize)
 
   filteredCategories.forEach((cat) => {
     const annotationGroup = svg
@@ -143,18 +139,24 @@ function renderAnnotationsD3({
       .attr('fill', cat.color)
 
     const labelXDir = catAnnotationPointOuterLabel(cat.id).x > 0 ? 1 : -1
-    // const labelYDir = catAnnotationPointOuterLabel(cat.id).y > 0 ? 1 : -1
-    const labelHeight = fontSize + 20
-
-    const labelAnchorPoint = {
-      x:
-        (catAnnotationPointOuterLabel(cat.id).x > 0 ? 0 : -getCatLabelWidth(cat.id)) +
-        catAnnotationPointOuterLabel(cat.id).x * (outerRadius + annotationPadding),
-      y:
-        catAnnotationPointOuterLabel(cat.id).y * (outerRadius + annotationPadding) -
-        (catAnnotationPointOuterLabel(cat.id).y > 0 ? 30 : 0),
-    }
-
+    const labelYDir = catAnnotationPointOuterLabel(cat.id).y > 0 ? 1 : -1
+    const labelWidth = catLabelWidthHeightMap[cat.id].width
+    const labelHeight = catLabelWidthHeightMap[cat.id].height
+    const labelAnchorPoint = useSmartLabelPositioning
+      ? {
+          x:
+            (catAnnotationPointOuterLabel(cat.id).x > 0 ? 0 : -labelWidth) +
+            catAnnotationPointOuterLabel(cat.id).x * (outerRadius + annotationPadding),
+          y: catAnnotationPointOuterLabel(cat.id).y,
+        }
+      : {
+          x:
+            (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -labelWidth) +
+            catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
+          y:
+            catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) +
+            labelYDir * fontSize,
+        }
     const outerAnnotationLineAnchor = {
       x: catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
       y: catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding),
@@ -190,8 +192,8 @@ function renderAnnotationsD3({
       .append('line')
       .attr('x1', outerAnnotationLineAnchor.x)
       .attr('y1', outerAnnotationLineAnchor.y)
-      .attr('x2', labelAnchorPoint.x + (labelXDir > 0 ? 0 : getCatLabelWidth(cat.id)))
-      .attr('y2', labelAnchorPoint.y + labelHeight)
+      .attr('x2', labelAnchorPoint.x + (labelXDir > 0 ? 0 : labelWidth))
+      .attr('y2', labelAnchorPoint.y)
       .attr('stroke', cat.color)
       .attr('fill', 'none')
       .attr('stroke-width', lineThickness)
@@ -201,9 +203,9 @@ function renderAnnotationsD3({
     annotationGroup
       .append('line')
       .attr('x1', labelAnchorPoint.x)
-      .attr('y1', labelAnchorPoint.y + labelHeight)
-      .attr('x2', labelAnchorPoint.x + getCatLabelWidth(cat.id))
-      .attr('y2', labelAnchorPoint.y + labelHeight)
+      .attr('y1', labelAnchorPoint.y)
+      .attr('x2', labelAnchorPoint.x + labelWidth)
+      .attr('y2', labelAnchorPoint.y)
       .attr('stroke', cat.color)
       .attr('fill', 'none')
       .attr('stroke-width', lineThickness)
@@ -212,23 +214,59 @@ function renderAnnotationsD3({
     annotationGroup
       .append('rect')
       .attr('x', labelAnchorPoint.x)
-      .attr('y', labelAnchorPoint.y)
-      .attr('width', getCatLabelWidth(cat.id))
+      .attr('y', labelAnchorPoint.y + (labelYDir === 1 ? 0 : -labelHeight))
+      .attr('width', labelWidth)
       .attr('height', labelHeight)
       .attr('color', labelTextColor)
       .attr('fill', cat.color)
 
     // Category label text
-    annotationGroup
-      .append('text')
-      .attr('x', labelAnchorPoint.x + getCatLabelWidth(cat.id) / 2)
-      .attr('y', labelAnchorPoint.y + labelHeight / 2)
-      .attr('fill', labelTextColor)
-      .attr('font-weight', 700)
-      .attr('font-size', fontSize)
-      .attr('text-anchor', 'middle')
-      .attr('color', labelTextColor)
-      .text(cat.id)
+    // Split the text into blocks of maxLabelWidth
+
+    const newLabel = cat.id.split(' ').reduce((acc, word) => {
+      const testLine = acc.length === 0 ? word : `${acc[acc.length - 1]} ${word}`
+      const testLineWidth = testLine.length * (fontSize * 0.6) // Approximate width of text in pixels
+      if (testLineWidth > config.maxLabelWidth) {
+        acc.push(word)
+      } else {
+        if (acc.length > 0) acc[acc.length - 1] = testLine
+        else {
+          acc.push(testLine)
+        }
+      }
+      return acc
+    }, [])
+
+    const labelDirected = labelYDir === 1 ? newLabel : newLabel.reverse()
+    labelDirected.forEach((line, i) => {
+      annotationGroup
+        .append('text')
+        .attr('x', labelAnchorPoint.x + labelWidth / 2)
+        .attr(
+          'y',
+          labelAnchorPoint.y + i * fontSize * labelYDir + (fontSize / 2) * labelYDir
+        )
+        .attr('fill', labelTextColor)
+        .attr('font-weight', 700)
+        .attr('font-size', fontSize)
+        .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'middle')
+        .attr('color', labelTextColor)
+        .text(line)
+    })
+    // annotationGroup
+    //   .append('text')
+    //   .attr('x', labelAnchorPoint.x + labelWidth / 2)
+    //   .attr(
+    //     'y',
+    //     labelAnchorPoint.y + labelHeight / 2 + (labelYDir === 1 ? 0 : labelHeight)
+    //   )
+    //   .attr('fill', labelTextColor)
+    //   .attr('font-weight', 700)
+    //   .attr('font-size', fontSize)
+    //   .attr('text-anchor', 'middle')
+    //   .attr('color', labelTextColor)
+    //   .text(newLabel)
 
     // Category lvl annotations
     if (lvlLabelType !== 'none')
@@ -264,7 +302,11 @@ const defaultConfig = {
   colourList: d3.schemeAccent, // List of colours to use for the categories
   fontSize: 10, // Font size for the category and level labels
   labelXOffset: 1.1, // Sets the distance of the category label from the outer radius as a multiple of the outer radius
-  labelYSpacing: 1, // Sets the spacing of the category labels from each other as a multiple of the font size
+  labelYSpacing: 10, // Sets the spacing of the category labels from each other as a multiple of the font size
+  maxLabelWidth: 150, // Maximum width of the category label in pixels
+  lvlLabelType: 'name', // 'none' | 'name' | 'level' - Whether to show the lvl name or lvl number in the lvl annotation
+  useSmartLabelPositioning: true, // Whether to use smart positioning for the category labels to avoid overlap
+  plotYOffset: 0, // Y offset for the entire plot to allow for annotations above the plot
 }
 
 /**
@@ -304,8 +346,10 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
     lvlArcColor = '#444',
     colourList = d3.schemeAccent,
     labelXOffset = 1.1,
-    labelYSpacing = 1,
+    labelYSpacing = 10,
+    plotYOffset = 0,
   } = config
+
   const height = _height ?? width * 0.8 // Width needs to be larger than height to fit cat labels
   const outerRadius = Math.min(width, height) / 2 - outerPadding
   config.height = height // Update config with calculated height
@@ -316,7 +360,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
     .append('svg')
     .attr('width', width)
     .attr('height', height)
-    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('viewBox', `0 ${plotYOffset} ${width} ${height}`)
 
     .attr('class', 'radial-bar-chart')
 
@@ -346,6 +390,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
     arcStartOffset,
     labelXOffset,
     labelYSpacing,
+    fontSize: config.fontSize,
   })
   const { lvlRing, lvlsArray } = getArcs({
     skillsData,

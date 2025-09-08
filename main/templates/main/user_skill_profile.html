@@ -68,17 +68,23 @@
     document.addEventListener('DOMContentLoaded', function () {
         const datavizRoot = document.getElementById('dataviz_root');
         const radialBarChartConfig = {
-            innerRadius: 0,
             width: 900,
+            height: 700,
+            plotYOffset: 80,
             // height: _height:undefined,
-            innerRadius: 200,
-            outerPadding: 80,
+            innerRadius: 140,
+            outerPadding: 100,
             categoryPadding: 0.1,
-            skillPadding: 0.05,
-            arcPercent: 0.8,
-            arcStartOffset: 0.1,
-            annotationPadding: 10,
+            skillPadding: 0.01,
+            arcPercent: 0.99,
+            arcStartOffset: 0.01,
+            annotationPadding: 20,
+            maxLabelWidth: 180,
             lineThickness: 2,
+            fontSize: 20,
+            labelXOffset: 1.05,
+            labelYSpacing: 40,
+            lvlLabelType: "none",
             labelTextColor: "white",
             lvlTextColor: "var(--ar-primary)",
             lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
@@ -96,8 +102,7 @@
             ],
         }
         const userDataLoadedFromContext = {{ user_data|safe }};
-        const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
-        console.info("Data loaded from context:", userDataLoadedFromContext, skillLevelsLoadedFromContext);
+        const skillLevelsLoadedFromContext = {{ skill_levels|safe }}.filter(lvl => lvl.level > 0);
         main().RadialBarChart({
             target: datavizRoot,
             data:  userDataLoadedFromContext,
