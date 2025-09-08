@@ -82,10 +82,10 @@ class TestTermsPageView(TemplateOkMixin):
 class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the SelfAssessPageView."""
 
-    _template_name = "main/self-assess.html"
+    _template_name = "main/user_self_assess.html"
 
     def _get_url(self):
-        return reverse("self-assess")
+        return reverse("self_assess")
 
     def test_post(self, client, user, django_user_model):
         """Test the view POST request creates new user skills and redirects."""
@@ -137,9 +137,9 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
         for user_skill in user_skills:
             assert user_skill.skill_level == skill_level
 
-        # Assert redirects to self-assess (success_url)
+        # Assert redirects to self_assess (success_url)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("self-assess")
+        assert response.url == reverse("self_assess")
 
 
 class TestUserSkillProfile(TemplateOkMixin):
@@ -158,4 +158,23 @@ class TestUserSkillProfile(TemplateOkMixin):
         assert isinstance(response.context["user_data"], str)
         assert "skill_levels" in response.context
         assert isinstance(response.context["skill_levels"], str)
+        # TODO: Improve this test
+
+
+class TestRolesPageView(TemplateOkMixin):
+    """Test suite for the role profiles page view."""
+
+    _template_name = "main/pages/roles.html"
+
+    def _get_url(self):
+        return reverse("roles")
+
+    def test_provides_required_context(self, admin_client):
+        """Test that the role profiles view renders the data visualization."""
+        response = admin_client.get(self._get_url())
+        assert response.status_code == 200
+        assert "sample_data" in response.context
+        assert isinstance(response.context["sample_data"], list)
+        assert "skill_levels" in response.context
+        assert isinstance(response.context["skill_levels"], list)
         # TODO: Improve this test

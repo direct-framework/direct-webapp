@@ -14,8 +14,8 @@ dependencies = [
     "django-stubs-ext",
     "crispy-bootstrap5",
     "gunicorn",
-    "sendgrid",
-    "whitenoise"
+    "whitenoise",
+    "mysqlclient"
 ]
 
 [project.optional-dependencies]

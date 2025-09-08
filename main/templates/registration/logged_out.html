@@ -1,7 +1,10 @@
 {% extends "main/base.auth.html" %}
 {% block content %}
     <h1>Signed out</h1>
-    <p class="pb-3 mb-3 mb-lg-4">You are now logged out.</p>
+    <p class="pb-3 mb-3 mb-lg-4">
+        You are now logged out.&nbsp;&nbsp;
+        <a href="{% url 'login' %}">Login again?</a>
+    </p>
     <p class="pb-3 mb-3 mb-lg-4">
         Back to <a href="{% url 'index' %}">home</a>
     </p>

@@ -14,8 +14,8 @@ class User(AbstractUser):
 class Category(models.Model):
     """Model for categories."""
 
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
     parent_category = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
@@ -47,8 +47,8 @@ class Category(models.Model):
 class Skill(models.Model):
     """Model for skills."""
 
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
@@ -67,7 +67,7 @@ class SkillLevel(models.Model):
     """Model for skill levels."""
 
     level = models.PositiveSmallIntegerField()
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=200)
     description = models.TextField()
 
     def __str__(self) -> str:

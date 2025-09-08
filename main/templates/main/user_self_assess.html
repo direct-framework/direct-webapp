@@ -38,8 +38,8 @@
                             </div>
                             {% with request.resolver_match.url_name as url_name %}
                                 <div class="d-flex gap-2 mb-4">
-                                    <a href="{% url 'self-assess' %}"
-                                       class="btn {% if url_name == 'self-assess' %}btn-primary{% else %}btn-secondary{% endif %}">
+                                    <a href="{% url 'self_assess' %}"
+                                       class="btn {% if url_name == 'self_assess' %}btn-primary{% else %}btn-secondary{% endif %}">
                                         Assessment
                                     </a>
                                     <a href="{% url 'skill_profile' %}"

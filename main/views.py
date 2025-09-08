@@ -10,10 +10,11 @@ from typing import TYPE_CHECKING, Any
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
@@ -88,6 +89,7 @@ def privacy(request: HttpRequest) -> HttpResponse:
     return render(request=request, template_name="main/pages/privacy.html")
 
 
+@login_required
 def skill_profile(request: HttpRequest) -> HttpResponse:
     """View that renders the skill profile page.
 
@@ -121,6 +123,25 @@ def skill_profile(request: HttpRequest) -> HttpResponse:
     return render(
         request=request, template_name="main/user_skill_profile.html", context=context
     )
+
+
+@login_required
+def account_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
+    """Route users to the appropriate account page based on their skills.
+
+    If the user has already defined skills, they are redirected to their
+    skill profile. Otherwise, they are sent to the self-assessment page
+    to set up their skills.
+
+    Args:
+        request: The current HTTP request (must be authenticated).
+
+    Returns:
+        An HTTP redirect to either ``skill_profile`` or ``self_assess``.
+    """
+    if UserSkill.objects.filter(user=request.user).exists():
+        return redirect("skill_profile")
+    return redirect("self_assess")
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserType"]]):
@@ -162,9 +183,46 @@ class TrainingPageView(TemplateView):
 
 
 class RolesPageView(TemplateView):
-    """View that renders the terms and conditions page."""
+    """View that renders the role profiles page."""
 
     template_name = "main/pages/roles.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add sample profile data to the template context."""
+        context = super().get_context_data(**kwargs)
+
+        # Skill levels from the database
+        skill_levels = SkillLevel.objects.all()
+        skill_levels_data = [
+            {
+                "level": sl.level,
+                "name": sl.name,
+                "description": sl.description,
+            }
+            for sl in skill_levels
+        ]
+
+        # Combine multiple sample JSON files
+        sample_data_files = [
+            "main/static/assets/sample_data/sample_profile_1.json",
+            "main/static/assets/sample_data/sample_profile_41.json",
+            "main/static/assets/sample_data/sample_profile_59.json",
+        ]
+
+        combined_sample_data = []
+        for file_path in sample_data_files:
+            json_path = Path(file_path)
+            if json_path.exists():
+                with open(json_path) as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        combined_sample_data.extend(data)
+                    else:
+                        combined_sample_data.append(data)
+
+        context["skill_levels"] = skill_levels_data
+        context["sample_data"] = combined_sample_data
+        return context
 
 
 class GetInvolvedPageView(TemplateView):
@@ -207,12 +265,6 @@ class EventsPageView(TemplateView):
         return context
 
 
-class AccountOverviewPageView(TemplateView):
-    """View that renders the account overview page."""
-
-    template_name = "main/user_overview.html"
-
-
 class CompetenciesPageView(TemplateView):
     """View that renders the competencies page."""
 
@@ -239,9 +291,9 @@ class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
     """View that renders the self-assessment questionnaire page."""
 
     request: AuthenticatedHttpRequest
-    template_name = "main/self-assess.html"
+    template_name = "main/user_self_assess.html"
     form_class = UserSkillsForm
-    success_url = reverse_lazy("self-assess")
+    success_url = reverse_lazy("self_assess")
 
     def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
         """Add the competencies framework data to the template context."""

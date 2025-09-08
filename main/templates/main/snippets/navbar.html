@@ -1,5 +1,5 @@
 {% load static %}
-<header class="navbar navbar-expand-lg fixed-top bg-secondary">
+<header class="navbar navbar-expand-lg fixed-top bg-light">
     <div class="container">
         <!-- Navbar brand -->
         <a class="navbar-brand pe-sm-3" href="{% url 'index' %}">
@@ -47,7 +47,7 @@
                         Change Password
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'self-assess' %}">
+                    <a class="dropdown-item" href="{% url 'self_assess' %}">
                         <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
                         Assess Skills
                     </a>
@@ -67,11 +67,10 @@
                 </div>
             </div>
         {% else %}
+            <a class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex me-2"
+               href="{% url 'login' %}">Login</a>
             <a class="btn btn-primary btn-sm fs-sm order-lg-3 d-none d-sm-inline-flex"
-               href="{% url 'login' %}">
-                <i class="ai-login fs-xl me-2 ms-n1"></i>
-                Login
-            </a>
+               href="{% url 'django_registration_register' %}">Register</a>
         {% endif %}
         <!-- Mobile menu toggler -->
         <button class="navbar-toggler ms-sm-3"
@@ -100,7 +99,7 @@
                                 <a class="dropdown-item" href="{% url 'competencies' %}">Competencies framework</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'skill-levels' %}">Skill levels</a>
+                                <a class="dropdown-item" href="{% url 'skill_levels' %}">Skill levels</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'training' %}">Training resources</a>
@@ -118,15 +117,15 @@
                            aria-expanded="false">Community</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'get-involved' %}">Get involved</a>
+                                <a class="dropdown-item" href="{% url 'get_involved' %}">Get involved</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'events' %}">Events</a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item {% if url_name == 'self-assess' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'self-assess' %}">
+                    <li class="nav-item {% if url_name == 'self_assess' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'self_assess' %}">
                             <i class="fa-solid fa-bolt fs-lg me-2"></i>
                             Start Using
                         </a>

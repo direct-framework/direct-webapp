@@ -5,15 +5,15 @@ import os
 from ._production import *  # noqa: F403
 
 # -----------------------------------------------------------------------------
-# Email settings (SendGrid)
+# Email settings (MailerSend)
 # -----------------------------------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST = "smtp.mailersend.net"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API_KEY")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
+EMAIL_HOST_USER = os.getenv("MAILERSEND_SMTP_USER")
+EMAIL_HOST_PASSWORD = os.getenv("MAILERSEND_SMTP_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@directframework.com")
 
 # -----------------------------------------------------------------------------
 # Security settings
@@ -22,6 +22,10 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 ALLOWED_HOSTS = [
     "directframework.com",
     "direct-c8ctfkd4btcecqde.ukwest-01.azurewebsites.net",
+    "169.254.130.2",  # Internal testing / staging addresses
+    "169.254.130.3",
+    "169.254.130.4",
+    "169.254.130.5",
 ]
 
 # Redirect all HTTP to HTTPS
@@ -62,4 +66,23 @@ LOGGING = {
         "handlers": ["console"],
         "level": "INFO",
     },
+}
+
+# -----------------------------------------------------------------------------
+# Database settings (MySQL)
+# -----------------------------------------------------------------------------
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MYSQL_DATABASE"),
+        "USER": os.getenv("MYSQL_USER"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD"),
+        "HOST": os.getenv("MYSQL_HOST"),
+        "PORT": os.getenv("MYSQL_PORT"),
+        "OPTIONS": {
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+            "charset": "utf8mb4",
+            "ssl": {"ca": "/etc/ssl/certs/ca-certificates.crt"},
+        },
+    }
 }
