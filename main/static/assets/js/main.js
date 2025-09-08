@@ -4092,6 +4092,22 @@ var main = (function () {
 
   Transform.prototype;
 
+  function splitTextToFitWidth(text, maxWidth, fontSize) {
+    const newLabel = text.split(' ').reduce((acc, word) => {
+      const testLine = acc.length === 0 ? word : `${acc[acc.length - 1]} ${word}`;
+      const testLineWidth = testLine.length * (fontSize * 0.6); // Approximate width of text in pixels
+      if (testLineWidth > maxWidth) {
+        acc.push(word);
+      } else {
+        if (acc.length > 0) acc[acc.length - 1] = testLine;else {
+          acc.push(testLine);
+        }
+      }
+      return acc;
+    }, []);
+    return newLabel;
+  }
+
   const fullCircleAngle = Math.PI * 2;
 
   /* Use d3's schemeSpectral color scheme to get a color for each category
@@ -4123,6 +4139,62 @@ var main = (function () {
     const angle = +categoryStartAngleMap[categoryId];
     const x = Math.sin(angle);
     const y = -Math.cos(angle);
+    return {
+      x,
+      y
+    };
+  };
+
+  /* Calculates label position based on offset from y centre */
+  // NOTE: This is an alternate method. Delete once confirmed using the other one
+  // export const catAnnotationPointOuterLabel =
+  //   (categoryStartAngleMap, catLabelWidthHeightMap, xPadding, yPadding) =>
+  //   (categoryId) => {
+  //     const angle = categoryStartAngleMap[categoryId] % fullCircleAngle
+  //     const xSide = Math.sin(angle) > 0 ? 1 : -1
+  //     const ySide = -Math.cos(angle) > 0 ? 1 : -1
+
+  //     const catsOnThisSide = Object.keys(categoryStartAngleMap)
+  //       .filter((catId) => {
+  //         const inXSide = Math.sin(categoryStartAngleMap[catId]) > 0 ? 1 : -1
+  //         const inYSide = -Math.cos(categoryStartAngleMap[catId]) > 0 ? 1 : -1
+  //         return inXSide === xSide && inYSide === ySide
+  //       })
+  //       .sort((a, b) =>
+  //         (ySide === -1 && xSide === -1) || (ySide === 1 && xSide === 1)
+  //           ? categoryStartAngleMap[a] > categoryStartAngleMap[b]
+  //             ? 1
+  //             : -1
+  //           : categoryStartAngleMap[a] > categoryStartAngleMap[b]
+  //           ? -1
+  //           : 1
+  //       )
+
+  //     const thisCatIndex = catsOnThisSide.indexOf(categoryId)
+  //     const preCatHeights = catsOnThisSide
+  //       .slice(0, thisCatIndex)
+  //       .reduce((acc, catId) => acc + catLabelWidthHeightMap[catId].height, 0)
+  //     const x = xSide * xPadding
+  //     const y = ySide * (preCatHeights + (thisCatIndex + 3) * yPadding)
+
+  //     return { x, y }
+  //   }
+
+  /* Calculates label position based on offset from y top/bottom */
+  const catAnnotationPointOuterLabel = (categoryStartAngleMap, catLabelWidthHeightMap, xPadding, yPadding, plotHeight) => categoryId => {
+    const angle = categoryStartAngleMap[categoryId] % fullCircleAngle;
+    const xSide = Math.sin(angle) > 0 ? 1 : -1;
+    const ySide = -Math.cos(angle) > 0 ? 1 : -1;
+    const catsOnThisSide = Object.keys(categoryStartAngleMap).filter(catId => {
+      const inXSide = Math.sin(categoryStartAngleMap[catId]) > 0 ? 1 : -1;
+      const inYSide = -Math.cos(categoryStartAngleMap[catId]) > 0 ? 1 : -1;
+      return inXSide === xSide && inYSide === ySide;
+    }).sort((a, b) => ySide === -1 && xSide === -1 || ySide === 1 && xSide === 1 ? categoryStartAngleMap[a] > categoryStartAngleMap[b] ? 1 : -1 : categoryStartAngleMap[a] > categoryStartAngleMap[b] ? -1 : 1);
+    const thisCatIndex = catsOnThisSide.length - catsOnThisSide.indexOf(categoryId) - 1;
+    const preCatHeights = catsOnThisSide.slice(0, thisCatIndex).reduce((acc, catId) => acc + catLabelWidthHeightMap[catId].height, 0);
+    const topPadding = 2.8; // TODO: Make this clearer and configurable
+    const x = xSide * xPadding;
+    const y = ySide * (plotHeight / topPadding - preCatHeights - thisCatIndex * yPadding);
     return {
       x,
       y
@@ -4167,7 +4239,11 @@ var main = (function () {
     categoryPadding = 0.1,
     skillPadding = 0.05,
     arcPercent = 0.8,
-    arcStartOffset = 0.1
+    arcStartOffset = 0.1,
+    labelXOffset = 1.1,
+    labelYSpacing = 10,
+    maxLabelWidth = 150,
+    fontSize = 14
   }) =>
   // eslint-disable-next-line indent
   ({
@@ -4196,7 +4272,7 @@ var main = (function () {
         */
     const categoryStartAngle = categories.reduce((acc, category) => {
       var _groupedByCategory$ge, _groupedByCategory$ge2, _groupedByCategory$ge3, _groupedByCategory$ge4;
-      return [...acc, acc[acc.length - 1] + (((_groupedByCategory$ge = (_groupedByCategory$ge2 = groupedByCategory.get(category.id)) == null ? void 0 : _groupedByCategory$ge2.length) != null ? _groupedByCategory$ge : 0) * columnAngle + ((_groupedByCategory$ge3 = (_groupedByCategory$ge4 = groupedByCategory.get(category.id)) == null ? void 0 : _groupedByCategory$ge4.length) != null ? _groupedByCategory$ge3 : 0) * skillPadding + categoryPadding)];
+      return [...acc, (acc[acc.length - 1] + (((_groupedByCategory$ge = (_groupedByCategory$ge2 = groupedByCategory.get(category.id)) == null ? void 0 : _groupedByCategory$ge2.length) != null ? _groupedByCategory$ge : 0) * columnAngle + ((_groupedByCategory$ge3 = (_groupedByCategory$ge4 = groupedByCategory.get(category.id)) == null ? void 0 : _groupedByCategory$ge4.length) != null ? _groupedByCategory$ge3 : 0) * skillPadding + categoryPadding)) % (Math.PI * 2)];
     }, [fullCircleAngle * arcStartOffset]);
 
     /* Convert the category start angles to a map for easy access
@@ -4255,9 +4331,27 @@ var main = (function () {
     const lvlRing = arc().innerRadius(lvl => lvlHeight(lvl + 1) - thicknessOfLvlRing) // use + 1 as ring at top of lvl
     .outerRadius(lvl => lvlHeight(lvl + 1)) // use + 1 as ring at top of lvl
     .startAngle(0).endAngle(totalArcAngle + (fullCircleAngle - totalArcAngle) / 2);
+    const getCatLabelWidth = getCatLabelWidthFn(fontSize);
+    const catLabelWidthHeightMap = categories.reduce((acc, cat) => {
+      // TODO: This is repeated
+      const newLabel = splitTextToFitWidth(cat.id, maxLabelWidth, fontSize);
+      const labelWidthCalced = getCatLabelWidth(cat.id);
+      const labelWidth = Math.min(labelWidthCalced, maxLabelWidth);
+      // If the label width is greater than the max label width, wrap the text
+      // by increasing the labelHeight to be a multiple of the font size
+      // TODO: Move label padding to config
+      const labelPadding = 5; // Padding between lines
+      const labelHeight = fontSize * newLabel.length + labelPadding;
+      acc[cat.id] = {
+        width: labelWidth,
+        height: labelHeight
+      };
+      return acc;
+    }, {});
     return {
       catAnnotationPointInner: catAnnotationPointInner(categoryStartAngleMap),
       catAnnotationPointOuter: catAnnotationPointOuter(categoryStartAngleMap),
+      catAnnotationPointOuterLabel: catAnnotationPointOuterLabel(categoryStartAngleMap, catLabelWidthHeightMap, labelXOffset, labelYSpacing, height),
       barArc,
       barFullHeightArc,
       barSegmentArc,
@@ -4266,7 +4360,8 @@ var main = (function () {
       lvlsArray,
       outerRadius,
       innerRadius,
-      getYPoint: lvlHeight
+      getYPoint: lvlHeight,
+      catLabelWidthHeightMap
     };
   };
 
@@ -4311,9 +4406,10 @@ var main = (function () {
   }
 
   /* Get the width of the category label based on the length of the category string */
-  function getCatLabelWidth(cat) {
-    return cat.length * 10;
-  }
+  const getCatLabelWidthFn = fontSize => cat => {
+    const width = cat.length * fontSize;
+    return width;
+  };
 
   /* D3js component to render the radial bar chart bars
 
@@ -4378,8 +4474,7 @@ var main = (function () {
     levels,
     getArcs,
     groupedByCategory,
-    config,
-    fontSize = 10
+    config
   }) {
     const {
       lineThickness,
@@ -4387,8 +4482,13 @@ var main = (function () {
       outerRadius,
       annotationPadding,
       labelTextColor,
-      lvlTextColor
+      lvlTextColor,
+      lvlLabelType = 'name',
+      // 'none' | 'name' | 'level' - Whether to show the lvl name or lvl number in the lvl annotation
+      fontSize = 10,
+      useSmartLabelPositioning = true
     } = config;
+
     // Remove previous annotation for this category if any
     svg.selectAll('.Annotation').remove();
     const filteredCategories = categoryFocus ? [categoryFocus] : sortedCategories;
@@ -4398,8 +4498,10 @@ var main = (function () {
       categoryBaseArc,
       catAnnotationPointInner,
       catAnnotationPointOuter,
+      catAnnotationPointOuterLabel,
       lvlsArray,
-      getYPoint
+      getYPoint,
+      catLabelWidthHeightMap
     } = getArcs({
       levels,
       skillsData: filteredData,
@@ -4407,25 +4509,74 @@ var main = (function () {
       groupedByCategory
     });
     filteredCategories.forEach(cat => {
-      const annotationGroup = svg.append('g').attr('class', `Annotation Annotation-${cat.id}`).attr('fill', cat.color);
+      const annotationGroup = svg.append('g').attr('class', `Annotation Annotation-${cat.id.replaceAll(' ', '-')}`).attr('fill', cat.color);
+      const labelXDir = catAnnotationPointOuterLabel(cat.id).x > 0 ? 1 : -1;
+      const labelYDir = catAnnotationPointOuterLabel(cat.id).y > 0 ? 1 : -1;
+      const labelWidth = catLabelWidthHeightMap[cat.id].width;
+      const labelHeight = catLabelWidthHeightMap[cat.id].height;
+      const labelAnchorPoint = useSmartLabelPositioning ? {
+        x: (catAnnotationPointOuterLabel(cat.id).x > 0 ? 0 : -labelWidth) + catAnnotationPointOuterLabel(cat.id).x * (outerRadius + annotationPadding),
+        y: catAnnotationPointOuterLabel(cat.id).y
+      } : {
+        x: (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -labelWidth) + catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
+        y: catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) + labelYDir * fontSize
+      };
+      const outerAnnotationLineAnchor = {
+        x: catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
+        y: catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding)
+      };
+      const baseOfCategoryAnchor = {
+        x: catAnnotationPointInner(cat.id).x * (innerRadius - 3),
+        y: catAnnotationPointInner(cat.id).y * (innerRadius - 3)
+      };
 
       // Arc at base of category
       annotationGroup.append('path').attr('d', categoryBaseArc(cat.id)).attr('fill', cat.color).attr('stroke', 'none').attr('stroke-width', lineThickness);
 
-      // Line from base of category to annotation label
-      annotationGroup.append('line').attr('x1', catAnnotationPointInner(cat.id).x * (innerRadius - 3)).attr('y1', catAnnotationPointInner(cat.id).y * (innerRadius - 3)).attr('x2', catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding)).attr('y2', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding)).attr('stroke', cat.color).attr('fill', 'none').attr('stroke-width', lineThickness).attr('opacity', 1);
+      // Line from base of category to outer radius
+      annotationGroup.append('line').attr('x1', baseOfCategoryAnchor.x).attr('y1', baseOfCategoryAnchor.y).attr('x2', outerAnnotationLineAnchor.x).attr('y2', outerAnnotationLineAnchor.y).attr('stroke', cat.color).attr('fill', 'none').attr('stroke-width', lineThickness).attr('opacity', 1);
+
+      // Line from outer radius to category label
+      annotationGroup.append('line').attr('x1', outerAnnotationLineAnchor.x).attr('y1', outerAnnotationLineAnchor.y).attr('x2', labelAnchorPoint.x + (labelXDir > 0 ? 0 : labelWidth)).attr('y2', labelAnchorPoint.y).attr('stroke', cat.color).attr('fill', 'none').attr('stroke-width', lineThickness).attr('opacity', 1);
 
       // Line beneath category label
-      annotationGroup.append('line').attr('x1', catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding)).attr('y1', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding)).attr('x2', catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding) + (catAnnotationPointOuter(cat.id).x > 0 ? getCatLabelWidth(cat.id) : -getCatLabelWidth(cat.id))).attr('y2', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding)).attr('stroke', cat.color).attr('fill', 'none').attr('stroke-width', lineThickness);
+      annotationGroup.append('line').attr('x1', labelAnchorPoint.x).attr('y1', labelAnchorPoint.y).attr('x2', labelAnchorPoint.x + labelWidth).attr('y2', labelAnchorPoint.y).attr('stroke', cat.color).attr('fill', 'none').attr('stroke-width', lineThickness);
 
       // Category label text box
-      annotationGroup.append('rect').attr('x', (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -getCatLabelWidth(cat.id)) + catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding)).attr('y', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) - (catAnnotationPointOuter(cat.id).y > 0 ? 0 : 30)).attr('width', getCatLabelWidth(cat.id)).attr('height', 30).attr('color', labelTextColor).attr('fill', cat.color);
+      annotationGroup.append('rect').attr('class', 'label-box').attr('x', labelAnchorPoint.x).attr('y', labelAnchorPoint.y + (labelYDir === 1 ? 0 : -labelHeight)).attr('width', labelWidth).attr('height', labelHeight).attr('color', labelTextColor).attr('opacity', 0.8) // increased on hover
+      .attr('fill', cat.color);
+      console.info(cat.id, {
+        labelAnchorPoint,
+        labelXDir
+      });
+      const highlightLineThickness = 10;
+      // Line On Side of category label
+      annotationGroup.append('line').attr('class', 'highlight-line').attr('x1', labelAnchorPoint.x + labelXDir * highlightLineThickness + (labelXDir === 1 ? labelWidth : 0)).attr('y1', labelAnchorPoint.y).attr('x2', labelAnchorPoint.x + labelXDir * highlightLineThickness + (labelXDir === 1 ? labelWidth : 0)).attr('y2', labelAnchorPoint.y + labelHeight * labelYDir).attr('stroke', cat.color).attr('opacity', 0) // only shown on hover
+      .attr('fill', 'none').attr('stroke-width', highlightLineThickness);
 
       // Category label text
-      annotationGroup.append('text').attr('x', catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding) + (catAnnotationPointOuter(cat.id).x > 0 ? getCatLabelWidth(cat.id) / 2 : -getCatLabelWidth(cat.id) / 2)).attr('y', catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) + (catAnnotationPointOuter(cat.id).y > 0 ? 20 : -fontSize)).attr('fill', labelTextColor).attr('font-weight', 700).attr('text-anchor', 'middle').attr('color', labelTextColor).text(cat.id);
+      // Split the text into blocks of maxLabelWidth
+      const newLabel = splitTextToFitWidth(cat.id, config.maxLabelWidth, fontSize);
+      const labelDirected = labelYDir === 1 ? newLabel : newLabel.reverse();
+      labelDirected.forEach((line, i) => {
+        annotationGroup.append('text').attr('x', labelAnchorPoint.x + labelWidth / 2).attr('y', labelAnchorPoint.y + i * fontSize * labelYDir + fontSize / 2 * labelYDir).attr('fill', labelTextColor).attr('font-weight', 700).attr('font-size', fontSize).attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').attr('color', labelTextColor).text(line);
+      });
+      // annotationGroup
+      //   .append('text')
+      //   .attr('x', labelAnchorPoint.x + labelWidth / 2)
+      //   .attr(
+      //     'y',
+      //     labelAnchorPoint.y + labelHeight / 2 + (labelYDir === 1 ? 0 : labelHeight)
+      //   )
+      //   .attr('fill', labelTextColor)
+      //   .attr('font-weight', 700)
+      //   .attr('font-size', fontSize)
+      //   .attr('text-anchor', 'middle')
+      //   .attr('color', labelTextColor)
+      //   .text(newLabel)
 
       // Category lvl annotations
-      lvlsArray.forEach(lvl => {
+      if (lvlLabelType !== 'none') lvlsArray.forEach(lvl => {
         annotationGroup.append('text').attr('x', 0).attr('y', -getYPoint(lvl.level + 1) + fontSize / 2) // level + 1 as we want this at the top of the level
         .attr('fill', lvlTextColor).attr('text-anchor', 'middle').attr('font-size', fontSize).text(lvl.name);
       });
@@ -4436,17 +4587,42 @@ var main = (function () {
     width: 640,
     height: undefined,
     innerRadius: 80,
+    // Radius of the inner empty circle
     outerPadding: 100,
+    // Padding between the outermost bars and the edge of the svg
     categoryPadding: 0.1,
+    // Proportion of space between categories
     skillPadding: 0.05,
+    // Proportion of space between skills in a category
     arcPercent: 0.8,
+    // Proportion of the circle to use for the bars (1 = full circle, 0.5 = half circle)
     arcStartOffset: 0.1,
+    // Proportion of the circle to offset the start of the bars (0 = start at top, 0.25 = start at right)
     annotationPadding: 10,
+    // Padding between the outermost bars and the annotation lines
     lineThickness: 2,
+    // Thickness of the annotation lines
     labelTextColor: 'black',
+    // Color of the category label text
     lvlTextColor: '#ccc',
+    // Color of the level annotation text
     lvlArcColor: '#444',
-    colourList: Accent
+    // Color of the level annotation arcs
+    colourList: Accent,
+    // List of colours to use for the categories
+    fontSize: 10,
+    // Font size for the category and level labels
+    labelXOffset: 1.1,
+    // Sets the distance of the category label from the outer radius as a multiple of the outer radius
+    labelYSpacing: 10,
+    // Sets the spacing of the category labels from each other as a multiple of the font size
+    maxLabelWidth: 150,
+    // Maximum width of the category label in pixels
+    lvlLabelType: 'name',
+    // 'none' | 'name' | 'level' - Whether to show the lvl name or lvl number in the lvl annotation
+    useSmartLabelPositioning: true,
+    // Whether to use smart positioning for the category labels to avoid overlap
+    plotYOffset: 0 // Y offset for the entire plot to allow for annotations above the plot
   };
 
   /**
@@ -4468,23 +4644,7 @@ var main = (function () {
    *   description: 'Level Description'
    * }
    * @param {Object} config - Configuration parameters for the chart.
-   *
-   * Config Params:
-   *   width = 640,
-   *   height: _height = undefined,
-   *   innerRadius = 80,
-   *   outerPadding = 100,
-   *   categoryPadding = 0.1,
-   *   skillPadding = 0.05,
-   *   arcPercent = 0.8,
-   *   arcStartOffset = 0.1,
-   *   annotationPadding = 10,
-   *   lineThickness = 2,
-   *   labelTextColor = 'black',
-   *   lvlTextColor = '#ccc',
-   *   lvlArcColor = '#444',
-   *   colourList = d3.schemeAccent,
-   *
+   * See `defaultConfig` for available options and their default values.
    *
    */
   function RadialBarChart({
@@ -4508,13 +4668,17 @@ var main = (function () {
       arcStartOffset = 0.1,
       labelTextColor = 'black',
       lvlArcColor = '#444',
-      colourList = Accent
+      colourList = Accent,
+      labelXOffset = 1.1,
+      labelYSpacing = 10,
+      plotYOffset = 0,
+      fontSize = 14
     } = config;
     const height = _height != null ? _height : width * 0.8; // Width needs to be larger than height to fit cat labels
     const outerRadius = Math.min(width, height) / 2 - outerPadding;
     config.height = height; // Update config with calculated height
     config.outerRadius = config.outerRadius || outerRadius;
-    const svg = select(target).append('svg').attr('width', width).attr('height', height).attr('viewBox', `0 0 ${width} ${height}`).attr('class', 'radial-bar-chart');
+    const svg = select(target).append('svg').attr('width', width).attr('height', height).attr('viewBox', `0 ${plotYOffset} ${width} ${height}`).attr('class', 'radial-bar-chart');
     const g = svg.append('g').attr('transform', `translate(${width / 2}, ${height / 2})`).attr('class', 'radial-bar-chart-group').attr('aria-label', 'Radial Bar Chart').attr('role', 'img').attr('aria-describedby', 'radial-bar-chart-description');
     const {
       skillsData,
@@ -4532,7 +4696,10 @@ var main = (function () {
       categoryPadding,
       skillPadding,
       arcPercent,
-      arcStartOffset
+      arcStartOffset,
+      labelXOffset,
+      labelYSpacing,
+      fontSize: config.fontSize
     });
     const {
       lvlRing,
@@ -4555,14 +4722,24 @@ var main = (function () {
       group.append('text').attr('y', -5).attr('text-anchor', 'middle').attr('fill', labelTextColor).attr('class', 'skill-highlight-text-cat').text('');
 
       // Skill text
-      group.append('text').attr('y', 15).attr('text-anchor', 'middle').attr('fill', labelTextColor).attr('class', 'skill-highlight-text-skill').text('');
+      // group
+      //   .append('text')
+      //   .attr('y', 0)
+      //   .attr('text-anchor', 'middle')
+      //   .attr('fill', labelTextColor)
+      //   .attr('class', 'skill-highlight-text-skill')
+      //   .text('')
 
+      group.append('g').attr('class', 'skill-highlight-text-skill');
       // Skill level text
-      group.append('text').attr('y', 35).attr('text-anchor', 'middle').attr('fill', labelTextColor).attr('class', 'skill-highlight-text-lvl').text('');
+      group.append('line').attr('class', 'skill-highlight-text-lvl-line').attr('x1', -innerRadius * 0.7).attr('y1', 50 - fontSize / 1.3).attr('x2', innerRadius * 0.7).attr('y2', 50 - fontSize / 1.3).attr('stroke', '#FFF').attr('fill', 'none').attr('stroke-width', 2).attr('opacity', 0);
+      group.append('text').attr('y', 60).attr('text-anchor', 'middle').attr('fill', '#FFF').attr('font-size', fontSize)
+      // .attr('fill', labelTextColor)
+      .attr('class', 'skill-highlight-text-lvl').text('');
     }
 
     // D3.js function to render the skill highlight
-    function refreshSkillHighlightD3(svg, highlightedSkill) {
+    function refreshSkillHighlightD3(svg, highlightedSkill, innerCircleWidth, fontSize) {
       const group = svg.select('.skill-highlight');
       if (!highlightedSkill) {
         const t = transition().delay(200).duration(200).ease(linear$1);
@@ -4570,14 +4747,22 @@ var main = (function () {
         group.select('.skill-highlight-circle').transition(t) // Transition to the new highlight
         .attr('opacity', 0);
 
-        // Category text
-        group.select('.skill-highlight-text-cat').transition(t).attr('opacity', 0).text('');
+        // Category text TEMPORARILY DISABLED
+        // group
+        //   .select('.skill-highlight-text-cat')
+        //   .transition(t)
+        //   .attr('opacity', 0)
+        //   .text('')
 
         // Skill text
         group.select('.skill-highlight-text-skill').transition(t).attr('opacity', 0).text('');
 
         // Skill level text
         group.select('.skill-highlight-text-lvl').transition(t).attr('opacity', 0).text('');
+        group.select('.skill-highlight-text-lvl-line').transition(t).attr('opacity', 0);
+        svg.selectAll('.highlight-line').transition(t).attr('opacity', 0);
+        svg.selectAll('.label-box').transition(t).attr('opacity', 0.8);
+        group.selectAll('.skill-highlight-text-skill-central').remove();
       } else {
         var _lvlsArray$find;
         const t = transition().duration(200).ease(linear$1);
@@ -4585,18 +4770,44 @@ var main = (function () {
         group.select('.skill-highlight-circle').transition(t) // Transition to the new highlight
         .attr('opacity', 1).attr('fill', highlightedSkill.color);
 
-        // Category text
-        group.select('.skill-highlight-text-cat').transition(t).attr('opacity', 1).text(highlightedSkill.category);
+        // Category text TEMPORARILY DISABLED
+        // group
+        //   .select('.skill-highlight-text-cat')
+        //   .transition(t)
+        //   .attr('opacity', 1)
+        //   .text(highlightedSkill.category)
 
         // Skill text
-        group.select('.skill-highlight-text-skill').transition(t).attr('opacity', 1).text(highlightedSkill.skill);
+
+        const skillTextSplit = splitTextToFitWidth(highlightedSkill.skill, innerCircleWidth * 2.5, fontSize);
+        group.select('.skill-highlight-text-skill').transition(t).attr('opacity', 1);
+        // .text(highlightedSkill.skill)
+        // const annotationSkillTextGroup = group.select('.skill-highlight-text-skill')
+        // console.info(skillTextSplit)
+        // skillTextSplit.forEach((skillTextRow, i) =>
+        //   annotationSkillTextGroup
+        //     .append('text')
+        //     .attr('x', 0)
+        //     .attr('y', i * 1)
+        //     .attr('text-anchor', 'middle')
+        //     .attr('fill', labelTextColor)
+        //     .attr('class', 'skill-highlight-text-skill-central')
+        //     .text(skillTextRow)
+        // )
+        // console.info("annotationSkillTextGroup", annotationSkillTextGroup)
+        group.select('.skill-highlight-text-skill').selectAll('skill-highlight-text-skill-central').data(skillTextSplit).enter().append('text').attr('x', 0).attr('font-size', fontSize).attr('y', (_, i) => -(0.5 * fontSize * skillTextSplit.length / 2) + i * fontSize * 1.2).attr('class', 'skill-highlight-text-skill-central').attr('text-anchor', 'middle').attr('fill', labelTextColor).text(skillText => skillText);
 
         // Skill level text
         group.select('.skill-highlight-text-lvl').transition(t).attr('opacity', 1).text((_lvlsArray$find = lvlsArray.find(lvl => lvl.level === highlightedSkill.skill_level)) == null ? void 0 : _lvlsArray$find.name);
+        group.select('.skill-highlight-text-lvl-line').transition(t).attr('opacity', 1);
+        svg.select(`.Annotation-${highlightedSkill.category.replaceAll(' ', '-')}`).selectAll('.highlight-line').transition(t)
+        // .attr('fill', "#333")
+        .attr('opacity', 1);
+        svg.select(`.Annotation-${highlightedSkill.category.replaceAll(' ', '-')}`).selectAll('.label-box').transition(t).attr('opacity', 1);
       }
     }
     const setHighlightedSkill = skill => {
-      refreshSkillHighlightD3(g, skill);
+      refreshSkillHighlightD3(g, skill, innerRadius, fontSize);
     };
 
     // eslint-disable-next-line no-unused-vars
