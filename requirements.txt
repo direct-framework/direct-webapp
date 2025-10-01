@@ -4,13 +4,13 @@
 #
 #    pip-compile
 #
-asgiref==3.9.1
+asgiref==3.9.2
     # via django
 confusable-homoglyphs==3.3.1
     # via django-registration
 crispy-bootstrap5==2025.6
     # via direct_webapp (pyproject.toml)
-django==5.2.4
+django==5.2.7
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
@@ -26,7 +26,7 @@ django-crispy-forms==2.4
     #   direct_webapp (pyproject.toml)
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
-django-stubs-ext==5.2.2
+django-stubs-ext==5.2.5
     # via direct_webapp (pyproject.toml)
 gunicorn==23.0.0
     # via direct_webapp (pyproject.toml)
@@ -36,7 +36,7 @@ packaging==25.0
     # via gunicorn
 sqlparse==0.5.3
     # via django
-typing-extensions==4.14.1
+typing-extensions==4.15.0
     # via django-stubs-ext
-whitenoise==6.9.0
+whitenoise==6.11.0
     # via direct_webapp (pyproject.toml)
