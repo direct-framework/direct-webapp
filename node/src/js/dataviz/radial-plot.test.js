@@ -1,8 +1,7 @@
+import { describe, test, expect, beforeEach } from 'vitest'
 import { RadialBarChart } from './radial-plot'
 import { levels as defaultLevels } from './defaults'
 import { generateRandomData } from './mock-data'
-import { describe, test, expect, beforeEach, vi } from 'vitest'
-import * as d3 from 'd3'
 
 describe('RadialBarChart', () => {
   let container
@@ -147,7 +146,9 @@ describe('RadialBarChart', () => {
     })
 
     test('should handle single data point', () => {
-      const singleData = [{ skill: 'test-skill', category: 'test-category', skill_level: 2 }]
+      const singleData = [
+        { skill: 'test-skill', category: 'test-category', skill_level: 2 },
+      ]
       const chart = RadialBarChart({
         target: container,
         data: singleData,
@@ -406,11 +407,13 @@ describe('RadialBarChart', () => {
     })
 
     test('should split long labels to fit within max width', () => {
-      const longData = [{
-        skill: 'This is a very long skill name that should be split',
-        category: 'Long Category',
-        skill_level: 2
-      }]
+      const longData = [
+        {
+          skill: 'This is a very long skill name that should be split',
+          category: 'Long Category',
+          skill_level: 2,
+        },
+      ]
       RadialBarChart({
         target: container,
         data: longData,
@@ -510,7 +513,9 @@ describe('RadialBarChart', () => {
 
     test('should handle data with maximum skill level', () => {
       const maxLevel = defaultLevels[defaultLevels.length - 1].level
-      const testData = [{ skill: 'max-skill', category: 'test-cat', skill_level: maxLevel }]
+      const testData = [
+        { skill: 'max-skill', category: 'test-cat', skill_level: maxLevel },
+      ]
       const chart = RadialBarChart({
         target: container,
         data: testData,
@@ -540,11 +545,14 @@ describe('RadialBarChart', () => {
     })
 
     test('should handle very long category names', () => {
-      const longData = [{
-        skill: 'test-skill',
-        category: 'This is an extremely long category name that might cause layout issues',
-        skill_level: 2
-      }]
+      const longData = [
+        {
+          skill: 'test-skill',
+          category:
+            'This is an extremely long category name that might cause layout issues',
+          skill_level: 2,
+        },
+      ]
       const chart = RadialBarChart({
         target: container,
         data: longData,
@@ -555,11 +563,13 @@ describe('RadialBarChart', () => {
     })
 
     test('should handle special characters in category names', () => {
-      const specialData = [{
-        skill: 'test-skill',
-        category: 'Cat & Dogs / Birds',
-        skill_level: 2
-      }]
+      const specialData = [
+        {
+          skill: 'test-skill',
+          category: 'Cat & Dogs / Birds',
+          skill_level: 2,
+        },
+      ]
       const chart = RadialBarChart({
         target: container,
         data: specialData,
@@ -581,7 +591,9 @@ describe('RadialBarChart', () => {
       const group = container.querySelector('.radial-bar-chart-group')
       expect(group.getAttribute('aria-label')).toBe('Radial Bar Chart')
       expect(group.getAttribute('role')).toBe('img')
-      expect(group.getAttribute('aria-describedby')).toBe('radial-bar-chart-description')
+      expect(group.getAttribute('aria-describedby')).toBe(
+        'radial-bar-chart-description'
+      )
     })
   })
 
