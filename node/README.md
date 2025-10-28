@@ -3,13 +3,11 @@
 
 These docs introduce the Node.js and NPM setup used for managing frontend assets in this project.
 
-These assets are built using Node.js tools and libraries, and the resulting files are then integrated into the Django application.
+These assets are built using Node.js tools and libraries, and the resulting files are then integrated into the Django application using a npm build script.
 
-## Working with NPM
+## Environment Setup
 
-This project includes an NPM-based setup for managing front-end assets like styles, scripts, and other resources. The `package.json` file contains predefined scripts to help with building and managing assets. You don't need to run these NPM commands if you are developing the Django app locally. You should only run these commands when needed, for example if you are changing javascript dependencies or modifying SCSS files.
-
-### Prerequisites
+Before you start working with the frontend assets, ensure that your development environment is set up correctly. This includes having the necessary tools and dependencies installed.
 
 Ensure you have Node.js (v16 or higher) and NPM installed. You can verify their installation with:
 
@@ -19,13 +17,27 @@ npm -v
 
 ### Installing Dependencies
 
-After cloning the repository, navigate to the project directory and install the required NPM dependencies:
+After cloning the repository, navigate to the project directory (where the `package.json` file is located) and install the required NPM dependencies:
 
 ```bash
 npm install
 ```
 
-### Building all frontend assets
+This command reads the `package.json` file and installs all listed dependencies into the `node_modules` directory.
+
+## Preview Components in Storybook
+
+To preview and interact with UI components in isolation, you can use Storybook. Start the Storybook server with:
+
+```bash
+npm run storybook
+```
+
+To view the Storybook interface, open your web browser and navigate to `http://localhost:6006`.
+
+## Building all frontend assets
+
+After making any changes to styles, scripts, or vendor files, you need to rebuild the assets to see the changes reflected in the Django application.
 
 To build all styles, scripts, and vendor files, run:
 
@@ -44,6 +56,8 @@ The above script performs all the following tasks, which are available as indivi
 ```bash
 npm run styles:expanded
 ```
+
+Built files are output to the `main/static/assets` directory, which is where the Django application expects to find them.
 
 ## Running Tests
 
