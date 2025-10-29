@@ -24,7 +24,6 @@ function refreshBarsD3({
   const filteredCategoriesIds = filteredCategories.map((c) => c.id)
   const filteredData = skillsData
     /* Only show the data in the focus category or all categories */
-    // TODO: Check this
     .filter((d) => filteredCategoriesIds.includes(d.category))
 
   const { barFullHeightArc, barSegmentArc } = getArcs({
@@ -222,8 +221,6 @@ function renderAnnotationsD3({
       .attr('color', labelTextColor)
       .attr('opacity', 0.8) // increased on hover
       .attr('fill', cat.color)
-
-    console.info(cat.id, { labelAnchorPoint, labelXDir })
 
     const highlightLineThickness = 10
     // Line On Side of category label
@@ -466,7 +463,6 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
       .attr('text-anchor', 'middle')
       .attr('fill', '#FFF')
       .attr('font-size', fontSize)
-      // .attr('fill', labelTextColor)
       .attr('class', 'skill-highlight-text-lvl')
       .text('')
   }
@@ -512,6 +508,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
       group.selectAll('.skill-highlight-text-skill-central').remove()
     } else {
       const t = d3.transition().duration(200).ease(d3.easeLinear)
+
       // Circle for skill highlight
       group
         .select('.skill-highlight-circle')
@@ -534,20 +531,6 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
         fontSize
       )
       group.select('.skill-highlight-text-skill').transition(t).attr('opacity', 1)
-      // .text(highlightedSkill.skill)
-      // const annotationSkillTextGroup = group.select('.skill-highlight-text-skill')
-      // console.info(skillTextSplit)
-      // skillTextSplit.forEach((skillTextRow, i) =>
-      //   annotationSkillTextGroup
-      //     .append('text')
-      //     .attr('x', 0)
-      //     .attr('y', i * 1)
-      //     .attr('text-anchor', 'middle')
-      //     .attr('fill', labelTextColor)
-      //     .attr('class', 'skill-highlight-text-skill-central')
-      //     .text(skillTextRow)
-      // )
-      // console.info("annotationSkillTextGroup", annotationSkillTextGroup)
       group
         .select('.skill-highlight-text-skill')
         .selectAll('skill-highlight-text-skill-central')
