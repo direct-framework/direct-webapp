@@ -41,8 +41,8 @@
                                                 <i class="ai-settings fs-5 opacity-60 me-2"></i>
                                                 Update Profile
                                             </a>
-                                            <a class="nav-link fw-semibold py-2 px-0 disabled {% if url_name == 'change-password' %}active{% endif %}"
-                                               href="{% url 'account-overview' %}">
+                                            <a class="nav-link fw-semibold py-2 px-0 {% if url_name == 'change-password' %}active{% endif %}"
+                                               href="{% url 'password_change' %}">
                                                 <i class="ai-wallet fs-5 opacity-60 me-2"></i>
                                                 Change Password
                                             </a>
