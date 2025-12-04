@@ -295,22 +295,6 @@ class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
     form_class = UserSkillsForm
     success_url = reverse_lazy("self_assess")
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
-        """Add the competencies framework data to the template context."""
-        context = super().get_context_data(**kwargs)
-        json_path = Path("data/skills-competencies-framework.json")
-        with open(json_path) as f:
-            framework = json.load(f)
-
-        for category in framework.get("categories", []):
-            category["competency_count"] = len(category.get("subcategories", []))
-            category["skill_count"] = sum(
-                len(sub.get("skills", [])) for sub in category.get("subcategories", [])
-            )
-
-        context["framework"] = framework
-        return context
-
     def get_form_kwargs(self) -> dict[str, Any]:
         """Return the keyword arguments for instantiating the form."""
         kwargs = super().get_form_kwargs()
