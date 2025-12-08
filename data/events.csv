@@ -1,15 +1,23 @@
-Title,Start Date,End Date,Description,Contributors,Image
-SSI CW23 Hack Day 2023,2023-05-04,2023-05-04,"Slides; Notes; Teams: HackMD, Miro, Github","Aleksandra Nenadic, Aman Goel, Dave Horsfall, Diego Alonso Álvarez, Eli Chadwick, Iain Barrass, Hannah Williams, Lieke de Boer, Paul K Korir, Martin O’Reilly, Matthew Bluteau, Nadine Spychala, Sean Marshallsay",assets/img/blog/single/image.jpg
-UKHSA internal presentation,2023-05-12,2023-05-12,Slides,Hannah Williams,assets/img/blog/single/image.jpg
-RSE South workshop,2023-05-16,2023-05-16,Slides,Hannah Williams,assets/img/blog/single/image.jpg
-UK Carpentries Community Call,2023-06-26,2023-06-26,Slides,"Aleksandra Nenadic, Matthew Bluteau, Dave Horsfall",assets/img/blog/single/image.jpg
-RS London South-East,2023-07-17,2023-07-17,Abstract,"Hannah Williams, Diego Alonso Álvarez",assets/img/blog/single/image.jpg
-RSE Conference 2023,2023-09-05,2023-09-08,Meeting notes,"Dave Horsfall, Hannah Williams, Matthew Bluteau",assets/img/blog/single/image.jpg
-Professionalising data science roles workshop,2023-10-02,2023-10-02,,Dave Horsfall,assets/img/blog/single/image.jpg
-DRI retreat,2024-03-18,2024-03-22,Emma & Sam attending; Emma involved in panels; Promote project via panels and poster,,assets/img/blog/single/image.jpg
-Dagstuhl Seminar 24161 Research Software Engineering: Bridging Knowledge Gaps,2024-04-14,2024-04-19,Toby attending and will try to promote project,,assets/img/blog/single/image.jpg
-Collaborations Workshop 2024,2024-04-30,2024-05-02,"Lightning talk/workshop; Target discussions, invite people to short interviews",,assets/img/blog/single/image.jpg
-N8CIR In person RSE Meetup Summer 2024,2024-06-01,2024-08-31,No website/dates available?,,assets/img/blog/single/image.jpg
-RSECon24,2024-09-03,2024-09-05,Submit panel in collaboration with Met Office via Emma; Submit workshop focused on defining & categorising skills,,assets/img/blog/single/image.jpg
-CarpentryConnect Heidelberg,2024-11-12,2024-11-14,"Aleks, Toby, Matt B working on submissions",,assets/img/blog/single/image.jpg
-CW25,2025-05-13,2025-05-15,"Proposal; Workshop notes & blogpost & Hack Day notes; Workshop slides, Hack Day slides",,assets/img/blog/single/image.jpg
+Title,Start Date,End Date,Description,Links,Contributors,Image
+SSI CW23 Hack Day 2023,2023-05-04,2023-05-04,"Slides; Notes; Teams: HackMD, Miro, Github","Slides Notes Teams HackMD Miro GitHub","Aleksandra Nenadic, Aman Goel, Dave Horsfall, Diego Alonso Álvarez, Eli Chadwick, Iain Barrass, Hannah Williams, Lieke de Boer, Paul K Korir, Martin O’Reilly, Matthew Bluteau, Nadine Spychala, Sean Marshallsay",assets/img/blog/single/image.jpg
+UKHSA internal presentation,2023-05-12,2023-05-12,,Slides,Hannah Williams,assets/img/blog/single/image.jpg
+RSE South workshop,2023-05-16,2023-05-16,,Slides,Hannah Williams,assets/img/blog/single/image.jpg
+UK Carpentries Community Call,2023-06-26,2023-06-26,,Slides,"Aleksandra Nenadic, Matthew Bluteau, Dave Horsfall",assets/img/blog/single/image.jpg
+RS London South-East,2023-07-17,2023-07-17,,Abstract,"Hannah Williams, Diego Alonso Álvarez",assets/img/blog/single/image.jpg
+RSE Conference 2023,2023-09-05,2023-09-08,,Meeting notes,"Dave Horsfall, Hannah Williams, Matthew Bluteau",assets/img/blog/single/image.jpg
+Professionalising data science roles workshop,2023-10-02,2023-10-02,,,Dave Horsfall,assets/img/blog/single/image.jpg
+DRI retreat,2024-03-18,2024-03-22,Emma & Sam attending; Emma involved in panels; Promote project via panels and poster,,,assets/img/blog/single/image.jpg
+Dagstuhl Seminar 24161 Research Software Engineering: Bridging Knowledge Gaps,2024-04-14,2024-04-19,Toby attending and will try to promote project,,,assets/img/blog/single/image.jpg
+Collaborations Workshop 2024,2024-04-30,2024-05-02,"Lightning talk/workshop; Target discussions, invite people to short interviews",,,assets/img/blog/single/image.jpg
+N8CIR In person RSE Meetup Summer 2024,2024-07-18,2024-07-18,,Event Page,,assets/img/blog/single/image.jpg
+RSECon24,2024-09-03,2024-09-05,Submit panel in collaboration with Met Office via Emma; Submit workshop focused on defining & categorising skills,"Programme Recording","Becky Osselton, Emma Hogan, Aleksandra Nenadic, Matt Craddock, Gabriel Hanganu, Eli Chadwick, Dave Horsfall",assets/img/blog/single/image.jpg
+CarpentryConnect Heidelberg,2024-11-12,2024-11-14,"Aleks, Toby, Matt B working on submissions",,,assets/img/blog/single/image.jpg
+SSI Fellows Community Call February 2025,2025-02-24,2025-02-24,10 minute talk given as a part of the regular SSI Fellows Community calls,"Recording Slides",Aman Goel,assets/img/blog/single/image.jpg
+CW25,2025-05-13,2025-05-15,"Proposal; Workshop notes & blogpost & Hack Day notes; Workshop slides, Hack Day slides","Workshop notes Blog","Workshop: Aleksandra Nenadic, David Horsfall, Eli Chadwick, , Aman Goel, Phil Reed, Adrian D’Alessandro, Jonathan Cooper Hack Day: Phil Reed, Aleksandra Nenadic, Patricia Loto, Adrian D’Alessandro, Bryn Ubald, Andrew Gait, Tamora James, Connor Aird, Ryan Smith",assets/img/blog/single/image.jpg
+"Open Research Conference 2025, Manchester",2025-06-09,2025-06-10,Aleks and Phil lightning talk at The University of Manchester,"Event Page Slides","Aleksandra Nenadic, Phil Reed",assets/img/blog/single/image.jpg
+UK-Ireland Digital Humanities Association Event 2025,2025-06-17,2025-06-18,"Workshop for capturing a digital humanities voice in the framework, part of SSI Fellowship for Phil Reed",https://digitalhumanities-uk-ie.org/2025-annual-event/,"Phil Reed, Dave Horsfall, Aleksandra Nenadic, Lucia Michielin, Anna-Maria Sichani",assets/img/blog/single/image.jpg
+N8 CIR RSE Annual Meeting 2025,2025-07-10,2025-07-10,Lightning talk,"Event Page Slides",Aman Goel,assets/img/blog/single/image.jpg
+SSI internal ideas meeting,2025-09-02,2025-09-02,Presentation + activity to explore the framework,Slides,Aleksandra Nenadic,assets/img/blog/single/image.jpg
+RSECon25,2025-09-09,2025-09-11,Workshop for user experience testing the web app visualisations and profiles,Programme,"Dave Horsfall, Adrian D’Alessandro, Aman Goel, Aleksandra Nenadic, Phil Reed, Emma Hogan, Muhammad Salihu, Gabriel Hanganu",assets/img/blog/single/image.jpg
+"Satellite Training Community Day, RSECon25",2025-09-12,2025-09-12,Workshop for capturing and mapping training and learning opportunities,Event Page,"Dave Horsfall, Toby Hodges, Weronika Filinger, Phil Reed, Samantha Ahern, Jonathan Cooper, Aman Goel",assets/img/blog/single/image.jpg
+CaSDaR launch,2025-09-18,2025-09-18,Lightning talk at the launch of Careers and Skills for Data-driven Research (CaSDaR),https://www.eventbrite.com/e/careers-and-skills-for-data-driven-research-casdar-hybrid-event-launch-tickets-1496323607189,Phil Reed,assets/img/blog/single/image.jpg
