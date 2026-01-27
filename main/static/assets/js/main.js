@@ -4323,8 +4323,8 @@ var main = (function () {
 
     /* A d3.js arc generator for the arc that is at the base of the category. */
     const categoryBaseArc = arc().innerRadius(innerRadius - 1).outerRadius(innerRadius - 3).startAngle(category => categoryStartAngleMap[category]).endAngle(category => {
-      var _groupedByCategory$ge9, _groupedByCategory$ge10, _groupedByCategory$ge11, _groupedByCategory$ge12;
-      return categoryStartAngleMap[category] + columnAngle * ((_groupedByCategory$ge9 = (_groupedByCategory$ge10 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge10.length) != null ? _groupedByCategory$ge9 : 0) + ((_groupedByCategory$ge11 = (_groupedByCategory$ge12 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge12.length) != null ? _groupedByCategory$ge11 : 0) * skillPadding;
+      var _groupedByCategory$ge9, _groupedByCategory$ge0, _groupedByCategory$ge1, _groupedByCategory$ge10;
+      return categoryStartAngleMap[category] + columnAngle * ((_groupedByCategory$ge9 = (_groupedByCategory$ge0 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge0.length) != null ? _groupedByCategory$ge9 : 0) + ((_groupedByCategory$ge1 = (_groupedByCategory$ge10 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge10.length) != null ? _groupedByCategory$ge1 : 0) * skillPadding;
     });
     const thicknessOfLvlRing = 0.5;
     /* A d3.js arc generator for the ring that shows each level for the entire plot */
@@ -4391,10 +4391,10 @@ var main = (function () {
     }));
     const groupedByCategory = group(augmentedData, d => d.category);
     const categoriesData = sortedCategories.map(cat => {
-      var _groupedByCategory$ge13;
+      var _groupedByCategory$ge11;
       return {
         id: cat,
-        skills: (_groupedByCategory$ge13 = groupedByCategory.get(cat)) != null ? _groupedByCategory$ge13 : [],
+        skills: (_groupedByCategory$ge11 = groupedByCategory.get(cat)) != null ? _groupedByCategory$ge11 : [],
         color: colorFn(cat)
       };
     });
@@ -4432,9 +4432,7 @@ var main = (function () {
     const filteredCategories = categoryFocus ? [categoryFocus] : sortedCategories;
     const filteredCategoriesIds = filteredCategories.map(c => c.id);
     const filteredData = skillsData
-    /* Only show the data in the focus category or all categories */
-    // TODO: Check this
-    .filter(d => filteredCategoriesIds.includes(d.category));
+    /* Only show the data in the focus category or all categories */.filter(d => filteredCategoriesIds.includes(d.category));
     const {
       barFullHeightArc,
       barSegmentArc
@@ -4545,10 +4543,6 @@ var main = (function () {
       // Category label text box
       annotationGroup.append('rect').attr('class', 'label-box').attr('x', labelAnchorPoint.x).attr('y', labelAnchorPoint.y + (labelYDir === 1 ? 0 : -labelHeight)).attr('width', labelWidth).attr('height', labelHeight).attr('color', labelTextColor).attr('opacity', 0.8) // increased on hover
       .attr('fill', cat.color);
-      console.info(cat.id, {
-        labelAnchorPoint,
-        labelXDir
-      });
       const highlightLineThickness = 10;
       // Line On Side of category label
       annotationGroup.append('line').attr('class', 'highlight-line').attr('x1', labelAnchorPoint.x + labelXDir * highlightLineThickness + (labelXDir === 1 ? labelWidth : 0)).attr('y1', labelAnchorPoint.y).attr('x2', labelAnchorPoint.x + labelXDir * highlightLineThickness + (labelXDir === 1 ? labelWidth : 0)).attr('y2', labelAnchorPoint.y + labelHeight * labelYDir).attr('stroke', cat.color).attr('opacity', 0) // only shown on hover
@@ -4733,9 +4727,7 @@ var main = (function () {
       group.append('g').attr('class', 'skill-highlight-text-skill');
       // Skill level text
       group.append('line').attr('class', 'skill-highlight-text-lvl-line').attr('x1', -innerRadius * 0.7).attr('y1', 50 - fontSize / 1.3).attr('x2', innerRadius * 0.7).attr('y2', 50 - fontSize / 1.3).attr('stroke', '#FFF').attr('fill', 'none').attr('stroke-width', 2).attr('opacity', 0);
-      group.append('text').attr('y', 60).attr('text-anchor', 'middle').attr('fill', '#FFF').attr('font-size', fontSize)
-      // .attr('fill', labelTextColor)
-      .attr('class', 'skill-highlight-text-lvl').text('');
+      group.append('text').attr('y', 60).attr('text-anchor', 'middle').attr('fill', '#FFF').attr('font-size', fontSize).attr('class', 'skill-highlight-text-lvl').text('');
     }
 
     // D3.js function to render the skill highlight
@@ -4766,6 +4758,7 @@ var main = (function () {
       } else {
         var _lvlsArray$find;
         const t = transition().duration(200).ease(linear$1);
+
         // Circle for skill highlight
         group.select('.skill-highlight-circle').transition(t) // Transition to the new highlight
         .attr('opacity', 1).attr('fill', highlightedSkill.color);
@@ -4781,20 +4774,6 @@ var main = (function () {
 
         const skillTextSplit = splitTextToFitWidth(highlightedSkill.skill, innerCircleWidth * 2.5, fontSize);
         group.select('.skill-highlight-text-skill').transition(t).attr('opacity', 1);
-        // .text(highlightedSkill.skill)
-        // const annotationSkillTextGroup = group.select('.skill-highlight-text-skill')
-        // console.info(skillTextSplit)
-        // skillTextSplit.forEach((skillTextRow, i) =>
-        //   annotationSkillTextGroup
-        //     .append('text')
-        //     .attr('x', 0)
-        //     .attr('y', i * 1)
-        //     .attr('text-anchor', 'middle')
-        //     .attr('fill', labelTextColor)
-        //     .attr('class', 'skill-highlight-text-skill-central')
-        //     .text(skillTextRow)
-        // )
-        // console.info("annotationSkillTextGroup", annotationSkillTextGroup)
         group.select('.skill-highlight-text-skill').selectAll('skill-highlight-text-skill-central').data(skillTextSplit).enter().append('text').attr('x', 0).attr('font-size', fontSize).attr('y', (_, i) => -(0.5 * fontSize * skillTextSplit.length / 2) + i * fontSize * 1.2).attr('class', 'skill-highlight-text-skill-central').attr('text-anchor', 'middle').attr('fill', labelTextColor).text(skillText => skillText);
 
         // Skill level text
@@ -4876,8 +4855,8 @@ var main = (function () {
   }
 
   /*!
-    * Bootstrap v5.3.2 (https://getbootstrap.com/)
-    * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+    * Bootstrap v5.3.8 (https://getbootstrap.com/)
+    * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
     * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
     */
   (function (global, factory) {
@@ -5081,12 +5060,11 @@ var main = (function () {
      * @param {HTMLElement} element
      * @return void
      *
-     * @see https://www.charistheo.io/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
+     * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
      */
     const reflow = element => {
       element.offsetHeight; // eslint-disable-line no-unused-expressions
     };
-
     const getjQuery = () => {
       if (window.jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
         return window.jQuery;
@@ -5127,7 +5105,7 @@ var main = (function () {
       });
     };
     const execute = (possibleCallback, args = [], defaultValue = possibleCallback) => {
-      return typeof possibleCallback === 'function' ? possibleCallback(...args) : defaultValue;
+      return typeof possibleCallback === 'function' ? possibleCallback.call(...args) : defaultValue;
     };
     const executeAfterTransition = (callback, transitionElement, waitForTransition = true) => {
       if (!waitForTransition) {
@@ -5449,7 +5427,7 @@ var main = (function () {
         const bsKeys = Object.keys(element.dataset).filter(key => key.startsWith('bs') && !key.startsWith('bsConfig'));
         for (const key of bsKeys) {
           let pureKey = key.replace(/^bs/, '');
-          pureKey = pureKey.charAt(0).toLowerCase() + pureKey.slice(1, pureKey.length);
+          pureKey = pureKey.charAt(0).toLowerCase() + pureKey.slice(1);
           attributes[pureKey] = normalizeData(element.dataset[key]);
         }
         return attributes;
@@ -5524,7 +5502,7 @@ var main = (function () {
      * Constants
      */
 
-    const VERSION = '5.3.2';
+    const VERSION = '5.3.8';
 
     /**
      * Class definition
@@ -5550,6 +5528,8 @@ var main = (function () {
           this[propertyName] = null;
         }
       }
+
+      // Private
       _queueCallback(callback, element, isAnimated = true) {
         executeAfterTransition(callback, element, isAnimated);
       }
@@ -5605,9 +5585,9 @@ var main = (function () {
         if (hrefAttribute.includes('#') && !hrefAttribute.startsWith('#')) {
           hrefAttribute = `#${hrefAttribute.split('#')[1]}`;
         }
-        selector = hrefAttribute && hrefAttribute !== '#' ? parseSelector(hrefAttribute.trim()) : null;
+        selector = hrefAttribute && hrefAttribute !== '#' ? hrefAttribute.trim() : null;
       }
-      return selector;
+      return selector ? selector.split(',').map(sel => parseSelector(sel)).join(',') : null;
     };
     const SelectorEngine = {
       find(selector, element = document.documentElement) {
@@ -6481,11 +6461,11 @@ var main = (function () {
         this._element.style[dimension] = '';
         this._queueCallback(complete, this._element, true);
       }
+
+      // Private
       _isShown(element = this._element) {
         return element.classList.contains(CLASS_NAME_SHOW$7);
       }
-
-      // Private
       _configAfterMerge(config) {
         config.toggle = Boolean(config.toggle); // Coerce string values
         config.parent = getElement(config.parent);
@@ -8576,7 +8556,7 @@ var main = (function () {
       }
       _createPopper() {
         if (typeof Popper === 'undefined') {
-          throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org)');
+          throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org/docs/v2/)');
         }
         let referenceElement = this._element;
         if (this._config.reference === 'parent') {
@@ -8655,7 +8635,7 @@ var main = (function () {
         }
         return {
           ...defaultBsPopperConfig,
-          ...execute(this._config.popperConfig, [defaultBsPopperConfig])
+          ...execute(this._config.popperConfig, [undefined, defaultBsPopperConfig])
         };
       }
       _selectMenuItem({
@@ -8790,7 +8770,6 @@ var main = (function () {
       // if false, we use the backdrop helper without adding any element to the dom
       rootElement: 'body' // give the choice to place backdrop under different elements
     };
-
     const DefaultType$8 = {
       className: 'string',
       clickCallback: '(function|null)',
@@ -8915,7 +8894,6 @@ var main = (function () {
       autofocus: true,
       trapElement: null // The element to trap focus inside of
     };
-
     const DefaultType$7 = {
       autofocus: 'boolean',
       trapElement: 'element'
@@ -9642,7 +9620,10 @@ var main = (function () {
       br: [],
       col: [],
       code: [],
+      dd: [],
       div: [],
+      dl: [],
+      dt: [],
       em: [],
       hr: [],
       h1: [],
@@ -9676,7 +9657,6 @@ var main = (function () {
      *
      * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
      */
-    // eslint-disable-next-line unicorn/better-regex
     const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i;
     const allowedAttribute = (attribute, allowedAttributeList) => {
       const attributeName = attribute.nodeName.toLowerCase();
@@ -9841,7 +9821,7 @@ var main = (function () {
         return this._config.sanitize ? sanitizeHtml(arg, this._config.allowList, this._config.sanitizeFn) : arg;
       }
       _resolvePossibleFunction(arg) {
-        return execute(arg, [this]);
+        return execute(arg, [undefined, this]);
       }
       _putElementInTemplate(element, templateElement) {
         if (this._config.html) {
@@ -9940,7 +9920,7 @@ var main = (function () {
     class Tooltip extends BaseComponent {
       constructor(element, config) {
         if (typeof Popper === 'undefined') {
-          throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org)');
+          throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org/docs/v2/)');
         }
         super(element, config);
 
@@ -9986,7 +9966,6 @@ var main = (function () {
         if (!this._isEnabled) {
           return;
         }
-        this._activeTrigger.click = !this._activeTrigger.click;
         if (this._isShown()) {
           this._leave();
           return;
@@ -10174,7 +10153,7 @@ var main = (function () {
         return offset;
       }
       _resolvePossibleFunction(arg) {
-        return execute(arg, [this._element]);
+        return execute(arg, [this._element, this._element]);
       }
       _getPopperConfig(attachment) {
         const defaultBsPopperConfig = {
@@ -10212,7 +10191,7 @@ var main = (function () {
         };
         return {
           ...defaultBsPopperConfig,
-          ...execute(this._config.popperConfig, [defaultBsPopperConfig])
+          ...execute(this._config.popperConfig, [undefined, defaultBsPopperConfig])
         };
       }
       _setListeners() {
@@ -10221,6 +10200,7 @@ var main = (function () {
           if (trigger === 'click') {
             EventHandler.on(this._element, this.constructor.eventName(EVENT_CLICK$1), this._config.selector, event => {
               const context = this._initializeOnDelegatedTarget(event);
+              context._activeTrigger[TRIGGER_CLICK] = !(context._isShown() && context._activeTrigger[TRIGGER_CLICK]);
               context.toggle();
             });
           } else if (trigger !== TRIGGER_MANUAL) {
@@ -11086,7 +11066,6 @@ var main = (function () {
       }
 
       // Private
-
       _maybeScheduleHide() {
         if (!this._config.autohide) {
           return;
@@ -12787,11 +12766,11 @@ var main = (function () {
    * Usage example:  main().RadialBarChart(...args)
    *
    */
-  var theme = (() => {
+  var theme = () => {
     return {
       RadialBarChart
     };
-  });
+  };
 
   return theme;
 
