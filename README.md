@@ -153,7 +153,7 @@ This project includes an NPM-based setup for managing front-end assets like styl
 Ensure you have Node.js (v16 or higher) and NPM installed. You can verify their installation with:
 
 ```bash
-npm -v
+npm version
 ```
 
 ### Installing Dependencies
