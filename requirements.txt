@@ -10,7 +10,7 @@ confusable-homoglyphs==3.3.1
     # via django-registration
 crispy-bootstrap5==2025.6
     # via direct_webapp (pyproject.toml)
-django==6.0
+django==6.0.1
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
@@ -18,7 +18,7 @@ django==6.0
     #   django-crispy-forms
     #   django-registration
     #   django-stubs-ext
-django-bootstrap5==25.3
+django-bootstrap5==26.1
     # via direct_webapp (pyproject.toml)
 django-crispy-forms==2.5
     # via
@@ -26,13 +26,13 @@ django-crispy-forms==2.5
     #   direct_webapp (pyproject.toml)
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
-django-stubs-ext==5.2.8
+django-stubs-ext==5.2.9
     # via direct_webapp (pyproject.toml)
-gunicorn==23.0.0
+gunicorn==25.0.0
     # via direct_webapp (pyproject.toml)
 mysqlclient==2.2.7
     # via direct_webapp (pyproject.toml)
-packaging==25.0
+packaging==26.0
     # via gunicorn
 sqlparse==0.5.5
     # via django
