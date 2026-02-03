@@ -1,7 +1,14 @@
 """CLI tool to allow populating the database with Category and Skill data."""
 
 import argparse
+import logging
 import pathlib
+from typing import Any
+
+from django.core.exceptions import ValidationError
+from django.db import models
+
+logger = logging.getLogger("django")
 
 
 def read_args() -> argparse.Namespace:  # pragma: no cover
@@ -34,58 +41,66 @@ def get_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def add_object_to_db(model: type[models.Model], **kwargs: Any) -> models.Model | None:
+    """Add an object to the database if it does not already exist and is valid.
+
+    Args:
+        model: The model class to add the object to.
+        **kwargs: The fields to set on the model instance.
+    """
+    instance = model(**kwargs)
+    try:
+        instance.clean_fields()
+    except ValidationError as e:
+        logger.info(f"{model.__name__} with invalid fields skipped: {e.message_dict}")
+        return None
+
+    try:
+        existing = model.objects.get(**kwargs)  # type: ignore[attr-defined]
+        logger.info(f"{model.__name__} already exists, skipping: {instance}")
+        return existing
+    except model.DoesNotExist:  # type: ignore[attr-defined]
+        try:
+            instance.full_clean()
+        except ValidationError as e:
+            logger.info(f"{model.__name__} with invalid data skipped: {e.message_dict}")
+            return None
+
+        instance.save()
+        return instance
+
+
 def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg]
     """Populate the database with categories and skills from a dictionary."""
     from main.models import Category, Skill
 
     # Loop over categories and add to db
     for category in data["categories"]:
-        cat_name = category["title"]
-        cat_description = category["description"]
-
-        # Check if category already exists
-        parent_cat = None
-        try:
-            parent_cat = Category.objects.get(name=cat_name)
-        except Category.DoesNotExist:
-            parent_cat = Category.objects.create(
-                name=cat_name,
-                description=cat_description,
-            )
-            parent_cat.save()
+        parent_cat = add_object_to_db(
+            Category, name=category["title"], description=category["description"]
+        )
+        if parent_cat is None:
+            continue
 
         # Loop over sub-categorys and add to db
         for subcategory in category["subcategories"]:
-            sub_cat_name = subcategory["title"]
-            sub_cat_description = subcategory["description"]
-
-            # Check if sub-category already exists
-            sub_cat = None
-            try:
-                sub_cat = Category.objects.get(name=sub_cat_name)
-            except Category.DoesNotExist:
-                sub_cat = Category.objects.create(
-                    name=sub_cat_name,
-                    description=sub_cat_description,
-                    parent_category=parent_cat,
-                )
-                sub_cat.save()
+            sub_cat = add_object_to_db(
+                Category,
+                name=subcategory["title"],
+                description=subcategory["description"],
+                parent_category=parent_cat,
+            )
+            if sub_cat is None:
+                continue
 
             # Loop over skills and add to db
             for skill in subcategory["skills"]:
-                skill_name = skill["title"]
-                skill_description = skill["description"]
-                # Check if skill already exists
-                skill = None
-                try:
-                    skill = Skill.objects.get(name=skill_name)
-                except Skill.DoesNotExist:
-                    skill = Skill.objects.create(
-                        name=skill_name,
-                        description=skill_description,
-                        category=sub_cat,
-                    )
-                    skill.save()
+                add_object_to_db(
+                    Skill,
+                    name=skill["title"],
+                    description=skill["description"],
+                    category=sub_cat,
+                )
 
 
 def populate_skill_levels(levels: list[dict]) -> None:  # type: ignore[type-arg]
@@ -94,19 +109,12 @@ def populate_skill_levels(levels: list[dict]) -> None:  # type: ignore[type-arg]
 
     # Loop over skill levels and add to db
     for lvl in levels:
-        # Check if skill level already exists
-        level = lvl["Level"]
-        name = lvl["Name"]
-        description = lvl["Description"]
-        try:
-            skill_level = SkillLevel.objects.get(level=level)
-        except SkillLevel.DoesNotExist:
-            skill_level = SkillLevel.objects.create(
-                level=level,
-                name=name,
-                description=description,
-            )
-            skill_level.save()
+        add_object_to_db(
+            SkillLevel,
+            level=lvl["Level"],
+            name=lvl["Name"],
+            description=lvl["Description"],
+        )
 
 
 def main() -> None:
