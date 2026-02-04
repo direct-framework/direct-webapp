@@ -1,9 +1,12 @@
 """Models module for the main app."""
 
+from typing import Any
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 
@@ -11,11 +14,42 @@ class User(AbstractUser):
     """Custom user model for this project."""
 
 
-class Category(models.Model):
-    """Model for categories."""
+class NamedModel(models.Model):
+    """Abstract base model with name and description fields."""
 
     name = models.CharField(max_length=200)
     description = models.TextField()
+
+    class Meta:
+        """Meta options to define NamedModel as abstract."""
+
+        abstract = True
+
+    def __str__(self) -> str:
+        """Return the name of the model instance."""
+        return self.name
+
+
+class SluggedModel(NamedModel):
+    """Abstract base model with slug field."""
+
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=200)
+
+    class Meta:
+        """Meta options to define SluggedModel as abstract."""
+
+        abstract = True
+
+    def save(self, **kwargs: Any) -> None:
+        """Override save method to auto-generate slug from name if not provided."""
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(**kwargs)
+
+
+class Category(SluggedModel):
+    """Model for categories."""
+
     parent_category = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
@@ -23,10 +57,6 @@ class Category(models.Model):
         blank=True,
         limit_choices_to={"parent_category": None},
     )
-
-    def __str__(self) -> str:
-        """Return the name of the category."""
-        return self.name
 
     def clean(self) -> None:
         """Validate the category instance."""
@@ -44,16 +74,10 @@ class Category(models.Model):
             )
 
 
-class Skill(models.Model):
+class Skill(SluggedModel):
     """Model for skills."""
 
-    name = models.CharField(max_length=200)
-    description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        """Return the name of the skill."""
-        return self.name
 
     def clean(self) -> None:
         """Validate the skill instance."""
@@ -63,16 +87,10 @@ class Skill(models.Model):
             )
 
 
-class SkillLevel(models.Model):
+class SkillLevel(NamedModel):
     """Model for skill levels."""
 
-    level = models.PositiveSmallIntegerField()
-    name = models.CharField(max_length=200)
-    description = models.TextField()
-
-    def __str__(self) -> str:
-        """Return the name of the skill level."""
-        return self.name
+    level = models.PositiveSmallIntegerField(unique=True)
 
 
 class UserSkill(models.Model):
