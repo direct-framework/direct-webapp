@@ -77,7 +77,10 @@ def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg
     # Loop over categories and add to db
     for category in data["categories"]:
         parent_cat = add_object_to_db(
-            Category, name=category["title"], description=category["description"]
+            Category,
+            name=category["title"],
+            description=category["description"],
+            slug=category.get("slug"),
         )
         if parent_cat is None:
             continue
@@ -89,6 +92,7 @@ def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg
                 name=subcategory["title"],
                 description=subcategory["description"],
                 parent_category=parent_cat,
+                slug=subcategory.get("slug"),
             )
             if sub_cat is None:
                 continue
@@ -100,6 +104,7 @@ def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg
                     name=skill["title"],
                     description=skill["description"],
                     category=sub_cat,
+                    slug=skill.get("slug"),
                 )
 
 
