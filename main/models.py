@@ -17,7 +17,7 @@ class User(AbstractUser):
 class NamedModel(models.Model):
     """Abstract base model with name and description fields."""
 
-    name = models.CharField(max_length=200)
+    name = models.CharField(unique=True, max_length=200)
     description = models.TextField()
 
     class Meta:
