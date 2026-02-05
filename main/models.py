@@ -1,5 +1,6 @@
 """Models module for the main app."""
 
+from collections.abc import Collection
 from typing import Any
 
 from django.conf import settings
@@ -40,10 +41,28 @@ class SluggedModel(NamedModel):
 
         abstract = True
 
+    def validate_unique(self, exclude: Collection[str] | None = None) -> None:
+        """Validate the auto-generated slug field."""
+        if not self.slug:
+            self.slug = slugify(self.name)
+        try:
+            super().validate_unique(exclude=exclude)
+        except ValidationError as e:
+            message_dict = {k: "".join(v) for k, v in e.message_dict.items()}
+            if "slug" in message_dict:
+                message_dict["slug"] = (
+                    _(message_dict["slug"])
+                    + f" Auto-generated slug '{self.slug}' already exists"
+                )
+
+            raise ValidationError(message_dict) from e
+
     def save(self, **kwargs: Any) -> None:
         """Override save method to auto-generate slug from name if not provided."""
         if not self.slug:
-            self.slug = slugify(self.name)
+            all_fields = [f.name for f in self._meta.get_fields()]
+            all_fields.remove("slug")
+            self.validate_unique(exclude=all_fields)
         super().save(**kwargs)
 
 

@@ -68,11 +68,26 @@ def test_slugged_model(mocker) -> None:
     assert instance.description == "Test Description"
     assert instance.slug is None
 
-    # Test save method to auto-generate slug
+    # Test save method calls validate_unique to auto-generate slug
     mock_save = mocker.patch.object(NamedModel, "save", autospec=True)
+    mock_val_unique = mocker.patch.object(NamedModel, "validate_unique", autospec=True)
     instance.save()
     assert instance.slug == "test-name"
     mock_save.assert_called_once()
+    mock_val_unique.assert_called_once_with(
+        instance, exclude=["id", "name", "description"]
+    )
+
+
+@pytest.mark.django_db
+def test_slug_collision() -> None:
+    """Test that slug collision edge cases are handled by validate_unique."""
+    Category.objects.create(name="Test Category", description="Desc")
+
+    with pytest.raises(
+        ValidationError, match=r"Auto-generated slug 'test-category' already exists"
+    ):
+        Category(name="Test-Category", description="Test Description").validate_unique()
 
 
 @pytest.mark.django_db
