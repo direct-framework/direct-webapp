@@ -69,6 +69,11 @@ class SluggedModel(NamedModel):
 class Category(SluggedModel):
     """Model for categories."""
 
+    class Meta:
+        """Meta options for Category model."""
+
+        verbose_name_plural = "categories"
+
     parent_category = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
