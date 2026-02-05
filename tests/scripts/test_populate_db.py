@@ -87,7 +87,7 @@ def test_populate_skill_levels(caplog) -> None:
             "Description": "Description of Level 1",
         },
         {
-            "Level": 1,  # Duplicate level
+            "Level": 1,  # Duplicate level - will overwrite previous
             "Name": "Name of Level 1",
             "Description": "Description of Level 1",
         },
@@ -111,20 +111,21 @@ def test_populate_skill_levels(caplog) -> None:
     assert SkillLevel.objects.all().count() == 2
     assert caplog.record_tuples[-1] == (
         "django",
-        logging.INFO,
-        "SkillLevel with invalid fields skipped: {'name': ['Ensure this value has at "
-        "most 200 characters (it has 3000).']}",
+        logging.WARNING,
+        f"SkillLevel with invalid fields skipped: {'Name of Level 2' * 200} "
+        "{'name': ['Ensure this value has at most 200 characters (it has 3000).']}",
     )
     assert caplog.record_tuples[-2] == (
         "django",
-        logging.INFO,
-        "SkillLevel with invalid fields skipped: {'level': ['“one” value must be an "
-        "integer.']}",
+        logging.WARNING,
+        "SkillLevel with invalid fields skipped: Name of Level 1 "
+        "{'level': ['“one” value must be an integer.']}",
     )
     assert caplog.record_tuples[-3] == (
         "django",
         logging.INFO,
-        "SkillLevel already exists, skipping: Name of Level 1",
+        "SkillLevel added to database: Name of Level 1 - "
+        "existing object 'Name of Level 1' overwritten",
     )
 
 
@@ -136,7 +137,7 @@ def test_add_object_to_db(caplog) -> None:
     assert Category.objects.all().count() == 0
 
     instance = populate_db.add_object_to_db(
-        Category, name="Test Category", description="Test Description"
+        Category, slug="cat", name="Test Category", description="Test Description"
     )
 
     assert instance.pk is not None  # type: ignore[union-attr]
@@ -147,24 +148,46 @@ def test_add_object_to_db(caplog) -> None:
     # Test adding the same object again
     with caplog.at_level("INFO"):
         instance2 = populate_db.add_object_to_db(
-            Category, name="Test Category", description="Test Description"
+            Category, slug="cat", name="Test Category", description="Test Description"
         )
     assert instance2 == instance
     assert caplog.record_tuples[-1] == (
         "django",
         logging.INFO,
-        "Category already exists, skipping: Test Category",
+        "Category added to database: Test Category - "
+        "existing object 'Test Category' overwritten",
     )
     assert Category.objects.all().count() == 1
 
     # Test adding an object with invalid fields
     with caplog.at_level("INFO"):
-        instance3 = populate_db.add_object_to_db(Category, name="Invalid Category")
+        instance3 = populate_db.add_object_to_db(
+            Category, slug=None, name="Invalid Category"
+        )
     assert instance3 is None
     assert caplog.record_tuples[-1] == (
         "django",
-        logging.INFO,
-        "Category with invalid fields skipped: {'description': ['This field cannot be "
-        "blank.']}",
+        logging.WARNING,
+        "Category with invalid fields skipped: Invalid Category "
+        "{'description': ['This field cannot be blank.']}",
     )
     assert Category.objects.all().count() == 1
+
+    # Test changing an object with the same slug
+    with caplog.at_level("INFO"):
+        instance4 = populate_db.add_object_to_db(
+            Category,
+            slug="cat",
+            name="Updated Category",
+            description="Updated Description",
+        )
+    assert instance4.pk == instance.pk  # type: ignore[union-attr]
+    assert instance4.name == "Updated Category"  # type: ignore[union-attr]
+    assert instance4.description == "Updated Description"  # type: ignore[union-attr]
+    assert caplog.record_tuples[-1] == (
+        "django",
+        logging.INFO,
+        "Category added to database: Updated Category - "
+        "existing object 'Test Category' overwritten",
+    )
+    assert Category.objects.all().count() == 1  # No new object created
