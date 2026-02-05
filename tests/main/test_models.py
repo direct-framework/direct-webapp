@@ -24,7 +24,7 @@ def sub_category(parent_category: Category) -> Category:
 
 @pytest.fixture
 def skill(sub_category: Category) -> Skill:
-    """Fixture for creating a Subcategory instance."""
+    """Fixture for creating a Skill instance."""
     return Skill.objects.create(
         name="Skill", description="A skill", category=sub_category
     )
@@ -120,7 +120,7 @@ def test_skill_model(skill: Skill, sub_category: Category) -> None:
 
 @pytest.mark.django_db
 def test_skill_clean(skill: Skill, parent_category: Category) -> None:
-    """Test the Skill model."""
+    """Test the clean method of the Skill model."""
     skill.category = parent_category
 
     with pytest.raises(
