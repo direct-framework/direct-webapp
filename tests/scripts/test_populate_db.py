@@ -237,7 +237,7 @@ def test_add_object_to_db(caplog) -> None:
     assert caplog.record_tuples[-1] == (
         "django",
         logging.WARNING,
-        "Skill with invalid data skipped: Skill "
+        "Skill with invalid data skipped: Skill (Test Category) "
         "{'category': ['The category cannot be a top-level category.']}",
     )
     assert Skill.objects.all().count() == 0

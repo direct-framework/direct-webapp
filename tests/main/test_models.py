@@ -3,7 +3,17 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from main.models import Category, NamedModel, Skill, SkillLevel, SluggedModel, UserSkill
+from main.models import (
+    Category,
+    LearningResource,
+    NamedModel,
+    Provider,
+    Skill,
+    SkillLevel,
+    SluggedModel,
+    Tool,
+    UserSkill,
+)
 
 
 @pytest.fixture
@@ -23,11 +33,54 @@ def sub_category(parent_category: Category) -> Category:
 
 
 @pytest.fixture
-def skill(sub_category: Category) -> Skill:
-    """Fixture for creating a Skill instance."""
-    return Skill.objects.create(
-        name="Skill", description="A skill", category=sub_category
+def provider() -> Provider:
+    """Fixture for creating a Provider instance."""
+    return Provider.objects.create(
+        name="Provider",
+        description="A provider",
+        url="https://example.com",
+        ror="https://ror.org/12345",
     )
+
+
+@pytest.fixture
+def learning_resource(provider: Provider) -> LearningResource:
+    """Fixture for creating a LearningResource instance."""
+    return LearningResource.objects.create(
+        name="Learning Resource",
+        description="A learning resource",
+        language="en",
+        url="https://example.com/resource",
+        provider=provider,
+    )
+
+
+@pytest.fixture
+def tool(learning_resource: LearningResource) -> Tool:
+    """Fixture for creating a Tool instance."""
+    tool = Tool.objects.create(
+        name="Tool",
+        description="A tool, methodology, behaviour or language",
+        kind=Tool.Kind.TOOL,
+        url="https://example.com/tool",
+    )
+    tool.learning_resources.add(learning_resource)
+    return tool
+
+
+@pytest.fixture
+def skill(
+    sub_category: Category, tool: Tool, learning_resource: LearningResource
+) -> Skill:
+    """Fixture for creating a Skill instance."""
+    skill = Skill.objects.create(
+        name="Skill",
+        description="A skill",
+        category=sub_category,
+    )
+    skill.tools.add(tool)
+    skill.learning_resources.add(learning_resource)
+    return skill
 
 
 @pytest.fixture
@@ -124,13 +177,21 @@ def test_category_clean(parent_category: Category, sub_category: Category) -> No
 
 
 @pytest.mark.django_db
-def test_skill_model(skill: Skill, sub_category: Category) -> None:
+def test_skill_model(
+    skill: Skill,
+    sub_category: Category,
+    tool: Tool,
+    learning_resource: LearningResource,
+) -> None:
     """Test the Skill model."""
     assert isinstance(skill, SluggedModel)
-    assert skill.name == str(skill) == "Skill"
+    assert skill.name == "Skill"
+    assert str(skill) == "Skill (Subcategory)"
     assert skill.description == "A skill"
     assert skill.slug == "skill"
     assert skill.category is sub_category
+    assert tool in skill.tools.all()
+    assert learning_resource in skill.learning_resources.all()
 
 
 @pytest.mark.django_db
@@ -180,3 +241,39 @@ def test_user_skill_model(
         ValidationError, match=r"User skill with this User and Skill already exists."
     ):
         new_user_skill.full_clean()
+
+
+@pytest.mark.django_db
+def test_provider_model(provider: Provider) -> None:
+    """Test the Provider model."""
+    assert isinstance(provider, SluggedModel)
+    assert provider.name == "Provider"
+    assert provider.description == "A provider"
+    assert provider.url == "https://example.com"
+    assert provider.ror == "https://ror.org/12345"
+
+
+@pytest.mark.django_db
+def test_learning_resource_model(
+    learning_resource: LearningResource, provider: Provider
+) -> None:
+    """Test the LearningResource model."""
+    assert isinstance(learning_resource, SluggedModel)
+    assert learning_resource.name == str(learning_resource) == "Learning Resource"
+    assert learning_resource.description == "A learning resource"
+    assert learning_resource.slug == "learning-resource"
+    assert learning_resource.language == "en"
+    assert learning_resource.url == "https://example.com/resource"
+    assert learning_resource.provider == provider
+
+
+@pytest.mark.django_db
+def test_tool_model(tool: Tool, learning_resource: LearningResource) -> None:
+    """Test the Tool model."""
+    assert isinstance(tool, SluggedModel)
+    assert tool.name == str(tool) == "Tool"
+    assert tool.description == "A tool, methodology, behaviour or language"
+    assert tool.slug == "tool"
+    assert tool.kind == Tool.Kind.TOOL
+    assert tool.url == "https://example.com/tool"
+    assert learning_resource in tool.learning_resources.all()
