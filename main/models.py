@@ -4,6 +4,7 @@ from collections.abc import Collection
 from typing import Any
 
 from django.conf import settings
+from django.conf.global_settings import LANGUAGES
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -98,10 +99,55 @@ class Category(SluggedModel):
             )
 
 
+class Provider(SluggedModel):
+    """Model for providers."""
+
+    url = models.URLField(max_length=500, blank=True, null=True)
+    ror = models.URLField(max_length=500, blank=True, null=True)
+
+
+class LearningResource(SluggedModel):
+    """Model for learning resources."""
+
+    language = models.CharField(max_length=7, choices=LANGUAGES, default="en")
+    url = models.URLField(max_length=500, blank=True, null=True)
+    provider = models.ForeignKey(
+        Provider, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+
+class Tool(SluggedModel):
+    """Model for tools and behaviours."""
+
+    class Meta:
+        """Meta options for Tool model."""
+
+        verbose_name = _("Tool or Behaviour")
+        verbose_name_plural = _("Tools & Behaviours")
+
+    class Kind(models.TextChoices):
+        """Enumeration of Kind choices."""
+
+        TOOL = "FR", "Tool"
+        METHODOLOGY = "SO", "Methodology"
+        BEHAVIOUR = "JR", "Behaviour"
+        LANGUAGE = "SR", "Language"
+
+    kind = models.CharField(max_length=2, choices=Kind, default=Kind.TOOL)
+    url = models.URLField(max_length=500, blank=True, null=True)
+    learning_resources = models.ManyToManyField(LearningResource, blank=True)
+
+
 class Skill(SluggedModel):
     """Model for skills."""
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    tools = models.ManyToManyField(
+        Tool,
+        blank=True,
+        verbose_name="tools, methodologies, behaviours and languages",
+    )
+    learning_resources = models.ManyToManyField(LearningResource, blank=True)
 
     def clean(self) -> None:
         """Validate the skill instance."""
@@ -111,6 +157,10 @@ class Skill(SluggedModel):
             raise ValidationError(
                 {"category": _("The category cannot be a top-level category.")}
             )
+
+    def __str__(self) -> str:
+        """Return the name of the skill and the category."""
+        return self.name + " (" + self.category.name + ")"
 
 
 class SkillLevel(NamedModel):
