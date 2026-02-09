@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 import scripts.populate_db as populate_db
+from main.models import Category, Skill, SkillLevel
 
 
 @pytest.mark.parametrize(
@@ -32,8 +33,6 @@ def test_get_parser_invalid_args(args: list[str]) -> None:
 @pytest.mark.django_db
 def test_populate_categories_and_skills() -> None:
     """Test the populate_categories_and_skills function."""
-    from main.models import Category, Skill
-
     data_path = Path(__file__).parent.parent / "data" / "framework.json"
 
     with open(data_path) as f:
@@ -71,10 +70,40 @@ def test_populate_categories_and_skills() -> None:
 
 
 @pytest.mark.django_db
+def test_populate_categories_and_skills_invalid_data(caplog) -> None:
+    """Test the loop skips categories and skills that are invalid and logs a warning."""
+    data = {
+        "categories": [
+            {
+                "title": "Category 1",
+                "description": "Description of Category 1",
+                "subcategories": [{"title": "Subcategory 1", "description": None}],
+            },
+            {
+                "title": "Category 2",
+                "description": None,
+                "subcategories": [],
+            },
+        ],
+    }
+
+    with caplog.at_level("WARNING"):
+        populate_db.populate_categories_and_skills(data)
+    assert caplog.record_tuples[-1] == (
+        "django",
+        logging.WARNING,
+        "Any subcategories under Category 2 skipped!",
+    )
+    assert caplog.record_tuples[-3] == (
+        "django",
+        logging.WARNING,
+        "Any skills under Subcategory 1 skipped!",
+    )
+
+
+@pytest.mark.django_db
 def test_populate_skill_levels(caplog) -> None:
     """Test the populate_skill_levels function."""
-    from main.models import SkillLevel
-
     data: list[dict[str, str | int]] = [
         {
             "Level": 0,
@@ -132,8 +161,6 @@ def test_populate_skill_levels(caplog) -> None:
 @pytest.mark.django_db
 def test_add_object_to_db(caplog) -> None:
     """Test the add_object_to_db function."""
-    from main.models import Category
-
     assert Category.objects.all().count() == 0
 
     instance = populate_db.add_object_to_db(
@@ -191,3 +218,26 @@ def test_add_object_to_db(caplog) -> None:
         "existing object 'Test Category' overwritten",
     )
     assert Category.objects.all().count() == 1  # No new object created
+
+    # Test adding an object with invalid data
+    Category.objects.create(  # type: ignore[misc]
+        name="Sub Category",
+        description="Description",
+        parent_category=instance,
+    )  # Create a sub-category to make instance a parent category
+    with caplog.at_level("INFO"):
+        instance5 = populate_db.add_object_to_db(
+            Skill,
+            slug="skill",
+            name="Skill",
+            description="Description",
+            category=instance,  # Cannot have a parent category as a skill category
+        )
+    assert instance5 is None
+    assert caplog.record_tuples[-1] == (
+        "django",
+        logging.WARNING,
+        "Skill with invalid data skipped: Skill "
+        "{'category': ['The category cannot be a top-level category.']}",
+    )
+    assert Skill.objects.all().count() == 0
