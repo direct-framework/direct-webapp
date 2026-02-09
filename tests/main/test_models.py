@@ -143,6 +143,9 @@ def test_skill_clean(skill: Skill, parent_category: Category) -> None:
     ):
         skill.clean()
 
+    with pytest.raises(ValidationError, match=r"A skill must belong to a category."):
+        Skill(name="Test Skill", description="Skill Description").clean()
+
 
 @pytest.mark.django_db
 def test_skill_level_model(skill_level: SkillLevel) -> None:

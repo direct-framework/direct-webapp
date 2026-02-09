@@ -105,6 +105,8 @@ class Skill(SluggedModel):
 
     def clean(self) -> None:
         """Validate the skill instance."""
+        if self.category_id is None:
+            raise ValidationError({"category": _("A skill must belong to a category.")})
         if self.category.parent_category is None:
             raise ValidationError(
                 {"category": _("The category cannot be a top-level category.")}
