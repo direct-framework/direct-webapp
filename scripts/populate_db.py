@@ -3,6 +3,7 @@
 import argparse
 import logging
 import pathlib
+from contextlib import suppress
 from typing import Any
 
 from django.core.exceptions import ValidationError
@@ -67,7 +68,8 @@ def add_object_to_db(
         return None
 
     success_message = f"{model.__name__} added to database: {instance}"
-    try:
+
+    with suppress(model.DoesNotExist):  # type: ignore[attr-defined]
         if slug:
             instance.slug = slug  # type: ignore[attr-defined]
             existing = model.objects.get(slug=slug)  # type: ignore[attr-defined]
@@ -75,8 +77,6 @@ def add_object_to_db(
             existing = model.objects.get(name=kwargs["name"])  # type: ignore[attr-defined]
         instance.pk = existing.pk
         success_message += f" - existing object '{existing}' overwritten"
-    except model.DoesNotExist:  # type: ignore[attr-defined]
-        pass
 
     try:
         instance.full_clean(validate_unique=False)
