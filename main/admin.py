@@ -83,8 +83,6 @@ class ToolInline(admin.TabularInline[Tool, LearningResource]):
 
     model = Tool.learning_resources.through  # type: ignore[assignment]
     extra = 0
-    show_change_link = True
-    exclude = ("slug",)
     verbose_name = "Tool, Methodology, Behaviour or Language"
     verbose_name_plural = "Tools, Methodologies, Behaviours and Languages"
 
