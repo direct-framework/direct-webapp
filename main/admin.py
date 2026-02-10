@@ -165,11 +165,10 @@ class CustomUserSkillAdmin(admin.ModelAdmin[UserProxy]):
     )
     readonly_fields = ("username", "first_name", "last_name", "email", "is_active")
     list_display = ("username", "first_name", "last_name", "email", "is_active")
-    search_fields = ("username", "first_name", "last_name", "email", "is_active")
+    search_fields = ("username", "first_name", "last_name", "email")
+    list_filter = ("is_active",)
     inlines = (UserSkillInline,)
 
-    def has_add_permission(
-        self, request: HttpRequest, obj: Category | None = None
-    ) -> bool:
+    def has_add_permission(self, request: HttpRequest) -> bool:
         """Do not allow adding new users from this view."""
         return False
