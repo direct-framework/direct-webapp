@@ -119,8 +119,15 @@ class TestSkillAdmin(AdminMixin):
 
     def _create_object(self):
         """Overwrite to also create the Category for the Skill being changed."""
-        category = Category.objects.create(name="Test Category", description="Test")
-        return Skill.objects.create(category=category, **self._data)
+        parent_category = Category.objects.create(
+            name="Test Parent Category", description="Test Parent"
+        )
+        subcategory = Category.objects.create(
+            name="Test Subcategory",
+            description="Test Subcategory",
+            parent_category=parent_category,
+        )
+        return Skill.objects.create(category=subcategory, **self._data)
 
 
 class TestSkillLevelAdmin(AdminMixin):
