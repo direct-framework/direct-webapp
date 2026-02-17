@@ -106,29 +106,39 @@ def test_populate_skill_levels(caplog) -> None:
     """Test the populate_skill_levels function."""
     data: list[dict[str, str | int]] = [
         {
-            "Level": 0,
-            "Name": "Name of Level 0",
-            "Description": "Description of Level 0",
+            "level": 0,
+            "name": "Name of Level 0",
+            "description": "Description of Level 0",
+            "short_description": "Short description of Level 0",
+            "focus": "Focus of Level 0",
         },
         {
-            "Level": 1,
-            "Name": "Name of Level 1",
-            "Description": "Description of Level 1",
+            "level": 1,
+            "name": "Name of Level 1",
+            "description": "Description of Level 1",
+            "short_description": "Short description of Level 1",
+            "focus": "Focus of Level 1",
         },
         {
-            "Level": 1,  # Duplicate level - will overwrite previous
-            "Name": "Name of Level 1",
-            "Description": "Description of Level 1",
+            "level": 1,  # Duplicate level - will overwrite previous
+            "name": "Name of Level 1",
+            "description": "Description of Level 1",
+            "short_description": "Short description of Level 1",
+            "focus": "Focus of Level 1",
         },
         {
-            "Level": "one",  # Invalid level
-            "Name": "Name of Level 1",
-            "Description": "Description of Level 1",
+            "level": "one",  # Invalid level
+            "name": "Name of Level 1",
+            "description": "Description of Level 1",
+            "short_description": "Short description of Level 1",
+            "focus": "Focus of Level 1",
         },
         {
-            "Level": 2,
-            "Name": "Name of Level 2" * 200,  # Name too long
-            "Description": "Description of Level 2",
+            "level": 2,
+            "name": "Name of Level 2" * 200,  # Name too long
+            "description": "Description of Level 2",
+            "short_description": "Short description of Level 2",
+            "focus": "Focus of Level 2",
         },
     ]
 

@@ -87,7 +87,11 @@ def skill(
 def skill_level() -> SkillLevel:
     """Fixture for creating a SkillLevel instance."""
     return SkillLevel.objects.create(
-        level=1, name="Beginner", description="Beginner level"
+        level=1,
+        name="Beginner",
+        description="Beginner level",
+        short_description="Beginner",
+        focus="Beginner focus",
     )
 
 
@@ -214,9 +218,17 @@ def test_skill_level_model(skill_level: SkillLevel) -> None:
     assert skill_level.level == 1
     assert skill_level.name == "Beginner"
     assert skill_level.description == "Beginner level"
+    assert skill_level.short_description == "Beginner"
+    assert skill_level.focus == "Beginner focus"
 
     # Test validation for unique level
-    skill_level = SkillLevel(level=1, name="Beginner", description="Beginner level")
+    skill_level = SkillLevel(
+        level=1,
+        name="Beginner",
+        description="Beginner level",
+        short_description="Beginner",
+        focus="Beginner focus",
+    )
     with pytest.raises(
         ValidationError, match=r"Skill level with this Level already exists."
     ):
