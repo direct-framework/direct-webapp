@@ -127,7 +127,7 @@ class Tool(SluggedModel):
         """Meta options for Tool model."""
 
         verbose_name = _("Tool or Behaviour")
-        verbose_name_plural = _("Tools & Behaviours")
+        verbose_name_plural = _("Tools and Behaviours")
 
     class Kind(models.TextChoices):
         """Enumeration of Kind choices."""
