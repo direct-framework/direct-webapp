@@ -152,6 +152,7 @@ class Skill(SluggedModel):
         verbose_name="tools, methodologies, behaviours and languages",
     )
     learning_resources = models.ManyToManyField(LearningResource, blank=True)
+    related_skills = models.ManyToManyField("self", blank=True)
 
     def clean(self) -> None:
         """Validate the skill instance."""
