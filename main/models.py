@@ -104,6 +104,8 @@ class Provider(SluggedModel):
 
     url = models.URLField(max_length=500, blank=True, null=True)
     ror = models.URLField(max_length=500, blank=True, null=True)
+    # Make description non-mandatory
+    description = models.TextField(blank=True, null=True)  # type: ignore[assignment]
 
 
 class LearningResource(SluggedModel):
@@ -114,6 +116,8 @@ class LearningResource(SluggedModel):
     provider = models.ForeignKey(
         Provider, on_delete=models.SET_NULL, null=True, blank=True
     )
+    # Make description non-mandatory
+    description = models.TextField(blank=True, null=True)  # type: ignore[assignment]
 
 
 class Tool(SluggedModel):
