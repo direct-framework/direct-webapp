@@ -140,9 +140,11 @@ def populate_skill_levels(levels: list[dict]) -> None:  # type: ignore[type-arg]
         add_object_to_db(
             SkillLevel,
             slug=None,
-            level=lvl["Level"],
-            name=lvl["Name"],
-            description=lvl["Description"],
+            level=lvl["level"],
+            name=lvl["name"],
+            description=lvl["description"],
+            short_description=lvl["short_description"],
+            focus=lvl["focus"],
         )
 
 

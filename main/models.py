@@ -172,6 +172,8 @@ class SkillLevel(NamedModel):
     """Model for skill levels."""
 
     level = models.PositiveSmallIntegerField(unique=True)
+    short_description = models.CharField(max_length=200)
+    focus = models.TextField(default="", blank=True)
 
 
 class UserSkill(models.Model):
