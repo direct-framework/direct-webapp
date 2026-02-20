@@ -84,7 +84,6 @@ class Competency(SluggedModel):
     class Meta:
         """Meta options for Competency model."""
 
-        # verbose_name_plural = "categories"
         verbose_name_plural = "competencies"
 
     competency_domain = models.ForeignKey(CompetencyDomain, on_delete=models.CASCADE)
