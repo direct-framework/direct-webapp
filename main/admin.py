@@ -5,7 +5,8 @@ from django.contrib.auth.admin import UserAdmin
 from django.http import HttpRequest
 
 from .models import (
-    Category,
+    Competency,
+    CompetencyDomain,
     LearningResource,
     Provider,
     Skill,
@@ -18,46 +19,42 @@ from .models import (
 admin.site.register(User, UserAdmin)
 
 
-class CategoryInline(admin.TabularInline[Category, Category]):
-    """Inline admin class for the Category model."""
+class CompetencyInline(admin.TabularInline[Competency, Competency]):
+    """Inline admin class for the Competency model."""
 
-    model = Category
+    model = Competency
     extra = 0
     show_change_link = True
     exclude = ("slug",)
-    verbose_name = "Sub-Category"
-    verbose_name_plural = "Sub-Categories"
+    verbose_name = "Competency"
+    verbose_name_plural = "Competencies"
 
 
-class SkillInline(admin.TabularInline[Skill, Category]):
+class SkillInline(admin.TabularInline[Skill, Competency]):
     """Inline admin class for the Skill model."""
 
     model = Skill
     extra = 0
 
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin[Category]):
-    """Admin class for the Category model."""
+@admin.register(Competency)
+class CompetencyAdmin(admin.ModelAdmin[Competency]):
+    """Admin class for the Competency model."""
 
-    list_display = ("name", "parent_category")
+    list_display = ("name", "competency_domain")
     search_fields = ("name", "description")
-    list_filter = ("parent_category",)
-    ordering = ("parent_category", "name")
+    list_filter = ("competency_domain",)
+    ordering = ("competency_domain", "name")
+    inlines = (SkillInline,)
 
-    def get_inlines(  # type: ignore[override]
-        self, request: HttpRequest, obj: Category | None = None
-    ) -> list[type[CategoryInline] | type[SkillInline]]:
-        """Return the inlines to use for edit views depending on Category status.
 
-        If the Category is a Parent Category, show the Sub-Categories.
-        If the Category is a Sub-Category, show the Skills.
-        """
-        if not obj:
-            return []
-        if obj.parent_category is None:
-            return [CategoryInline]
-        return [SkillInline]
+@admin.register(CompetencyDomain)
+class CompetencyDomainAdmin(admin.ModelAdmin[CompetencyDomain]):
+    """Admin class for the CompetencyDomain model."""
+
+    list_display = ("name",)
+    search_fields = ("name", "description")
+    inlines = (CompetencyInline,)
 
 
 class LearningResourceInline(admin.TabularInline[LearningResource, Provider]):
@@ -108,10 +105,10 @@ class ToolAdmin(admin.ModelAdmin[Tool]):
 class SkillAdmin(admin.ModelAdmin[Skill]):
     """Admin class for the Skill model."""
 
-    list_display = ("name", "category", "category__parent_category")
+    list_display = ("name", "competency", "competency__competency_domain")
     search_fields = ("name", "description")
-    list_filter = ("category__parent_category", "category")
-    ordering = ("category__parent_category", "category", "name")
+    list_filter = ("competency__competency_domain", "competency")
+    ordering = ("competency__competency_domain", "competency", "name")
 
 
 @admin.register(SkillLevel)
