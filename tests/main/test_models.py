@@ -126,10 +126,10 @@ def test_slugged_model(mocker) -> None:
     instance = TestModel(name="Test Name", description="Test Description")
     assert instance.name == str(instance) == "Test Name"
     assert instance.description == "Test Description"
-    assert instance.slug is None
+    assert instance.slug == ""
 
     # Test save method calls validate_unique to auto-generate slug
-    mock_save = mocker.patch.object(NamedModel, "save", autospec=True)  # type: ignore [unreachable]
+    mock_save = mocker.patch.object(NamedModel, "save", autospec=True)
     mock_val_unique = mocker.patch.object(NamedModel, "validate_unique", autospec=True)
     instance.save()
     assert instance.slug == "test-name"
