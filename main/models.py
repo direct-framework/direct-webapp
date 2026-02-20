@@ -35,7 +35,7 @@ class NamedModel(models.Model):
 class SluggedModel(NamedModel):
     """Abstract base model with slug field."""
 
-    slug = models.SlugField(unique=True, null=True, blank=True, max_length=200)
+    slug = models.SlugField(unique=True, max_length=200)
 
     class Meta:
         """Meta options to define SluggedModel as abstract."""
@@ -67,36 +67,27 @@ class SluggedModel(NamedModel):
         super().save(**kwargs)
 
 
-class Category(SluggedModel):
-    """Model for categories."""
+class CompetencyDomain(SluggedModel):
+    """Model for competency domains."""
+
+    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
 
     class Meta:
-        """Meta options for Category model."""
+        """Meta options for CompetencyDomain model."""
 
-        verbose_name_plural = "categories"
+        ordering = ("rank", "name")
 
-    parent_category = models.ForeignKey(
-        "self",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        limit_choices_to={"parent_category": None},
-    )
 
-    def clean(self) -> None:
-        """Validate the category instance."""
-        if self.parent_category == self:
-            raise ValidationError(
-                {"parent_category": _("A category cannot be its own parent.")}
-            )
-        if self.parent_category and self.pk and self.category_set.all().exists():
-            raise ValidationError(
-                {
-                    "parent_category": _(
-                        "This is a parent category so can't be made into a subcategory."
-                    )
-                }
-            )
+class Competency(SluggedModel):
+    """Model for competencies."""
+
+    class Meta:
+        """Meta options for Competency model."""
+
+        # verbose_name_plural = "categories"
+        verbose_name_plural = "competencies"
+
+    competency_domain = models.ForeignKey(CompetencyDomain, on_delete=models.CASCADE)
 
 
 class Provider(SluggedModel):
@@ -145,7 +136,7 @@ class Tool(SluggedModel):
 class Skill(SluggedModel):
     """Model for skills."""
 
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE)
     tools = models.ManyToManyField(
         Tool,
         blank=True,
@@ -154,18 +145,9 @@ class Skill(SluggedModel):
     learning_resources = models.ManyToManyField(LearningResource, blank=True)
     related_skills = models.ManyToManyField("self", blank=True)
 
-    def clean(self) -> None:
-        """Validate the skill instance."""
-        if self.category_id is None:
-            raise ValidationError({"category": _("A skill must belong to a category.")})
-        if self.category.parent_category is None:
-            raise ValidationError(
-                {"category": _("The category cannot be a top-level category.")}
-            )
-
     def __str__(self) -> str:
-        """Return the name of the skill and the category."""
-        return self.name + " (" + self.category.name + ")"
+        """Return the name of the skill and the competency."""
+        return self.name + " (" + self.competency.name + ")"
 
 
 class SkillLevel(NamedModel):

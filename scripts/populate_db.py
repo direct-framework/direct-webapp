@@ -93,12 +93,12 @@ def add_object_to_db(
 
 def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg]
     """Populate the database with categories and skills from a dictionary."""
-    from main.models import Category, Skill
+    from main.models import Competency, Skill
 
     # Loop over categories and add to db
     for category in data["categories"]:
         parent_cat = add_object_to_db(
-            Category,
+            Competency,
             slug=category.get("slug"),
             name=category["title"],
             description=category["description"],
@@ -110,7 +110,7 @@ def populate_categories_and_skills(data: dict) -> None:  # type: ignore[type-arg
         # Loop over sub-categories and add to db
         for subcategory in category["subcategories"]:
             sub_cat = add_object_to_db(
-                Category,
+                Competency,
                 slug=subcategory.get("slug"),
                 name=subcategory["title"],
                 description=subcategory["description"],

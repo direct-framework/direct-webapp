@@ -4,7 +4,8 @@ import pytest
 from django.core.exceptions import ValidationError
 
 from main.models import (
-    Category,
+    Competency,
+    CompetencyDomain,
     LearningResource,
     NamedModel,
     Provider,
@@ -17,18 +18,20 @@ from main.models import (
 
 
 @pytest.fixture
-def parent_category() -> Category:
-    """Fixture for creating a Parent Category instance."""
-    return Category.objects.create(
-        name="Parent Category", description="A parent category"
+def competency_domain() -> CompetencyDomain:
+    """Fixture for creating a Competency Domain instance."""
+    return CompetencyDomain.objects.create(
+        name="Competency Domain", description="A competency domain"
     )
 
 
 @pytest.fixture
-def sub_category(parent_category: Category) -> Category:
-    """Fixture for creating a Subcategory instance."""
-    return Category.objects.create(
-        name="Subcategory", description="A subcategory", parent_category=parent_category
+def competency(competency_domain: CompetencyDomain) -> Competency:
+    """Fixture for creating a Competency instance."""
+    return Competency.objects.create(
+        name="Competency",
+        description="A competency",
+        competency_domain=competency_domain,
     )
 
 
@@ -70,13 +73,13 @@ def tool(learning_resource: LearningResource) -> Tool:
 
 @pytest.fixture
 def skill(
-    sub_category: Category, tool: Tool, learning_resource: LearningResource
+    competency: Competency, tool: Tool, learning_resource: LearningResource
 ) -> Skill:
     """Fixture for creating a Skill instance."""
     skill = Skill.objects.create(
         name="Skill",
         description="A skill",
-        category=sub_category,
+        competency=competency,
     )
     skill.tools.add(tool)
     skill.learning_resources.add(learning_resource)
@@ -126,7 +129,7 @@ def test_slugged_model(mocker) -> None:
     assert instance.slug is None
 
     # Test save method calls validate_unique to auto-generate slug
-    mock_save = mocker.patch.object(NamedModel, "save", autospec=True)
+    mock_save = mocker.patch.object(NamedModel, "save", autospec=True)  # type: ignore [unreachable]
     mock_val_unique = mocker.patch.object(NamedModel, "validate_unique", autospec=True)
     instance.save()
     assert instance.slug == "test-name"
@@ -137,79 +140,49 @@ def test_slugged_model(mocker) -> None:
 
 
 @pytest.mark.django_db
-def test_slug_collision() -> None:
+def test_slug_collision(competency_domain: CompetencyDomain) -> None:
     """Test that slug collision edge cases are handled by validate_unique."""
-    Category.objects.create(name="Test Category", description="Desc")
-
     with pytest.raises(
-        ValidationError, match=r"Auto-generated slug 'test-category' already exists"
+        ValidationError, match=r"Auto-generated slug 'competency-domain' already exists"
     ):
-        Category(name="Test-Category", description="Test Description").validate_unique()
+        CompetencyDomain(
+            name="Competency-Domain", description="Description"
+        ).validate_unique()
 
 
 @pytest.mark.django_db
-def test_category_model(parent_category: Category, sub_category: Category) -> None:
-    """Test the Category model."""
-    assert isinstance(parent_category, SluggedModel)
-    assert parent_category.name == str(parent_category) == "Parent Category"
-    assert parent_category.description == "A parent category"
-    assert parent_category.slug == "parent-category"
-    assert parent_category.parent_category is None
+def test_competency_model(
+    competency_domain: CompetencyDomain, competency: Competency
+) -> None:
+    """Test the Competency model."""
+    assert isinstance(competency_domain, SluggedModel)
+    assert competency_domain.name == str(competency_domain) == "Competency Domain"
+    assert competency_domain.description == "A competency domain"
+    assert competency_domain.slug == "competency-domain"
 
-    assert isinstance(sub_category, SluggedModel)
-    assert sub_category.name == str(sub_category) == "Subcategory"
-    assert sub_category.description == "A subcategory"
-    assert sub_category.slug == "subcategory"
-    assert sub_category.parent_category == parent_category
-
-
-@pytest.mark.django_db
-def test_category_clean(parent_category: Category, sub_category: Category) -> None:
-    """Test the clean method of the Category model."""
-    # Test that a category cannot be its own parent
-    sub_category.parent_category = sub_category
-    with pytest.raises(ValidationError, match=r"A category cannot be its own parent."):
-        sub_category.clean()
-
-    parent_category.parent_category = sub_category
-    # Test that a parent category with subcategories cannot be made a subcategory
-    with pytest.raises(
-        ValidationError,
-        match=r"This is a parent category so can't be made into a subcategory.",
-    ):
-        parent_category.clean()
+    assert isinstance(competency, SluggedModel)
+    assert competency.name == str(competency) == "Competency"
+    assert competency.description == "A competency"
+    assert competency.slug == "competency"
+    assert competency.competency_domain == competency_domain
 
 
 @pytest.mark.django_db
 def test_skill_model(
     skill: Skill,
-    sub_category: Category,
+    competency: Competency,
     tool: Tool,
     learning_resource: LearningResource,
 ) -> None:
     """Test the Skill model."""
     assert isinstance(skill, SluggedModel)
     assert skill.name == "Skill"
-    assert str(skill) == "Skill (Subcategory)"
+    assert str(skill) == "Skill (Competency)"
     assert skill.description == "A skill"
     assert skill.slug == "skill"
-    assert skill.category is sub_category
+    assert skill.competency is competency
     assert tool in skill.tools.all()
     assert learning_resource in skill.learning_resources.all()
-
-
-@pytest.mark.django_db
-def test_skill_clean(skill: Skill, parent_category: Category) -> None:
-    """Test the clean method of the Skill model."""
-    skill.category = parent_category
-
-    with pytest.raises(
-        ValidationError, match=r"The category cannot be a top-level category."
-    ):
-        skill.clean()
-
-    with pytest.raises(ValidationError, match=r"A skill must belong to a category."):
-        Skill(name="Test Skill", description="Skill Description").clean()
 
 
 @pytest.mark.django_db
