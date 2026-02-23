@@ -89,28 +89,34 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
 
     def test_post(self, client, user, django_user_model):
         """Test the view POST request creates new user skills and redirects."""
-        from main.models import Category, Skill, SkillLevel, UserSkill
+        from main.models import (
+            Competency,
+            CompetencyDomain,
+            Skill,
+            SkillLevel,
+            UserSkill,
+        )
 
         client.force_login(user)
 
         # Create test data
-        parent_category = Category.objects.create(
-            name="Test Parent Category", description="Test parent description"
+        competency_domain = CompetencyDomain.objects.create(
+            name="Test Competency Domain", description="Test parent description"
         )
-        subcategory = Category.objects.create(
-            name="Test Subcategory",
-            description="Test subcategory description",
-            parent_category=parent_category,
+        competency = Competency.objects.create(
+            name="Test Competency",
+            description="Test competency description",
+            competency_domain=competency_domain,
         )
         skill1 = Skill.objects.create(
             name="Test Skill 1",
             description="Test skill 1 description",
-            category=subcategory,
+            competency=competency,
         )
         skill2 = Skill.objects.create(
             name="Test Skill 2",
             description="Test skill 2 description",
-            category=subcategory,
+            competency=competency,
         )
         skill_level = SkillLevel.objects.create(
             level=1, name="Beginner", description="Basic understanding"

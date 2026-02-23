@@ -29,10 +29,10 @@ class UserSkillsForm(forms.Form):
         self.user = user
         super().__init__(*args, **kwargs)
 
-        # Get all skills, ordered by category for better organization
+        # Get all skills, ordered by competency for better organization
         skills = Skill.objects.select_related(
-            "category", "category__parent_category"
-        ).order_by("category__parent_category__name", "category__name", "name")
+            "competency", "competency__competency_domain"
+        ).order_by("competency__competency_domain__name", "competency__name", "name")
 
         # Get all skill levels for the choice field
         skill_levels = SkillLevel.objects.all().order_by("level")
@@ -62,20 +62,20 @@ class UserSkillsForm(forms.Form):
                 existing_user_skill.skill_level.id if existing_user_skill else None
             )
 
-            # Organize skills by category hierarchy for layout
+            # Organize skills by competency hierarchy for layout
             parent_name = (
-                skill.category.parent_category.name
-                if skill.category.parent_category
+                skill.competency.competency_domain.name
+                if skill.competency.competency_domain
                 else "No Parent"
             )
 
             if parent_name not in skill_organization:
                 skill_organization[parent_name] = {}
 
-            if skill.category.name not in skill_organization[parent_name]:
-                skill_organization[parent_name][skill.category.name] = []
+            if skill.competency.name not in skill_organization[parent_name]:
+                skill_organization[parent_name][skill.competency.name] = []
 
-            skill_organization[parent_name][skill.category.name].append(skill)
+            skill_organization[parent_name][skill.competency.name].append(skill)
 
             # Create form field with just the skill name as label
             self.fields[field_name] = forms.ChoiceField(
@@ -93,26 +93,26 @@ class UserSkillsForm(forms.Form):
         # Build the layout structure
         layout_elements = []
 
-        for parent_category, subcategories in skill_organization.items():
-            # Add parent category heading
+        for competency_domain, competencies in skill_organization.items():
+            # Add parent competency heading
             parent_heading = (
-                f'<h2 class="card-title text-primary mt-5">{parent_category}</h2>'
+                f'<h2 class="card-title text-primary mt-5">{competency_domain}</h2>'
             )
             parent_div = Div(HTML(parent_heading), css_class="mb-5")
 
-            subcategory_elements = []
-            for subcategory, skills_list in subcategories.items():
-                # Add subcategory heading
-                subcategory_heading = f"<h4>{subcategory}</h4>"
+            competency_elements = []
+            for competency, skills_list in competencies.items():
+                # Add competency heading
+                competency_heading = f"<h4>{competency}</h4>"
 
                 # Outer card div
-                subcategory_div = Div(css_class="mt-5 card rounded-1")
+                competency_div = Div(css_class="mt-5 card rounded-1")
 
                 # Card body div with heading and table
                 card_body_div = Div(css_class="card-body")
 
-                # Add subcategory heading inside card body
-                card_body_div.append(HTML(subcategory_heading))
+                # Add competency heading inside card body
+                card_body_div.append(HTML(competency_heading))
 
                 # Build the table for skills
                 table_html = """
@@ -142,24 +142,24 @@ class UserSkillsForm(forms.Form):
                 # Append table to card body
                 card_body_div.append(HTML(table_html))
 
-                # Add a submit button for this subcategory
-                subcategory_submit = Div(
+                # Add a submit button for this competency
+                competency_submit = Div(
                     Submit(
-                        f"submit_{subcategory.replace(' ', '_')}",
+                        f"submit_{competency.replace(' ', '_')}",
                         "Save",
                         css_class="btn btn-primary mt-3",
                     ),
                     css_class="mt-3",
                 )
-                card_body_div.append(subcategory_submit)
+                card_body_div.append(competency_submit)
 
                 # Append card body to the card
-                subcategory_div.append(card_body_div)
+                competency_div.append(card_body_div)
 
-                # Add the subcategory div to elements
-                subcategory_elements.append(subcategory_div)
+                # Add the competency div to elements
+                competency_elements.append(competency_div)
 
-            parent_div.extend(subcategory_elements)
+            parent_div.extend(competency_elements)
 
             layout_elements.append(parent_div)
 

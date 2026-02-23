@@ -9,7 +9,8 @@ from django.db.models import Model
 
 from main.admin import UserProxy
 from main.models import (
-    Category,
+    Competency,
+    CompetencyDomain,
     LearningResource,
     Provider,
     Skill,
@@ -63,14 +64,33 @@ class TestUserAdmin(AdminMixin):
     }
 
 
-class TestCategoryAdmin(AdminMixin):
-    """Test suite for the Category admin views."""
+class TestCompetencyDomainAdmin(AdminMixin):
+    """Test suite for the CompetencyDomain admin views."""
 
-    _model = Category
+    _model = CompetencyDomain
     _data: ClassVar[dict[str, Any]] = {
-        "name": "Test Category",
+        "name": "Test Competency Domain",
         "description": "Test Description",
     }
+
+
+class TestCompetencyAdmin(AdminMixin):
+    """Test suite for the Competency admin views."""
+
+    _model = Competency
+    _data: ClassVar[dict[str, Any]] = {
+        "name": "Test Competency",
+        "description": "Test Description",
+    }
+
+    def _create_object(self):
+        """Overwrite to also create the Category for the Skill being changed."""
+        competency_domain = CompetencyDomain.objects.create(
+            **TestCompetencyDomainAdmin._data
+        )
+        return Competency.objects.create(
+            competency_domain=competency_domain, **self._data
+        )
 
 
 class TestProviderAdmin(AdminMixin):
@@ -119,15 +139,13 @@ class TestSkillAdmin(AdminMixin):
 
     def _create_object(self):
         """Overwrite to also create the Category for the Skill being changed."""
-        parent_category = Category.objects.create(
-            name="Test Parent Category", description="Test Parent"
+        competency_domain = CompetencyDomain.objects.create(
+            **TestCompetencyDomainAdmin._data
         )
-        subcategory = Category.objects.create(
-            name="Test Subcategory",
-            description="Test Subcategory",
-            parent_category=parent_category,
+        competency = Competency.objects.create(
+            competency_domain=competency_domain, **TestCompetencyAdmin._data
         )
-        return Skill.objects.create(category=subcategory, **self._data)
+        return Skill.objects.create(competency=competency, **self._data)
 
 
 class TestSkillLevelAdmin(AdminMixin):
