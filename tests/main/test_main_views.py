@@ -9,6 +9,14 @@ from http import HTTPStatus
 
 from django.urls import reverse
 
+from main.models import (
+    Competency,
+    CompetencyDomain,
+    Skill,
+    SkillLevel,
+    UserSkill,
+)
+
 from .view_utils import LoginRequiredMixin, TemplateOkMixin
 
 
@@ -19,6 +27,12 @@ class TestIndex(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("index")
+
+    def test_provides_required_context(self, admin_client):
+        """Test the view provides skill_levels and sample_data context."""
+        response = admin_client.get(self._get_url())
+        assert "skill_levels" in response.context
+        assert "sample_data" in response.context
 
 
 class TestPrivacy(TemplateOkMixin):
@@ -89,14 +103,6 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
 
     def test_post(self, client, user, django_user_model):
         """Test the view POST request creates new user skills and redirects."""
-        from main.models import (
-            Competency,
-            CompetencyDomain,
-            Skill,
-            SkillLevel,
-            UserSkill,
-        )
-
         client.force_login(user)
 
         # Create test data
@@ -184,3 +190,102 @@ class TestRolesPageView(TemplateOkMixin):
         assert "skill_levels" in response.context
         assert isinstance(response.context["skill_levels"], list)
         # TODO: Improve this test
+
+
+class TestSkillLevelsPageView(TemplateOkMixin):
+    """Test suite for the SkillLevelsPageView."""
+
+    _template_name = "main/pages/skill-levels.html"
+
+    def _get_url(self):
+        return reverse("skill_levels")
+
+
+class TestTrainingPageView(TemplateOkMixin):
+    """Test suite for the TrainingPageView."""
+
+    _template_name = "main/pages/training.html"
+
+    def _get_url(self):
+        return reverse("training")
+
+
+class TestGetInvolvedPageView(TemplateOkMixin):
+    """Test suite for the GetInvolvedPageView."""
+
+    _template_name = "main/pages/get-involved.html"
+
+    def _get_url(self):
+        return reverse("get_involved")
+
+
+class TestEventsPageView(TemplateOkMixin):
+    """Test suite for the EventsPageView."""
+
+    _template_name = "main/pages/events.html"
+
+    def _get_url(self):
+        return reverse("events")
+
+    def test_provides_required_context(self, client):
+        """Test that the events view provides the events context."""
+        response = client.get(self._get_url())
+        assert response.status_code == HTTPStatus.OK
+        assert "events" in response.context
+        assert isinstance(response.context["events"], list)
+
+
+class TestAccountOverviewView(LoginRequiredMixin):
+    """Test suite for the account_overview view."""
+
+    def _get_url(self):
+        return reverse("account-overview")
+
+    def test_redirects_to_self_assess_when_no_skills(self, client, user):
+        """Test that users with no skills are redirected to self-assess."""
+        client.force_login(user)
+        response = client.get(self._get_url())
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("self_assess")
+
+    def test_redirects_to_skill_profile_when_skills_exist(self, client, user):
+        """Test that users with skills are redirected to their skill profile."""
+        client.force_login(user)
+
+        competency_domain = CompetencyDomain.objects.create(
+            name="Test Domain", description="Test domain description"
+        )
+        competency = Competency.objects.create(
+            name="Test Competency",
+            description="Test competency description",
+            competency_domain=competency_domain,
+        )
+        skill = Skill.objects.create(
+            name="Test Skill",
+            description="Test skill description",
+            competency=competency,
+        )
+        skill_level = SkillLevel.objects.create(
+            level=1, name="Beginner", description="Basic understanding"
+        )
+        UserSkill.objects.create(user=user, skill=skill, skill_level=skill_level)
+
+        response = client.get(self._get_url())
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("skill_profile")
+
+
+class TestCompetenciesPageView(TemplateOkMixin):
+    """Test suite for the CompetenciesPageView."""
+
+    _template_name = "main/pages/competencies.html"
+
+    def _get_url(self):
+        return reverse("competencies")
+
+    def test_provides_required_context(self, client):
+        """Test that the competencies view provides the framework context."""
+        response = client.get(self._get_url())
+        assert response.status_code == HTTPStatus.OK
+        assert "framework" in response.context
+        assert isinstance(response.context["framework"], dict)
