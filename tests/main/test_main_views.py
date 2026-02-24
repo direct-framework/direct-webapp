@@ -9,7 +9,13 @@ from http import HTTPStatus
 
 from django.urls import reverse
 
-from main.models import Competency, CompetencyDomain, Skill, SkillLevel, UserSkill
+from main.models import (
+    Competency,
+    CompetencyDomain,
+    Skill,
+    SkillLevel,
+    UserSkill,
+)
 
 from .view_utils import LoginRequiredMixin, TemplateOkMixin
 
@@ -21,6 +27,12 @@ class TestIndex(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("index")
+
+    def test_provides_required_context(self, admin_client):
+        """Test the view provides skill_levels and sample_data context."""
+        response = admin_client.get(self._get_url())
+        assert "skill_levels" in response.context
+        assert "sample_data" in response.context
 
 
 class TestPrivacy(TemplateOkMixin):
@@ -91,14 +103,6 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
 
     def test_post(self, client, user, django_user_model):
         """Test the view POST request creates new user skills and redirects."""
-        from main.models import (
-            Competency,
-            CompetencyDomain,
-            Skill,
-            SkillLevel,
-            UserSkill,
-        )
-
         client.force_login(user)
 
         # Create test data
