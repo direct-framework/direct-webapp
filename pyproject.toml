@@ -15,7 +15,8 @@ dependencies = [
     "crispy-bootstrap5",
     "gunicorn",
     "whitenoise",
-    "mysqlclient"
+    "mysqlclient",
+    "django-import-export",
 ]
 
 [project.optional-dependencies]
