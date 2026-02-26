@@ -69,6 +69,10 @@ module = ["crispy_forms.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = ["tablib.*"]
+follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
 module = ["main.io_resources"]
 disallow_any_generics = false
 
