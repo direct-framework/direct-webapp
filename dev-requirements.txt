@@ -49,7 +49,9 @@ django-import-export==4.4.0
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
 django-stubs[compatible-mypy]==5.2.9
-    # via direct_webapp (pyproject.toml)
+    # via
+    #   direct_webapp (pyproject.toml)
+    #   types-django-import-export
 django-stubs-ext==5.2.9
     # via
     #   direct_webapp (pyproject.toml)
@@ -142,6 +144,8 @@ tablib==3.9.0
     # via django-import-export
 tqdm==4.67.3
     # via djlint
+types-django-import-export==4.4.0.20260113
+    # via direct_webapp (pyproject.toml)
 types-pyyaml==6.0.12.20250915
     # via django-stubs
 typing-extensions==4.15.0
