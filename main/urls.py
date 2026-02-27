@@ -2,31 +2,37 @@
 
 from django.urls import include, path
 
-from . import views
+from main.views import account_views, page_views
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("privacy/", views.privacy, name="privacy"),
+    path("", page_views.index, name="index"),
+    path("privacy/", page_views.privacy, name="privacy"),
     path("accounts/", include("django_registration.backends.one_step.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
-    path("about/", views.AboutPageView.as_view(), name="about"),
-    path("terms/", views.TermsPageView.as_view(), name="terms"),
-    path("skill-levels/", views.SkillLevelsPageView.as_view(), name="skill_levels"),
-    path("training/", views.TrainingPageView.as_view(), name="training"),
-    path("roles/", views.RolesPageView.as_view(), name="roles"),
-    path("get-involved/", views.GetInvolvedPageView.as_view(), name="get_involved"),
-    path("events/", views.EventsPageView.as_view(), name="events"),
-    path("self-assess/", views.SelfAssessPageView.as_view(), name="self_assess"),
-    path("skills/", views.skill_profile, name="skill_profile"),
-    path("account/profile/", views.UserUpdateView.as_view(), name="profile"),
+    path("about/", page_views.AboutPageView.as_view(), name="about"),
+    path("terms/", page_views.TermsPageView.as_view(), name="terms"),
+    path(
+        "skill-levels/", page_views.SkillLevelsPageView.as_view(), name="skill_levels"
+    ),
+    path("training/", page_views.TrainingPageView.as_view(), name="training"),
+    path("roles/", page_views.RolesPageView.as_view(), name="roles"),
+    path(
+        "get-involved/", page_views.GetInvolvedPageView.as_view(), name="get_involved"
+    ),
+    path("events/", page_views.EventsPageView.as_view(), name="events"),
+    path(
+        "self-assess/", account_views.SelfAssessPageView.as_view(), name="self_assess"
+    ),
+    path("skills/", account_views.skill_profile, name="skill_profile"),
+    path("account/profile/", account_views.UserUpdateView.as_view(), name="profile"),
     path(
         "account/overview/",
-        views.account_overview,
+        account_views.account_overview,
         name="account-overview",
     ),
     path(
         "competencies/",
-        views.CompetenciesPageView.as_view(),
+        page_views.CompetenciesPageView.as_view(),
         name="competencies",
     ),
 ]
