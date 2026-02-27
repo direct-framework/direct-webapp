@@ -1,4 +1,4 @@
-"""Views for the main app."""
+"""Views for the page-related pages of the main app."""
 
 import csv
 import json
@@ -85,19 +85,19 @@ class TermsPageView(TemplateView):
 
 
 class SkillLevelsPageView(TemplateView):
-    """View that renders the terms and conditions page."""
+    """View that renders the skill levels page."""
 
     template_name = "main/pages/skill-levels.html"
 
 
 class TrainingPageView(TemplateView):
-    """View that renders the terms and conditions page."""
+    """View that renders the training page."""
 
     template_name = "main/pages/training.html"
 
 
 class GetInvolvedPageView(TemplateView):
-    """View that renders the terms and conditions page."""
+    """View that renders the get involved page."""
 
     template_name = "main/pages/get-involved.html"
 

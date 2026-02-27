@@ -1,4 +1,4 @@
-"""Views for the main app."""
+"""Views for the account-related pages of the main app."""
 
 import logging
 from json import dumps
