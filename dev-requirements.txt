@@ -4,7 +4,7 @@
 #
 #    pip-compile --extra=dev --output-file=dev-requirements.txt
 #
-asgiref==3.11.0
+asgiref==3.11.1
     # via django
 build==1.4.0
     # via pip-tools
@@ -18,15 +18,15 @@ colorama==0.4.6
     # via djlint
 confusable-homoglyphs==3.3.1
     # via django-registration
-coverage[toml]==7.13.2
+coverage[toml]==7.13.4
     # via pytest-cov
-crispy-bootstrap5==2025.6
+crispy-bootstrap5==2026.3
     # via direct_webapp (pyproject.toml)
 cssbeautifier==1.15.4
     # via djlint
 distlib==0.4.0
     # via virtualenv
-django==6.0.1
+django==6.0.2
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
@@ -35,9 +35,9 @@ django==6.0.1
     #   django-registration
     #   django-stubs
     #   django-stubs-ext
-django-bootstrap5==26.1
+django-bootstrap5==26.2
     # via direct_webapp (pyproject.toml)
-django-crispy-forms==2.5
+django-crispy-forms==2.6
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
@@ -55,9 +55,9 @@ editorconfig==0.17.1
     # via
     #   cssbeautifier
     #   jsbeautifier
-filelock==3.20.3
+filelock==3.25.0
     # via virtualenv
-gunicorn==25.0.0
+gunicorn==25.1.0
     # via direct_webapp (pyproject.toml)
 identify==2.6.16
     # via pre-commit
@@ -75,7 +75,7 @@ mypy==1.19.1
     #   django-stubs
 mypy-extensions==1.1.0
     # via mypy
-mysqlclient==2.2.7
+mysqlclient==2.2.8
     # via direct_webapp (pyproject.toml)
 nodeenv==1.10.0
     # via pre-commit
@@ -88,9 +88,9 @@ pathspec==1.0.4
     # via
     #   djlint
     #   mypy
-pip-tools==7.5.2
+pip-tools==7.5.3
     # via direct_webapp (pyproject.toml)
-platformdirs==4.5.1
+platformdirs==4.9.2
     # via virtualenv
 pluggy==1.6.0
     # via
@@ -112,7 +112,7 @@ pytest==9.0.2
     #   pytest-mock
 pytest-cov==7.0.0
     # via direct_webapp (pyproject.toml)
-pytest-django==4.11.1
+pytest-django==4.12.0
     # via direct_webapp (pyproject.toml)
 pytest-mock==3.15.1
     # via direct_webapp (pyproject.toml)
@@ -120,9 +120,9 @@ pyyaml==6.0.3
     # via
     #   djlint
     #   pre-commit
-regex==2026.1.15
+regex==2026.2.28
     # via djlint
-ruff==0.14.14
+ruff==0.15.4
     # via direct_webapp (pyproject.toml)
 six==1.17.0
     # via
@@ -130,7 +130,7 @@ six==1.17.0
     #   jsbeautifier
 sqlparse==0.5.5
     # via django
-tqdm==4.67.2
+tqdm==4.67.3
     # via djlint
 types-pyyaml==6.0.12.20250915
     # via django-stubs
@@ -139,11 +139,11 @@ typing-extensions==4.15.0
     #   django-stubs
     #   django-stubs-ext
     #   mypy
-virtualenv==20.36.1
+virtualenv==21.1.0
     # via pre-commit
 wheel==0.46.3
     # via pip-tools
-whitenoise==6.11.0
+whitenoise==6.12.0
     # via direct_webapp (pyproject.toml)
 
 # The following packages are considered to be unsafe in a requirements file:
