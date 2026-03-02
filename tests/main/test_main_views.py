@@ -7,6 +7,7 @@ This test module includes tests for main views of the app ensuring that:
 
 from http import HTTPStatus
 
+from bs4 import BeautifulSoup
 from django.urls import reverse
 
 from main.models import (
@@ -82,6 +83,12 @@ class TestAboutPageView(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("about")
+
+    def test_should_say_direct_atleast_three_times(self, client):
+        """Test that the about page contains the word 'Direct' at least 3 times."""
+        response = client.get(self._get_url())
+        soup = BeautifulSoup(response.content, "lxml")
+        assert soup.text.count("DIRECT") >= 3
 
 
 class TestTermsPageView(TemplateOkMixin):

@@ -30,6 +30,8 @@ dev = [
     "pytest-mock",
     "django-stubs[compatible-mypy]",
     "djlint",
+    "beautifulsoup4",
+    "lxml",
 ]
 doc = [
     "mkdocs",
