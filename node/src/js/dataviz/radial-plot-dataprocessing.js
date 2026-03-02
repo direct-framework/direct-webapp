@@ -12,8 +12,10 @@ const color = colorFn(category);
 export function getColor(categories, colourList = d3.schemeAccent) {
   return d3.scaleOrdinal().domain(categories).range(colourList).unknown('#ccc')
 }
-/* Get the point at the bottom left of the category. Used as the start point of
-the line from category segments to category label  */
+
+/* Get the point at the bottom left of the category.
+
+Used as the start point of the line from category segments to category label  */
 export const catAnnotationPointInner = (categoryStartAngleMap) => (categoryId) => {
   const angle = categoryStartAngleMap[categoryId]
   const x = Math.sin(angle)
@@ -67,7 +69,7 @@ export const catAnnotationPointOuter = (categoryStartAngleMap) => (categoryId) =
 //     return { x, y }
 //   }
 
-/* Calculates label position based on offset from y top/bottom */
+/* Calculates label position based on position in quadrant*/
 export const catAnnotationPointOuterLabel =
   (categoryStartAngleMap, catLabelWidthHeightMap, xPadding, yPadding, plotHeight) =>
   (categoryId) => {
@@ -75,7 +77,7 @@ export const catAnnotationPointOuterLabel =
     const xSide = Math.sin(angle) > 0 ? 1 : -1
     const ySide = -Math.cos(angle) > 0 ? 1 : -1
 
-    const catsOnThisSide = Object.keys(categoryStartAngleMap)
+    const catsInThisQuadrant = Object.keys(categoryStartAngleMap)
       .filter((catId) => {
         const inXSide = Math.sin(categoryStartAngleMap[catId]) > 0 ? 1 : -1
         const inYSide = -Math.cos(categoryStartAngleMap[catId]) > 0 ? 1 : -1
@@ -91,8 +93,9 @@ export const catAnnotationPointOuterLabel =
             : 1
       )
 
-    const thisCatIndex = catsOnThisSide.length - catsOnThisSide.indexOf(categoryId) - 1
-    const preCatHeights = catsOnThisSide
+    const thisCatIndex =
+      catsInThisQuadrant.length - catsInThisQuadrant.indexOf(categoryId) - 1
+    const preCatHeights = catsInThisQuadrant
       .slice(0, thisCatIndex)
       .reduce((acc, catId) => acc + catLabelWidthHeightMap[catId].height, 0)
 
@@ -117,6 +120,10 @@ export const catAnnotationPointOuterLabel =
     skillPadding: number;
     arcPercent: number;
     arcStartOffset: number;
+    labelXOffset = 1.1,
+    labelYSpacing = 10,
+    maxLabelWidth = 150,
+    fontSize = 14,
 
   The function returns a function that takes in the following parameters:
     skillsData: IDataItem[];
@@ -130,9 +137,10 @@ export const catAnnotationPointOuterLabel =
       color: string;
 
     Category is an object with the following properties:
-      id: string;
-      skills: IDataItem[];
-      color: string;
+      skillsData: IDataItem[];
+      levels: Level[];
+      categories: Category[];
+      groupedByCategory: Map<Category, IDataItem[]>;
 */
 export const getArcsFn =
   ({
@@ -226,7 +234,6 @@ export const getArcsFn =
     /* Function to get the distance from the center of the circle to a y value
         at the bottom of the level */
     const lvlHeight = d3
-      // .scaleRadial() // Disabled so each level is the same depth
       .scaleLinear()
       .domain([minLvl, maxLvl + 1]) // Use max lvl + 1 as we need the top and bottom of each lvl
       .range([innerRadius, outerRadius])
@@ -329,6 +336,7 @@ export const getArcsFn =
 
   The function takes in the following parameters:
     data: IDataItem[];
+    colourList?: string[];
 
   Where IDataItem is an object with the following properties:
     skill: string;
