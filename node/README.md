@@ -44,3 +44,52 @@ The above script performs all the following tasks, which are available as indivi
 ```bash
 npm run styles:expanded
 ```
+
+## Running Tests
+
+To run the test suite using Vitest, execute:
+
+```bash
+npm run test
+```
+
+This will run all tests files (files with a `.test.js` extension) and display the results in the console.
+The output will look like this:
+
+``` > vitest run
+ ✓ node/src/js/dataviz/radial-plot.test.js (46 tests) 345ms
+...
+ Test Files  1 passed (1)
+      Tests  46 passed (46)
+   Start at  10:50:02
+   Duration  11.39s (transform 2.45s, setup 0ms, collect 8.93s, tests 345ms, environment 596ms, prepare 110ms)
+
+ PASS  Waiting for file changes...
+       press h to show help, press q to quit
+```
+
+If any tests fail you will see a summary of the failures in the console output. See example below:
+
+``` > vitest run
+ FAIL  node/src/js/dataviz/radial-plot.test.js > RadialBarChart > Plot Offset > should apply custom plot Y offset
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+...
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 45 passed (46)
+   Start at  10:59:02
+   Duration  803ms
+
+ FAIL  Tests failed. Watching for file changes...
+       press h to show help, press q to quit
+
+```
+
+If this occurs you will need to investigate the test failures and fix any issues in the code or tests before re-running the test suite.
