@@ -6,6 +6,7 @@ import logging
 from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest, HttpResponse
@@ -13,7 +14,7 @@ from django.shortcuts import render
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
-from ..models import SkillLevel
+from ..models import CompetencyDomain, SkillLevel
 
 logger = logging.getLogger(__name__)
 
@@ -187,9 +188,40 @@ class CompetenciesPageView(TemplateView):
     def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
         """Add the competencies framework data to the template context."""
         context = super().get_context_data(**kwargs)
-        json_path = Path("data/skills-competencies-framework.json")
-        with open(json_path) as f:
-            framework = json.load(f)
+
+        domains = CompetencyDomain.objects.prefetch_related(
+            "competency_set__skill_set"
+        ).all()
+
+        framework: dict[str, list[dict[str, Any]]] = {
+            "categories": [
+                {
+                    "id": domain.id,
+                    "name": domain.name,
+                    "description": domain.description,
+                    "slug": domain.slug,
+                    "subcategories": [
+                        {
+                            "id": competency.id,
+                            "name": competency.name,
+                            "description": competency.description,
+                            "slug": competency.slug,
+                            "skills": [
+                                {
+                                    "id": skill.id,
+                                    "name": skill.name,
+                                    "description": skill.description,
+                                    "slug": skill.slug,
+                                }
+                                for skill in competency.skill_set.all()
+                            ],
+                        }
+                        for competency in domain.competency_set.all()
+                    ],
+                }
+                for domain in domains
+            ]
+        }
 
         for category in framework.get("categories", []):
             category["competency_count"] = len(category.get("subcategories", []))

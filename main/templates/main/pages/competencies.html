@@ -45,14 +45,14 @@
                                         <div class="mb-2">
                                             <a class="nav-link fw-semibold py-2 px-0" href="#header-{{ cat_id }}">
                                                 <i class="ai-user-check fs-5 opacity-60 me-2"></i>
-                                                {{ category.title }}
+                                                {{ category.name }}
                                             </a>
                                             {% if category.subcategories %}
                                                 <nav class="nav flex-column ms-3">
                                                     {% for sub in category.subcategories %}
                                                         <a class="nav-link py-1 px-0 small"
                                                            href="#header-{{ cat_id }}-{{ forloop.counter }}">
-                                                            {{ sub.title }}
+                                                            {{ sub.name }}
                                                         </a>
                                                     {% endfor %}
                                                 </nav>
@@ -71,7 +71,7 @@
                     {% with cat_id=forloop.counter %}
                         <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
                             <div class="card-body">
-                                <h2 id="header-{{ cat_id }}" class="card-title text-primary">{{ category.title }}</h2>
+                                <h2 id="header-{{ cat_id }}" class="card-title text-primary">{{ category.name }}</h2>
                                 <p class="card-text">{{ category.description }}</p>
                                 <p class="card-text">
                                     <span class="badge bg-secondary me-1">{{ category.competency_count }} Competencies</span>
@@ -82,7 +82,7 @@
                                         <div class="card-body">
                                             <h5 id="header-{{ cat_id }}-{{ forloop.counter }}"
                                                 class="card-title d-flex align-items-center">
-                                                <span class="me-2">{{ sub.title }}</span>
+                                                <span class="me-2">{{ sub.name }}</span>
                                             </h5>
                                             {% if sub.description %}<p class="card-text">{{ sub.description }}</p>{% endif %}
                                             {% if sub.skills %}
@@ -96,7 +96,7 @@
                                                     <tbody>
                                                         {% for skill in sub.skills %}
                                                             <tr>
-                                                                <td class="fw-semibold">{{ skill.title }}</td>
+                                                                <td class="fw-semibold">{{ skill.name }}</td>
                                                                 <td>{{ skill.description }}</td>
                                                             </tr>
                                                         {% endfor %}
