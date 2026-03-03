@@ -3,17 +3,11 @@
 from collections.abc import Collection
 from typing import Any
 
-from django.conf import settings
 from django.conf.global_settings import LANGUAGES
-from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-
-
-class User(AbstractUser):
-    """Custom user model for this project."""
 
 
 class NamedModel(models.Model):
@@ -155,18 +149,3 @@ class SkillLevel(NamedModel):
     level = models.PositiveSmallIntegerField(unique=True)
     short_description = models.CharField(max_length=200)
     focus = models.TextField(default="", blank=True)
-
-
-class UserSkill(models.Model):
-    """Model for mapping users to skills and skill levels."""
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-    skill_level = models.ForeignKey(SkillLevel, on_delete=models.CASCADE)
-
-    class Meta:
-        """Meta options for UserSkill model."""
-
-        constraints = (
-            models.UniqueConstraint(fields=["user", "skill"], name="unique_user_skill"),
-        )
