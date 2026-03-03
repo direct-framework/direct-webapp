@@ -10,8 +10,10 @@
         </div>
         <main class="page-wrapper">
             {% include "main/snippets/navbar.html" %}
-            {% block content %}
-            {% endblock content %}
+            {% block page %}
+                {% block content %}
+                {% endblock content %}
+            {% endblock page %}
         </main>
         {% include "main/snippets/footer.html" %}
     </body>
