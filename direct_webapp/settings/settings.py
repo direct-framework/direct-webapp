@@ -126,6 +126,7 @@ INSTALLED_APPS = [
     "django_registration",
     "crispy_forms",
     "crispy_bootstrap5",
+    "import_export",
 ]
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 STATIC_ROOT = BASE_DIR / "staticfiles"
