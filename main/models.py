@@ -122,12 +122,12 @@ class Tool(SluggedModel):
     class Kind(models.TextChoices):
         """Enumeration of Kind choices."""
 
-        TOOL = "FR", "Tool"
-        METHODOLOGY = "SO", "Methodology"
-        BEHAVIOUR = "JR", "Behaviour"
-        LANGUAGE = "SR", "Language"
+        TOOL = "tool", "Tool"
+        METHODOLOGY = "methodology", "Methodology"
+        BEHAVIOUR = "behaviour", "Behaviour"
+        LANGUAGE = "language", "Language"
 
-    kind = models.CharField(max_length=2, choices=Kind, default=Kind.TOOL)
+    kind = models.CharField(max_length=12, choices=Kind, default=Kind.TOOL)
     url = models.URLField(max_length=500, blank=True, null=True)
     learning_resources = models.ManyToManyField(LearningResource, blank=True)
 
