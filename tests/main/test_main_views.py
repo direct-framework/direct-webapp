@@ -283,7 +283,7 @@ class TestCompetenciesPageView(TemplateOkMixin):
     def _get_url(self):
         return reverse("competencies")
 
-    def test_provides_required_context(self, client):
+    def test_provides_required_context(self, client, db):
         """Test that the competencies view provides the framework context."""
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.OK
