@@ -27,6 +27,7 @@
                     <thead class="table-light">
                         <tr>
                             <th scope="col" style="width: 20%;">Skill Level</th>
+                            <th scope="col" style="width: 30%;">Short Description</th>
                             <th scope="col">Description</th>
                         </tr>
                     </thead>
@@ -37,8 +38,9 @@
                                     <span class="text-muted d-block">Level {{ skill_level.level }}</span>
                                     <strong>{{ skill_level.name }}</strong>
                                 </td>
+                                <td>{{ skill_level.short_description }}</td>
                                 <td>
-                                    {{ skill_level.short_description }}
+                                    {{ skill_level.description }}
                                     {% if skill_level.focus %}
                                         <br>
                                         <br>
