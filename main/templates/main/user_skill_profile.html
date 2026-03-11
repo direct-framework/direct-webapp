@@ -1,27 +1,22 @@
-{% extends "main/base.html" %}
+{% extends "main/base.page.html" %}
 {% block body_class %}
     bg-secondary
 {% endblock body_class %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% load django_bootstrap5 %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'profile' %}">Profile</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">View Skills</li>
+{% endblock breadcrumb_items %}
 {% block title %}
     Digital Research Competencies Framework
 {% endblock title %}
 {% block content %}
     <!-- Page container -->
     <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
-        <nav aria-label="breadcrumb">
-            <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="{% url 'index' %}">Home</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{% url 'profile' %}">Profile</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">View Skills</li>
-            </ol>
-        </nav>
         <div class="row pt-sm-2 pt-lg-0">
             <!-- Sidebar (offcanvas on screens < 992px) -->
             <aside class="col-lg-3">

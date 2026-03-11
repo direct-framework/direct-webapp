@@ -1,6 +1,15 @@
 {% extends "main/base.html" %}
 {% block page %}
     <div class="container my-5 pt-5">
+        <nav aria-label="breadcrumb">
+            <ol class="pt-lg-2 pb-lg-3 pb-1 breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                {% block breadcrumb_items %}
+                {% endblock breadcrumb_items %}
+            </ol>
+        </nav>
         {% block content %}
         {% endblock content %}
     </div>
