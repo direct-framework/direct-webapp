@@ -2,17 +2,6 @@
 
 import pytest
 
-from main.models import (
-    Competency,
-    CompetencyDomain,
-    LearningResource,
-    Provider,
-    Skill,
-    SkillLevel,
-    Tool,
-    UserSkill,
-)
-
 
 @pytest.fixture
 def user(django_user_model):
