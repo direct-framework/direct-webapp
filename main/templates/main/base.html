@@ -3,8 +3,8 @@
     <head>{% include "main/snippets/head.html" %}</head>
     <body class="{% block body_class %}{% endblock body_class %}">
         {% include "main/snippets/page-loading.html" %}
+        {% include "main/snippets/navbar.html" %}
         <main class="page-wrapper">
-            {% include "main/snippets/navbar.html" %}
             {% block page %}
                 {% block content %}
                 {% endblock content %}
