@@ -8,6 +8,7 @@ This test module includes tests for main views of the app ensuring that:
 from http import HTTPStatus
 
 import pytest
+from django.db.models import QuerySet
 from django.urls import reverse
 
 from main.models import (
@@ -286,8 +287,8 @@ class TestCompetenciesPageView(TemplateOkMixin):
 
     @pytest.mark.django_db
     def test_provides_required_context(self, client):
-        """Test that the competencies view provides the framework context."""
+        """Test that the competencies view provides the domains context."""
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.OK
-        assert "framework" in response.context
-        assert isinstance(response.context["framework"], dict)
+        assert "domains" in response.context
+        assert isinstance(response.context["domains"], QuerySet)
