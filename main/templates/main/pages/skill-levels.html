@@ -38,15 +38,15 @@
                                     <span class="text-muted d-block">Level {{ skill_level.level }}</span>
                                     <strong>{{ skill_level.name }}</strong>
                                 </td>
-                                <td>{{ skill_level.short_description }}</td>
                                 <td>
-                                    {{ skill_level.description }}
+                                    {{ skill_level.short_description }}
                                     {% if skill_level.focus %}
                                         <br>
                                         <br>
                                         <strong>Focus:</strong> {{ skill_level.focus }}
                                     {% endif %}
                                 </td>
+                                <td>{{ skill_level.description }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
