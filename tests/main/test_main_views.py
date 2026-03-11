@@ -7,6 +7,7 @@ This test module includes tests for main views of the app ensuring that:
 
 from http import HTTPStatus
 
+import pytest
 from django.urls import reverse
 
 from main.models import (
@@ -283,7 +284,8 @@ class TestCompetenciesPageView(TemplateOkMixin):
     def _get_url(self):
         return reverse("competencies")
 
-    def test_provides_required_context(self, client, db):
+    @pytest.mark.django_db
+    def test_provides_required_context(self, client):
         """Test that the competencies view provides the framework context."""
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.OK
