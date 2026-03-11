@@ -6,7 +6,6 @@ import logging
 from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
-from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest, HttpResponse
@@ -193,41 +192,5 @@ class CompetenciesPageView(TemplateView):
             "competency_set__skill_set"
         ).all()
 
-        framework: dict[str, list[dict[str, Any]]] = {
-            "categories": [
-                {
-                    "id": domain.id,
-                    "name": domain.name,
-                    "description": domain.description,
-                    "slug": domain.slug,
-                    "subcategories": [
-                        {
-                            "id": competency.id,
-                            "name": competency.name,
-                            "description": competency.description,
-                            "slug": competency.slug,
-                            "skills": [
-                                {
-                                    "id": skill.id,
-                                    "name": skill.name,
-                                    "description": skill.description,
-                                    "slug": skill.slug,
-                                }
-                                for skill in competency.skill_set.all()
-                            ],
-                        }
-                        for competency in domain.competency_set.all()
-                    ],
-                }
-                for domain in domains
-            ]
-        }
-
-        for category in framework.get("categories", []):
-            category["competency_count"] = len(category.get("subcategories", []))
-            category["skill_count"] = sum(
-                len(sub.get("skills", [])) for sub in category.get("subcategories", [])
-            )
-
-        context["framework"] = framework
+        context["domains"] = domains
         return context
