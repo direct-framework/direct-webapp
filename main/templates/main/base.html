@@ -2,12 +2,7 @@
 <html lang="en" data-bs-theme="light">
     <head>{% include "main/snippets/head.html" %}</head>
     <body class="{% block body_class %}{% endblock body_class %}">
-        <div class="page-loading active">
-            <div class="page-loading-inner">
-                <div class="page-spinner"></div>
-                <span>Loading...</span>
-            </div>
-        </div>
+        {% include "main/snippets/page-loading.html" %}
         <main class="page-wrapper">
             {% include "main/snippets/navbar.html" %}
             {% block page %}
