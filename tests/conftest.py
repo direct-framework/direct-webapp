@@ -10,6 +10,7 @@ from main.models import (
     Skill,
     SkillLevel,
     Tool,
+    UserSkill,
 )
 
 
@@ -104,3 +105,9 @@ def skill_level() -> SkillLevel:
         short_description="Beginner",
         focus="Beginner focus",
     )
+
+
+@pytest.fixture
+def user_skill(user, skill: Skill, skill_level: SkillLevel) -> UserSkill:
+    """Fixture for creating a UserSkill instance."""
+    return UserSkill.objects.create(user=user, skill=skill, skill_level=skill_level)

@@ -6,12 +6,6 @@ from django.core.exceptions import ValidationError
 from main.models import Skill, SkillLevel, UserSkill
 
 
-@pytest.fixture
-def user_skill(user, skill: Skill, skill_level: SkillLevel) -> UserSkill:
-    """Fixture for creating a UserSkill instance."""
-    return UserSkill.objects.create(user=user, skill=skill, skill_level=skill_level)
-
-
 @pytest.mark.django_db
 def test_user_skill_model(
     user_skill: UserSkill, user, skill: Skill, skill_level: SkillLevel
