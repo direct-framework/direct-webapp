@@ -1,11 +1,8 @@
-{% extends "main/base.page.html" %}
+{% extends "main/base.html" %}
 {% load static %}
 {% block title %}
     Digital Research Competencies Framework
 {% endblock title %}
-{% block breadcrumb_items %}
-    <li class="breadcrumb-item active" aria-current="page">About</li>
-{% endblock breadcrumb_items %}
 {% block content %}
     <section class="bg-dark position-relative py-5">
         <div class="d-none d-dark-mode-block position-absolute top-0 start-0 w-100 h-100"></div>
@@ -13,6 +10,14 @@
              data-bs-theme="dark">
             <div class="row pb-5 mb-2 mb-sm-0 mb-lg-3">
                 <div class="col-lg-10 col-xl-9">
+                    <nav aria-label="breadcrumb">
+                        <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'index' %}">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">About the project</li>
+                        </ol>
+                    </nav>
                     <h1 class="display-2 pb-2 pb-sm-3">Building a stronger future for digital research</h1>
                     <ul class="list-unstyled d-flex flex-wrap mb-0">
                         <li class="d-flex text-body py-1 me-4">
