@@ -255,3 +255,21 @@ class SkillLevelResource(resources.ModelResource):
         skip_unchanged = True
         import_id_fields = ("level",)
         exclude = ("id",)
+
+
+def export_framework() -> dict[str, list[dict[str, str]]]:
+    """Exports the entire framework into one dictionary with each model as a key.
+
+    Returns:
+        A dictionary containing the entire framework. Each model is labelled by a key
+            and is a list of dictionaries. This is JSON compatible.
+    """
+    return dict(
+        competency_domains=CompetencyDomainResource().export().dict,
+        competency=CompetencyResource().export().dict,
+        skills=SkillResource().export().dict,
+        skill_level=SkillLevelResource().export().dict,
+        tools_languages_methodologies=ToolResource().export().dict,
+        learning_resources=LearningResourceResource().export().dict,
+        providers=ProviderResource().export().dict,
+    )
