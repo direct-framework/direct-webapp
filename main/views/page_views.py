@@ -89,6 +89,13 @@ class SkillLevelsPageView(TemplateView):
 
     template_name = "main/pages/skill-levels.html"
 
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add skill levels to the template context."""
+        context = super().get_context_data(**kwargs)
+        skill_levels = SkillLevel.objects.all().order_by("level")
+        context["skill_levels"] = skill_levels
+        return context
+
 
 class TrainingPageView(TemplateView):
     """View that renders the training page."""

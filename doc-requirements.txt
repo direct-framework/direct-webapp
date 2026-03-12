@@ -17,9 +17,7 @@ charset-normalizer==3.4.4
 click==8.3.1
     # via mkdocs
 colorama==0.4.6
-    # via
-    #   griffe
-    #   mkdocs-material
+    # via mkdocs-material
 confusable-homoglyphs==3.3.1
     # via django-registration
 crispy-bootstrap5==2026.3
@@ -49,7 +47,7 @@ django-stubs-ext==5.2.9
     # via direct_webapp (pyproject.toml)
 ghp-import==2.1.0
     # via mkdocs
-griffe==2.0.0
+griffelib==2.0.0
     # via mkdocstrings-python
 gunicorn==25.1.0
     # via direct_webapp (pyproject.toml)
