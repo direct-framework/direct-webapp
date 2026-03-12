@@ -1,4 +1,7 @@
 {% extends "main/base.html" %}
+{% block body_class %}
+    bg-secondary
+{% endblock body_class %}
 {% block page %}
     <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
         <div class="row pt-sm-2 pt-lg-0">
@@ -30,7 +33,7 @@
                                         <i class="ai-settings fs-5 opacity-60 me-2"></i>
                                         Update Profile
                                     </a>
-                                    <a class="nav-link fw-semibold py-2 px-0 {% if url_name == 'change-password' %}active{% endif %}"
+                                    <a class="nav-link fw-semibold py-2 px-0 {% if url_name == 'password_change' %}active{% endif %}"
                                        href="{% url 'password_change' %}">
                                         <i class="ai-wallet fs-5 opacity-60 me-2"></i>
                                         Change Password
