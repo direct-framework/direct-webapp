@@ -2,7 +2,7 @@ name: Add Contributors
 
 on:
   push:
-    branches: [main]
+    branches: [main, 624-contr-bug]
 
 jobs:
   contributors:
