@@ -1,20 +1,16 @@
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
-    <head>{% include "main/snippets/head.html" %}</head>
-    <body>
-        <div class="page-loading active">
-            <div class="page-loading-inner">
-                <div class="page-spinner"></div>
-                <span>Loading...</span>
-            </div>
-        </div>
-        <main class="page-wrapper">
-            {% include "main/snippets/navbar.html" %}
-            <div class="container my-5 pt-5">
-                {% block content %}
-                {% endblock content %}
-            </div>
-        </main>
-        {% include "main/snippets/footer.html" %}
-    </body>
-</html>
+{% extends "main/base.html" %}
+{% block page %}
+    <div class="container my-5 pt-5">
+        <nav aria-label="breadcrumb">
+            <ol class="pt-lg-2 pb-lg-3 pb-1 breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                {% block breadcrumb_items %}
+                {% endblock breadcrumb_items %}
+            </ol>
+        </nav>
+        {% block content %}
+        {% endblock content %}
+    </div>
+{% endblock page %}
