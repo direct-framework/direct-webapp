@@ -54,6 +54,7 @@ class SluggedModel(NamedModel):
 
     def save(self, **kwargs: Any) -> None:
         """Override save method to auto-generate slug from name if not provided."""
+        self.clean_fields(exclude="slug")
         if not self.slug:
             all_fields = [f.name for f in self._meta.get_fields()]
             all_fields.remove("slug")
