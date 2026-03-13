@@ -8,12 +8,13 @@ from json import dumps
 from pathlib import Path
 
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
-from ..models import SkillLevel
+from ..models import LearningResource, Skill, SkillLevel, Tool
 
 logger = logging.getLogger(__name__)
 
@@ -205,4 +206,38 @@ class CompetenciesPageView(TemplateView):
             )
 
         context["framework"] = framework
+        return context
+
+
+class SkillPageView(TemplateView):
+    """View that renders the skill details page."""
+
+    template_name = "main/pages/skill-page.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add skill data and related resources to the template context."""
+        context = super().get_context_data(**kwargs)
+        slug = self.kwargs["slug"]
+
+        skill = get_object_or_404(
+            Skill.objects.select_related(
+                "competency", "competency__competency_domain"
+            ).prefetch_related("related_skills", "tools", "learning_resources"),
+            slug=slug,
+        )
+
+        all_learning_resources = (
+            LearningResource.objects.filter(Q(skill=skill) | Q(tool__skill=skill))
+            .select_related("provider")
+            .distinct()
+            .order_by("name")
+        )
+
+        tools = skill.tools.order_by("name")
+        context["skill"] = skill
+        context["related_skills"] = skill.related_skills.order_by("name")
+        context["learning_resources"] = all_learning_resources
+        context["tools"] = tools.filter(kind=Tool.Kind.TOOL)
+        context["languages"] = tools.filter(kind=Tool.Kind.LANGUAGE)
+        context["methodologies"] = tools.filter(kind=Tool.Kind.METHODOLOGY)
         return context
