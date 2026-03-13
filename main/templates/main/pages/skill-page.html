@@ -1,0 +1,72 @@
+{# main/templates/main/pages/skill-page.html #}
+{% extends "main/base.page.html" %}
+{% block title %}
+    {{ skill.name }} - DIRECT Framework
+{% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'competencies' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">{{ skill.name }}</li>
+{% endblock breadcrumb_items %}
+{% block content %}
+    <section id="skill-detail">
+        <div class="row">
+            <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
+                <h1 class="pb-2 pb-lg-3">{{ skill.name }}</h1>
+                <p class="fs-lg mb-4">{{ skill.description }}</p>
+                <p class="text-muted mb-4">
+                    <strong>Competency:</strong> {{ skill.competency.name }}
+                    {% if skill.competency.competency_domain %}({{ skill.competency.competency_domain.name }}){% endif %}
+                </p>
+                <h2 class="h4 mt-4">Related skills</h2>
+                {% if related_skills %}
+                    <ul>
+                        {% for related_skill in related_skills %}
+                            <li>
+                                <a href="{% url 'skill_page' slug=related_skill.slug %}">{{ related_skill.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No related skills available.</p>
+                {% endif %}
+                <h2 class="h4 mt-4">Learning Resources</h2>
+                {% if learning_resources %}
+                    <ul>
+                        {% for resource in learning_resources %}
+                            <li>
+                                {% if resource.url %}
+                                    <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.name }}</a>
+                                {% else %}
+                                    {{ resource.name }}
+                                {% endif %}
+                                {% if resource.provider %}({{ resource.provider.name }}){% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No learning resources available.</p>
+                {% endif %}
+                {% if tools %}
+                    <h2 class="h4 mt-4">Tools</h2>
+                    <ul>
+                        {% for item in tools %}<li>{{ item.name }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+                {% if languages %}
+                    <h2 class="h4 mt-4">Languages</h2>
+                    <ul>
+                        {% for item in languages %}<li>{{ item.name }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+                {% if methodologies %}
+                    <h2 class="h4 mt-4">Methodologies</h2>
+                    <ul>
+                        {% for item in methodologies %}<li>{{ item.name }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock content %}
