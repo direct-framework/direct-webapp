@@ -45,7 +45,7 @@
                                                 <nav class="nav flex-column ms-3">
                                                     {% for competency in competencies %}
                                                         <a class="nav-link py-1 px-0 small"
-                                                           href="#header-{{ competency_domain.slug }}-{{ competency.slug }}">
+                                                           href="#header-{{ domain.slug }}-{{ competency.slug }}">
                                                             {{ competency.name }}
                                                         </a>
                                                     {% endfor %}
@@ -63,8 +63,7 @@
                 {% for domain in domains %}
                     <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
                         <div class="card-body">
-                            <h2 id="header-{{ competency_domain.slug }}"
-                                class="card-title text-primary">{{ domain.name }}</h2>
+                            <h2 id="header-{{ domain.slug }}" class="card-title text-primary">{{ domain.name }}</h2>
                             <p class="card-text">{{ domain.description }}</p>
                             {% with competencies=domain.competency_set.all %}
                                 <p class="card-text">
@@ -73,7 +72,7 @@
                                 {% for competency in competencies %}
                                     <div class="card rounded-1 mt-5">
                                         <div class="card-body">
-                                            <h5 id="header-{{ competency_domain.slug }}-{{ competency.slug }}"
+                                            <h5 id="header-{{ domain.slug }}-{{ competency.slug }}"
                                                 class="card-title d-flex align-items-center">
                                                 <span class="me-2">{{ competency.name }}</span>
                                             </h5>

@@ -286,9 +286,10 @@ class TestCompetenciesPageView(TemplateOkMixin):
         return reverse("competencies")
 
     @pytest.mark.django_db
-    def test_provides_required_context(self, client):
+    def test_provides_required_context(self, client, competency_domain):
         """Test that the competencies view provides the domains context."""
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.OK
         assert "domains" in response.context
         assert isinstance(response.context["domains"], QuerySet)
+        assert response.context["domains"].first() == competency_domain
