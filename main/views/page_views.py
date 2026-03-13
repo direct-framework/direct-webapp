@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
-from ..models import SkillLevel
+from ..models import CompetencyDomain, SkillLevel
 
 logger = logging.getLogger(__name__)
 
@@ -194,15 +194,10 @@ class CompetenciesPageView(TemplateView):
     def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
         """Add the competencies framework data to the template context."""
         context = super().get_context_data(**kwargs)
-        json_path = Path("data/skills-competencies-framework.json")
-        with open(json_path) as f:
-            framework = json.load(f)
 
-        for category in framework.get("categories", []):
-            category["competency_count"] = len(category.get("subcategories", []))
-            category["skill_count"] = sum(
-                len(sub.get("skills", [])) for sub in category.get("subcategories", [])
-            )
+        domains = CompetencyDomain.objects.prefetch_related(
+            "competency_set__skill_set"
+        ).all()
 
-        context["framework"] = framework
+        context["domains"] = domains
         return context
