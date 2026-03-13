@@ -13,102 +13,114 @@
     <li class="breadcrumb-item active" aria-current="page">Competencies</li>
 {% endblock breadcrumb_items %}
 {% block content %}
-    <!-- Page container -->
-    <div class="row">
-        <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
-            <h1 class="pb-2 pb-lg-3">Competencies framework</h1>
-            <p class="fs-lg mb-5">
-                This page outlines the Digital Research Competencies Framework. Skills and competencies are organised into a number of competencies and competency domains which you can explore using the links in the sidebar.
-            </p>
+    <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+        <nav aria-label="breadcrumb">
+            <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'competencies' %}">Framework</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Competencies</li>
+            </ol>
+        </nav>
+        <div class="row">
+            <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
+                <h1 class="pb-2 pb-lg-3">Competencies framework</h1>
+                <p class="fs-lg mb-5">
+                    This page outlines the Digital Research Competencies Framework. Skills and competencies are organised into a number of competencies and competency domains which you can explore using the links in the sidebar.
+                </p>
+            </div>
         </div>
-    </div>
-    <div class="row pt-sm-2 pt-lg-0">
-        <!-- Sidebar (offcanvas on screens < 992px) -->
-        <aside class="col-lg-3">
-            <div class="position-lg-sticky competencies-sticky">
-                <div class="offcanvas-lg offcanvas-start" id="sidebarAccount">
-                    <button class="btn-close position-absolute top-0 end-0 mt-3 me-3 d-lg-none"
-                            type="button"
-                            data-bs-dismiss="offcanvas"
-                            data-bs-target="#sidebarAccount"
-                            aria-label="Close"></button>
-                    <div class="offcanvas-body">
-                        <nav class="nav flex-column pb-2 pb-lg-4 mb-3">
-                            {% for category in framework.categories %}
-                                {% with cat_id=forloop.counter %}
+        <div class="row pt-sm-2 pt-lg-0">
+            <aside class="col-lg-3">
+                <div class="position-lg-sticky competencies-sticky">
+                    <div class="offcanvas-lg offcanvas-start" id="sidebarAccount">
+                        <button class="btn-close position-absolute top-0 end-0 mt-3 me-3 d-lg-none"
+                                type="button"
+                                data-bs-dismiss="offcanvas"
+                                data-bs-target="#sidebarAccount"
+                                aria-label="Close"></button>
+                        <div class="offcanvas-body">
+                            <nav class="nav flex-column pb-2 pb-lg-4 mb-3">
+                                {% for domain in domains %}
                                     <div class="mb-2">
-                                        <a class="nav-link fw-semibold py-2 px-0" href="#header-{{ cat_id }}">
+                                        <a class="nav-link fw-semibold py-2 px-0"
+                                           href="#header-{{ domain.slug }}">
                                             <i class="ai-user-check fs-5 opacity-60 me-2"></i>
-                                            {{ category.title }}
+                                            {{ domain.name }}
                                         </a>
-                                        {% if category.subcategories %}
-                                            <nav class="nav flex-column ms-3">
-                                                {% for sub in category.subcategories %}
-                                                    <a class="nav-link py-1 px-0 small"
-                                                       href="#header-{{ cat_id }}-{{ forloop.counter }}">
-                                                        {{ sub.title }}
-                                                    </a>
-                                                {% endfor %}
-                                            </nav>
-                                        {% endif %}
+                                        {% with competencies=domain.competency_set.all %}
+                                            {% if competencies %}
+                                                <nav class="nav flex-column ms-3">
+                                                    {% for competency in competencies %}
+                                                        <a class="nav-link py-1 px-0 small"
+                                                           href="#header-{{ competency_domain.slug }}-{{ competency.slug }}">
+                                                            {{ competency.name }}
+                                                        </a>
+                                                    {% endfor %}
+                                                </nav>
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
-                                {% endwith %}
-                            {% endfor %}
-                        </nav>
+                                {% endfor %}
+                            </nav>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </aside>
-        <!-- Page content -->
-        <div class="col-lg-9 pb-2 pb-sm-4">
-            {% for category in framework.categories %}
-                {% with cat_id=forloop.counter %}
+            </aside>
+            <div class="col-lg-9 pb-2 pb-sm-4">
+                {% for domain in domains %}
                     <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
                         <div class="card-body">
-                            <h2 id="header-{{ cat_id }}" class="card-title text-primary">{{ category.title }}</h2>
-                            <p class="card-text">{{ category.description }}</p>
-                            <p class="card-text">
-                                <span class="badge bg-secondary me-1">{{ category.competency_count }} Competencies</span>
-                                <span class="badge bg-secondary">{{ category.skill_count }} Skills</span>
-                            </p>
-                            {% for sub in category.subcategories %}
-                                <div class="card rounded-1 mt-5">
-                                    <div class="card-body">
-                                        <h5 id="header-{{ cat_id }}-{{ forloop.counter }}"
-                                            class="card-title d-flex align-items-center">
-                                            <span class="me-2">{{ sub.title }}</span>
-                                        </h5>
-                                        {% if sub.description %}<p class="card-text">{{ sub.description }}</p>{% endif %}
-                                        {% if sub.skills %}
-                                            <table class="table mt-2">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Skill</th>
-                                                        <th scope="col">Description</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for skill in sub.skills %}
-                                                        <tr>
-                                                            <td class="fw-semibold">{{ skill.title }}</td>
-                                                            <td>{{ skill.description }}</td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        {% else %}
-                                            <p class="text-muted">No skills available.</p>
-                                        {% endif %}
+                            <h2 id="header-{{ competency_domain.slug }}"
+                                class="card-title text-primary">{{ domain.name }}</h2>
+                            <p class="card-text">{{ domain.description }}</p>
+                            {% with competencies=domain.competency_set.all %}
+                                <p class="card-text">
+                                    <span class="badge bg-secondary me-1">{{ competencies|length }} Competencies</span>
+                                </p>
+                                {% for competency in competencies %}
+                                    <div class="card rounded-1 mt-5">
+                                        <div class="card-body">
+                                            <h5 id="header-{{ competency_domain.slug }}-{{ competency.slug }}"
+                                                class="card-title d-flex align-items-center">
+                                                <span class="me-2">{{ competency.name }}</span>
+                                            </h5>
+                                            {% if competency.description %}<p class="card-text">{{ competency.description }}</p>{% endif %}
+                                            {% with skills=competency.skill_set.all %}
+                                                {% if skills %}
+                                                    <table class="table mt-2">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Skill</th>
+                                                                <th scope="col">Description</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for skill in skills %}
+                                                                <tr>
+                                                                    <td class="fw-semibold">{{ skill.name }}</td>
+                                                                    <td>{{ skill.description }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                {% else %}
+                                                    <p class="text-muted">No skills available.</p>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
                                     </div>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            {% endwith %}
                         </div>
                     </section>
-                {% endwith %}
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
-    <!-- Sidebar toggle button -->
     <button class="d-lg-none btn btn-sm fs-sm btn-primary w-100 rounded-0 fixed-bottom"
             type="button"
             data-bs-toggle="offcanvas"
