@@ -43,12 +43,14 @@ def test_slugged_model(mocker) -> None:
     # Test save method calls validate_unique to auto-generate slug
     mock_save = mocker.patch.object(NamedModel, "save", autospec=True)
     mock_val_unique = mocker.patch.object(NamedModel, "validate_unique", autospec=True)
+    mock_clean_fields = mocker.patch.object(NamedModel, "clean_fields", autospec=True)
     instance.save()
     assert instance.slug == "test-name"
     mock_save.assert_called_once()
     mock_val_unique.assert_called_once_with(
         instance, exclude=["id", "name", "description"]
     )
+    mock_clean_fields.assert_called_once_with(instance, exclude="slug")
 
 
 @pytest.mark.django_db
@@ -143,6 +145,12 @@ def test_learning_resource_model(
     assert learning_resource.url == "https://example.com/resource"
     assert learning_resource.provider == provider
 
+    learning_resource.language = "invalid-lang"
+    with pytest.raises(
+        ValidationError, match=r"Value 'invalid-lang' is not a valid choice."
+    ):
+        learning_resource.save()
+
 
 @pytest.mark.django_db
 def test_tool_model(tool: Tool, learning_resource: LearningResource) -> None:
@@ -154,3 +162,9 @@ def test_tool_model(tool: Tool, learning_resource: LearningResource) -> None:
     assert tool.kind == Tool.Kind.TOOL
     assert tool.url == "https://example.com/tool"
     assert learning_resource in tool.learning_resources.all()
+
+    tool.kind = "invalid-kind"
+    with pytest.raises(
+        ValidationError, match=r"Value 'invalid-kind' is not a valid choice."
+    ):
+        tool.save()

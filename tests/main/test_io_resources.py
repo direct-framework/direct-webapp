@@ -406,7 +406,7 @@ class TestToolResource:
                 "tool",
                 "Updated Tool",
                 "Updated description",
-                "behaviour",
+                "methodology",
                 "https://example.com/updated",
                 "learning-resource",
             ]
@@ -417,7 +417,7 @@ class TestToolResource:
         assert not result.has_errors()
         tool.refresh_from_db()
         assert tool.name == "Updated Tool"
-        assert tool.kind == "behaviour"
+        assert tool.kind == "methodology"
 
 
 @pytest.mark.django_db
