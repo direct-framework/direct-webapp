@@ -155,8 +155,8 @@ class SkillResource(resources.ModelResource):
     )
     tools = fields.Field(
         "tools",
-        column_name="tools_languages_methods_behaviours",
-        widget=SluggedM2MWidget(Tool, "tools"),
+        column_name="tools_languages_methodologies",
+        widget=SluggedM2MWidget(Tool, "tools_languages_methodologies"),
     )
     learning_resources = fields.Field(
         "learning_resources",
