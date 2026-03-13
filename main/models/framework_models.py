@@ -54,6 +54,7 @@ class SluggedModel(NamedModel):
 
     def save(self, **kwargs: Any) -> None:
         """Override save method to auto-generate slug from name if not provided."""
+        self.clean_fields(exclude="slug")
         if not self.slug:
             all_fields = [f.name for f in self._meta.get_fields()]
             all_fields.remove("slug")
@@ -105,21 +106,20 @@ class LearningResource(SluggedModel):
 
 
 class Tool(SluggedModel):
-    """Model for tools and behaviours."""
+    """Model for tools, languages and methodologies."""
 
     class Meta:
         """Meta options for Tool model."""
 
-        verbose_name = _("Tool or Behaviour")
-        verbose_name_plural = _("Tools and Behaviours")
+        verbose_name = _("Tool, Language or Methodology")
+        verbose_name_plural = _("Tools, Languages and Methodologies")
 
     class Kind(models.TextChoices):
         """Enumeration of Kind choices."""
 
         TOOL = "tool", "Tool"
-        METHODOLOGY = "methodology", "Methodology"
-        BEHAVIOUR = "behaviour", "Behaviour"
         LANGUAGE = "language", "Language"
+        METHODOLOGY = "methodology", "Methodology"
 
     kind = models.CharField(max_length=12, choices=Kind, default=Kind.TOOL)
     url = models.URLField(max_length=500, blank=True, null=True)
