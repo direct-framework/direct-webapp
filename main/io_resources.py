@@ -36,7 +36,7 @@ class SluggedFKWidget(ForeignKeyWidget):
     ) -> Any:
         """Overwrite the clean method so that it raises and error on missing objects."""
         try:
-            return super().clean(value)
+            return super().clean(value, row=row, **kwargs)
         except ObjectDoesNotExist as e:
             raise ValidationError({self.column_name: _(force_str(e))})
 
@@ -54,8 +54,11 @@ class SluggedM2MWidget(ManyToManyWidget):
     def clean(
         self, value: str, row: Mapping[str, Any] | None = None, **kwargs: Any
     ) -> Any:
-        """Overwrite the clean method so that it raises and error on missing objects."""
-        queryset = super().clean(value)
+        """Overwrite the clean method so that it raises and error on missing objects.
+
+        This does not prevent the instance from being saved if dry_run=False on import!
+        """
+        queryset = super().clean(value, row=row, **kwargs)
         slugs = set(filter(None, value.split(self.separator)))
         if queryset.count() == len(slugs):
             return queryset

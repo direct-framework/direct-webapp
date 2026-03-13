@@ -727,6 +727,14 @@ class TestResourceWidgets:
         competency = Competency.objects.get(slug="test-comp")
         assert competency.competency_domain == competency_domain
 
+        # Test with invalid slug
+        dataset.append(["invalid-comp", "Invalid", "Test description", "not-a-slug"])
+
+        result = resource.import_data(dataset, dry_run=False)
+
+        assert result.has_validation_errors()
+        assert not Competency.objects.filter(slug="invalid-comp").exists()
+
     def test_slugged_m2m_widget(
         self, tool: Tool, learning_resource: LearningResource, provider: Provider
     ):
@@ -768,3 +776,22 @@ class TestResourceWidgets:
         slugs = [lr.slug for lr in tool.learning_resources.all()]
         assert "learning-resource" in slugs
         assert "second-resource" in slugs
+
+        # Test with invalid slug
+        dataset.append(
+            [
+                "invalid-tool",
+                "Invalid Tool",
+                "Tool description",
+                "tool",
+                "",
+                "learning-resource|not-a-slug",
+            ]
+        )
+
+        result = resource.import_data(dataset, dry_run=False)
+
+        assert result.has_validation_errors()
+
+        # The Tool object is still saved! We can get around this
+        assert Tool.objects.filter(slug="invalid-tool").exists()
