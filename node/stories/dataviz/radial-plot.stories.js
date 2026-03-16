@@ -1,7 +1,7 @@
 import { RadialBarChart } from '../../src/js/dataviz/radial-plot'
 import { generateRandomData } from '../../src/js/dataviz/mock-data'
 import { levels as defaultLevels } from '../../src/js/dataviz/defaults'
-import '../src/scss/dataviz.scss'
+import '../../src/scss/dataviz.scss'
 
 export default {
   title: 'Dataviz/radial-plot',
