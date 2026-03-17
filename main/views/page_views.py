@@ -9,11 +9,11 @@ from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
-from ..models import CompetencyDomain, SkillLevel
+from ..models import CompetencyDomain, Skill, SkillLevel, Tool
 
 logger = logging.getLogger(__name__)
 
@@ -200,4 +200,40 @@ class CompetenciesPageView(TemplateView):
         ).all()
 
         context["domains"] = domains
+        return context
+
+
+class SkillPageView(TemplateView):
+    """View that renders a single skill page."""
+
+    template_name = "main/pages/skill.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add the selected skill and related data to the template context."""
+        context = super().get_context_data(**kwargs)
+
+        slug = self.kwargs["slug"]
+        skill = get_object_or_404(
+            Skill.objects.select_related(
+                "competency",
+                "competency__competency_domain",
+            ).prefetch_related(
+                "related_skills",
+                "learning_resources__provider",
+                "tools",
+            ),
+            slug=slug,
+        )
+
+        tools_qs = skill.tools.all().order_by("name")
+        context["skill"] = skill
+        context["related_skills"] = skill.related_skills.all().order_by("name")
+        context["learning_resources"] = skill.learning_resources.all().order_by("name")
+        context["tools"] = tools_qs.filter(kind=Tool.Kind.TOOL)
+        context["languages"] = tools_qs.filter(kind=Tool.Kind.LANGUAGE)
+        context["methodologies"] = tools_qs.filter(kind=Tool.Kind.METHODOLOGY)
+
+        # Current model has no Behaviour kind; keep key for template contract.
+        context["behaviours"] = []
+
         return context
