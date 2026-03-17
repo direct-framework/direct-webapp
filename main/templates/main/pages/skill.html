@@ -14,11 +14,6 @@
             <div class="col-lg-9 col-xl-8">
                 <h1 class="pb-2 pb-lg-3">{{ skill.name }}</h1>
                 <p class="fs-lg mb-4">{{ skill.description }}</p>
-                <p class="mb-4 text-muted">
-                    Competency:
-                    {{ skill.competency.name }}
-                    ({{ skill.competency.competency_domain.name }})
-                </p>
                 {% if related_skills %}
                     <h2 class="h4 mt-5">Related skills</h2>
                     <ul>
