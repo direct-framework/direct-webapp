@@ -19,8 +19,8 @@
                     {{ skill.competency.name }}
                     ({{ skill.competency.competency_domain.name }})
                 </p>
-                <h2 class="h4 mt-5">Related skills</h2>
                 {% if related_skills %}
+                    <h2 class="h4 mt-5">Related skills</h2>
                     <ul>
                         {% for related in related_skills %}
                             <li>
@@ -28,11 +28,9 @@
                             </li>
                         {% endfor %}
                     </ul>
-                {% else %}
-                    <p class="text-muted">No related skills listed.</p>
                 {% endif %}
-                <h2 class="h4 mt-5">Learning resources</h2>
                 {% if learning_resources %}
+                    <h2 class="h4 mt-5">Learning resources</h2>
                     <ul>
                         {% for resource in learning_resources %}
                             <li>
@@ -45,8 +43,6 @@
                             </li>
                         {% endfor %}
                     </ul>
-                {% else %}
-                    <p class="text-muted">No learning resources listed.</p>
                 {% endif %}
                 {% if tools %}
                     <h2 class="h4 mt-5">Tools</h2>
