@@ -29,5 +29,5 @@ urlpatterns = [
         views.CompetenciesPageView.as_view(),
         name="competencies",
     ),
-    path("skills/<str:slug>/", views.SkillPageView.as_view(), name="skill_detail"),
+    path("skills/<slug:slug>/", views.SkillPageView.as_view(), name="skill_detail"),
 ]
