@@ -233,7 +233,6 @@ class SkillPageView(TemplateView):
         context["languages"] = tools_qs.filter(kind=Tool.Kind.LANGUAGE)
         context["methodologies"] = tools_qs.filter(kind=Tool.Kind.METHODOLOGY)
 
-        # Current model has no Behaviour kind; keep key for template contract.
         context["behaviours"] = []
 
         return context
