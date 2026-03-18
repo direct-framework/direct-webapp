@@ -440,7 +440,7 @@ class TestSkillResource:
         assert dataset["description"][0] == "A skill"
         assert dataset["slug"][0] == "skill"
         assert dataset["competency"][0] == "competency"
-        assert dataset["tools_languages_methods_behaviours"][0] == "tool"
+        assert dataset["tools_languages_methodologies"][0] == "tool"
         assert dataset["learning_resources"][0] == "learning-resource"
         assert "id" not in dataset.headers
 
@@ -478,7 +478,7 @@ class TestSkillResource:
         dataset = resource.export(Skill.objects.all())
 
         assert len(dataset) == 1
-        tools = dataset["tools_languages_methods_behaviours"][0].split("|")
+        tools = dataset["tools_languages_methodologies"][0].split("|")
         assert len(tools) == 2
         assert "tool" in tools
         assert "second-tool" in tools
@@ -494,7 +494,7 @@ class TestSkillResource:
             "name",
             "description",
             "competency",
-            "tools_languages_methods_behaviours",
+            "tools_languages_methodologies",
             "learning_resources",
             "related_skills",
         ]
@@ -551,7 +551,7 @@ class TestSkillResource:
             "name",
             "description",
             "competency",
-            "tools_languages_methods_behaviours",
+            "tools_languages_methodologies",
             "learning_resources",
             "related_skills",
         ]
@@ -589,7 +589,7 @@ class TestSkillResource:
             "name",
             "description",
             "competency",
-            "tools_languages_methods_behaviours",
+            "tools_languages_methodologies",
             "learning_resources",
             "related_skills",
         ]
@@ -627,7 +627,7 @@ class TestSkillResource:
             "name",
             "description",
             "competency",
-            "tools_languages_methods_behaviours",
+            "tools_languages_methodologies",
             "learning_resources",
             "related_skills",
         ]
