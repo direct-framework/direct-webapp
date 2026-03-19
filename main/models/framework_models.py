@@ -25,6 +25,11 @@ class NamedModel(models.Model):
         """Return the name of the model instance."""
         return self.name
 
+    def save(self, **kwargs: Any) -> None:
+        """Override save method to run a full validation before saving."""
+        self.full_clean()
+        super().save(**kwargs)
+
 
 class SluggedModel(NamedModel):
     """Abstract base model with slug field."""
@@ -54,11 +59,11 @@ class SluggedModel(NamedModel):
 
     def save(self, **kwargs: Any) -> None:
         """Override save method to auto-generate slug from name if not provided."""
-        self.clean_fields(exclude="slug")
         if not self.slug:
             all_fields = [f.name for f in self._meta.get_fields()]
             all_fields.remove("slug")
             self.validate_unique(exclude=all_fields)
+
         super().save(**kwargs)
 
 
