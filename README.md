@@ -215,7 +215,7 @@ npm run styles:expanded
       <td align="center" valign="top" width="14.28%"><a href="https://tbyhdgs.info"><img src="https://avatars.githubusercontent.com/u/9694524?v=4?s=100" width="100px;" alt="Toby Hodges"/><br /><sub><b>Toby Hodges</b></sub></a><br /><a href="#code-tobyhodges" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/GeoDaoyu"><img src="https://avatars.githubusercontent.com/u/34641603?v=4?s=100" width="100px;" alt="geodaoyu"/><br /><sub><b>geodaoyu</b></sub></a><br /><a href="#code-geodaoyu" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/cc-a"><img src="https://avatars.githubusercontent.com/u/16690296?v=4?s=100" width="100px;" alt="Christopher Cave-Ayland"/><br /><sub><b>Christopher Cave-Ayland</b></sub></a><br /><a href="#maintenance-cc-a" title="Maintenance">🚧</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Sahil590"><img src="https://avatars.githubusercontent.com/u/56438860?v=4?s=100" width="100px;" alt="Sahil Raja"/><br /><sub><b>Sahil Raja</b></sub></a><br /><a href="#maintenance-sahil590" title="Maintenance">🚧</a> <a href="#test-sahil590" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Sahil590"><img src="https://avatars.githubusercontent.com/u/56438860?v=4?s=100" width="100px;" alt="Sahil Raja"/><br /><sub><b>Sahil Raja</b></sub></a><br /><a href="#maintenance-sahil590" title="Maintenance">🚧</a> <a href="#test-sahil590" title="Tests">⚠️</a> <a href="#code-sahil590" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
