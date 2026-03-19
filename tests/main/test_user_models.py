@@ -16,7 +16,10 @@ def test_user_skill_model(
     assert user_skill.skill_level == skill_level
 
     new_skill_level = SkillLevel.objects.create(
-        level=2, name="Intermediate", description="Intermediate level"
+        name="Intermediate",
+        description="Intermediate level",
+        level=2,
+        short_description="Intermediate",
     )
 
     new_user_skill = UserSkill(user=user, skill=skill, skill_level=new_skill_level)
