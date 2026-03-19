@@ -2,6 +2,7 @@
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.db import models
 
 from main.models import (
     Competency,
@@ -16,7 +17,7 @@ from main.models import (
 )
 
 
-def test_named_model() -> None:
+def test_named_model(mocker) -> None:
     """Test the abstract NamedModel provides correct behaviour to children."""
 
     class TestModel(NamedModel):
@@ -26,6 +27,13 @@ def test_named_model() -> None:
     instance = TestModel(name="Test Name", description="Test Description")
     assert instance.name == str(instance) == "Test Name"
     assert instance.description == "Test Description"
+
+    # Test save method calls clean_fields to validate the data
+    mock_save = mocker.patch.object(models.Model, "save", autospec=True)
+    mock_full_clean = mocker.patch.object(models.Model, "full_clean", autospec=True)
+    instance.save()
+    mock_save.assert_called_once()
+    mock_full_clean.assert_called_once_with(instance)
 
 
 def test_slugged_model(mocker) -> None:
@@ -43,14 +51,12 @@ def test_slugged_model(mocker) -> None:
     # Test save method calls validate_unique to auto-generate slug
     mock_save = mocker.patch.object(NamedModel, "save", autospec=True)
     mock_val_unique = mocker.patch.object(NamedModel, "validate_unique", autospec=True)
-    mock_clean_fields = mocker.patch.object(NamedModel, "clean_fields", autospec=True)
     instance.save()
     assert instance.slug == "test-name"
     mock_save.assert_called_once()
     mock_val_unique.assert_called_once_with(
         instance, exclude=["id", "name", "description"]
     )
-    mock_clean_fields.assert_called_once_with(instance, exclude="slug")
 
 
 @pytest.mark.django_db

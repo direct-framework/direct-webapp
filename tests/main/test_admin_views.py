@@ -156,6 +156,7 @@ class TestSkillLevelAdmin(AdminMixin):
         "name": "Test SkillLevel",
         "description": "Test Description",
         "level": 1,
+        "short_description": "Short",
     }
 
 
