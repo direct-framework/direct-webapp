@@ -41,6 +41,7 @@ repos:
           - crispy-bootstrap5
           - django-import-export
           - types-django-import-export
+          - django-multiselectfield
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.48.0
     hooks:

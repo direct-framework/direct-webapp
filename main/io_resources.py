@@ -4,11 +4,12 @@ from collections.abc import Mapping
 from typing import Any
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import Model
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from import_export import fields, resources
 from import_export.results import Result
-from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
+from import_export.widgets import CharWidget, ForeignKeyWidget, ManyToManyWidget
 from tablib import Dataset
 
 from .models import (
@@ -83,6 +84,28 @@ class SluggedM2MWidget(ManyToManyWidget):
         )
 
 
+class MultipleChoiceWidget(CharWidget):
+    """A CharWidget that allows for multiple values to work with MultiSelectField."""
+
+    def __init__(self, separator: str = "|", **kwargs: Any) -> None:
+        """Override the constructor to set a separator, defaults to `|`."""
+        self.separator = separator
+        super().__init__(**kwargs)
+
+    def clean(
+        self, value: str, row: Mapping[str, Any] | None = None, **kwargs: Any
+    ) -> str | None:
+        """Override the clean method to make the choices comma-separated.
+
+        This is required for the MultiSelectField to work.
+        """
+        return super().clean(value.replace(self.separator, ","), row, **kwargs)
+
+    def render(self, value: list, obj: Model | None = None, **kwargs: Any) -> Any:
+        """Override the render method so the correct separator is used on export."""
+        return super().render(self.separator.join(value), obj, **kwargs)
+
+
 class CompetencyDomainResource(resources.ModelResource):
     """A ModelResource to facilitate importing and exporting CompetencyDomains."""
 
@@ -128,6 +151,7 @@ class LearningResourceResource(resources.ModelResource):
     """A ModelResource to facilitate importing and exporting LearningResource."""
 
     provider = fields.Field("provider", widget=SluggedFKWidget(Provider, "provider"))
+    language = fields.Field("language", widget=MultipleChoiceWidget(separator="|"))
 
     class Meta:
         """Meta options for LearningResourceResource."""

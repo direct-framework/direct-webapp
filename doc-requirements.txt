@@ -31,6 +31,7 @@ django==6.0.2
     #   django-bootstrap5
     #   django-crispy-forms
     #   django-import-export
+    #   django-multiselectfield
     #   django-registration
     #   django-stubs-ext
 django-bootstrap5==26.2
@@ -40,6 +41,8 @@ django-crispy-forms==2.6
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
 django-import-export==4.4.0
+    # via direct_webapp (pyproject.toml)
+django-multiselectfield==1.0.1
     # via direct_webapp (pyproject.toml)
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)

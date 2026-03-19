@@ -1,5 +1,7 @@
 """Admin module for the main app."""
 
+from typing import Any
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.http import HttpRequest
@@ -101,10 +103,15 @@ class ToolInline(admin.TabularInline[Tool, LearningResource]):
 class LearningResourceAdmin(ImportExportModelAdmin[LearningResource]):
     """Admin class for The LearningResource model."""
 
-    list_display = ("name", "language", "url", "provider")
+    list_display = ("name", "get_language_display", "url", "provider")
     search_fields = ("name",)
     inlines = (ToolInline,)
     resource_classes = (LearningResourceResource,)
+
+    @admin.display(description="language", ordering="language")
+    def get_language_display(self, obj: LearningResource) -> Any:
+        """Enable displaying multiple languages in the list display."""
+        return obj.get_language_display()
 
 
 @admin.register(Tool)

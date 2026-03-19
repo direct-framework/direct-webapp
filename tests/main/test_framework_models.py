@@ -147,14 +147,12 @@ def test_learning_resource_model(
     assert learning_resource.name == str(learning_resource) == "Learning Resource"
     assert learning_resource.description == "A learning resource"
     assert learning_resource.slug == "learning-resource"
-    assert learning_resource.language == "en"
+    assert learning_resource.language == ["en"]
     assert learning_resource.url == "https://example.com/resource"
     assert learning_resource.provider == provider
 
     learning_resource.language = "invalid-lang"
-    with pytest.raises(
-        ValidationError, match=r"Value 'invalid-lang' is not a valid choice."
-    ):
+    with pytest.raises(ValidationError, match=r"invalid-lang"):
         learning_resource.save()
 
 
