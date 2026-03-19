@@ -4,7 +4,7 @@
 {% endblock title %}
 {% block breadcrumb_items %}
     <li class="breadcrumb-item">
-        <a href="{% url 'competencies' %}">Competencies</a>
+        <a href="{% url 'competencies' %}">Framework</a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">{{ skill.name }}</li>
 {% endblock breadcrumb_items %}
@@ -55,12 +55,6 @@
                     <h2 class="h4 mt-5">Methodologies</h2>
                     <ul>
                         {% for item in methodologies %}<li>{{ item.name }}</li>{% endfor %}
-                    </ul>
-                {% endif %}
-                {% if behaviours %}
-                    <h2 class="h4 mt-5">Behaviours</h2>
-                    <ul>
-                        {% for item in behaviours %}<li>{{ item.name }}</li>{% endfor %}
                     </ul>
                 {% endif %}
             </div>

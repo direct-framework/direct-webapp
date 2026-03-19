@@ -233,6 +233,4 @@ class SkillPageView(TemplateView):
         context["languages"] = tools_qs.filter(kind=Tool.Kind.LANGUAGE)
         context["methodologies"] = tools_qs.filter(kind=Tool.Kind.METHODOLOGY)
 
-        context["behaviours"] = []
-
         return context
