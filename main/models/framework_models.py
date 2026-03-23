@@ -102,7 +102,7 @@ class Provider(SluggedModel):
 class LearningResource(SluggedModel):
     """Model for learning resources."""
 
-    language = MultiSelectField(max_length=7, choices=LANGUAGES, default="en")
+    language = MultiSelectField(max_length=7, choices=LANGUAGES, default=["en"])
     url = models.URLField(max_length=500, blank=True, null=True)
     provider = models.ForeignKey(
         Provider, on_delete=models.SET_NULL, null=True, blank=True
