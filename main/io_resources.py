@@ -215,7 +215,7 @@ class SkillResource(resources.ModelResource):
                     # Update the diff display in the admin page
                     diff = self.get_diff_class()(self, Skill(), True)  # type: ignore[arg-type]
                     diff.compare_with(self, skill)
-                    col_idx = dataset.headers.index("related_skills")
+                    col_idx = result.diff_headers.index("related_skills")
                     result.rows[i - 1].diff[col_idx] = diff.as_html()[col_idx]  # type: ignore[index]
 
         super().after_import(dataset, result, **kwargs)
