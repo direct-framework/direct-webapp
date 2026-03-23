@@ -18,7 +18,7 @@ class TestFrameworkView:
         """Test the GET returns the dictionary returned by `export_framework`."""
         framework_dict = {"key": [{"sub-key": "value"}]}
         export_mock = mocker.patch(
-            "main.io_resources.export_framework", return_value=framework_dict
+            "main.views.data_views.export_framework", return_value=framework_dict
         )
 
         response = client.get(self._get_url())
