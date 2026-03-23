@@ -74,6 +74,10 @@ module = ["tablib.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
+module = ["multiselectfield.*"]
+follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
 module = ["main.io_resources"]
 disallow_any_generics = false
 
