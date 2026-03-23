@@ -29,4 +29,9 @@ urlpatterns = [
         views.CompetenciesPageView.as_view(),
         name="competencies",
     ),
+    path(
+        "framework-json/",
+        views.FrameworkView.as_view(),
+        name="framework_json",
+    ),
 ]
