@@ -7,6 +7,7 @@ from main.io_resources import (
     CompetencyDomainResource,
     CompetencyResource,
     LearningResourceResource,
+    MultipleChoiceWidget,
     ProviderResource,
     SkillLevelResource,
     SkillResource,
@@ -258,7 +259,7 @@ class TestLearningResourceResource:
                 "Updated Resource",
                 "Updated description",
                 "provider",
-                "fr",
+                "en|fr",
                 "https://example.com/updated",
             ]
         )
@@ -268,7 +269,7 @@ class TestLearningResourceResource:
         assert not result.has_errors()
         learning_resource.refresh_from_db()
         assert learning_resource.name == "Updated Resource"
-        assert learning_resource.language == "fr"
+        assert set(learning_resource.language) == {"en", "fr"}
         assert learning_resource.url == "https://example.com/updated"
 
 
@@ -820,3 +821,11 @@ class TestResourceWidgets:
 
         # The Tool object is still saved! We can get around this
         assert Tool.objects.filter(slug="invalid-tool").exists()
+
+    def test_multiple_choice_widget(self):
+        """Test that the MultipleChoiceWidget operates as expected."""
+        mc_widget = MultipleChoiceWidget()
+
+        assert mc_widget.separator == "|"
+        assert mc_widget.clean("en|fr") == "en,fr"
+        assert mc_widget.render(["en", "fr"]) == "en|fr"

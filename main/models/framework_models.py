@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from multiselectfield import MultiSelectField
 
 
 class NamedModel(models.Model):
@@ -101,7 +102,7 @@ class Provider(SluggedModel):
 class LearningResource(SluggedModel):
     """Model for learning resources."""
 
-    language = models.CharField(max_length=7, choices=LANGUAGES, default="en")
+    language = MultiSelectField(max_length=7, choices=LANGUAGES, default=["en"])
     url = models.URLField(max_length=500, blank=True, null=True)
     provider = models.ForeignKey(
         Provider, on_delete=models.SET_NULL, null=True, blank=True
