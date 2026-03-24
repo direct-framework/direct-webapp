@@ -34,7 +34,7 @@ dev = [
     "types-django-import-export",
 ]
 doc = [
-    "mkdocs",
+    "mkdocs<2",
     "mkdocstrings",
     "mkdocstrings-python",
     "mkdocs-material",
