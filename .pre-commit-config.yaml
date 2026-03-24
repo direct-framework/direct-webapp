@@ -40,6 +40,7 @@ repos:
           - django-crispy-forms
           - crispy-bootstrap5
           - django-import-export
+          - types-django-import-export
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.48.0
     hooks:

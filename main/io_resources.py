@@ -7,7 +7,9 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from import_export import fields, resources
+from import_export.results import Result
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
+from tablib import Dataset
 
 from .models import (
     Competency,
@@ -45,10 +47,15 @@ class SluggedM2MWidget(ManyToManyWidget):
     """A ManyToManyWidget that always uses `slug` as the field, separated by `|`."""
 
     def __init__(
-        self, model: type[SluggedModel], column_name: str, **kwargs: Any
+        self,
+        model: type[SluggedModel],
+        column_name: str,
+        ignore_missing: bool = False,
+        **kwargs: Any,
     ) -> None:
         """Override the constructor to set the field to slug and the separator to |."""
         self.column_name = column_name
+        self.ignore_missing = ignore_missing
         super().__init__(model, field="slug", separator="|", **kwargs)
 
     def clean(
@@ -60,12 +67,13 @@ class SluggedM2MWidget(ManyToManyWidget):
         """
         queryset = super().clean(value, row=row, **kwargs)
         slugs = set(filter(None, value.split(self.separator)))
-        if queryset.count() == len(slugs):
+        if queryset.count() == len(slugs) or self.ignore_missing:
             return queryset
 
         missing = slugs.symmetric_difference(
             queryset.values_list(self.field, flat=True)
         )
+
         raise ValidationError(
             {
                 self.column_name: _(
@@ -163,7 +171,8 @@ class SkillResource(resources.ModelResource):
         widget=SluggedM2MWidget(LearningResource, "learning_resources"),
     )
     related_skills = fields.Field(
-        "related_skills", widget=SluggedM2MWidget(Skill, "related_skills")
+        "related_skills",
+        widget=SluggedM2MWidget(Skill, "related_skills", ignore_missing=True),
     )
 
     class Meta:
@@ -173,6 +182,43 @@ class SkillResource(resources.ModelResource):
         skip_unchanged = True
         import_id_fields = ("slug",)
         exclude = ("id",)
+
+    def after_import(self, dataset: Dataset, result: Result, **kwargs: Any) -> None:
+        """Override the after_import method to ensure that related_skills are linked.
+
+        This approach was inspired by
+        https://github.com/django-import-export/django-import-export/issues/397#issuecomment-1034928530
+        """
+        for i, skill_dict in enumerate(dataset.dict, 1):
+            skill = Skill.objects.get(slug=skill_dict["slug"])
+            related_skills = filter(
+                None, skill_dict.get("related_skills", "").split("|")
+            )
+            for related_skill_slug in related_skills:
+                try:
+                    related_skill = Skill.objects.get(slug=related_skill_slug)
+                except Skill.DoesNotExist:
+                    result.append_invalid_row(
+                        i,
+                        skill_dict,
+                        ValidationError(
+                            {
+                                "related_skills": _(
+                                    f"The skill does not exist: {related_skill_slug}"
+                                )
+                            }
+                        ),
+                    )
+                skill.related_skills.add(related_skill)
+
+                if result.rows[i - 1].import_type == "new":
+                    # Update the diff display in the admin page
+                    diff = self.get_diff_class()(self, Skill(), True)  # type: ignore[arg-type]
+                    diff.compare_with(self, skill)
+                    col_idx = result.diff_headers.index("related_skills")
+                    result.rows[i - 1].diff[col_idx] = diff.as_html()[col_idx]  # type: ignore[index]
+
+        super().after_import(dataset, result, **kwargs)
 
 
 class SkillLevelResource(resources.ModelResource):

@@ -601,16 +601,41 @@ class TestSkillResource:
                 "competency",
                 "",
                 "",
-                "skill",
+                "skill|another-skill",
+            ]
+        )
+        dataset.append(
+            [
+                "another-skill",
+                "Another Skill",
+                "Another skill",
+                "competency",
+                "",
+                "",
+                "",
             ]
         )
 
         result = resource.import_data(dataset, dry_run=False)
 
-        assert not result.has_errors()
+        assert not result.has_validation_errors()
         imported_skill = Skill.objects.get(slug="imported-skill")
-        assert imported_skill.related_skills.count() == 1
+        assert imported_skill.related_skills.count() == 2
         assert imported_skill.related_skills.first() == skill
+
+        dataset.append(
+            [
+                "another-skill",
+                "Another Skill",
+                "Another skill",
+                "competency",
+                "",
+                "",
+                "nope",
+            ]
+        )
+        result = resource.import_data(dataset, dry_run=False)
+        assert result.has_validation_errors()
 
     def test_import_skill_update_existing(
         self,
