@@ -9,11 +9,11 @@ from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
-from ..models import SkillLevel
+from ..models import CompetencyDomain, Skill, SkillLevel, Tool
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +88,13 @@ class SkillLevelsPageView(TemplateView):
     """View that renders the skill levels page."""
 
     template_name = "main/pages/skill-levels.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add skill levels to the template context."""
+        context = super().get_context_data(**kwargs)
+        skill_levels = SkillLevel.objects.all().order_by("level")
+        context["skill_levels"] = skill_levels
+        return context
 
 
 class TrainingPageView(TemplateView):
@@ -187,15 +194,43 @@ class CompetenciesPageView(TemplateView):
     def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
         """Add the competencies framework data to the template context."""
         context = super().get_context_data(**kwargs)
-        json_path = Path("data/skills-competencies-framework.json")
-        with open(json_path) as f:
-            framework = json.load(f)
 
-        for category in framework.get("categories", []):
-            category["competency_count"] = len(category.get("subcategories", []))
-            category["skill_count"] = sum(
-                len(sub.get("skills", [])) for sub in category.get("subcategories", [])
-            )
+        domains = CompetencyDomain.objects.prefetch_related(
+            "competency_set__skill_set"
+        ).all()
 
-        context["framework"] = framework
+        context["domains"] = domains
+        return context
+
+
+class SkillPageView(TemplateView):
+    """View that renders a single skill page."""
+
+    template_name = "main/pages/skill.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add the selected skill and related data to the template context."""
+        context = super().get_context_data(**kwargs)
+
+        slug = self.kwargs["slug"]
+        skill = get_object_or_404(
+            Skill.objects.select_related(
+                "competency",
+                "competency__competency_domain",
+            ).prefetch_related(
+                "related_skills",
+                "learning_resources__provider",
+                "tools",
+            ),
+            slug=slug,
+        )
+
+        tools_qs = skill.tools.all().order_by("name")
+        context["skill"] = skill
+        context["related_skills"] = skill.related_skills.all().order_by("name")
+        context["learning_resources"] = skill.learning_resources.all().order_by("name")
+        context["tools"] = tools_qs.filter(kind=Tool.Kind.TOOL)
+        context["languages"] = tools_qs.filter(kind=Tool.Kind.LANGUAGE)
+        context["methodologies"] = tools_qs.filter(kind=Tool.Kind.METHODOLOGY)
+
         return context

@@ -3,19 +3,14 @@
 {% block title %}
     DIRECT Framework - Skill Levels
 {% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'competencies' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Skill Levels</li>
+{% endblock breadcrumb_items %}
 {% block content %}
-    <section id="about">
-        <nav aria-label="breadcrumb">
-            <ol class="pt-lg-2 pb-lg-3 pb-1 breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="{% url 'index' %}">Home</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{% url 'competencies' %}">Framework</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Skill Levels</li>
-            </ol>
-        </nav>
+    <section id="skill-levels">
         <div class="row">
             <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
                 <h1 class="pb-2 pb-lg-3">Skill levels</h1>
@@ -27,85 +22,28 @@
                     <thead class="table-light">
                         <tr>
                             <th scope="col" style="width: 20%;">Skill Level</th>
+                            <th scope="col" style="width: 30%;">Short Description</th>
                             <th scope="col">Description</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <span class="text-muted d-block">Level 0</span>
-                                <strong>None</strong>
-                            </td>
-                            <td>You do not possess this skill or it is not applicable to your role.</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="text-muted d-block">Level 1</span>
-                                <strong>Fundamental Awareness</strong>
-                            </td>
-                            <td>
-                                <ul>
-                                    <li>Understand basic concepts and techniques</li>
-                                    <li>Focus on learning and remembering</li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="text-muted d-block">Level 2</span>
-                                <strong>Novice</strong>
-                            </td>
-                            <td>
-                                <ul>
-                                    <li>Gain experience in classroom or on-the-job</li>
-                                    <li>Understand terminology, principles, and concepts</li>
-                                    <li>Use reference and resource materials</li>
-                                    <li>Focus on understanding and on-the-job development</li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="text-muted d-block">Level 3</span>
-                                <strong>Intermediate Practitioner</strong>
-                            </td>
-                            <td>
-                                <ul>
-                                    <li>Perform tasks with minimal guidance</li>
-                                    <li>Occasionally apply skill independently</li>
-                                    <li>Understand application and implications of changes</li>
-                                    <li>Focus on applying known solutions and enhancing knowledge</li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="text-muted d-block">Level 4</span>
-                                <strong>Advanced Practitioner</strong>
-                            </td>
-                            <td>
-                                <ul>
-                                    <li>Perform skill independently and consistently</li>
-                                    <li>Mentor others and translate complex concepts</li>
-                                    <li>Contribute to reference materials</li>
-                                    <li>Focus on designing solutions and evaluating impact</li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="text-muted d-block">Level 5</span>
-                                <strong>Expert</strong>
-                            </td>
-                            <td>
-                                <ul>
-                                    <li>Provide guidance and troubleshoot complex problems</li>
-                                    <li>Recognised authority within and outside the organisation</li>
-                                    <li>Create or lead development of reference materials</li>
-                                    <li>Focus on strategy and shaping organisational or national policies</li>
-                                </ul>
-                            </td>
-                        </tr>
+                        {% for skill_level in skill_levels %}
+                            <tr>
+                                <td>
+                                    <span class="text-muted d-block">Level {{ skill_level.level }}</span>
+                                    <strong>{{ skill_level.name }}</strong>
+                                </td>
+                                <td>
+                                    {{ skill_level.short_description }}
+                                    {% if skill_level.focus %}
+                                        <br>
+                                        <br>
+                                        <strong>Focus:</strong> {{ skill_level.focus }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ skill_level.description }}</td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

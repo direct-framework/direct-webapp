@@ -3,17 +3,12 @@
 from collections.abc import Collection
 from typing import Any
 
-from django.conf import settings
 from django.conf.global_settings import LANGUAGES
-from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-
-
-class User(AbstractUser):
-    """Custom user model for this project."""
+from multiselectfield import MultiSelectField
 
 
 class NamedModel(models.Model):
@@ -30,6 +25,11 @@ class NamedModel(models.Model):
     def __str__(self) -> str:
         """Return the name of the model instance."""
         return self.name
+
+    def save(self, **kwargs: Any) -> None:
+        """Override save method to run a full validation before saving."""
+        self.full_clean()
+        super().save(**kwargs)
 
 
 class SluggedModel(NamedModel):
@@ -64,6 +64,7 @@ class SluggedModel(NamedModel):
             all_fields = [f.name for f in self._meta.get_fields()]
             all_fields.remove("slug")
             self.validate_unique(exclude=all_fields)
+
         super().save(**kwargs)
 
 
@@ -101,7 +102,7 @@ class Provider(SluggedModel):
 class LearningResource(SluggedModel):
     """Model for learning resources."""
 
-    language = models.CharField(max_length=7, choices=LANGUAGES, default="en")
+    language = MultiSelectField(max_length=7, choices=LANGUAGES, default=["en"])
     url = models.URLField(max_length=500, blank=True, null=True)
     provider = models.ForeignKey(
         Provider, on_delete=models.SET_NULL, null=True, blank=True
@@ -111,23 +112,22 @@ class LearningResource(SluggedModel):
 
 
 class Tool(SluggedModel):
-    """Model for tools and behaviours."""
+    """Model for tools, languages and methodologies."""
 
     class Meta:
         """Meta options for Tool model."""
 
-        verbose_name = _("Tool or Behaviour")
-        verbose_name_plural = _("Tools and Behaviours")
+        verbose_name = _("Tool, Language or Methodology")
+        verbose_name_plural = _("Tools, Languages and Methodologies")
 
     class Kind(models.TextChoices):
         """Enumeration of Kind choices."""
 
-        TOOL = "FR", "Tool"
-        METHODOLOGY = "SO", "Methodology"
-        BEHAVIOUR = "JR", "Behaviour"
-        LANGUAGE = "SR", "Language"
+        TOOL = "tool", "Tool"
+        LANGUAGE = "language", "Language"
+        METHODOLOGY = "methodology", "Methodology"
 
-    kind = models.CharField(max_length=2, choices=Kind, default=Kind.TOOL)
+    kind = models.CharField(max_length=12, choices=Kind, default=Kind.TOOL)
     url = models.URLField(max_length=500, blank=True, null=True)
     learning_resources = models.ManyToManyField(LearningResource, blank=True)
 
@@ -155,18 +155,3 @@ class SkillLevel(NamedModel):
     level = models.PositiveSmallIntegerField(unique=True)
     short_description = models.CharField(max_length=200)
     focus = models.TextField(default="", blank=True)
-
-
-class UserSkill(models.Model):
-    """Model for mapping users to skills and skill levels."""
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-    skill_level = models.ForeignKey(SkillLevel, on_delete=models.CASCADE)
-
-    class Meta:
-        """Meta options for UserSkill model."""
-
-        constraints = (
-            models.UniqueConstraint(fields=["user", "skill"], name="unique_user_skill"),
-        )

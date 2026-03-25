@@ -3,12 +3,7 @@
 <html lang="en" data-bs-theme="light">
     <head>{% include "main/snippets/head.html" %}</head>
     <body>
-        <div class="page-loading active">
-            <div class="page-loading-inner">
-                <div class="page-spinner"></div>
-                <span>Loading...</span>
-            </div>
-        </div>
+        {% include "main/snippets/page-loading.html" %}
         <main class="page-wrapper">
             <div class="d-flex flex-column flex-lg-row position-relative h-100">
                 <div class="d-flex flex-column align-items-center w-lg-50 h-100 px-3 px-lg-5 pt-5">

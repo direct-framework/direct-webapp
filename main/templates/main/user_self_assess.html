@@ -1,4 +1,4 @@
-{% extends "main/base.html" %}
+{% extends "main/base.page.html" %}
 {% block body_class %}
     bg-secondary
 {% endblock body_class %}
@@ -7,20 +7,15 @@
 {% block title %}
     Digital Research Competencies Framework
 {% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'profile' %}">Profile</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Assess Skills</li>
+{% endblock breadcrumb_items %}
 {% block content %}
     <!-- Page container -->
-    <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
-        <nav aria-label="breadcrumb">
-            <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="{% url 'index' %}">Home</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{% url 'profile' %}">Profile</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Assess Skills</li>
-            </ol>
-        </nav>
+    <section id="self-assess" class="container">
         <div class="row pt-sm-2 pt-lg-0">
             <!-- Sidebar (offcanvas on screens < 992px) -->
             <aside class="col-lg-3">
@@ -77,7 +72,7 @@
                 </section>
             </div>
         </div>
-    </div>
+    </section>
     <!-- Sidebar toggle button -->
     <button class="d-lg-none btn btn-sm fs-sm btn-primary w-100 rounded-0 fixed-bottom"
             type="button"

@@ -7,14 +7,14 @@ This test module includes tests for main views of the app ensuring that:
 
 from http import HTTPStatus
 
+import pytest
 from bs4 import BeautifulSoup
+from django.db.models import QuerySet
 from django.urls import reverse
+from pytest_django.asserts import assertTemplateUsed
 
 from main.models import (
-    Competency,
-    CompetencyDomain,
     Skill,
-    SkillLevel,
     UserSkill,
 )
 
@@ -108,36 +108,20 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
     def _get_url(self):
         return reverse("self_assess")
 
-    def test_post(self, client, user, django_user_model):
+    @pytest.mark.django_db
+    def test_post(self, client, user, competency, skill, skill_level):
         """Test the view POST request creates new user skills and redirects."""
         client.force_login(user)
 
-        # Create test data
-        competency_domain = CompetencyDomain.objects.create(
-            name="Test Competency Domain", description="Test parent description"
-        )
-        competency = Competency.objects.create(
-            name="Test Competency",
-            description="Test competency description",
-            competency_domain=competency_domain,
-        )
-        skill1 = Skill.objects.create(
-            name="Test Skill 1",
-            description="Test skill 1 description",
-            competency=competency,
-        )
         skill2 = Skill.objects.create(
             name="Test Skill 2",
             description="Test skill 2 description",
             competency=competency,
         )
-        skill_level = SkillLevel.objects.create(
-            level=1, name="Beginner", description="Basic understanding"
-        )
 
         # Create form data for the POST request
         form_data = {
-            f"skill_{skill1.id}": skill_level.id,
+            f"skill_{skill.id}": skill_level.id,
             f"skill_{skill2.id}": skill_level.id,
         }
 
@@ -150,7 +134,7 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
 
         # Assert the skills are correctly associated
         skill_ids = set(us.skill.id for us in user_skills)
-        assert skill_ids == {skill1.id, skill2.id}
+        assert skill_ids == {skill.id, skill2.id}
 
         # Assert all user skills have the correct level
         for user_skill in user_skills:
@@ -255,27 +239,10 @@ class TestAccountOverviewView(LoginRequiredMixin):
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse("self_assess")
 
-    def test_redirects_to_skill_profile_when_skills_exist(self, client, user):
+    @pytest.mark.django_db
+    def test_redirects_to_skill_profile_when_skills_exist(self, client, user_skill):
         """Test that users with skills are redirected to their skill profile."""
-        client.force_login(user)
-
-        competency_domain = CompetencyDomain.objects.create(
-            name="Test Domain", description="Test domain description"
-        )
-        competency = Competency.objects.create(
-            name="Test Competency",
-            description="Test competency description",
-            competency_domain=competency_domain,
-        )
-        skill = Skill.objects.create(
-            name="Test Skill",
-            description="Test skill description",
-            competency=competency,
-        )
-        skill_level = SkillLevel.objects.create(
-            level=1, name="Beginner", description="Basic understanding"
-        )
-        UserSkill.objects.create(user=user, skill=skill, skill_level=skill_level)
+        client.force_login(user_skill.user)
 
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.FOUND
@@ -290,9 +257,40 @@ class TestCompetenciesPageView(TemplateOkMixin):
     def _get_url(self):
         return reverse("competencies")
 
-    def test_provides_required_context(self, client):
-        """Test that the competencies view provides the framework context."""
+    @pytest.mark.django_db
+    def test_provides_required_context(self, client, competency_domain):
+        """Test that the competencies view provides the domains context."""
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.OK
-        assert "framework" in response.context
-        assert isinstance(response.context["framework"], dict)
+        assert "domains" in response.context
+        assert isinstance(response.context["domains"], QuerySet)
+        assert response.context["domains"].first() == competency_domain
+
+
+class TestSkillPageView(TemplateOkMixin):
+    """Test suite for the SkillPageView."""
+
+    _template_name = "main/pages/skill.html"
+
+    def _get_url(self, **kwargs):
+        return reverse("skill_detail", kwargs=kwargs)
+
+    def test_template_used(self, admin_client, skill):
+        """Test the correct template is used by the GET request."""
+        with assertTemplateUsed(template_name=self._template_name):
+            response = admin_client.get(self._get_url(slug=skill.slug))
+        assert response.status_code == HTTPStatus.OK
+
+    @pytest.mark.django_db
+    def test_provides_required_context(self, client, skill):
+        """Test that the skill page view provides the skill context."""
+        response = client.get(self._get_url(slug=skill.slug))
+        assert response.status_code == HTTPStatus.OK
+        assert "skill" in response.context
+        assert response.context["skill"] == skill
+
+    @pytest.mark.django_db
+    def test_404_for_nonexistent_skill(self, client):
+        """Test that requesting a non-existent skill returns a 404."""
+        response = client.get(self._get_url(slug="nonexistent-skill"))
+        assert response.status_code == HTTPStatus.NOT_FOUND

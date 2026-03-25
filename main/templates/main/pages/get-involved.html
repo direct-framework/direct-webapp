@@ -1,14 +1,9 @@
 {% extends "main/base.page.html" %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active" aria-current="page">Get Involved</li>
+{% endblock breadcrumb_items %}
 {% block content %}
     <section id="get-involved">
-        <nav aria-label="breadcrumb">
-            <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="{% url 'index' %}">Home</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Get Involved</li>
-            </ol>
-        </nav>
         <h1 class="display-2">Get involved</h1>
         <p class="fs-lg pb-4 mb-2 mb-sm-3">
             The Digital Research Competencies Framework (Direct Framework) is a community driven, open and collaborative project.

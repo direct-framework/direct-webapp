@@ -1,9 +1,21 @@
 """Admin module for the main app."""
 
+from typing import Any
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.http import HttpRequest
+from import_export.admin import ImportExportModelAdmin
 
+from .io_resources import (
+    CompetencyDomainResource,
+    CompetencyResource,
+    LearningResourceResource,
+    ProviderResource,
+    SkillLevelResource,
+    SkillResource,
+    ToolResource,
+)
 from .models import (
     Competency,
     CompetencyDomain,
@@ -38,7 +50,7 @@ class SkillInline(admin.TabularInline[Skill, Competency]):
 
 
 @admin.register(Competency)
-class CompetencyAdmin(admin.ModelAdmin[Competency]):
+class CompetencyAdmin(ImportExportModelAdmin[Competency]):
     """Admin class for the Competency model."""
 
     list_display = ("name", "competency_domain")
@@ -46,15 +58,17 @@ class CompetencyAdmin(admin.ModelAdmin[Competency]):
     list_filter = ("competency_domain",)
     ordering = ("competency_domain", "name")
     inlines = (SkillInline,)
+    resource_classes = (CompetencyResource,)
 
 
 @admin.register(CompetencyDomain)
-class CompetencyDomainAdmin(admin.ModelAdmin[CompetencyDomain]):
+class CompetencyDomainAdmin(ImportExportModelAdmin[CompetencyDomain]):
     """Admin class for the CompetencyDomain model."""
 
     list_display = ("name",)
     search_fields = ("name", "description")
     inlines = (CompetencyInline,)
+    resource_classes = (CompetencyDomainResource,)
 
 
 class LearningResourceInline(admin.TabularInline[LearningResource, Provider]):
@@ -67,12 +81,13 @@ class LearningResourceInline(admin.TabularInline[LearningResource, Provider]):
 
 
 @admin.register(Provider)
-class ProviderAdmin(admin.ModelAdmin[Provider]):
+class ProviderAdmin(ImportExportModelAdmin[Provider]):
     """Admin class for The Provider model."""
 
     list_display = ("name", "url", "ror")
     search_fields = ("name",)
     inlines = (LearningResourceInline,)
+    resource_classes = (ProviderResource,)
 
 
 class ToolInline(admin.TabularInline[Tool, LearningResource]):
@@ -85,38 +100,48 @@ class ToolInline(admin.TabularInline[Tool, LearningResource]):
 
 
 @admin.register(LearningResource)
-class LearningResourceAdmin(admin.ModelAdmin[LearningResource]):
+class LearningResourceAdmin(ImportExportModelAdmin[LearningResource]):
     """Admin class for The LearningResource model."""
 
-    list_display = ("name", "language", "url", "provider")
+    list_display = ("name", "get_language_display", "url", "provider")
     search_fields = ("name",)
     inlines = (ToolInline,)
+    resource_classes = (LearningResourceResource,)
+
+    @admin.display(description="language", ordering="language")
+    def get_language_display(self, obj: LearningResource) -> Any:
+        """Enable displaying multiple languages in the list display."""
+        return obj.get_language_display()
 
 
 @admin.register(Tool)
-class ToolAdmin(admin.ModelAdmin[Tool]):
+class ToolAdmin(ImportExportModelAdmin[Tool]):
     """Admin class for The Tool model."""
 
     list_display = ("name", "kind", "url")
     search_fields = ("name",)
+    list_filter = ("kind",)
+    resource_classes = (ToolResource,)
 
 
 @admin.register(Skill)
-class SkillAdmin(admin.ModelAdmin[Skill]):
+class SkillAdmin(ImportExportModelAdmin[Skill]):
     """Admin class for the Skill model."""
 
     list_display = ("name", "competency", "competency__competency_domain")
     search_fields = ("name", "description")
     list_filter = ("competency__competency_domain", "competency")
     ordering = ("competency__competency_domain", "competency", "name")
+    resource_classes = (SkillResource,)
 
 
 @admin.register(SkillLevel)
-class SkillLevelAdmin(admin.ModelAdmin[SkillLevel]):
+class SkillLevelAdmin(ImportExportModelAdmin[SkillLevel]):
     """Admin class for The SkillLevel model."""
 
     list_display = ("name", "level")
     search_fields = ("name",)
+    resource_classes = (SkillLevelResource,)
 
 
 class UserSkillInline(admin.TabularInline[UserSkill, User]):

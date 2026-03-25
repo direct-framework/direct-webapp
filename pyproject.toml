@@ -15,7 +15,9 @@ dependencies = [
     "crispy-bootstrap5",
     "gunicorn",
     "whitenoise",
-    "mysqlclient"
+    "mysqlclient",
+    "django-import-export",
+    "django-multiselectfield"
 ]
 
 [project.optional-dependencies]
@@ -30,11 +32,12 @@ dev = [
     "pytest-mock",
     "django-stubs[compatible-mypy]",
     "djlint",
+    "types-django-import-export",
     "beautifulsoup4",
     "lxml",
 ]
 doc = [
-    "mkdocs",
+    "mkdocs<2",
     "mkdocstrings",
     "mkdocstrings-python",
     "mkdocs-material",
@@ -67,6 +70,18 @@ disallow_untyped_defs = false
 [[tool.mypy.overrides]]
 module = ["crispy_forms.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tablib.*"]
+follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["multiselectfield.*"]
+follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["main.io_resources"]
+disallow_any_generics = false
 
 [tool.pytest.ini_options]
 addopts = "-v -p no:warnings --cov=. --cov-report=html --doctest-modules --ignore=direct_webapp/__main__.py --ignore=docs --ignore=direct_webapp/settings/"
