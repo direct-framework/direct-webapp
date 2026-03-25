@@ -89,7 +89,9 @@
                                                         <tbody>
                                                             {% for skill in skills %}
                                                                 <tr>
-                                                                    <td class="fw-semibold">{{ skill.name }}</td>
+                                                                    <td class="fw-semibold">
+                                                                        <a href="{% url 'skill_detail' skill.slug %}">{{ skill.name }}</a>
+                                                                    </td>
                                                                     <td>{{ skill.description }}</td>
                                                                 </tr>
                                                             {% endfor %}

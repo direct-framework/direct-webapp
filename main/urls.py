@@ -29,6 +29,7 @@ urlpatterns = [
         views.CompetenciesPageView.as_view(),
         name="competencies",
     ),
+    path("skills/<slug:slug>/", views.SkillPageView.as_view(), name="skill_detail"),
     path(
         "framework-json/",
         views.FrameworkView.as_view(),
