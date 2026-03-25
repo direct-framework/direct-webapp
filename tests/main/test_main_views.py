@@ -10,6 +10,7 @@ from http import HTTPStatus
 import pytest
 from django.db.models import QuerySet
 from django.urls import reverse
+from pytest_django.asserts import assertTemplateUsed
 
 from main.models import (
     Skill,
@@ -264,22 +265,19 @@ class TestSkillPageView(TemplateOkMixin):
 
     _template_name = "main/pages/skill.html"
 
-    def _get_url(self):
-        return reverse("skill_detail", kwargs={"slug": "skill"})
+    def _get_url(self, **kwargs):
+        return reverse("skill_detail", kwargs=kwargs)
 
-    @pytest.mark.django_db
     def test_template_used(self, admin_client, skill):
         """Test the correct template is used by the GET request."""
-        from pytest_django.asserts import assertTemplateUsed
-
         with assertTemplateUsed(template_name=self._template_name):
-            response = admin_client.get(self._get_url())
+            response = admin_client.get(self._get_url(slug=skill.slug))
         assert response.status_code == HTTPStatus.OK
 
     @pytest.mark.django_db
     def test_provides_required_context(self, client, skill):
         """Test that the skill page view provides the skill context."""
-        response = client.get(self._get_url())
+        response = client.get(self._get_url(slug=skill.slug))
         assert response.status_code == HTTPStatus.OK
         assert "skill" in response.context
         assert response.context["skill"] == skill
@@ -287,7 +285,5 @@ class TestSkillPageView(TemplateOkMixin):
     @pytest.mark.django_db
     def test_404_for_nonexistent_skill(self, client):
         """Test that requesting a non-existent skill returns a 404."""
-        response = client.get(
-            reverse("skill_detail", kwargs={"slug": "nonexistent-skill"})
-        )
+        response = client.get(self._get_url(slug="nonexistent-skill"))
         assert response.status_code == HTTPStatus.NOT_FOUND
