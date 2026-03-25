@@ -1,10 +1,9 @@
-<!-- markdownlint-disable MD041 -->
+# DIRECT Framework Webapp
 
 [![GitHub](https://img.shields.io/github/license/direct-framework/direct-webapp)](https://raw.githubusercontent.com/direct-framework/direct-webapp/main/LICENSE)
 [![Test and build](https://github.com/direct-framework/direct-webapp/actions/workflows/ci.yml/badge.svg)](https://github.com/direct-framework/direct-webapp/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/direct-framework/direct-webapp/graph/badge.svg?token=56K64XN243)](https://codecov.io/gh/direct-framework/direct-webapp)
-
-# DIRECT Framework Webapp
+[![DOI](https://zenodo.org/badge/876231041.svg)](https://doi.org/10.5281/zenodo.19223448)
 
 A Django webapp implementing the [DIRECT competencies framework](https://github.com/direct-framework/digital-research-competencies-framework/) as a website that can:
 
