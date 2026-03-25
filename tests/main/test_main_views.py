@@ -8,7 +8,6 @@ This test module includes tests for main views of the app ensuring that:
 from http import HTTPStatus
 
 import pytest
-from bs4 import BeautifulSoup
 from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
@@ -18,7 +17,12 @@ from main.models import (
     UserSkill,
 )
 
-from .view_utils import LoginRequiredMixin, TemplateOkMixin
+from .view_utils import (
+    BS4Mixin,
+    LoginRequiredMixin,
+    TemplateOkMixin,
+    tag_with_text_filter,
+)
 
 
 class TestIndex(TemplateOkMixin):
@@ -76,7 +80,7 @@ class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
         assert response.url == self._get_url()
 
 
-class TestAboutPageView(TemplateOkMixin):
+class TestAboutPageView(TemplateOkMixin, BS4Mixin):
     """Test suite for the AboutPageView."""
 
     _template_name = "main/pages/about.html"
@@ -84,11 +88,19 @@ class TestAboutPageView(TemplateOkMixin):
     def _get_url(self):
         return reverse("about")
 
-    def test_should_say_direct_atleast_three_times(self, client):
-        """Test that the about page contains the word 'Direct' at least 3 times."""
-        response = client.get(self._get_url())
-        soup = BeautifulSoup(response.content, "lxml")
-        assert soup.text.count("DIRECT") >= 3
+    def test_page_content(self, soup):
+        """Test that the about page contains correct heading and breadcrumbs."""
+        assert "Building a stronger future for digital research" == soup.find("h1").text
+
+        breadcrumbs = soup.find("nav", attrs={"aria-label": "breadcrumb"})
+        assert breadcrumbs.find(
+            tag_with_text_filter("a", "Home"),
+            href=reverse("index"),
+        )
+        assert breadcrumbs.find(
+            tag_with_text_filter("li", "About the project"),
+            class_="breadcrumb-item active",
+        )
 
 
 class TestTermsPageView(TemplateOkMixin):
