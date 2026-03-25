@@ -34,7 +34,6 @@ dev = [
     "djlint",
     "types-django-import-export",
     "beautifulsoup4",
-    "lxml",
 ]
 doc = [
     "mkdocs<2",
