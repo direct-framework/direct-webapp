@@ -59,8 +59,21 @@ class BS4Mixin(ABC):
 
     @pytest.fixture
     def soup(self, client) -> BeautifulSoup:
-        """A fixture providing the BeautifulSoup4 object of the requested page."""
+        """A fixture of the BeautifulSoup4 object of the requested page."""
         response = client.get(self._get_url())
+        return BeautifulSoup(response.content, "html.parser")
+
+    @pytest.fixture
+    def auth_soup(self, client, user) -> BeautifulSoup:
+        """A BeautifulSoup4 object of the requested page viewed by a logged-in user."""
+        client.force_login(user)
+        response = client.get(self._get_url())
+        return BeautifulSoup(response.content, "html.parser")
+
+    @pytest.fixture
+    def admin_soup(self, admin_client) -> BeautifulSoup:
+        """A BeautifulSoup4 object of the requested page viewed by an admin user."""
+        response = admin_client.get(self._get_url())
         return BeautifulSoup(response.content, "html.parser")
 
 
