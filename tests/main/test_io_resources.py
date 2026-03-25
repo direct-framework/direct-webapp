@@ -7,10 +7,12 @@ from main.io_resources import (
     CompetencyDomainResource,
     CompetencyResource,
     LearningResourceResource,
+    MultipleChoiceWidget,
     ProviderResource,
     SkillLevelResource,
     SkillResource,
     ToolResource,
+    export_framework,
 )
 from main.models import (
     Competency,
@@ -258,7 +260,7 @@ class TestLearningResourceResource:
                 "Updated Resource",
                 "Updated description",
                 "provider",
-                "fr",
+                "en|fr",
                 "https://example.com/updated",
             ]
         )
@@ -268,7 +270,7 @@ class TestLearningResourceResource:
         assert not result.has_errors()
         learning_resource.refresh_from_db()
         assert learning_resource.name == "Updated Resource"
-        assert learning_resource.language == "fr"
+        assert set(learning_resource.language) == {"en", "fr"}
         assert learning_resource.url == "https://example.com/updated"
 
 
@@ -601,16 +603,41 @@ class TestSkillResource:
                 "competency",
                 "",
                 "",
-                "skill",
+                "skill|another-skill",
+            ]
+        )
+        dataset.append(
+            [
+                "another-skill",
+                "Another Skill",
+                "Another skill",
+                "competency",
+                "",
+                "",
+                "",
             ]
         )
 
         result = resource.import_data(dataset, dry_run=False)
 
-        assert not result.has_errors()
+        assert not result.has_validation_errors()
         imported_skill = Skill.objects.get(slug="imported-skill")
-        assert imported_skill.related_skills.count() == 1
+        assert imported_skill.related_skills.count() == 2
         assert imported_skill.related_skills.first() == skill
+
+        dataset.append(
+            [
+                "another-skill",
+                "Another Skill",
+                "Another skill",
+                "competency",
+                "",
+                "",
+                "nope",
+            ]
+        )
+        result = resource.import_data(dataset, dry_run=False)
+        assert result.has_validation_errors()
 
     def test_import_skill_update_existing(
         self,
@@ -795,3 +822,49 @@ class TestResourceWidgets:
 
         # The Tool object is still saved! We can get around this
         assert Tool.objects.filter(slug="invalid-tool").exists()
+
+    def test_multiple_choice_widget(self):
+        """Test that the MultipleChoiceWidget operates as expected."""
+        mc_widget = MultipleChoiceWidget()
+
+        assert mc_widget.separator == "|"
+        assert mc_widget.clean("en|fr") == "en,fr"
+        assert mc_widget.render(["en", "fr"]) == "en|fr"
+
+
+@pytest.mark.django_db
+def test_export_framework(
+    competency_domain: CompetencyDomain,
+    competency: Competency,
+    skill: Skill,
+    skill_level: SkillLevel,
+):
+    """Test that the export_framework function returns the framework in the db."""
+    data = export_framework()
+
+    assert (
+        CompetencyDomain.objects.get(**data.pop("competency_domains")[0])
+        == competency_domain
+    )
+
+    data["competencies"][0]["competency_domain__slug"] = data["competencies"][0].pop(
+        "competency_domain"
+    )
+    assert Competency.objects.get(**data.pop("competencies")[0]) == competency
+
+    data["skills"][0]["competency__slug"] = data["skills"][0].pop("competency")
+    data["skills"][0]["tools__slug"] = data["skills"][0].pop(
+        "tools_languages_methodologies"
+    )
+    data["skills"][0]["learning_resources__slug"] = data["skills"][0].pop(
+        "learning_resources"
+    )
+    related_skill = None
+    if rs := data["skills"][0].pop("related_skills"):
+        related_skill = rs
+    data["skills"][0]["related_skills__slug"] = related_skill  # type: ignore[assignment]
+    assert Skill.objects.get(**data.pop("skills")[0]) == skill
+
+    assert SkillLevel.objects.get(**data.pop("skill_levels")[0]) == skill_level
+
+    assert data == {}

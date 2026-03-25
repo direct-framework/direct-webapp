@@ -22,7 +22,7 @@ repos:
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.6
+    rev: v0.15.7
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -40,6 +40,8 @@ repos:
           - django-crispy-forms
           - crispy-bootstrap5
           - django-import-export
+          - types-django-import-export
+          - django-multiselectfield
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.48.0
     hooks:
