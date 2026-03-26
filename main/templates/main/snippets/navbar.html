@@ -55,6 +55,13 @@
                         <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
                         View Skills
                     </a>
+                    {% if user.is_staff %}
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'admin:index' %}">
+                            <i class="fa-solid fa-gear fa-fw opacity-70 me-2"></i>
+                            Admin Backend
+                        </a>
+                    {% endif %}
                     <div class="dropdown-divider"></div>
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}

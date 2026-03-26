@@ -25,7 +25,7 @@ from .view_utils import (
 )
 
 
-class TestIndex(TemplateOkMixin):
+class TestIndex(TemplateOkMixin, BS4Mixin):
     """Test suite for the index view."""
 
     _template_name = "main/index.html"
@@ -38,6 +38,101 @@ class TestIndex(TemplateOkMixin):
         response = admin_client.get(self._get_url())
         assert "skill_levels" in response.context
         assert "sample_data" in response.context
+
+    @pytest.mark.django_db
+    def test_navbar_contents(self, soup, auth_soup, admin_soup):
+        """Test that the navbar contains expected menus and sub-menus."""
+        nav = soup.find("header", class_="navbar")
+
+        # Top-level items
+        assert nav.find(tag_with_text_filter("a", "DIRECT"), href=reverse("index"))
+        assert nav.find(tag_with_text_filter("a", "About"), href=reverse("about"))
+        assert nav.find(
+            tag_with_text_filter("a", "Start Using"), href=reverse("self_assess")
+        )
+        assert nav.find(tag_with_text_filter("a", "Login"), href=reverse("login"))
+        assert nav.find(
+            tag_with_text_filter("a", "Register"),
+            href=reverse("django_registration_register"),
+        )
+
+        # Framework Dropdown
+        framework_dropdown = nav.find(
+            tag_with_text_filter("li", "Framework"), class_="nav-item dropdown"
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Competencies framework"),
+            href=reverse("competencies"),
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Skill levels"), href=reverse("skill_levels")
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Training resources"), href=reverse("training")
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Roles and job profiles"), href=reverse("roles")
+        )
+
+        # Community Dropdown
+        community_dropdown = nav.find(
+            tag_with_text_filter("li", "Community"), class_="nav-item dropdown"
+        )
+        assert community_dropdown.find(
+            tag_with_text_filter("a", "Get involved"), href=reverse("get_involved")
+        )
+        assert community_dropdown.find(
+            tag_with_text_filter("a", "Events"), href=reverse("events")
+        )
+
+        # Light-Dark mode toggle
+        assert nav.find("div", attrs={"data-bs-toggle": "mode"})
+
+        # Account Dropdown (requires to be logged in)
+        assert not nav.find(tag_with_text_filter("div", "Hello,"), class_="dropdown")
+
+    def test_navbar_contents_when_authenticated(self, auth_soup, admin_soup):
+        """Test the navbar contains expected menus and sub-menus for logged-in users."""
+        nav = auth_soup.find("header", class_="navbar")
+
+        # Not-present top-level items
+        assert not nav.find(tag_with_text_filter("a", "Login"))
+        assert not nav.find(tag_with_text_filter("a", "Register"))
+
+        # Account Dropdown
+        account_dropdown = nav.find(
+            tag_with_text_filter("div", "Hello,"), class_="dropdown"
+        )
+        assert account_dropdown.find(
+            tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
+        )
+        assert account_dropdown.find(
+            tag_with_text_filter("a", "Update Profile"), href=reverse("profile")
+        )
+        assert account_dropdown.find(
+            tag_with_text_filter("a", "Change Password"),
+            href=reverse("password_change"),
+        )
+        assert account_dropdown.find(
+            tag_with_text_filter("a", "Assess Skills"), href=reverse("self_assess")
+        )
+        assert account_dropdown.find(
+            tag_with_text_filter("a", "View Skills"), href=reverse("skill_profile")
+        )
+        assert account_dropdown.find(
+            tag_with_text_filter("form", "Sign out"), action=reverse("logout")
+        )
+
+        # Admin link (requires admin user)
+        assert not account_dropdown.find(tag_with_text_filter("a", "Admin Backend"))
+
+        assert (
+            admin_soup.find("header", class_="navbar")
+            .find(tag_with_text_filter("div", "Hello,"), class_="dropdown")
+            .find(
+                tag_with_text_filter("a", "Admin Backend"), href=reverse("admin:index")
+            )
+        )
 
 
 class TestPrivacy(TemplateOkMixin):
