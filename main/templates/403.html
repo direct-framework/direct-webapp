@@ -1,0 +1,11 @@
+{% extends "main/base.html" %}
+{% block title %}
+    Not Found
+{% endblock title %}
+{% block content %}
+    <div class="container my-5 pt-5">
+        <h1>403 - Forbidden</h1>
+        <p>You do not have permission to access this page.</p>
+        <a class="btn btn-lg btn-primary" href="{% url 'index' %}">Go to homepage</a>
+    </div>
+{% endblock content %}
