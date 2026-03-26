@@ -66,11 +66,6 @@ class PrivacyPageView(TemplateView):
 
     template_name = "main/pages/privacy.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
-        """Add privacy page context."""
-        context = super().get_context_data(**kwargs)
-        logger.info("Rendering privacy page.")
-        return context
 
 
 class AboutPageView(TemplateView):
