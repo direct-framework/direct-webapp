@@ -67,7 +67,6 @@ class PrivacyPageView(TemplateView):
     template_name = "main/pages/privacy.html"
 
 
-
 class AboutPageView(TemplateView):
     """View that renders the about page."""
 
