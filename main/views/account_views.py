@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING, Any
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
+from django.views.generic.base import RedirectView, TemplateView
 from django.views.generic.edit import FormView, UpdateView
 
 from ..forms import UserSkillsForm
@@ -32,59 +31,53 @@ class AuthenticatedHttpRequest(HttpRequest):
 User = get_user_model()
 
 
-@login_required
-def skill_profile(request: HttpRequest) -> HttpResponse:
-    """View that renders the skill profile page.
+class SkillProfileView(LoginRequiredMixin, TemplateView):
+    """View that renders the skill profile page."""
 
-    Args:
-      request: A GET request.
-    """
-    logger.info("Rendering skill_profile page.")
-    user_skills = UserSkill.objects.filter(user=request.user.pk)
-    user_skills_data = [
-        {
-            "skill": user_skill.skill.name,
-            "competency": user_skill.skill.competency.name,
-            "skill_level": user_skill.skill_level.level,
-        }
-        for user_skill in user_skills
-    ]
-    skill_levels = SkillLevel.objects.all()
-    skill_levels_data = [
-        {
-            "level": skill_level.level,
-            "name": skill_level.name,
-            "description": skill_level.description,
-        }
-        for skill_level in skill_levels
-    ]
-    context = {
-        "user_data": dumps(user_skills_data),
-        "skill_levels": dumps(skill_levels_data),
-    }
+    request: AuthenticatedHttpRequest
+    template_name = "main/user_skill_profile.html"
 
-    return render(
-        request=request, template_name="main/user_skill_profile.html", context=context
-    )
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Add user skills and skill levels to the template context."""
+        context = super().get_context_data(**kwargs)
+        logger.info("Rendering skill_profile page.")
+
+        user_skills = UserSkill.objects.filter(user=self.request.user.pk)
+        user_skills_data = [
+            {
+                "skill": user_skill.skill.name,
+                "competency": user_skill.skill.competency.name,
+                "skill_level": user_skill.skill_level.level,
+            }
+            for user_skill in user_skills
+        ]
+
+        skill_levels = SkillLevel.objects.all()
+        skill_levels_data = [
+            {
+                "level": skill_level.level,
+                "name": skill_level.name,
+                "description": skill_level.description,
+            }
+            for skill_level in skill_levels
+        ]
+
+        context["user_data"] = dumps(user_skills_data)
+        context["skill_levels"] = dumps(skill_levels_data)
+        return context
 
 
-@login_required
-def account_overview(request: AuthenticatedHttpRequest) -> HttpResponse:
-    """Route users to the appropriate account page based on their skills.
+class AccountOverviewView(LoginRequiredMixin, RedirectView):
+    """Route users to the appropriate account page based on their skills."""
 
-    If the user has already defined skills, they are redirected to their
-    skill profile. Otherwise, they are sent to the self-assessment page
-    to set up their skills.
+    request: AuthenticatedHttpRequest
+    permanent = False
 
-    Args:
-        request: The current HTTP request (must be authenticated).
-
-    Returns:
-        An HTTP redirect to either ``skill_profile`` or ``self_assess``.
-    """
-    if UserSkill.objects.filter(user=request.user).exists():
-        return redirect("skill_profile")
-    return redirect("self_assess")
+    def get_redirect_url(self, *args: Any, **kwargs: Any) -> str:
+        """Redirect to skill profile if skills exist, otherwise self-assess."""
+        if UserSkill.objects.filter(user=self.request.user).exists():
+            return reverse("skill_profile")
+        return reverse("self_assess")
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserType"]]):

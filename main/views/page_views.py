@@ -8,8 +8,7 @@ from json import dumps
 from pathlib import Path
 
 from django.contrib.auth import get_user_model
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
@@ -17,59 +16,61 @@ from ..models import CompetencyDomain, Skill, SkillLevel, Tool
 
 logger = logging.getLogger(__name__)
 
-
 User = get_user_model()
 
 
-def index(request: HttpRequest) -> HttpResponse:
+class IndexPageView(TemplateView):
     """View that renders the index/home page."""
-    logger.info("Rendering index page.")
 
-    # Skill levels from the database
-    skill_levels = SkillLevel.objects.all()
-    skill_levels_data = [
-        {
-            "level": sl.level,
-            "name": sl.name,
-            "description": sl.description,
-        }
-        for sl in skill_levels
-    ]
+    template_name = "main/index.html"
 
-    # Combine multiple sample JSON files
-    sample_data_files = [
-        "main/static/assets/sample_data/sample_profile_1.json",
-        "main/static/assets/sample_data/sample_profile_41.json",
-        "main/static/assets/sample_data/sample_profile_59.json",
-    ]
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add skill levels and sample profile data to the template context."""
+        context = super().get_context_data(**kwargs)
+        logger.info("Rendering index page.")
 
-    combined_sample_data = []
-    for file_path in sample_data_files:
-        json_path = Path(file_path)
-        if json_path.exists():
-            with open(json_path) as f:
-                data = json.load(f)
-                if isinstance(data, list):
-                    combined_sample_data.extend(data)
-                else:
-                    combined_sample_data.append(data)
+        skill_levels = SkillLevel.objects.all()
+        skill_levels_data = [
+            {
+                "level": sl.level,
+                "name": sl.name,
+                "description": sl.description,
+            }
+            for sl in skill_levels
+        ]
 
-    context = {
-        "skill_levels": dumps(skill_levels_data),
-        "sample_data": dumps(combined_sample_data),
-    }
+        sample_data_files = [
+            "main/static/assets/sample_data/sample_profile_1.json",
+            "main/static/assets/sample_data/sample_profile_41.json",
+            "main/static/assets/sample_data/sample_profile_59.json",
+        ]
 
-    return render(request=request, template_name="main/index.html", context=context)
+        combined_sample_data = []
+        for file_path in sample_data_files:
+            json_path = Path(file_path)
+            if json_path.exists():
+                with open(json_path) as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        combined_sample_data.extend(data)
+                    else:
+                        combined_sample_data.append(data)
+
+        context["skill_levels"] = dumps(skill_levels_data)
+        context["sample_data"] = dumps(combined_sample_data)
+        return context
 
 
-def privacy(request: HttpRequest) -> HttpResponse:
-    """View that renders the privacy page.
+class PrivacyPageView(TemplateView):
+    """View that renders the privacy page."""
 
-    Args:
-      request: A GET request.
-    """
-    logger.info("Rendering privacy page.")
-    return render(request=request, template_name="main/pages/privacy.html")
+    template_name = "main/pages/privacy.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add privacy page context."""
+        context = super().get_context_data(**kwargs)
+        logger.info("Rendering privacy page.")
+        return context
 
 
 class AboutPageView(TemplateView):
