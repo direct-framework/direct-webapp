@@ -33,6 +33,7 @@ dev = [
     "django-stubs[compatible-mypy]",
     "djlint",
     "types-django-import-export",
+    "beautifulsoup4",
 ]
 doc = [
     "mkdocs<2",

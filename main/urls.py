@@ -5,8 +5,8 @@ from django.urls import include, path
 from . import views
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("privacy/", views.privacy, name="privacy"),
+    path("", views.IndexPageView.as_view(), name="index"),
+    path("privacy/", views.PrivacyPageView.as_view(), name="privacy"),
     path("accounts/", include("django_registration.backends.one_step.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("about/", views.AboutPageView.as_view(), name="about"),
@@ -17,11 +17,11 @@ urlpatterns = [
     path("get-involved/", views.GetInvolvedPageView.as_view(), name="get_involved"),
     path("events/", views.EventsPageView.as_view(), name="events"),
     path("self-assess/", views.SelfAssessPageView.as_view(), name="self_assess"),
-    path("skills/", views.skill_profile, name="skill_profile"),
+    path("skills/", views.SkillProfileView.as_view(), name="skill_profile"),
     path("account/profile/", views.UserUpdateView.as_view(), name="profile"),
     path(
         "account/overview/",
-        views.account_overview,
+        views.AccountOverviewView.as_view(),
         name="account-overview",
     ),
     path(
