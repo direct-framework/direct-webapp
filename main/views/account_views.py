@@ -71,7 +71,6 @@ class AccountOverviewView(LoginRequiredMixin, RedirectView):
     """Route users to the appropriate account page based on their skills."""
 
     request: AuthenticatedHttpRequest
-    permanent = False
 
     def get_redirect_url(self, *args: Any, **kwargs: Any) -> str:
         """Redirect to skill profile if skills exist, otherwise self-assess."""
