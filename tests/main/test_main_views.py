@@ -5,6 +5,7 @@ This test module includes tests for main views of the app ensuring that:
   - The correct status codes are returned.
 """
 
+import json
 from http import HTTPStatus
 
 import pytest
@@ -14,6 +15,7 @@ from pytest_django.asserts import assertTemplateUsed
 
 from main.models import (
     Skill,
+    SkillLevel,
     UserSkill,
 )
 
@@ -252,7 +254,7 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
         assert response.url == reverse("self_assess")
 
 
-class TestUserSkillProfile(TemplateOkMixin):
+class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
     """Test suite for the user skill profile view."""
 
     _template_name = "main/user_skill_profile.html"
@@ -261,14 +263,46 @@ class TestUserSkillProfile(TemplateOkMixin):
         return reverse("skill_profile")
 
     def test_provides_required_context(self, admin_client):
-        """Test that the skill profile view renders the data visualization."""
+        """Test that the skill profile view send the correct context data."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
         assert "user_data" in response.context
         assert isinstance(response.context["user_data"], str)
         assert "skill_levels" in response.context
         assert isinstance(response.context["skill_levels"], str)
-        # TODO: Improve this test
+
+    def test_skill_wheel_script(self, user_skill, auth_soup):
+        """Test that the skill profile view contains the correct script."""
+        card = auth_soup.find("div", class_="card-body")
+
+        assert card.find(tag_with_text_filter("h1", "Skills Wheel Visualisation"))
+        assert card.find("div", id="dataviz_root")
+
+        user_skill_dict = {
+            "skill": user_skill.skill.name,
+            "category": user_skill.skill.competency.name,
+            "skill_level": user_skill.skill_level.level,
+        }
+        assert card.find(
+            tag_with_text_filter(
+                "script", f"userDataLoadedFromContext = [{json.dumps(user_skill_dict)}]"
+            )
+        )
+        skill_level_list = list(
+            SkillLevel.objects.values("level", "name", "description")
+        )
+        assert card.find(
+            tag_with_text_filter(
+                "script",
+                f"skillLevelsLoadedFromContext = {json.dumps(skill_level_list)}",
+            )
+        )
+        assert card.find(
+            tag_with_text_filter(
+                "script",
+                "main().RadialBarChart(",
+            )
+        )
 
 
 class TestRolesPageView(TemplateOkMixin):
