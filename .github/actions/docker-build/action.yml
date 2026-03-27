@@ -16,7 +16,9 @@ runs:
       with:
         images: ghcr.io/${{ github.repository }}
 
-    - run: echo "${{ inputs.cache-from-ref || steps.meta.outputs.tags }}"
+    - name: echo input
+      shell: bash
+      run: echo "${{ inputs.cache-from-ref || steps.meta.outputs.tags }}"
 
       # - name: Build and push Docker image for the web app
       #   uses: docker/build-push-action@v6
