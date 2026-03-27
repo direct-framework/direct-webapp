@@ -46,64 +46,16 @@
             No profiles
         {% endif %}
     </section>
+    <script src="{% static 'main/js/radial-bar-chart-config.js' %}"></script>
     <script>
 document.addEventListener('DOMContentLoaded', function () {
     const sampleData = {{ sample_data|safe }};
     const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
 
-    // Function to render the radial bar chart
-    function renderSkillWheel(userData, userId) {
-        const radialBarChartConfig = {
-            width: 900,
-            height: 700,
-            plotYOffset: 40,
-            innerRadius: 140,
-            outerPadding: 100,
-            categoryPadding: 0.1,
-            skillPadding: 0.01,
-            arcPercent: 0.99,
-            arcStartOffset: 0.01,
-            annotationPadding: 20,
-            maxLabelWidth: 180,
-            lineThickness: 2,
-            fontSize: 20,
-            labelXOffset: 1.05,
-            labelYSpacing: 40,
-            lvlLabelType: "none",
-            labelTextColor: "white",
-            lvlTextColor: "var(--ar-primary)",
-            lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
-            colourList: [
-                "#4E79A7", // blue
-                "#F28E2B", // orange
-                "#E15759", // red
-                "#76B7B2", // teal
-                "#59A14F", // green
-                "#EDC948", // yellow
-                "#B07AA1", // purple
-                "#FF9DA7", // pink
-                "#9C755F", // brown
-                "#BAB0AC", // grey
-            ],
-        };
-
-        const datavizRoot = document.getElementById('dataviz_'+userId);
-
-        // Clear existing chart
-        datavizRoot.innerHTML = '';
-
-        main().RadialBarChart({
-            target: datavizRoot,
-            data: userData,
-            levels: skillLevelsLoadedFromContext,
-            config: radialBarChartConfig,
-        });
-    }
-
     window.loadSkillWheels = function() {
         for (let i = 0; i < sampleData.length; i++) {
-            // Render the skill wheel
-            renderSkillWheel(sampleData[i].user_data, sampleData[i].user_id);
+            const datavizRoot = document.getElementById('dataviz_' + sampleData[i].user_id);
+            renderRadialBarChart(datavizRoot, sampleData[i].user_data, skillLevelsLoadedFromContext);
         }
     };
 
