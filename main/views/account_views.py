@@ -46,7 +46,7 @@ class SkillProfileView(LoginRequiredMixin, TemplateView):
         user_skills_data = [
             {
                 "skill": user_skill.skill.name,
-                "competency": user_skill.skill.competency.name,
+                "category": user_skill.skill.competency.name,
                 "skill_level": user_skill.skill_level.level,
             }
             for user_skill in user_skills
