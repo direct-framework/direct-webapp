@@ -56,4 +56,3 @@ jobs:
         uses: ./.github/actions/docker-build
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache-from-ref: ghcr.io/${{ github.repository }}:main
