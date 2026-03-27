@@ -46,7 +46,7 @@
             No profiles
         {% endif %}
     </section>
-    <script src="{% static 'main/js/radial-bar-chart-config.js' %}"></script>
+    <script defer src="{% static 'main/js/radial-bar-chart-config.js' %}"></script>
     <script>
 document.addEventListener('DOMContentLoaded', function () {
     const sampleData = {{ sample_data|safe }};
