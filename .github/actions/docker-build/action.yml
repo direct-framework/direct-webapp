@@ -16,15 +16,11 @@ runs:
       with:
         images: ghcr.io/${{ github.repository }}
 
-    - name: echo input
-      shell: bash
-      run: echo "${{ inputs.cache-from-ref || steps.meta.outputs.tags }}"
-
-      # - name: Build and push Docker image for the web app
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     cache-from: type=registry,ref=${{ inputs.cache-from-ref || steps.meta.outputs.tags }}
-      #     cache-to: type=registry,ref=${{ steps.meta.outputs.tags }},mode=max
+    - name: Build and push Docker image for the web app
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        cache-from: type=registry,ref=${{ inputs.cache-from-ref || steps.meta.outputs.tags }}
+        cache-to: type=registry,ref=${{ steps.meta.outputs.tags }},mode=max

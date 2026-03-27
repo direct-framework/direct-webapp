@@ -54,8 +54,3 @@ jobs:
 
       - name: Test Docker build
         uses: ./.github/actions/docker-build
-
-      - name: Test Docker build NUMBER 2 - remove this!
-        uses: ./.github/actions/docker-build
-        with:
-          cache-from-ref: ghcr.io/${{ github.repository }}:main
