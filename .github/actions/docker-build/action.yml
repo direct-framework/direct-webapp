@@ -1,12 +1,22 @@
 name: Build and push Docker Image
 description: Build and push the docker image. Save cache to registry with configurable values
 inputs:
+  github-token:
+    description: The GITHUB_TOKEN
+    required: true
   cache-from-ref:
     description: Where to get the cache from (passed to the build and push action)
 
 runs:
   using: composite
   steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github-token }}
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v4
 
