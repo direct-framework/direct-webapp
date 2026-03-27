@@ -300,7 +300,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "main().RadialBarChart(",
+                "renderRadialBarChart(datavizRoot, userDataLoadedFromContext, skillLevelsLoadedFromContext);",  # noqa: E501
             )
         )
 
