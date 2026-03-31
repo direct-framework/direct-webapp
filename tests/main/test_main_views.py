@@ -39,8 +39,8 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
     def test_provides_required_context(self, admin_client, skill_level):
         """Test the view provides skill_levels and sample_data context."""
         response = admin_client.get(self._get_url())
-        assert "sample_data" in response.context
-        assert isinstance(response.context["sample_data"], list)
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
         assert response.context["skill_levels"] == json.dumps(
             [{"level": skill_level.level, "name": skill_level.name}]
         )
