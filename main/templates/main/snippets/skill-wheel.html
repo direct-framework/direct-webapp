@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const charts = {{ chart_data|safe }};
 
     for (let i = 0; i < charts.length; i++) {
-        const target = document.getElementById('dataviz_' + charts[i].target_id);
+        const target = document.getElementById('dataviz_' + charts[i].user_id);
         renderRadialBarChart(target, charts[i].user_data, skillLevels);
     }
 });

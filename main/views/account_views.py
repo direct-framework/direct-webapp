@@ -56,7 +56,7 @@ class SkillProfileView(LoginRequiredMixin, TemplateView):
         context["chart_data"] = dumps(
             [
                 {
-                    "target_id": "root",
+                    "user_id": "root",
                     "user_data": user_skills_data,
                 }
             ]
