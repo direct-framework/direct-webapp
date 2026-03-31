@@ -29,19 +29,11 @@ runs:
       with:
         images: ghcr.io/${{ github.repository }}
 
-    - name: echo input
-      shell: bash
-      run: |
-        echo "tags: ${{ inputs.cache-from-ref || steps.meta.outputs.tags }}"
-        echo "publish: ${{ inputs.publish }}"
-        echo "${{ case(inputs.publish == 'true', format('type=registry,ref={0}', steps.meta.outputs.tags), 'type=gha,mode=max') }}"
-
-
-    # - name: Build and push Docker image for the web app
-    #   uses: docker/build-push-action@v6
-    #   with:
-    #     context: .
-    #     push: true
-    #     tags: ${{ steps.meta.outputs.tags }}
-    #     cache-from: type=registry,ref=${{ inputs.cache-from-ref || steps.meta.outputs.tags }}
-    #     cache-to: ${{ case(inputs.publish, 'type=registry,ref=${{ steps.meta.outputs.tags }}', 'type=gha,mode=max') }}
+    - name: Build and push Docker image for the web app
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        cache-from: type=registry,ref=${{ inputs.cache-from-ref || steps.meta.outputs.tags }}
+        cache-to: ${{ case(inputs.publish == 'true', format('type=registry,ref={0}', steps.meta.outputs.tags), 'type=gha,mode=max') }}
