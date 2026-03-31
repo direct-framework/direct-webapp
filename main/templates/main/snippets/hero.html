@@ -58,26 +58,4 @@
     </div>
     <br />
 </section>
-<script defer src="{% static 'js/radial-bar-chart-config.js' %}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const datavizRoot = document.getElementById('dataviz_hero');
-    const sampleData = {{ sample_data|safe }};
-    const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
-
-    // Function to load sample data for a given user
-    function loadProfileData(userId) {
-        const profile = sampleData.find(u => u.user_id === userId);
-        return profile || { user_data: [], role: 'Unknown Role' };
-    }
-
-    // Expose function globally for button onclick
-    window.loadSkillWheel = function(profileId) {
-        const profile = loadProfileData(profileId);
-        renderRadialBarChart(datavizRoot, profile.user_data, skillLevelsLoadedFromContext);
-    };
-
-    // Initially render first profile
-    loadSkillWheel(1);
-});
-</script>
+{% include "main/snippets/skill-wheel.html" with mode="hero" target_id="dataviz_hero" %}

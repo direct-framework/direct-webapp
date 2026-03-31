@@ -46,20 +46,5 @@
             No profiles
         {% endif %}
     </section>
-    <script defer src="{% static 'js/radial-bar-chart-config.js' %}"></script>
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const sampleData = {{ sample_data|safe }};
-    const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
-
-    window.loadSkillWheels = function() {
-        for (let i = 0; i < sampleData.length; i++) {
-            const datavizRoot = document.getElementById('dataviz_' + sampleData[i].user_id);
-            renderRadialBarChart(datavizRoot, sampleData[i].user_data, skillLevelsLoadedFromContext);
-        }
-    };
-
-    loadSkillWheels();
-});
-    </script>
+    {% include "main/snippets/skill-wheel.html" with mode="multi" %}
 {% endblock content %}

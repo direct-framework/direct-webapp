@@ -59,16 +59,7 @@
                             with size according to your self-assessed level.
                         </p>
                         <div id="dataviz_root" style="width:100%"></div>
-                        <script defer src="{% static 'js/radial-bar-chart-config.js' %}"></script>
-                        <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const datavizRoot = document.getElementById('dataviz_root');
-        const userDataLoadedFromContext = {{ user_data|safe }};
-        const skillLevelsLoadedFromContext = {{ skill_levels|safe }}.filter(lvl => lvl.level > 0);
-        renderRadialBarChart(datavizRoot, userDataLoadedFromContext, skillLevelsLoadedFromContext);
-    });
-
-                        </script>
+                        {% include "main/snippets/skill-wheel.html" with mode="single" target_id="dataviz_root" chart_data=user_data %}
                     </div>
                 </section>
             </div>
