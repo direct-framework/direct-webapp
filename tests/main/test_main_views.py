@@ -286,7 +286,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         skill_level_list = list(
             SkillLevel.objects.values("level", "name", "description")
         )
-  
+
         user_skill_dict = {
             "skill": user_skill.skill.name,
             "category": user_skill.skill.competency.competency_domain.name,
@@ -299,7 +299,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
             )
         )
         skill_level_list = list(SkillLevel.objects.values("level", "name"))
-      
+
         assert card.find(
             tag_with_text_filter(
                 "script",
