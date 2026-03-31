@@ -19,7 +19,7 @@ runs:
         echo "tags: ${{ inputs.cache-from-ref || steps.meta.outputs.tags }}"
         echo "publish: ${{ inputs.publish }}"
         echo "type=registry,ref=${{ steps.meta.outputs.tags }}"
-        echo "${{ case(inputs.publish, 'type=registry,ref=${{ steps.meta.outputs.tags }}', 'type=gha,mode=max') }}"
+        echo "${{ case(inputs.publish == true, 'type=registry,ref=${{ steps.meta.outputs.tags }}', 'type=gha,mode=max') }}"
 
     # - name: Login to GitHub Container Registry
     #   uses: docker/login-action@v3
