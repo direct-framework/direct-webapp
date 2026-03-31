@@ -1,0 +1,24 @@
+[
+    {
+        "user_id": 1,
+        "name": "User 1",
+        "role": "Example role",
+        "description": [
+            "Description of the example role"
+        ],
+        "user_data": [
+            {
+                "skill": "Skill 1",
+                "category": "Category 1",
+                "subcategory": "Sub-Category 1",
+                "skill_level": 1
+            },
+            {
+                "skill": "Skill 2",
+                "category": "Category 2",
+                "subcategory": "Sub-Category 2",
+                "skill_level": 2
+            }
+        ]
+    }
+]
