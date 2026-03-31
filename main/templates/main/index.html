@@ -1,70 +1,56 @@
 {% extends "main/base.html" %}
 {% load static %}
 {% load django_bootstrap5 %}
-{% block title %}
-    Digital Research Competencies Framework
-{% endblock title %}
+<!--{% block title %}-->
+<!--DIgital REsearch CompeTencies Framework-->
+<!--{% endblock title %}-->
 {% block content %}
     <!-- Hero -->
-    {% include "main/snippets/hero.html" %}
-    <!-- Features grid -->
-    <section class="container pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
-        <div class="row pt-2 pt-md-4 pt-lg-3 pt-xl-4 g-4 g-sm-3 g-md-4">
-            <div class="col-lg-8 order-lg-1">
-                <div class="d-md-flex h-100 bg-primary rounded-5 overflow-hidden px-4 px-sm-5 pt-5 pb-5">
-                    <div class="d-md-flex row">
-                        <div class="text-center text-md-start pe-sm-3 col-5">
-                            <h2 class="h1 text-white pb-2 pb-md-3 mb-lg-4 col-4">Track and manage your professional development</h2>
-                            <a class="btn btn-icon btn-xl btn-warning rounded-circle"
-                               href="#"
-                               data-bs-toggle="modal"
-                               data-bs-target="#videoModal"
-                               aria-label="Play video">
-                                <i class="fa-solid fa-play fs-lg"></i>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <img src="{% static 'assets/img/landing/workshop-breakout.webp' %}"
-                                 alt="Workshop photo"
-                                 class="img-fluid w-100 h-100"
-                                 style="object-fit: cover;
-                                        border-radius: 1rem">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 order-lg-2">
-                <div class="card border-0 bg-secondary h-100 py-lg-2 py-xl-4 text-center">
-                    <div class="card-body">
-                        <h3>A framework for success</h3>
-                        <p class="mb-4">
-                            The DIRECT Framework is a community model that defines the knowledge, skills, and behaviours that individuals need to attain to succeed in research software roles.
-                        </p>
-                        <a class="btn btn-lg btn-primary" href="{% url 'competencies' %}">View Framework</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!--    {% include "main/snippets/hero.html" %}-->
     <!-- Features list -->
     <section class="container pt-5 pb-4 mb-2 my-lg-3 my-xl-4 my-xxl-5">
         <div class="row justify-content-center pt-2 pt-sm-3 pt-md-4 mt-lg-2 pb-lg-2 pb-xl-0">
-            <div class="col-sm-11 col-md-9 col-lg-8 col-xl-7 col-xxl-6 text-center">
-                <h2 class="h1 mb-0"></h2>
+            <div class="text-center">
+                <h2 class="h1 mb-0">
+                    Competencies Framework for Digital Research Technical
+                    Professionals
+                </h2>
             </div>
         </div>
-        <div class="col-md-6 col-xl-5 order-md-1 pt-xl-2"
-             data-aos="fade-up"
-             data-aos-duration="850"
-             data-aos-offset="200"
-             data-disable-parallax-down="md">
-            <div class="pe-md-3 pe-xl-0">
-                <h3 class="h2 mb-lg-4">A competencies framework for Digital Research Technical Professionals</h3>
-                <p class="mb-0">
-                    The DIRECT Framework is a community resource to support dRTPs (Digital Research Technical Professionals) in tracking and managing their professional development.
-                </p>
+        <div class="row justify-content-center pt-2 pt-sm-3 pt-md-4 mt-lg-2 pb-lg-2 pb-xl-0">
+            <div class="order-md-1 pt-xl-2 text-center"
+                 data-aos="fade-up"
+                 data-aos-duration="850"
+                 data-aos-offset="200"
+                 data-disable-parallax-down="md">
+                <div class="pe-md-3 pe-xl-0">
+                    <p class="mb-0">
+                        A community-developed competencies model
+                        and resource to support Digital
+                        Research Technical Professionals (dRTPs) thrive in research
+                        environments.
+                    </p>
+                </div>
             </div>
         </div>
+        <!--    <div -->
+        <!--        class="row justify-content-center pt-2 pt-sm-3 pt-md-4 mt-lg-2 pb-lg-2 pb-xl-0">-->
+        <!--        <div>-->
+        <!--            <div class="order-md-1 pt-xl-2 text-center"-->
+        <!--                 data-aos="fade-up"-->
+        <!--                 data-aos-duration="850"-->
+        <!--                 data-aos-offset="200"-->
+        <!--                 data-disable-parallax-down="md">-->
+        <!--                <a class="btn btn-icon btn-xl btn-warning rounded-circle"-->
+        <!--                   href="#"-->
+        <!--                   data-bs-toggle="modal"-->
+        <!--                   data-bs-target="#videoModal"-->
+        <!--                   aria-label="Play video">-->
+        <!--                    <i class="fa-solid fa-play fs-lg"></i>-->
+        <!--                </a>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!--    </div>-->
     </section>
     <!-- Bootstrap modal -->
     <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
@@ -82,6 +68,166 @@
             </div>
         </div>
     </div>
+    <!-- Features grid -->
+    <section class="container pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
+        <div class="row pt-2 pt-md-4 pt-lg-3 pt-xl-4 g-4 g-sm-3 g-md-4">
+            <div class="col-sm-6 col-lg-4 order-lg-1">
+                <div class="card border-0 bg-secondary h-100 py-lg-2 py-xl-4 text-center">
+                    <div class="card-body">
+                        <h3>Competencies for digital research</h3>
+                        <p class="mb-4">
+                            Define the knowledge and behaviours individuals need to succeed in digital research and technical roles in academia.
+                        </p>
+                        <a class="btn btn-lg btn-primary" href="{% url 'competencies' %}">Explore
+                        the framework</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 order-lg-2">
+                <div class="d-md-flex h-100 bg-secondary rounded-5 overflow-hidden px-4 px-sm-5 pt-5 pb-5">
+                    <div class="d-md-flex row">
+                        <div class="text-center text-md-start pe-sm-3 col-5">
+                            <h3>Understand and develop your skills</h3>
+                            <ul class="list-unstyled d-flex flex-wrap mb-0">
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Recognise technical and professional skills, tools and methodologies
+                                </li>
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Define clear skill levels to support growth
+                                </li>
+                                <li class="d-flex text-body py-1">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Link skills to learning resources for targeted development
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <img src="{% static 'assets/img/landing/workshop-stickies.webp' %}"
+                                 alt="Workshop photo"
+                                 class="img-fluid w-100 h-100"
+                                 style="object-fit: cover;
+                                        border-radius: 1rem">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-2 pt-md-4 pt-lg-3 pt-xl-4 g-4 g-sm-3 g-md-4">
+            <!--        <div class="col-lg-8 order-lg-1">-->
+            <!--            <div class="d-md-flex h-100 bg-primary rounded-5 overflow-hidden px-4 px-sm-5 pt-5 pb-5">-->
+            <!--                <div class="d-md-flex row">-->
+            <!--                    <div class="text-center text-md-start pe-sm-3 col-5">-->
+            <!--                        <h3 class="h1 text-white pb-2 pb-md-3 mb-lg-4 col-4">Track and-->
+            <!--                            manage your professional development</h3>-->
+            <!--                        <a class="btn btn-icon btn-xl btn-warning rounded-circle"-->
+            <!--                           href="#"-->
+            <!--                           data-bs-toggle="modal"-->
+            <!--                           data-bs-target="#videoModal"-->
+            <!--                           aria-label="Play video">-->
+            <!--                            <i class="fa-solid fa-play fs-lg"></i>-->
+            <!--                        </a>-->
+            <!--                    </div>-->
+            <!--                    <div class="col">-->
+            <!--                        <img src="{% static 'assets/img/landing/skills-wheel.png' %}"-->
+            <!--                             alt="Workshop photo"-->
+            <!--                             class="img-fluid w-100 h-100"-->
+            <!--                             style="object-fit: cover;-->
+            <!--                                        border-radius: 1rem">-->
+            <!--                    </div>-->
+            <!--                </div>-->
+            <!--            </div>-->
+            <!--        </div>-->
+            <div class="col-sm-6 col-lg-4 order-lg-2">
+                <div class="card border-0 bg-primary h-100 py-lg-2 py-xl-4 text-center">
+                    <div class="card-body">
+                        <h3 class="text-white">Chart and manage professional development</h3>
+                        <p class="mb-4 text-white">
+                            Create individual profiles (skill wheels) and compare them across teams or with role profiles.
+                        </p>
+                        <a class="btn btn-lg btn-secondary" href="{% url 'competencies' %}">Create
+                        a skills profile</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 order-lg-2">
+                <div class="d-md-flex h-100 bg-primary rounded-5 overflow-hidden px-4 px-sm-5 pt-5 pb-5">
+                    <div class="d-md-flex row">
+                        <div class="text-center text-md-start pe-sm-3 col-5">
+                            <h3 class="text-white">Track your progress</h3>
+                            <ul class="list-unstyled d-flex flex-wrap mb-0">
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2 text-white"></i>
+                                    <span class="text-white">Self-assess and assign proficiency levels to your skills</span>
+                                </li>
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2 text-white"></i>
+                                    <span class="text-white">Visualise your capabilities across competency domains</span>
+                                </li>
+                                <li class="d-flex text-body py-1">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2 text-white"></i>
+                                    <span class="text-white">Support discussions with line managers during development reviews</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <img src="{% static 'assets/img/landing/skills-wheel.png' %}"
+                                 alt="Workshop photo"
+                                 class="img-fluid w-100 h-100"
+                                 style="object-fit: cover;
+                                        border-radius: 1rem">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-2 pt-md-4 pt-lg-3 pt-xl-4 g-4 g-sm-3 g-md-4">
+            <div class="col-lg-8 order-lg-2">
+                <div class="d-md-flex h-100 bg-secondary rounded-5 overflow-hidden px-4 px-sm-5 pt-5 pb-5">
+                    <div class="d-md-flex row">
+                        <div class="text-center text-md-start pe-sm-3 col-5">
+                            <h3>Plan your career</h3>
+                            <ul class="list-unstyled d-flex flex-wrap mb-0">
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Define roles and structured career pathways
+                                </li>
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Support specialities, good practices, and community values
+                                </li>
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Enable organisations to build stronger, more inclusive teams
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <img src="{% static 'assets/img/landing/workshop-breakout.webp' %}"
+                                 alt="Workshop photo"
+                                 class="img-fluid w-100 h-100"
+                                 style="object-fit: cover;
+                                        border-radius: 1rem">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 order-lg-1">
+                <div class="card border-0 bg-secondary h-100 py-lg-2 py-xl-4 text-center">
+                    <div class="card-body">
+                        <h3>Building a stronger future for digital research</h3>
+                        <p class="mb-4">
+                            Define a variety of roles that exist and support recognition
+                            and hiring people in those roles.
+                        </p>
+                        <a class="btn btn-lg btn-primary" href="{% url 'competencies' %}">Explore
+                        roles</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <script>
     const videoModal = document.getElementById('videoModal');
     const iframe = document.getElementById('videoFrame');
