@@ -270,8 +270,8 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         """Test that the skill profile view send the correct context data."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
-        assert "user_data" in response.context
-        assert isinstance(response.context["user_data"], str)
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
         assert response.context["skill_levels"] == json.dumps(
             [{"level": skill_level.level, "name": skill_level.name}]
         )
@@ -290,6 +290,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
             "subcategory": user_skill.skill.competency.name,
             "skill_level": user_skill.skill_level.level,
         }
+        chart_data = [{"target_id": "root", "user_data": [user_skill_dict]}]
 
         assert card.find(
             tag_with_text_filter(
@@ -300,13 +301,13 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         assert card.find(
             tag_with_text_filter(
                 "script",
-                f"const data = [{json.dumps(user_skill_dict)}];",
+                f"const charts = {json.dumps(chart_data)};",
             )
         )
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "renderRadialBarChart(target, data, skillLevels.filter(lvl => lvl.level > 0));",  # noqa: E501
+                "renderRadialBarChart(target, charts[i].user_data, skillLevels);",
             )
         )
 
