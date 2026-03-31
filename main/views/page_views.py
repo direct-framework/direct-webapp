@@ -47,13 +47,21 @@ class IndexPageView(TemplateView):
         context = super().get_context_data(**kwargs)
         logger.info("Rendering index page.")
 
-        context["sample_data"] = _extract_and_combine_roles(
+        sample_data = _extract_and_combine_roles(
             ["main/static/assets/sample_data/sample_profile_1.json"]
+        )
+        first_profile = sample_data[0] if sample_data else {"user_data": []}
+        context["chart_data"] = dumps(
+            [
+                {
+                    "target_id": "hero",
+                    "user_data": first_profile["user_data"],
+                }
+            ]
         )
         context["skill_levels"] = dumps(
             list(SkillLevel.objects.values("level", "name"))
         )
-
         return context
 
 
@@ -143,17 +151,23 @@ class RolesPageView(TemplateView):
         """Add sample profile data to the template context."""
         context = super().get_context_data(**kwargs)
 
-        context["sample_data"] = _extract_and_combine_roles(
+        sample_data = _extract_and_combine_roles(
             [
                 "main/static/assets/sample_data/sample_profile_1.json",
                 "main/static/assets/sample_data/sample_profile_41.json",
                 "main/static/assets/sample_data/sample_profile_59.json",
             ]
         )
+        context["sample_data"] = sample_data
+        context["chart_data"] = dumps(
+            [
+                {"target_id": str(p["user_id"]), "user_data": p["user_data"]}
+                for p in sample_data
+            ]
+        )
         context["skill_levels"] = dumps(
             list(SkillLevel.objects.values("level", "name"))
         )
-
         return context
 
 

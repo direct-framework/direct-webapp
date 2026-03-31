@@ -53,7 +53,14 @@ class SkillProfileView(LoginRequiredMixin, TemplateView):
             for user_skill in user_skills
         ]
 
-        context["user_data"] = dumps(user_skills_data)
+        context["chart_data"] = dumps(
+            [
+                {
+                    "target_id": "root",
+                    "user_data": user_skills_data,
+                }
+            ]
+        )
         context["skill_levels"] = dumps(
             list(SkillLevel.objects.values("level", "name"))
         )

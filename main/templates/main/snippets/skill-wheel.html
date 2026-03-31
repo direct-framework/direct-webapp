@@ -37,28 +37,11 @@ function renderRadialBarChart(target, data, levels) {
 
 document.addEventListener('DOMContentLoaded', function () {
     const skillLevels = {{ skill_levels|safe }};
+    const charts = {{ chart_data|safe }};
 
-    {% if mode == "skill-profile" %}
-    const target = document.getElementById('{{ target_id }}');
-    const data = {{ chart_data|safe }};
-    renderRadialBarChart(target, data, skillLevels.filter(lvl => lvl.level > 0));
-
-    {% elif mode == "roles" %}
-    const sampleData = {{ sample_data|safe }};
-    for (let i = 0; i < sampleData.length; i++) {
-        const target = document.getElementById('dataviz_' + sampleData[i].user_id);
-        renderRadialBarChart(target, sampleData[i].user_data, skillLevels);
+    for (let i = 0; i < charts.length; i++) {
+        const target = document.getElementById('dataviz_' + charts[i].target_id);
+        renderRadialBarChart(target, charts[i].user_data, skillLevels);
     }
-
-    {% elif mode == "hero" %}
-    const datavizRoot = document.getElementById('{{ target_id }}');
-    const sampleData = {{ sample_data|safe }};
-
-    window.loadSkillWheel = function(profileId) {
-        const profile = sampleData.find(u => u.user_id === profileId) || { user_data: [], role: 'Unknown Role' };
-        renderRadialBarChart(datavizRoot, profile.user_data, skillLevels);
-    };
-    loadSkillWheel(1);
-    {% endif %}
 });
 </script>
