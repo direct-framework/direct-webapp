@@ -17,12 +17,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
-    uses: ./.github/workflows/ci.yml
-
   # Single deploy job since we're just deploying
   deploy:
-    needs: test
     timeout-minutes: 15
     environment:
       name: github-pages
