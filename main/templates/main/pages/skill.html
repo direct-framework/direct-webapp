@@ -1,4 +1,7 @@
 {% extends "main/base.page.html" %}
+{% block body_class %}
+    bg-secondary
+{% endblock body_class %}
 {% block title %}
     {{ skill.name }} - Digital Research Competencies Framework
 {% endblock title %}
@@ -9,7 +12,7 @@
     <li class="breadcrumb-item active" aria-current="page">{{ skill.name }}</li>
 {% endblock breadcrumb_items %}
 {% block content %}
-    <section class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+    <section id="skill_details" class="container">
         <div class="row">
             <div class="col-lg-9 col-xl-8">
                 <h1 class="pb-2 pb-lg-3">{{ skill.name }}</h1>
