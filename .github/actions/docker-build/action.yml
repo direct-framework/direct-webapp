@@ -35,7 +35,7 @@ runs:
         echo "tags: ${{ inputs.cache-from-ref || steps.meta.outputs.tags }}"
         echo "publish: ${{ inputs.publish }}"
         echo "type=registry,ref=${{ steps.meta.outputs.tags }}"
-        echo "${{ case(inputs.publish == 'true', 'type=registry,ref=${{ steps.meta.outputs.tags }}', 'type=gha,mode=max') }}"
+        echo "${{ case(inputs.publish == 'true', env[format('type=registry,ref={0}', steps.meta.outputs.tags)], 'type=gha,mode=max') }}"
 
 
     # - name: Build and push Docker image for the web app
