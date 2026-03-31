@@ -42,19 +42,43 @@
                 {% if tools %}
                     <h2 class="h4 mt-5">Tools</h2>
                     <ul>
-                        {% for item in tools %}<li>{{ item.name }}</li>{% endfor %}
+                        {% for item in tools %}
+                            <li>
+                                {% if item.url %}
+                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                {% else %}
+                                    {{ item.name }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
                     </ul>
                 {% endif %}
                 {% if languages %}
                     <h2 class="h4 mt-5">Languages</h2>
                     <ul>
-                        {% for item in languages %}<li>{{ item.name }}</li>{% endfor %}
+                        {% for item in languages %}
+                            <li>
+                                {% if item.url %}
+                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                {% else %}
+                                    {{ item.name }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
                     </ul>
                 {% endif %}
                 {% if methodologies %}
                     <h2 class="h4 mt-5">Methodologies</h2>
                     <ul>
-                        {% for item in methodologies %}<li>{{ item.name }}</li>{% endfor %}
+                        {% for item in methodologies %}
+                            <li>
+                                {% if item.url %}
+                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                {% else %}
+                                    {{ item.name }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
                     </ul>
                 {% endif %}
             </div>
