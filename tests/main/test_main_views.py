@@ -290,7 +290,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
             "subcategory": user_skill.skill.competency.name,
             "skill_level": user_skill.skill_level.level,
         }
-        chart_data = [{"target_id": "root", "user_data": [user_skill_dict]}]
+        chart_data = [{"user_id": "root", "user_data": [user_skill_dict]}]
 
         assert card.find(
             tag_with_text_filter(
