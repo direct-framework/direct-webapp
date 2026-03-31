@@ -278,29 +278,19 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         assert card.find(tag_with_text_filter("h1", "Skills Wheel Visualisation"))
         assert card.find("div", id="dataviz_root")
 
-        user_skill_dict = {
-            "skill": user_skill.skill.name,
-            "category": user_skill.skill.competency.name,
-            "skill_level": user_skill.skill_level.level,
-        }
-        assert card.find(
-            tag_with_text_filter(
-                "script", f"userDataLoadedFromContext = [{json.dumps(user_skill_dict)}]"
-            )
-        )
         skill_level_list = list(
             SkillLevel.objects.values("level", "name", "description")
         )
         assert card.find(
             tag_with_text_filter(
                 "script",
-                f"skillLevelsLoadedFromContext = {json.dumps(skill_level_list)}",
+                f"const skillLevels = {json.dumps(skill_level_list)}",
             )
         )
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "renderRadialBarChart(datavizRoot, userDataLoadedFromContext, skillLevelsLoadedFromContext);",  # noqa: E501
+                "renderRadialBarChart(target, data, skillLevels.filter(lvl => lvl.level > 0));",  # noqa: E501
             )
         )
 
