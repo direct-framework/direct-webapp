@@ -4,6 +4,8 @@ inputs:
   github-token:
     description: The GITHUB_TOKEN
     required: true
+  publish:
+    description: Boolean to determine if this build is published to GHCR
   cache-from-ref:
     description: Where to get the cache from (passed to the build and push action)
 
@@ -33,4 +35,4 @@ runs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         cache-from: type=registry,ref=${{ inputs.cache-from-ref || steps.meta.outputs.tags }}
-        cache-to: type=registry,ref=${{ steps.meta.outputs.tags }},mode=max
+        cache-to: ${{ case(inputs.publish, 'type=registry,ref=${{ steps.meta.outputs.tags }}', 'type=gha,mode=max') }}
