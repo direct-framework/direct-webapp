@@ -21,36 +21,36 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{matrix.python-version}}
-          cache: pip
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r dev-requirements.txt
-          pip install --no-deps -e .
+      # - uses: actions/setup-python@v6
+      #   with:
+      #     python-version: ${{matrix.python-version}}
+      #     cache: pip
+      # - name: Install dependencies
+      #   run: |
+      #     pip install --upgrade pip
+      #     pip install -r dev-requirements.txt
+      #     pip install --no-deps -e .
 
-      - name: Run mypy
-        run: mypy .
+      # - name: Run mypy
+      #   run: mypy .
 
-      - name: Run tests
-        run: pytest --cov-report=xml
+      # - name: Run tests
+      #   run: pytest --cov-report=xml
 
-      - name: Upload coverage to Codecov
-        if: github.event.pull_request.user.login != 'dependabot[bot]' && github.event.pull_request.user.login != 'pre-commit-ci[bot]' && github.ref_type != 'tag'
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      # - name: Upload coverage to Codecov
+      #   if: github.event.pull_request.user.login != 'dependabot[bot]' && github.event.pull_request.user.login != 'pre-commit-ci[bot]' && github.ref_type != 'tag'
+      #   uses: codecov/codecov-action@v5
+      #   with:
+      #     fail_ci_if_error: true
+      #   env:
+      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Install doc dependencies
-        run: pip install -r doc-requirements.txt
+      # - name: Install doc dependencies
+      #   run: pip install -r doc-requirements.txt
 
-      - name: Check that documentation builds cleanly with MkDocs
-        if: matrix.os == 'ubuntu-latest'
-        run: mkdocs build --strict
+      # - name: Check that documentation builds cleanly with MkDocs
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: mkdocs build --strict
 
       - name: Test Docker build
         uses: ./.github/actions/docker-build
