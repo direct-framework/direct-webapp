@@ -38,12 +38,12 @@ function renderRadialBarChart(target, data, levels) {
 document.addEventListener('DOMContentLoaded', function () {
     const skillLevels = {{ skill_levels|safe }};
 
-    {% if mode == "single" %}
+    {% if mode == "skill-profile" %}
     const target = document.getElementById('{{ target_id }}');
     const data = {{ chart_data|safe }};
     renderRadialBarChart(target, data, skillLevels.filter(lvl => lvl.level > 0));
 
-    {% elif mode == "multi" %}
+    {% elif mode == "roles" %}
     const sampleData = {{ sample_data|safe }};
     for (let i = 0; i < sampleData.length; i++) {
         const target = document.getElementById('dataviz_' + sampleData[i].user_id);
