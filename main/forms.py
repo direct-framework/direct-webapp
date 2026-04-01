@@ -98,7 +98,9 @@ class UserSkillsForm(forms.Form):
             parent_heading = (
                 f'<h2 class="card-title text-primary mt-5">{competency_domain}</h2>'
             )
-            parent_div = Div(HTML(parent_heading), css_class="mb-5")
+            parent_div = Div(
+                HTML(parent_heading), css_class="mb-5 competency-domain-container"
+            )
 
             competency_elements = []
             for competency, skills_list in competencies.items():
@@ -106,7 +108,7 @@ class UserSkillsForm(forms.Form):
                 competency_heading = f"<h4>{competency}</h4>"
 
                 # Outer card div
-                competency_div = Div(css_class="mt-5 card rounded-1")
+                competency_div = Div(css_class="mt-5 card rounded-1 competency-card")
 
                 # Card body div with heading and table
                 card_body_div = Div(css_class="card-body")
@@ -128,7 +130,7 @@ class UserSkillsForm(forms.Form):
                 """
                 for skill in skills_list:
                     table_html += f"""
-                        <tr>
+                        <tr class="skill-item">
                             <td class="fw-semibold">{skill.name}</td>
                             <td>{skill.description}</td>
                             <td>{{{{ form.skill_{skill.id} }}}}</td>
