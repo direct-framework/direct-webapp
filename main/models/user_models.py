@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .framework_models import Skill, SkillLevel, SluggedModel
+from .framework_models import Skill, SkillLevel
 
 
 class User(AbstractUser):
@@ -24,7 +24,3 @@ class UserSkill(models.Model):
         constraints = (
             models.UniqueConstraint(fields=["user", "skill"], name="unique_user_skill"),
         )
-
-
-class Team(SluggedModel):
-    """Model for teams of users."""
