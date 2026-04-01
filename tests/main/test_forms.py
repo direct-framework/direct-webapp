@@ -6,7 +6,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from main.forms import RegistrationForm
+from main.forms import RegistrationForm, TermsAcceptanceForm
 
 
 @pytest.fixture
@@ -88,3 +88,20 @@ def test_registration_form_rejects_duplicate_email(
 
     assert not form.is_valid()
     assert "email" in form.errors
+
+
+def test_terms_acceptance_form_tos_label_includes_terms_and_privacy_links() -> None:
+    """The acceptance form tos label should include terms/privacy links."""
+    form = TermsAcceptanceForm()
+
+    label = str(form.fields["tos"].label)
+    assert reverse("terms") in label
+    assert reverse("privacy") in label
+
+
+def test_terms_acceptance_form_requires_tos() -> None:
+    """The acceptance form should require the checkbox to be ticked."""
+    form = TermsAcceptanceForm(data={"tos": False})
+
+    assert not form.is_valid()
+    assert "tos" in form.errors
