@@ -18,7 +18,7 @@ from main.models import (
 def competency_domain() -> CompetencyDomain:
     """Fixture for creating a Competency Domain instance."""
     return CompetencyDomain.objects.create(
-        name="Competency Domain", description="A competency domain"
+        name="Competency Domain", description="A competency domain", rank=1
     )
 
 
@@ -29,6 +29,7 @@ def competency(competency_domain: CompetencyDomain) -> Competency:
         name="Competency",
         description="A competency",
         competency_domain=competency_domain,
+        rank=1,
     )
 
 
@@ -77,6 +78,7 @@ def skill(
         name="Skill",
         description="A skill",
         competency=competency,
+        rank=1,
     )
     skill.tools.add(tool)
     skill.learning_resources.add(learning_resource)
