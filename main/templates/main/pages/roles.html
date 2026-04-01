@@ -11,8 +11,8 @@
 {% endblock breadcrumb_items %}
 {% block content %}
     <section id="roles" class="container">
-        {% if sample_data %}
-            {% for profile in sample_data %}
+        {% if chart_data %}
+            {% for profile in chart_data %}
                 <section id="role-{{ profile.user_id }}" class="overflow-hidden pb-5">
                     <div class="pb-sm-3 mb-md-2 mb-lg-3">
                         <div class="row g-4">

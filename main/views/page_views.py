@@ -50,9 +50,7 @@ class IndexPageView(TemplateView):
         sample_data = _extract_and_combine_roles(
             ["main/static/assets/sample_data/sample_profile_1.json"]
         )
-        context["chart_data"] = dumps(
-            [{"user_id": "1", "user_data": sample_data[0]["user_data"]}]
-        )
+        context["chart_data"] = dumps(sample_data)
         context["skill_levels"] = dumps(
             list(SkillLevel.objects.values("level", "name"))
         )
@@ -152,13 +150,7 @@ class RolesPageView(TemplateView):
                 "main/static/assets/sample_data/sample_profile_59.json",
             ]
         )
-        context["sample_data"] = sample_data
-        context["chart_data"] = dumps(
-            [
-                {"user_id": p["user_id"], "user_data": p["user_data"]}
-                for p in sample_data
-            ]
-        )
+        context["chart_data"] = sample_data
         context["skill_levels"] = dumps(
             list(SkillLevel.objects.values("level", "name"))
         )
