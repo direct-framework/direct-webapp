@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .framework_models import Skill, SkillLevel
+from .framework_models import Skill, SkillLevel, SluggedModel
 
 
 class User(AbstractUser):
@@ -30,3 +30,15 @@ class UserSkill(models.Model):
         constraints = (
             models.UniqueConstraint(fields=["user", "skill"], name="unique_user_skill"),
         )
+
+
+class Team(SluggedModel):
+    """Model for teams of users."""
+
+
+class TeamMembership(models.Model):
+    """Model for linking users to teams."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    manager = models.BooleanField(blank=True, default=False)
