@@ -324,8 +324,8 @@ class TestRolesPageView(TemplateOkMixin):
         """Test that the role profiles view renders the data visualization."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
-        assert "sample_data" in response.context
-        assert isinstance(response.context["sample_data"], list)
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], list)
         assert response.context["skill_levels"] == json.dumps(
             [{"level": skill_level.level, "name": skill_level.name}]
         )
