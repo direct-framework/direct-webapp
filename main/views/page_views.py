@@ -6,6 +6,7 @@ import logging
 from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -19,45 +20,40 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
+def _extract_and_combine_roles(
+    sample_data_files: list[str | Path],
+) -> list[dict[str, Any]]:
+    """Read and combine multiple JSON files with sample user data."""
+    combined_sample_data = []
+    for file_path in sample_data_files:
+        json_path = Path(file_path)
+        if json_path.exists():
+            with json_path.open() as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    combined_sample_data.extend(data)
+                else:
+                    combined_sample_data.append(data)
+    return combined_sample_data
+
+
 class IndexPageView(TemplateView):
     """View that renders the index/home page."""
 
     template_name = "main/index.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add skill levels and sample profile data to the template context."""
         context = super().get_context_data(**kwargs)
         logger.info("Rendering index page.")
 
-        skill_levels = SkillLevel.objects.all()
-        skill_levels_data = [
-            {
-                "level": sl.level,
-                "name": sl.name,
-                "description": sl.description,
-            }
-            for sl in skill_levels
-        ]
-
-        sample_data_files = [
-            "main/static/assets/sample_data/sample_profile_1.json",
-            "main/static/assets/sample_data/sample_profile_41.json",
-            "main/static/assets/sample_data/sample_profile_59.json",
-        ]
-
-        combined_sample_data = []
-        for file_path in sample_data_files:
-            json_path = Path(file_path)
-            if json_path.exists():
-                with open(json_path) as f:
-                    data = json.load(f)
-                    if isinstance(data, list):
-                        combined_sample_data.extend(data)
-                    else:
-                        combined_sample_data.append(data)
-
-        context["skill_levels"] = dumps(skill_levels_data)
-        context["sample_data"] = dumps(combined_sample_data)
+        sample_data = _extract_and_combine_roles(
+            ["main/static/assets/sample_data/sample_profile_1.json"]
+        )
+        context["chart_data"] = dumps(sample_data)
+        context["skill_levels"] = dumps(
+            list(SkillLevel.objects.values("level", "name"))
+        )
         return context
 
 
@@ -84,7 +80,7 @@ class SkillLevelsPageView(TemplateView):
 
     template_name = "main/pages/skill-levels.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add skill levels to the template context."""
         context = super().get_context_data(**kwargs)
         skill_levels = SkillLevel.objects.all().order_by("level")
@@ -109,7 +105,7 @@ class EventsPageView(TemplateView):
 
     template_name = "main/pages/events.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add events from CSV to the template context."""
         context = super().get_context_data(**kwargs)
         csv_path = Path("data/events.csv")
@@ -143,41 +139,21 @@ class RolesPageView(TemplateView):
 
     template_name = "main/pages/roles.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add sample profile data to the template context."""
         context = super().get_context_data(**kwargs)
 
-        # Skill levels from the database
-        skill_levels = SkillLevel.objects.all()
-        skill_levels_data = [
-            {
-                "level": sl.level,
-                "name": sl.name,
-                "description": sl.description,
-            }
-            for sl in skill_levels
-        ]
-
-        # Combine multiple sample JSON files
-        sample_data_files = [
-            "main/static/assets/sample_data/sample_profile_1.json",
-            "main/static/assets/sample_data/sample_profile_41.json",
-            "main/static/assets/sample_data/sample_profile_59.json",
-        ]
-
-        combined_sample_data = []
-        for file_path in sample_data_files:
-            json_path = Path(file_path)
-            if json_path.exists():
-                with open(json_path) as f:
-                    data = json.load(f)
-                    if isinstance(data, list):
-                        combined_sample_data.extend(data)
-                    else:
-                        combined_sample_data.append(data)
-
-        context["skill_levels"] = skill_levels_data
-        context["sample_data"] = combined_sample_data
+        sample_data = _extract_and_combine_roles(
+            [
+                "main/static/assets/sample_data/sample_profile_1.json",
+                "main/static/assets/sample_data/sample_profile_41.json",
+                "main/static/assets/sample_data/sample_profile_59.json",
+            ]
+        )
+        context["chart_data"] = sample_data
+        context["skill_levels"] = dumps(
+            list(SkillLevel.objects.values("level", "name"))
+        )
         return context
 
 
@@ -186,7 +162,7 @@ class CompetenciesPageView(TemplateView):
 
     template_name = "main/pages/competencies.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add the competencies framework data to the template context."""
         context = super().get_context_data(**kwargs)
 
@@ -203,7 +179,7 @@ class SkillPageView(TemplateView):
 
     template_name = "main/pages/skill.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add the selected skill and related data to the template context."""
         context = super().get_context_data(**kwargs)
 

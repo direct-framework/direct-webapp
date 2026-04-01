@@ -51,3 +51,10 @@ jobs:
       - name: Check that documentation builds cleanly with MkDocs
         if: matrix.os == 'ubuntu-latest'
         run: mkdocs build --strict
+
+      - name: Test Docker build
+        # Only run on main to not pollute the registry
+        if: github.ref == 'refs/heads/main'
+        uses: ./.github/actions/docker-build
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

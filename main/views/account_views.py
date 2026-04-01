@@ -46,24 +46,24 @@ class SkillProfileView(LoginRequiredMixin, TemplateView):
         user_skills_data = [
             {
                 "skill": user_skill.skill.name,
-                "category": user_skill.skill.competency.name,
+                "category": user_skill.skill.competency.competency_domain.name,
+                "subcategory": user_skill.skill.competency.name,
                 "skill_level": user_skill.skill_level.level,
             }
             for user_skill in user_skills
         ]
 
-        skill_levels = SkillLevel.objects.all()
-        skill_levels_data = [
-            {
-                "level": skill_level.level,
-                "name": skill_level.name,
-                "description": skill_level.description,
-            }
-            for skill_level in skill_levels
-        ]
-
-        context["user_data"] = dumps(user_skills_data)
-        context["skill_levels"] = dumps(skill_levels_data)
+        context["chart_data"] = dumps(
+            [
+                {
+                    "user_id": "root",
+                    "user_data": user_skills_data,
+                }
+            ]
+        )
+        context["skill_levels"] = dumps(
+            list(SkillLevel.objects.values("level", "name"))
+        )
         return context
 
 

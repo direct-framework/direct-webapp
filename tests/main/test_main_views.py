@@ -18,6 +18,7 @@ from main.models import (
     SkillLevel,
     UserSkill,
 )
+from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import (
     BS4Mixin,
@@ -35,11 +36,14 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
     def _get_url(self):
         return reverse("index")
 
-    def test_provides_required_context(self, admin_client):
+    def test_provides_required_context(self, admin_client, skill_level):
         """Test the view provides skill_levels and sample_data context."""
         response = admin_client.get(self._get_url())
-        assert "skill_levels" in response.context
-        assert "sample_data" in response.context
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
+        assert response.context["skill_levels"] == json.dumps(
+            [{"level": skill_level.level, "name": skill_level.name}]
+        )
 
     @pytest.mark.django_db
     def test_navbar_contents(self, soup, auth_soup, admin_soup):
@@ -262,14 +266,15 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
     def _get_url(self):
         return reverse("skill_profile")
 
-    def test_provides_required_context(self, admin_client):
+    def test_provides_required_context(self, admin_client, skill_level):
         """Test that the skill profile view send the correct context data."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
-        assert "user_data" in response.context
-        assert isinstance(response.context["user_data"], str)
-        assert "skill_levels" in response.context
-        assert isinstance(response.context["skill_levels"], str)
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
+        assert response.context["skill_levels"] == json.dumps(
+            [{"level": skill_level.level, "name": skill_level.name}]
+        )
 
     def test_skill_wheel_script(self, user_skill, auth_soup):
         """Test that the skill profile view contains the correct script."""
@@ -278,29 +283,31 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         assert card.find(tag_with_text_filter("h1", "Skills Wheel Visualisation"))
         assert card.find("div", id="dataviz_root")
 
+        skill_level_list = list(SkillLevel.objects.values("level", "name"))
         user_skill_dict = {
             "skill": user_skill.skill.name,
-            "category": user_skill.skill.competency.name,
+            "category": user_skill.skill.competency.competency_domain.name,
+            "subcategory": user_skill.skill.competency.name,
             "skill_level": user_skill.skill_level.level,
         }
-        assert card.find(
-            tag_with_text_filter(
-                "script", f"userDataLoadedFromContext = [{json.dumps(user_skill_dict)}]"
-            )
-        )
-        skill_level_list = list(
-            SkillLevel.objects.values("level", "name", "description")
-        )
+        chart_data = [{"user_id": "root", "user_data": [user_skill_dict]}]
+
         assert card.find(
             tag_with_text_filter(
                 "script",
-                f"skillLevelsLoadedFromContext = {json.dumps(skill_level_list)}",
+                f"const skillLevels = {json.dumps(skill_level_list)};",
             )
         )
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "main().RadialBarChart(",
+                f"const charts = {json.dumps(chart_data)};",
+            )
+        )
+        assert card.find(
+            tag_with_text_filter(
+                "script",
+                "renderRadialBarChart(target, charts[i].user_data, skillLevels);",
             )
         )
 
@@ -313,15 +320,15 @@ class TestRolesPageView(TemplateOkMixin):
     def _get_url(self):
         return reverse("roles")
 
-    def test_provides_required_context(self, admin_client):
+    def test_provides_required_context(self, admin_client, skill_level):
         """Test that the role profiles view renders the data visualization."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
-        assert "sample_data" in response.context
-        assert isinstance(response.context["sample_data"], list)
-        assert "skill_levels" in response.context
-        assert isinstance(response.context["skill_levels"], list)
-        # TODO: Improve this test
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], list)
+        assert response.context["skill_levels"] == json.dumps(
+            [{"level": skill_level.level, "name": skill_level.name}]
+        )
 
 
 class TestSkillLevelsPageView(TemplateOkMixin):
@@ -435,3 +442,17 @@ class TestSkillPageView(TemplateOkMixin):
         """Test that requesting a non-existent skill returns a 404."""
         response = client.get(self._get_url(slug="nonexistent-skill"))
         assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_extract_and_combine_roles():
+    """Test the _extract_and_combine_roles function."""
+    data = _extract_and_combine_roles(
+        ["./tests/data/example_role.json", "./tests/data/example_role.json"]
+    )
+
+    assert isinstance(data, list)
+    assert len(data) == 2
+    assert isinstance(data[0], dict)
+    assert data[0]["name"] == "User 1"
+    assert data[0]["user_data"][0]["skill"] == "Skill 1"
+    assert data[1]["user_data"][1]["category"] == "Category 2"

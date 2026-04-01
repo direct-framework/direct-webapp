@@ -71,12 +71,12 @@ class SluggedModel(NamedModel):
 class CompetencyDomain(SluggedModel):
     """Model for competency domains."""
 
-    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
-
     class Meta:
         """Meta options for CompetencyDomain model."""
 
         ordering = ("rank", "name")
+
+    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
 
 
 class Competency(SluggedModel):
@@ -86,8 +86,10 @@ class Competency(SluggedModel):
         """Meta options for Competency model."""
 
         verbose_name_plural = "competencies"
+        ordering = ("rank", "name")
 
     competency_domain = models.ForeignKey(CompetencyDomain, on_delete=models.CASCADE)
+    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
 
 
 class Provider(SluggedModel):
@@ -135,6 +137,11 @@ class Tool(SluggedModel):
 class Skill(SluggedModel):
     """Model for skills."""
 
+    class Meta:
+        """Meta options for Skill model."""
+
+        ordering = ("rank", "name")
+
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE)
     tools = models.ManyToManyField(
         Tool,
@@ -143,6 +150,7 @@ class Skill(SluggedModel):
     )
     learning_resources = models.ManyToManyField(LearningResource, blank=True)
     related_skills = models.ManyToManyField("self", blank=True)
+    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
 
     def __str__(self) -> str:
         """Return the name of the skill and the competency."""

@@ -339,8 +339,7 @@ const defaultConfig = {
  * Each level should have the following structure:
  * {
  *   level: number,
- *   name: 'Level Name',
- *   description: 'Level Description'
+ *   name: 'Level Name'
  * }
  * @param {Object} config - Configuration parameters for the chart.
  * See `defaultConfig` for available options and their default values.
