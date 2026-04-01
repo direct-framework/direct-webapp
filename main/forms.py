@@ -5,12 +5,58 @@ from typing import TYPE_CHECKING, Any
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Layout, Submit
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
+from django_registration.forms import (
+    RegistrationFormTermsOfService,
+    RegistrationFormUniqueEmail,
+)
 
 from .models import Skill, SkillLevel, UserSkill
 
 if TYPE_CHECKING:  # pragma: no cover
     from .models import User as UserType
+
+
+class RegistrationForm(RegistrationFormUniqueEmail, RegistrationFormTermsOfService):
+    """Inherit from provided Registration Forms to include additional fields.
+
+    This form ensures:
+    - The email is unique.
+    - There is a mandatory checkbox to agree to the terms of service and privacy policy.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Override the constructor to include links in the `tos` field label."""
+        super().__init__(*args, **kwargs)
+        self.fields["tos"].label = _(
+            format_html(
+                'I have read and agree to the <a href="{}">Terms and Conditions</a> and'
+                ' <a href="{}">Privacy Policy</a>.',
+                reverse("terms"),
+                reverse("privacy"),
+            )
+        )
+
+    def clean(self) -> dict[str, Any] | None:
+        """Ensure that the Terms are agreed to and assign them to the user instance."""
+        agreed = self.cleaned_data.get("tos")
+        if agreed is not True:
+            raise ValidationError(
+                {
+                    "tos": _(
+                        "The Terms and Conditions and Privacy Policy must be agreed to."
+                    )
+                }
+            )
+
+        self.instance.agreed_to_tos = agreed
+        self.instance.date_agreed = timezone.now()
+        return super().clean()
 
 
 class UserSkillForm(ModelForm[UserSkill]):
