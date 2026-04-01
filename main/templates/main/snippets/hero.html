@@ -50,7 +50,7 @@
                 </div>
                 <div class="col-md-7 col-lg-8 order-md-2">
                     <div class="card border-0 rounded-2 h-100 bg-skill-wheel">
-                        <div id="dataviz_hero"></div>
+                        <div id="dataviz_1"></div>
                     </div>
                 </div>
             </div>
@@ -58,74 +58,4 @@
     </div>
     <br />
 </section>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const datavizRoot = document.getElementById('dataviz_hero');
-    const sampleData = {{ sample_data|safe }};
-    const skillLevelsLoadedFromContext = {{ skill_levels|safe }};
-
-    // Function to load sample data for a given user
-    function loadProfileData(userId) {
-        const profile = sampleData.find(u => u.user_id === userId);
-        return profile || { user_data: [], role: 'Unknown Role' };
-    }
-
-    // Function to render the radial bar chart
-    function renderSkillWheel(userData) {
-        const radialBarChartConfig = {
-            width: 900,
-            height: 700,
-            plotYOffset: 40,
-            innerRadius: 140,
-            outerPadding: 100,
-            categoryPadding: 0.1,
-            skillPadding: 0.01,
-            arcPercent: 0.99,
-            arcStartOffset: 0.01,
-            annotationPadding: 20,
-            maxLabelWidth: 180,
-            lineThickness: 2,
-            fontSize: 20,
-            labelXOffset: 1.05,
-            labelYSpacing: 40,
-            lvlLabelType: "none",
-            labelTextColor: "white",
-            lvlTextColor: "var(--ar-primary)",
-            lvlArcColor: "rgba(var(--ar-primary-rgb), 0.2)",
-            colourList: [
-                "#4E79A7", // blue
-                "#F28E2B", // orange
-                "#E15759", // red
-                "#76B7B2", // teal
-                "#59A14F", // green
-                "#EDC948", // yellow
-                "#B07AA1", // purple
-                "#FF9DA7", // pink
-                "#9C755F", // brown
-                "#BAB0AC", // grey
-            ],
-        };
-
-        // Clear existing chart
-        datavizRoot.innerHTML = '';
-
-        main().RadialBarChart({
-            target: datavizRoot,
-            data: userData,
-            levels: skillLevelsLoadedFromContext,
-            config: radialBarChartConfig,
-        });
-    }
-
-    // Expose function globally for button onclick
-    window.loadSkillWheel = function(profileId) {
-        const profile = loadProfileData(profileId);
-
-        // Render the skill wheel
-        renderSkillWheel(profile.user_data);
-    };
-
-    // Initially render first profile
-    loadSkillWheel(1);
-});
-</script>
+{% include "main/snippets/skill-wheel.html" %}

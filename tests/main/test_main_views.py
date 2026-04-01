@@ -39,8 +39,8 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
     def test_provides_required_context(self, admin_client, skill_level):
         """Test the view provides skill_levels and sample_data context."""
         response = admin_client.get(self._get_url())
-        assert "sample_data" in response.context
-        assert isinstance(response.context["sample_data"], list)
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
         assert response.context["skill_levels"] == json.dumps(
             [{"level": skill_level.level, "name": skill_level.name}]
         )
@@ -270,8 +270,8 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         """Test that the skill profile view send the correct context data."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
-        assert "user_data" in response.context
-        assert isinstance(response.context["user_data"], str)
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
         assert response.context["skill_levels"] == json.dumps(
             [{"level": skill_level.level, "name": skill_level.name}]
         )
@@ -283,28 +283,31 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         assert card.find(tag_with_text_filter("h1", "Skills Wheel Visualisation"))
         assert card.find("div", id="dataviz_root")
 
+        skill_level_list = list(SkillLevel.objects.values("level", "name"))
         user_skill_dict = {
             "skill": user_skill.skill.name,
             "category": user_skill.skill.competency.competency_domain.name,
             "subcategory": user_skill.skill.competency.name,
             "skill_level": user_skill.skill_level.level,
         }
-        assert card.find(
-            tag_with_text_filter(
-                "script", f"userDataLoadedFromContext = [{json.dumps(user_skill_dict)}]"
-            )
-        )
-        skill_level_list = list(SkillLevel.objects.values("level", "name"))
+        chart_data = [{"user_id": "root", "user_data": [user_skill_dict]}]
+
         assert card.find(
             tag_with_text_filter(
                 "script",
-                f"skillLevelsLoadedFromContext = {json.dumps(skill_level_list)}",
+                f"const skillLevels = {json.dumps(skill_level_list)};",
             )
         )
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "main().RadialBarChart(",
+                f"const charts = {json.dumps(chart_data)};",
+            )
+        )
+        assert card.find(
+            tag_with_text_filter(
+                "script",
+                "renderRadialBarChart(target, charts[i].user_data, skillLevels);",
             )
         )
 
@@ -321,8 +324,8 @@ class TestRolesPageView(TemplateOkMixin):
         """Test that the role profiles view renders the data visualization."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
-        assert "sample_data" in response.context
-        assert isinstance(response.context["sample_data"], list)
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], list)
         assert response.context["skill_levels"] == json.dumps(
             [{"level": skill_level.level, "name": skill_level.name}]
         )
