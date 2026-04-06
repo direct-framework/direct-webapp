@@ -56,6 +56,14 @@
                             Please assess your skill level for each competency below.
                             You can leave skills blank if they are not applicable to you.
                         </p>
+                        <!-- Skill Search Filter -->
+                        <p>
+                            <label for="skill_filter">Search skills:</label>
+                            <input type="text"
+                                   name="skill_filter"
+                                   value=""
+                                   placeholder="Enter search term...">
+                        </p>
                         {% if messages %}
                             {% for message in messages %}
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
