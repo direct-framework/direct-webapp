@@ -33,10 +33,11 @@ class RegistrationForm(RegistrationFormUniqueEmail, RegistrationFormTermsOfServi
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Override the constructor to include links in the `tos` field label."""
         super().__init__(*args, **kwargs)
+        html_anchor = '<a href="{}" target="_blank" rel="noopener noreferrer">'
         self.fields["tos"].label = _(
             format_html(
-                'I have read and agree to the <a href="{}">Terms and Conditions</a> and'
-                ' <a href="{}">Privacy Policy</a>.',
+                f"I have read and agree to the {html_anchor} Terms and Conditions</a>"
+                f" and {html_anchor}Privacy Policy</a>.",
                 reverse("terms"),
                 reverse("privacy"),
             )
