@@ -2,8 +2,10 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <section class="container">
-        <h1>Accept Terms and Privacy Policy</h1>
-        <p class="mb-3">You need to accept the Terms and Conditions and Privacy Policy before using your account pages.</p>
+        <h1>Terms and Privacy Policy</h1>
+        <p class="mb-3">
+            To continue using your account, please review and accept our latest Terms and Conditions and Privacy Policy.
+        </p>
         <form method="post">
             {% csrf_token %}
             {{ form|crispy }}
