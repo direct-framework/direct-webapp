@@ -39,7 +39,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: github.event.pull_request.user.login != 'dependabot[bot]' && github.event.pull_request.user.login != 'pre-commit-ci[bot]' && github.ref_type != 'tag'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           fail_ci_if_error: true
         env:
