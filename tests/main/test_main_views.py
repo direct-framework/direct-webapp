@@ -140,6 +140,38 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             )
         )
 
+    @pytest.mark.django_db
+    def test_footer_release_links(self, client, mocker):
+        """Test the footer renders the current release metadata."""
+        mocker.patch(
+            "direct_webapp.context_processors.get_footer_release_links",
+            return_value=[
+                {
+                    "label": "Webapp",
+                    "tag_name": "v9.9.9",
+                    "url": "https://github.com/direct-framework/direct-webapp/releases/tag/v9.9.9",
+                },
+                {
+                    "label": "Competency framework",
+                    "tag_name": "v8.8.8",
+                    "url": "https://github.com/direct-framework/digital-research-competencies-framework/releases/tag/v8.8.8",
+                },
+            ],
+        )
+
+        response = client.get(self._get_url())
+
+        assert (
+            b"https://github.com/direct-framework/direct-webapp/releases/tag/v9.9.9"
+            in response.content
+        )
+        assert b"Webapp v9.9.9" in response.content
+        assert (
+            b"https://github.com/direct-framework/digital-research-competencies-framework/releases/tag/v8.8.8"
+            in response.content
+        )
+        assert b"Competency framework v8.8.8" in response.content
+
 
 class TestPrivacy(TemplateOkMixin):
     """Test suite for the privacy view."""

@@ -61,6 +61,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "direct_webapp.context_processors.site_title",
+                "direct_webapp.context_processors.footer_release_links",
             ],
         },
     },
@@ -134,6 +135,23 @@ AUTH_USER_MODEL = "main.User"
 LOGIN_REDIRECT_URL = "/account/overview"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 SITE_TITLE = "DIRECT Framework"
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
+GITHUB_RELEASE_TIMEOUT = float(os.getenv("GITHUB_RELEASE_TIMEOUT", "2.0"))
+GITHUB_RELEASE_CACHE_TIMEOUT = int(
+    os.getenv("GITHUB_RELEASE_CACHE_TIMEOUT", str(60 * 60 * 6))
+)
+GITHUB_RELEASE_REPOSITORIES = (
+    {
+        "label": "Competency framework",
+        "repository": "direct-framework/digital-research-competencies-framework",
+        "fallback_tag": "v1.0.0",
+    },
+    {
+        "label": "Webapp",
+        "repository": "direct-framework/direct-webapp",
+        "fallback_tag": "v1.0.0",
+    },
+)
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
