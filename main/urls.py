@@ -1,12 +1,19 @@
 """Urls module for the main app."""
 
 from django.urls import include, path
+from django_registration.backends.one_step.views import RegistrationView
 
 from . import views
+from .forms import RegistrationForm
 
 urlpatterns = [
     path("", views.IndexPageView.as_view(), name="index"),
     path("privacy/", views.PrivacyPageView.as_view(), name="privacy"),
+    path(
+        "accounts/register/",
+        RegistrationView.as_view(form_class=RegistrationForm),
+        name="django_registration_register",
+    ),
     path("accounts/", include("django_registration.backends.one_step.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("about/", views.AboutPageView.as_view(), name="about"),

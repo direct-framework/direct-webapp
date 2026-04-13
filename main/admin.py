@@ -28,7 +28,18 @@ from .models import (
     UserSkill,
 )
 
-admin.site.register(User, UserAdmin)
+
+@admin.register(User)
+class CustomUserAdmin(UserAdmin[User]):
+    """Override the UserAdmin to display extra fields."""
+
+    list_display = (*UserAdmin.list_display, "is_active", "agreed_to_tos")  # type: ignore[misc]
+    list_filter = (*UserAdmin.list_filter, "agreed_to_tos")
+    fieldsets = (  # type: ignore[misc]
+        *UserAdmin.fieldsets,
+        (("Terms and Conditions"), {"fields": ("agreed_to_tos", "date_agreed")}),
+    )
+    readonly_fields = ("agreed_to_tos", "date_agreed")
 
 
 class CompetencyInline(admin.TabularInline[Competency, Competency]):
@@ -184,8 +195,8 @@ class CustomUserSkillAdmin(admin.ModelAdmin[UserProxy]):
         "user_permissions",
     )
     readonly_fields = ("username", "first_name", "last_name", "email", "is_active")
-    list_display = ("username", "first_name", "last_name", "email", "is_active")
-    search_fields = ("username", "first_name", "last_name", "email")
+    list_display = ("username", "is_active")
+    search_fields = ("username", "email")
     list_filter = ("is_active",)
     inlines = (UserSkillInline,)
 
