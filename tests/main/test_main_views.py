@@ -67,14 +67,19 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("li", "Framework"), class_="nav-item dropdown"
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Competencies framework"),
-            href=reverse("competencies"),
+            tag_with_text_filter("a", "Overview"),
+            href=reverse("framework_overview"),
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Skills and competencies"),
+            href=reverse("skills_and_competencies"),
         )
         assert framework_dropdown.find(
             tag_with_text_filter("a", "Skill levels"), href=reverse("skill_levels")
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Training resources"), href=reverse("training")
+            tag_with_text_filter("a", "Learning resources"),
+            href=reverse("learning_resources"),
         )
         assert framework_dropdown.find(
             tag_with_text_filter("a", "Roles and job profiles"), href=reverse("roles")
@@ -340,13 +345,13 @@ class TestSkillLevelsPageView(TemplateOkMixin):
         return reverse("skill_levels")
 
 
-class TestTrainingPageView(TemplateOkMixin):
-    """Test suite for the TrainingPageView."""
+class TestLearningResourcesPageView(TemplateOkMixin):
+    """Test suite for the LearningResourcesPageView."""
 
-    _template_name = "main/pages/training.html"
+    _template_name = "main/pages/learning-resources.html"
 
     def _get_url(self):
-        return reverse("training")
+        return reverse("learning_resources")
 
 
 class TestGetInvolvedPageView(TemplateOkMixin):
@@ -397,13 +402,13 @@ class TestAccountOverviewView(LoginRequiredMixin):
         assert response.url == reverse("skill_profile")
 
 
-class TestCompetenciesPageView(TemplateOkMixin):
-    """Test suite for the CompetenciesPageView."""
+class TestSkillsAndCompetenciesPageView(TemplateOkMixin):
+    """Test suite for the SkillsAndCompetenciesPageView."""
 
-    _template_name = "main/pages/competencies.html"
+    _template_name = "main/pages/skills-and-competencies.html"
 
     def _get_url(self):
-        return reverse("competencies")
+        return reverse("skills_and_competencies")
 
     @pytest.mark.django_db
     def test_provides_required_context(self, client, competency_domain):

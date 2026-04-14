@@ -1,0 +1,36 @@
+{% extends "main/base.page.html" %}
+{% load static %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'framework_overview' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Overview</li>
+{% endblock breadcrumb_items %}
+{% block content %}
+    <section id="training">
+        <div class="row">
+            <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
+                <h1 class="pb-2 pb-lg-3">Framework Overview</h1>
+                <p class="fs-lg mb-5">Framework overview page.</p>
+            </div>
+            <aside class="col-lg-3 offset-xl-1">
+                <div class="offcanvas-lg offcanvas-end" id="sidebar">
+                    <div class="offcanvas-header">
+                        <h4 class="offcanvas-title">Sidebar</h4>
+                        <button class="btn-close ms-auto"
+                                type="button"
+                                data-bs-dismiss="offcanvas"
+                                data-bs-target="#sidebar"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <h4 class="pt-1 pt-lg-0 mt-lg-n2"></h4>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+{% endblock content %}
