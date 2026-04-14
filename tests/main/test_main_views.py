@@ -461,3 +461,12 @@ def test_extract_and_combine_roles():
     assert data[0]["name"] == "User 1"
     assert data[0]["user_data"][0]["skill"] == "Skill 1"
     assert data[1]["user_data"][1]["category"] == "Category 2"
+
+
+class TestFrameworkOverviewPageView(TemplateOkMixin):
+    """Test suite for the GetInvolvedPageView."""
+
+    _template_name = "main/pages/framework-overview.html"
+
+    def _get_url(self):
+        return reverse("framework_overview")

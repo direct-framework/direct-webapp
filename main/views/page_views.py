@@ -210,4 +210,4 @@ class SkillPageView(TemplateView):
 class FrameworkOverviewPageView(TemplateView):
     """View that renders an overview page for the framework."""
 
-    template_name = "main/pages/overview.html"
+    template_name = "main/pages/framework-overview.html"
