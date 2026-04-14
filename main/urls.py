@@ -58,13 +58,28 @@ urlpatterns = [
     ),
     path("get-involved/", views.GetInvolvedPageView.as_view(), name="get_involved"),
     path("events/", views.EventsPageView.as_view(), name="events"),
-    path("self-assess/", views.SelfAssessPageView.as_view(), name="self_assess"),
-    path("skills/", views.SkillProfileView.as_view(), name="skill_profile"),
-    path("account/profile/", views.UserUpdateView.as_view(), name="profile"),
     path(
-        "account/overview/",
-        views.AccountOverviewView.as_view(),
-        name="account-overview",
+        "accounts/",
+        include(
+            [
+                path(
+                    "self-assess/",
+                    views.SelfAssessPageView.as_view(),
+                    name="self_assess",
+                ),
+                path(
+                    "skills-profile/",
+                    views.SkillProfileView.as_view(),
+                    name="skills_profile",
+                ),
+                path("profile/", views.UserUpdateView.as_view(), name="profile"),
+                path(
+                    "overview/",
+                    views.AccountOverviewView.as_view(),
+                    name="account-overview",
+                ),
+            ]
+        ),
     ),
     path(
         "framework-json/",

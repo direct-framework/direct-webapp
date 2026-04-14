@@ -118,17 +118,17 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Update Profile"), href=reverse("profile")
+            tag_with_text_filter("a", "Update profile"), href=reverse("profile")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Change Password"),
+            tag_with_text_filter("a", "Change password"),
             href=reverse("password_change"),
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Assess Skills"), href=reverse("self_assess")
+            tag_with_text_filter("a", "Assessment"), href=reverse("self_assess")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "View Skills"), href=reverse("skill_profile")
+            tag_with_text_filter("a", "Skills profile"), href=reverse("skills_profile")
         )
         assert account_dropdown.find(
             tag_with_text_filter("form", "Sign out"), action=reverse("logout")
@@ -141,7 +141,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             admin_soup.find("header", class_="navbar")
             .find(tag_with_text_filter("div", "Hello,"), class_="dropdown")
             .find(
-                tag_with_text_filter("a", "Admin Backend"), href=reverse("admin:index")
+                tag_with_text_filter("a", "Admin backend"), href=reverse("admin:index")
             )
         )
 
@@ -158,7 +158,7 @@ class TestPrivacy(TemplateOkMixin):
 class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the UserUpdateView."""
 
-    _template_name = "main/user_update_form.html"
+    _template_name = "main/user-update-form.html"
 
     def _get_url(self):
         return reverse("profile")
@@ -221,7 +221,7 @@ class TestTermsPageView(TemplateOkMixin):
 class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the SelfAssessPageView."""
 
-    _template_name = "main/user_self_assess.html"
+    _template_name = "main/user-self-assess.html"
 
     def _get_url(self):
         return reverse("self_assess")
@@ -266,10 +266,10 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
 class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
     """Test suite for the user skill profile view."""
 
-    _template_name = "main/user_skill_profile.html"
+    _template_name = "main/user-skills-profile.html"
 
     def _get_url(self):
-        return reverse("skill_profile")
+        return reverse("skills_profile")
 
     def test_provides_required_context(self, admin_client, skill_level):
         """Test that the skill profile view send the correct context data."""
@@ -285,7 +285,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         """Test that the skill profile view contains the correct script."""
         card = auth_soup.find("div", class_="card-body")
 
-        assert card.find(tag_with_text_filter("h1", "Skills Wheel Visualisation"))
+        assert card.find(tag_with_text_filter("h1", "Skills profile"))
         assert card.find("div", id="dataviz_root")
 
         skill_level_list = list(SkillLevel.objects.values("level", "name"))
@@ -399,7 +399,7 @@ class TestAccountOverviewView(LoginRequiredMixin):
 
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("skill_profile")
+        assert response.url == reverse("skills_profile")
 
 
 class TestSkillsAndCompetenciesPageView(TemplateOkMixin):
