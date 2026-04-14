@@ -17,7 +17,8 @@ dependencies = [
     "whitenoise",
     "mysqlclient",
     "django-import-export",
-    "django-multiselectfield"
+    "django-multiselectfield",
+    "django-tables2"
 ]
 
 [project.optional-dependencies]
