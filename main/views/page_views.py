@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
-from ..models import CompetencyDomain, Skill, SkillLevel, Tool
+from ..models import CompetencyDomain, Skill, SkillLevel, ToolLanguageMethodology
 
 logger = logging.getLogger(__name__)
 
@@ -200,9 +200,13 @@ class SkillPageView(TemplateView):
         context["skill"] = skill
         context["related_skills"] = skill.related_skills.all().order_by("name")
         context["learning_resources"] = skill.learning_resources.all().order_by("name")
-        context["tools"] = tools_qs.filter(kind=Tool.Kind.TOOL)
-        context["languages"] = tools_qs.filter(kind=Tool.Kind.LANGUAGE)
-        context["methodologies"] = tools_qs.filter(kind=Tool.Kind.METHODOLOGY)
+        context["tools"] = tools_qs.filter(kind=ToolLanguageMethodology.Kind.TOOL)
+        context["languages"] = tools_qs.filter(
+            kind=ToolLanguageMethodology.Kind.LANGUAGE
+        )
+        context["methodologies"] = tools_qs.filter(
+            kind=ToolLanguageMethodology.Kind.METHODOLOGY
+        )
 
         return context
 

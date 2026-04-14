@@ -113,7 +113,7 @@ class LearningResource(SluggedModel):
     description = models.TextField(blank=True, null=True)  # type: ignore[assignment]
 
 
-class Tool(SluggedModel):
+class ToolLanguageMethodology(SluggedModel):
     """Model for tools, languages and methodologies."""
 
     class Meta:
@@ -125,8 +125,8 @@ class Tool(SluggedModel):
     class Kind(models.TextChoices):
         """Enumeration of Kind choices."""
 
-        TOOL = "tool", "Tool"
-        LANGUAGE = "language", "Language"
+        TOOL = "tool", "Computational Tool"
+        LANGUAGE = "language", "Programming or Data Language"
         METHODOLOGY = "methodology", "Methodology"
 
     kind = models.CharField(max_length=12, choices=Kind, default=Kind.TOOL)
@@ -144,9 +144,9 @@ class Skill(SluggedModel):
 
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE)
     tools = models.ManyToManyField(
-        Tool,
+        ToolLanguageMethodology,
         blank=True,
-        verbose_name="tools, methodologies, behaviours and languages",
+        verbose_name="tools, languages and methodologies",
     )
     learning_resources = models.ManyToManyField(LearningResource, blank=True)
     related_skills = models.ManyToManyField("self", blank=True)

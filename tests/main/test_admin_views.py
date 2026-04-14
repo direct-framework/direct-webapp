@@ -15,7 +15,7 @@ from main.models import (
     Provider,
     Skill,
     SkillLevel,
-    Tool,
+    ToolLanguageMethodology,
 )
 
 
@@ -121,7 +121,7 @@ class TestLearningResourceAdmin(AdminMixin):
 class TestToolAdmin(AdminMixin):
     """Test suite for the Tool admin views."""
 
-    _model = Tool
+    _model = ToolLanguageMethodology
     _data: ClassVar[dict[str, Any]] = {
         "name": "Test Tool",
         "description": "Test Description",

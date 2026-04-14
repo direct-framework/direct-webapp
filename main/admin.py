@@ -14,7 +14,7 @@ from .io_resources import (
     ProviderResource,
     SkillLevelResource,
     SkillResource,
-    ToolResource,
+    ToolLanguageMethodologyResource,
 )
 from .models import (
     Competency,
@@ -23,7 +23,7 @@ from .models import (
     Provider,
     Skill,
     SkillLevel,
-    Tool,
+    ToolLanguageMethodology,
     User,
     UserSkill,
 )
@@ -101,10 +101,10 @@ class ProviderAdmin(ImportExportModelAdmin[Provider]):
     resource_classes = (ProviderResource,)
 
 
-class ToolInline(admin.TabularInline[Tool, LearningResource]):
+class ToolInline(admin.TabularInline[ToolLanguageMethodology, LearningResource]):
     """Inline admin class for the Tool model."""
 
-    model = Tool.learning_resources.through  # type: ignore[assignment]
+    model = ToolLanguageMethodology.learning_resources.through  # type: ignore[assignment]
     extra = 0
     verbose_name = "Tool, Methodology, Behaviour or Language"
     verbose_name_plural = "Tools, Methodologies, Behaviours and Languages"
@@ -125,14 +125,14 @@ class LearningResourceAdmin(ImportExportModelAdmin[LearningResource]):
         return obj.get_language_display()
 
 
-@admin.register(Tool)
-class ToolAdmin(ImportExportModelAdmin[Tool]):
+@admin.register(ToolLanguageMethodology)
+class ToolAdmin(ImportExportModelAdmin[ToolLanguageMethodology]):
     """Admin class for The Tool model."""
 
     list_display = ("name", "kind", "url")
     search_fields = ("name",)
     list_filter = ("kind",)
-    resource_classes = (ToolResource,)
+    resource_classes = (ToolLanguageMethodologyResource,)
 
 
 @admin.register(Skill)
