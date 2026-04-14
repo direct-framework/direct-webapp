@@ -172,12 +172,11 @@ class UserProxy(User):
         """Make model a proxy and set verbose names."""
 
         proxy = True
-        verbose_name = "User Skills"
-        verbose_name_plural = "User Skills"
+        verbose_name = "User skills profile"
 
 
 @admin.register(UserProxy)
-class CustomUserSkillAdmin(admin.ModelAdmin[UserProxy]):
+class CustomUserSkillsProfilesAdmin(admin.ModelAdmin[UserProxy]):
     """Admin class for adding UserSkills in bulk to individual Users."""
 
     exclude = (
@@ -193,6 +192,8 @@ class CustomUserSkillAdmin(admin.ModelAdmin[UserProxy]):
         "date_joined",
         "groups",
         "user_permissions",
+        "agreed_to_tos",
+        "date_agreed",
     )
     readonly_fields = ("username", "first_name", "last_name", "email", "is_active")
     list_display = ("username", "is_active")
@@ -202,4 +203,10 @@ class CustomUserSkillAdmin(admin.ModelAdmin[UserProxy]):
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         """Do not allow adding new users from this view."""
+        return False
+
+    def has_delete_permission(
+        self, request: HttpRequest, obj: UserProxy | None = None
+    ) -> bool:
+        """Do not allow deleting users from this view."""
         return False
