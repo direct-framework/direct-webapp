@@ -40,26 +40,26 @@
                     </a>
                     <a class="dropdown-item" href="{% url 'profile' %}">
                         <i class="fa-solid fa-address-card fa-fw opacity-70 me-2 icon-width"></i>
-                        Update Profile
+                        Update profile
                     </a>
                     <a class="dropdown-item" href="{% url 'password_change' %}">
                         <i class="fa-solid fa-lock fa-fw opacity-70 me-2 icon-width"></i>
-                        Change Password
+                        Change password
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{% url 'self_assess' %}">
                         <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
-                        Assess Skills
+                        Assessment
                     </a>
-                    <a class="dropdown-item" href="{% url 'skill_profile' %}">
+                    <a class="dropdown-item" href="{% url 'skills_profile' %}">
                         <i class="fa-solid fa-chart-pie fa-fw opacity-70 me-2"></i>
-                        View Skills
+                        Skills profile
                     </a>
                     {% if user.is_staff %}
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{% url 'admin:index' %}">
                             <i class="fa-solid fa-gear fa-fw opacity-70 me-2"></i>
-                            Admin Backend
+                            Admin backend
                         </a>
                     {% endif %}
                     <div class="dropdown-divider"></div>
@@ -103,13 +103,16 @@
                            aria-expanded="false">Framework</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'competencies' %}">Competencies framework</a>
+                                <a class="dropdown-item" href="{% url 'framework_overview' %}">Overview</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'skills_and_competencies' %}">Skills and competencies</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'skill_levels' %}">Skill levels</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'training' %}">Training resources</a>
+                                <a class="dropdown-item" href="{% url 'learning_resources' %}">Learning resources</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'roles' %}">Roles and job profiles</a>

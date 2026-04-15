@@ -88,10 +88,10 @@ class SkillLevelsPageView(TemplateView):
         return context
 
 
-class TrainingPageView(TemplateView):
-    """View that renders the training page."""
+class LearningResourcesPageView(TemplateView):
+    """View that renders the page with all learning resources."""
 
-    template_name = "main/pages/training.html"
+    template_name = "main/pages/learning-resources.html"
 
 
 class GetInvolvedPageView(TemplateView):
@@ -157,10 +157,10 @@ class RolesPageView(TemplateView):
         return context
 
 
-class CompetenciesPageView(TemplateView):
+class SkillsAndCompetenciesPageView(TemplateView):
     """View that renders the competencies page."""
 
-    template_name = "main/pages/competencies.html"
+    template_name = "main/pages/skills-and-competencies.html"
 
     def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add the competencies framework data to the template context."""
@@ -205,3 +205,9 @@ class SkillPageView(TemplateView):
         context["methodologies"] = tools_qs.filter(kind=Tool.Kind.METHODOLOGY)
 
         return context
+
+
+class FrameworkOverviewPageView(TemplateView):
+    """View that renders an overview page for the framework."""
+
+    template_name = "main/pages/framework-overview.html"

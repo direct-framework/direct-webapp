@@ -1,0 +1,29 @@
+<aside class="col-lg-3">
+    <div class="position-lg-sticky competencies-sticky">
+        <div class="offcanvas-lg offcanvas-start" id="sidebarAccount">
+            <button class="btn-close position-absolute top-0 end-0 mt-3 me-3 d-lg-none"
+                    type="button"
+                    data-bs-dismiss="offcanvas"
+                    data-bs-target="#sidebarAccount"
+                    aria-label="Close"></button>
+            <div class="offcanvas-body">
+                <div class="mb-3">
+                    <h3 class="h5 mb-1">{{ request.user.username }}</h3>
+                    <p class="fs-sm text-body-secondary mb-0">{{ request.user.email }}</p>
+                </div>
+                {% with request.resolver_match.url_name as url_name %}
+                    <div class="d-flex gap-2 mb-4">
+                        <a href="{% url 'self_assess' %}"
+                           class="btn {% if url_name == 'self_assess' %}btn-primary{% else %}btn-secondary{% endif %}">
+                            Assessment
+                        </a>
+                        <a href="{% url 'skills_profile' %}"
+                           class="btn {% if url_name == 'skills_profile' %}btn-primary{% else %}btn-secondary{% endif %}">
+                            Skills profile
+                        </a>
+                    </div>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</aside>

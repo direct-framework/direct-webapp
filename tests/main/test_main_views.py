@@ -67,14 +67,19 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("li", "Framework"), class_="nav-item dropdown"
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Competencies framework"),
-            href=reverse("competencies"),
+            tag_with_text_filter("a", "Overview"),
+            href=reverse("framework_overview"),
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Skills and competencies"),
+            href=reverse("skills_and_competencies"),
         )
         assert framework_dropdown.find(
             tag_with_text_filter("a", "Skill levels"), href=reverse("skill_levels")
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Training resources"), href=reverse("training")
+            tag_with_text_filter("a", "Learning resources"),
+            href=reverse("learning_resources"),
         )
         assert framework_dropdown.find(
             tag_with_text_filter("a", "Roles and job profiles"), href=reverse("roles")
@@ -113,17 +118,17 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Update Profile"), href=reverse("profile")
+            tag_with_text_filter("a", "Update profile"), href=reverse("profile")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Change Password"),
+            tag_with_text_filter("a", "Change password"),
             href=reverse("password_change"),
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Assess Skills"), href=reverse("self_assess")
+            tag_with_text_filter("a", "Assessment"), href=reverse("self_assess")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "View Skills"), href=reverse("skill_profile")
+            tag_with_text_filter("a", "Skills profile"), href=reverse("skills_profile")
         )
         assert account_dropdown.find(
             tag_with_text_filter("form", "Sign out"), action=reverse("logout")
@@ -136,7 +141,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             admin_soup.find("header", class_="navbar")
             .find(tag_with_text_filter("div", "Hello,"), class_="dropdown")
             .find(
-                tag_with_text_filter("a", "Admin Backend"), href=reverse("admin:index")
+                tag_with_text_filter("a", "Admin backend"), href=reverse("admin:index")
             )
         )
 
@@ -153,7 +158,7 @@ class TestPrivacy(TemplateOkMixin):
 class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the UserUpdateView."""
 
-    _template_name = "main/user_update_form.html"
+    _template_name = "main/user-update-form.html"
 
     def _get_url(self):
         return reverse("profile")
@@ -216,7 +221,7 @@ class TestTermsPageView(TemplateOkMixin):
 class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the SelfAssessPageView."""
 
-    _template_name = "main/user_self_assess.html"
+    _template_name = "main/user-self-assess.html"
 
     def _get_url(self):
         return reverse("self_assess")
@@ -261,10 +266,10 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
 class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
     """Test suite for the user skill profile view."""
 
-    _template_name = "main/user_skill_profile.html"
+    _template_name = "main/user-skills-profile.html"
 
     def _get_url(self):
-        return reverse("skill_profile")
+        return reverse("skills_profile")
 
     def test_provides_required_context(self, admin_client, skill_level):
         """Test that the skill profile view send the correct context data."""
@@ -280,7 +285,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         """Test that the skill profile view contains the correct script."""
         card = auth_soup.find("div", class_="card-body")
 
-        assert card.find(tag_with_text_filter("h1", "Skills Wheel Visualisation"))
+        assert card.find(tag_with_text_filter("h1", "Skills profile"))
         assert card.find("div", id="dataviz_root")
 
         skill_level_list = list(SkillLevel.objects.values("level", "name"))
@@ -340,13 +345,13 @@ class TestSkillLevelsPageView(TemplateOkMixin):
         return reverse("skill_levels")
 
 
-class TestTrainingPageView(TemplateOkMixin):
-    """Test suite for the TrainingPageView."""
+class TestLearningResourcesPageView(TemplateOkMixin):
+    """Test suite for the LearningResourcesPageView."""
 
-    _template_name = "main/pages/training.html"
+    _template_name = "main/pages/learning-resources.html"
 
     def _get_url(self):
-        return reverse("training")
+        return reverse("learning_resources")
 
 
 class TestGetInvolvedPageView(TemplateOkMixin):
@@ -394,16 +399,16 @@ class TestAccountOverviewView(LoginRequiredMixin):
 
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("skill_profile")
+        assert response.url == reverse("skills_profile")
 
 
-class TestCompetenciesPageView(TemplateOkMixin):
-    """Test suite for the CompetenciesPageView."""
+class TestSkillsAndCompetenciesPageView(TemplateOkMixin):
+    """Test suite for the SkillsAndCompetenciesPageView."""
 
-    _template_name = "main/pages/competencies.html"
+    _template_name = "main/pages/skills-and-competencies.html"
 
     def _get_url(self):
-        return reverse("competencies")
+        return reverse("skills_and_competencies")
 
     @pytest.mark.django_db
     def test_provides_required_context(self, client, competency_domain):
@@ -456,3 +461,12 @@ def test_extract_and_combine_roles():
     assert data[0]["name"] == "User 1"
     assert data[0]["user_data"][0]["skill"] == "Skill 1"
     assert data[1]["user_data"][1]["category"] == "Category 2"
+
+
+class TestFrameworkOverviewPageView(TemplateOkMixin):
+    """Test suite for the GetInvolvedPageView."""
+
+    _template_name = "main/pages/framework-overview.html"
+
+    def _get_url(self):
+        return reverse("framework_overview")

@@ -35,12 +35,12 @@ class SkillProfileView(LoginRequiredMixin, TemplateView):
     """View that renders the skill profile page."""
 
     request: AuthenticatedHttpRequest
-    template_name = "main/user_skill_profile.html"
+    template_name = "main/user-skills-profile.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         """Add user skills and skill levels to the template context."""
         context = super().get_context_data(**kwargs)
-        logger.info("Rendering skill_profile page.")
+        logger.info("Rendering skills-profile page.")
 
         user_skills = UserSkill.objects.filter(user=self.request.user.pk)
         user_skills_data = [
@@ -75,7 +75,7 @@ class AccountOverviewView(LoginRequiredMixin, RedirectView):
     def get_redirect_url(self, *args: Any, **kwargs: Any) -> str:
         """Redirect to skill profile if skills exist, otherwise self-assess."""
         if UserSkill.objects.filter(user=self.request.user).exists():
-            return reverse("skill_profile")
+            return reverse("skills_profile")
         return reverse("self_assess")
 
 
@@ -85,7 +85,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView["UserType", ModelForm["UserT
     request: AuthenticatedHttpRequest
     model = User
     fields = ("username", "email")
-    template_name_suffix = "_update_form"
+    template_name_suffix = "-update-form"
     success_url = reverse_lazy("profile")
 
     def get_object(self, queryset: Any | None = None) -> "UserType":
@@ -97,7 +97,7 @@ class SelfAssessPageView(LoginRequiredMixin, FormView[UserSkillsForm]):
     """View that renders the self-assessment questionnaire page."""
 
     request: AuthenticatedHttpRequest
-    template_name = "main/user_self_assess.html"
+    template_name = "main/user-self-assess.html"
     form_class = UserSkillsForm
     success_url = reverse_lazy("self_assess")
 
