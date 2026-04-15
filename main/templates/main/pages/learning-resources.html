@@ -1,5 +1,6 @@
 {% extends "main/base.page.html" %}
 {% load static %}
+{% load render_table from django_tables2 %}
 {% block title %}
     Digital Research Competencies Framework
 {% endblock title %}
@@ -12,11 +13,9 @@
 {% block content %}
     <section id="training">
         <div class="row">
-            <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
+            <div class="col pe-lg-4 pe-xl-0">
                 <h1 class="pb-2 pb-lg-3">Learning resources</h1>
-                <p class="fs-lg mb-5">
-                    This section will be developed in future to provide resources for training and personal development pathways.
-                </p>
+                {% render_table table %}
             </div>
             <aside class="col-lg-3 offset-xl-1">
                 <div class="offcanvas-lg offcanvas-end" id="sidebar">
