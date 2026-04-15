@@ -17725,4 +17725,13 @@ html {
   margin: 0;
 }
 
+.mermaid {
+  background-color: var(--ar-gray-100);
+}
+
+.mermaid > svg {
+  display: block;
+  margin: auto;
+}
+
 /*# sourceMappingURL=theme.css.map */
