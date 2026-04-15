@@ -119,14 +119,14 @@ class ToolLanguageMethodology(SluggedModel):
     class Meta:
         """Meta options for Tool model."""
 
-        verbose_name = _("Tool, Language or Methodology")
-        verbose_name_plural = _("Tools, Languages and Methodologies")
+        verbose_name = _("Tool, language or methodology")
+        verbose_name_plural = _("Tools, languages and methodologies")
 
     class Kind(models.TextChoices):
         """Enumeration of Kind choices."""
 
-        TOOL = "tool", "Computational Tool"
-        LANGUAGE = "language", "Programming or Data Language"
+        TOOL = "tool", "Computational tool"
+        LANGUAGE = "language", "Programming or data language"
         METHODOLOGY = "methodology", "Methodology"
 
     kind = models.CharField(max_length=12, choices=Kind, default=Kind.TOOL)
