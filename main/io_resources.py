@@ -20,7 +20,7 @@ from .models import (
     Skill,
     SkillLevel,
     SluggedModel,
-    Tool,
+    ToolLanguageMethodology,
 )
 
 
@@ -162,7 +162,7 @@ class LearningResourceResource(resources.ModelResource):
         exclude = ("id",)
 
 
-class ToolResource(resources.ModelResource):
+class ToolLanguageMethodologyResource(resources.ModelResource):
     """A ModelResource to facilitate importing and exporting Tools."""
 
     learning_resources = fields.Field(
@@ -171,9 +171,9 @@ class ToolResource(resources.ModelResource):
     )
 
     class Meta:
-        """Meta options for ToolResource."""
+        """Meta options for ToolLanguageMethodologyResource."""
 
-        model = Tool
+        model = ToolLanguageMethodology
         skip_unchanged = True
         import_id_fields = ("slug",)
         exclude = ("id",)
@@ -188,7 +188,9 @@ class SkillResource(resources.ModelResource):
     tools = fields.Field(
         "tools",
         column_name="tools_languages_methodologies",
-        widget=SluggedM2MWidget(Tool, "tools_languages_methodologies"),
+        widget=SluggedM2MWidget(
+            ToolLanguageMethodology, "tools_languages_methodologies"
+        ),
     )
     learning_resources = fields.Field(
         "learning_resources",

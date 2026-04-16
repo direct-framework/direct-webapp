@@ -42,6 +42,7 @@ repos:
           - django-import-export
           - types-django-import-export
           - django-multiselectfield
+          - django-tables2
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.48.0
     hooks:

@@ -8,16 +8,21 @@ from json import dumps
 from pathlib import Path
 from typing import Any
 
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
+from django_tables2 import SingleTableView
 
-from ..models import CompetencyDomain, Skill, SkillLevel, Tool
+from ..models import (
+    CompetencyDomain,
+    LearningResource,
+    Skill,
+    SkillLevel,
+    ToolLanguageMethodology,
+)
+from ..tables import LearningResourcesTable
 
 logger = logging.getLogger(__name__)
-
-User = get_user_model()
 
 
 def _extract_and_combine_roles(
@@ -88,9 +93,11 @@ class SkillLevelsPageView(TemplateView):
         return context
 
 
-class LearningResourcesPageView(TemplateView):
+class LearningResourcesPageView(SingleTableView):
     """View that renders the page with all learning resources."""
 
+    model = LearningResource
+    table_class = LearningResourcesTable
     template_name = "main/pages/learning-resources.html"
 
 
@@ -200,9 +207,13 @@ class SkillPageView(TemplateView):
         context["skill"] = skill
         context["related_skills"] = skill.related_skills.all().order_by("name")
         context["learning_resources"] = skill.learning_resources.all().order_by("name")
-        context["tools"] = tools_qs.filter(kind=Tool.Kind.TOOL)
-        context["languages"] = tools_qs.filter(kind=Tool.Kind.LANGUAGE)
-        context["methodologies"] = tools_qs.filter(kind=Tool.Kind.METHODOLOGY)
+        context["tools"] = tools_qs.filter(kind=ToolLanguageMethodology.Kind.TOOL)
+        context["languages"] = tools_qs.filter(
+            kind=ToolLanguageMethodology.Kind.LANGUAGE
+        )
+        context["methodologies"] = tools_qs.filter(
+            kind=ToolLanguageMethodology.Kind.METHODOLOGY
+        )
 
         return context
 

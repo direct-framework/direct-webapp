@@ -218,6 +218,40 @@ class TestTermsPageView(TemplateOkMixin):
         return reverse("terms")
 
 
+class TestTermsAcceptanceView(TemplateOkMixin, LoginRequiredMixin):
+    """Test suite for the terms acceptance view."""
+
+    _template_name = "main/terms_acceptance.html"
+
+    def _get_url(self):
+        return reverse("terms_acceptance")
+
+    def test_post_updates_user_and_redirects_to_overview(self, client, user):
+        """Test that posting acceptance updates user fields and redirects."""
+        user.agreed_to_tos = False
+        user.save(update_fields=["agreed_to_tos"])
+        client.force_login(user)
+
+        response = client.post(self._get_url(), data={"tos": True})
+
+        user.refresh_from_db()
+        assert user.agreed_to_tos is True
+        assert user.date_agreed is not None
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("account-overview")
+
+    def test_post_redirects_to_overview_without_next(self, client, user):
+        """Test that posting acceptance without next redirects to account overview."""
+        user.agreed_to_tos = False
+        user.save(update_fields=["agreed_to_tos"])
+        client.force_login(user)
+
+        response = client.post(self._get_url(), data={"tos": True})
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("account-overview")
+
+
 class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the SelfAssessPageView."""
 
@@ -261,6 +295,23 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
         # Assert redirects to self_assess (success_url)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse("self_assess")
+
+
+@pytest.mark.parametrize(
+    "url_name",
+    ["skills_profile", "self_assess", "profile", "account-overview"],
+)
+def test_unaccepted_users_are_redirected_to_terms_acceptance(client, user, url_name):
+    """Unaccepted users should be redirected from gated account pages."""
+    user.agreed_to_tos = False
+    user.save(update_fields=["agreed_to_tos"])
+    client.force_login(user)
+    target_url = reverse(url_name)
+
+    response = client.get(target_url)
+
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == reverse("terms_acceptance")
 
 
 class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
@@ -345,13 +396,38 @@ class TestSkillLevelsPageView(TemplateOkMixin):
         return reverse("skill_levels")
 
 
-class TestLearningResourcesPageView(TemplateOkMixin):
+class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
     """Test suite for the LearningResourcesPageView."""
 
     _template_name = "main/pages/learning-resources.html"
 
     def _get_url(self):
         return reverse("learning_resources")
+
+    @pytest.mark.django_db
+    def test_page_content(self, learning_resource, skill, soup):
+        """Test that the learning page contains a table with learning resources."""
+        assert "Learning resources" == soup.find("h1").text
+
+        table = soup.find("table")
+        thead = table.find("thead")
+        assert thead.find(tag_with_text_filter("th", "Name"), class_="asc orderable")
+        assert thead.find(tag_with_text_filter("th", "Language"), class_="orderable")
+        assert thead.find(tag_with_text_filter("th", "Provider"), class_="orderable")
+        assert thead.find(tag_with_text_filter("th", "Skills"))
+        tr = table.find("tbody").find("tr", class_="even")
+        assert tr.find(
+            tag_with_text_filter("a", "Learning Resource"), href=learning_resource.url
+        )
+        assert tr.find(tag_with_text_filter("td", "English"))
+        assert tr.find(
+            tag_with_text_filter("a", "Provider"), href=learning_resource.provider.url
+        )
+        assert tr.find(
+            tag_with_text_filter("a", "Skill"),
+            class_="badge",
+            href=reverse("skill_detail", args=(skill.slug,)),
+        )
 
 
 class TestGetInvolvedPageView(TemplateOkMixin):

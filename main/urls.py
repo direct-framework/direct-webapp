@@ -46,6 +46,11 @@ urlpatterns = [
     path("accounts/", include(accounts_patterns)),
     path("about/", views.AboutPageView.as_view(), name="about"),
     path("terms/", views.TermsPageView.as_view(), name="terms"),
+    path(
+        "terms-acceptance/",
+        views.TermsAcceptanceView.as_view(),
+        name="terms_acceptance",
+    ),
     path("framework/", include(framework_patterns)),
     path("get-involved/", views.GetInvolvedPageView.as_view(), name="get_involved"),
     path("events/", views.EventsPageView.as_view(), name="events"),

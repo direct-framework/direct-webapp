@@ -22,6 +22,16 @@ if TYPE_CHECKING:  # pragma: no cover
     from .models import User as UserType
 
 
+def _build_tos_form_label() -> str:
+    html_anchor = '<a href="{}" target="_blank" rel="noopener noreferrer">'
+    return format_html(
+        f"I have read and agree to the {html_anchor} Terms and Conditions</a>"
+        f" and {html_anchor}Privacy Policy</a>.",
+        reverse("terms"),
+        reverse("privacy"),
+    )
+
+
 class RegistrationForm(RegistrationFormUniqueEmail, RegistrationFormTermsOfService):
     """Inherit from provided Registration Forms to include additional fields.
 
@@ -33,15 +43,7 @@ class RegistrationForm(RegistrationFormUniqueEmail, RegistrationFormTermsOfServi
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Override the constructor to include links in the `tos` field label."""
         super().__init__(*args, **kwargs)
-        html_anchor = '<a href="{}" target="_blank" rel="noopener noreferrer">'
-        self.fields["tos"].label = _(
-            format_html(
-                f"I have read and agree to the {html_anchor} Terms and Conditions</a>"
-                f" and {html_anchor}Privacy Policy</a>.",
-                reverse("terms"),
-                reverse("privacy"),
-            )
-        )
+        self.fields["tos"].label = _(_build_tos_form_label())
 
     def clean(self) -> dict[str, Any] | None:
         """Ensure that the Terms are agreed to and assign them to the user instance."""
@@ -58,6 +60,17 @@ class RegistrationForm(RegistrationFormUniqueEmail, RegistrationFormTermsOfServi
         self.instance.agreed_to_tos = agreed
         self.instance.date_agreed = timezone.now()
         return super().clean()
+
+
+class TermsAcceptanceForm(forms.Form):
+    """Simple form that requires terms acceptance for existing users."""
+
+    tos = forms.BooleanField(required=True)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Include links to terms and privacy pages in the checkbox label."""
+        super().__init__(*args, **kwargs)
+        self.fields["tos"].label = _(_build_tos_form_label())
 
 
 class UserSkillForm(ModelForm[UserSkill]):
