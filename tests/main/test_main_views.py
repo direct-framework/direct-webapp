@@ -396,13 +396,38 @@ class TestSkillLevelsPageView(TemplateOkMixin):
         return reverse("skill_levels")
 
 
-class TestLearningResourcesPageView(TemplateOkMixin):
+class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
     """Test suite for the LearningResourcesPageView."""
 
     _template_name = "main/pages/learning-resources.html"
 
     def _get_url(self):
         return reverse("learning_resources")
+
+    @pytest.mark.django_db
+    def test_page_content(self, learning_resource, skill, soup):
+        """Test that the learning page contains a table with learning resources."""
+        assert "Learning resources" == soup.find("h1").text
+
+        table = soup.find("table")
+        thead = table.find("thead")
+        assert thead.find(tag_with_text_filter("th", "Name"), class_="asc orderable")
+        assert thead.find(tag_with_text_filter("th", "Language"), class_="orderable")
+        assert thead.find(tag_with_text_filter("th", "Provider"), class_="orderable")
+        assert thead.find(tag_with_text_filter("th", "Related Skills"))
+        tr = table.find("tbody").find("tr", class_="even")
+        assert tr.find(
+            tag_with_text_filter("a", "Learning Resource"), href=learning_resource.url
+        )
+        assert tr.find(tag_with_text_filter("td", "English"))
+        assert tr.find(
+            tag_with_text_filter("a", "Provider"), href=learning_resource.provider.url
+        )
+        assert tr.find(
+            tag_with_text_filter("a", "Skill"),
+            class_="badge",
+            href=reverse("skill_detail", args=(skill.slug,)),
+        )
 
 
 class TestGetInvolvedPageView(TemplateOkMixin):

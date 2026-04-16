@@ -16,9 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class LearningResourcesTable(tables.Table):
     """Table class for the LearningResources model."""
 
-    skill_set = tables.ManyToManyColumn(
-        transform=lambda s: s.name, verbose_name="Related Skills"
-    )
+    skill_set = tables.ManyToManyColumn(verbose_name="Related Skills")
 
     class Meta:
         """Meta options for the LearningResourcesTable."""
@@ -30,7 +28,7 @@ class LearningResourcesTable(tables.Table):
     def render_name(self, value: str, record: LearningResource) -> SafeString:
         """Include the URL in the name."""
         return format_html(
-            '<a href="{}" target="_blank" rel="noopener noreferrer">{}<a>',
+            '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
             record.url,
             value,
         )
@@ -41,7 +39,7 @@ class LearningResourcesTable(tables.Table):
             return mark_safe(value)
 
         return format_html(
-            '<a href="{}" target="_blank" rel="noopener noreferrer">{}<a>',
+            '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
             record.provider.url,
             value,
         )
@@ -52,7 +50,7 @@ class LearningResourcesTable(tables.Table):
             "".join(
                 format_html(
                     '<a href="{}" target="_blank" rel="noopener noreferrer" '
-                    'class="badge bg-secondary">{}<a>',
+                    'class="badge bg-secondary">{}</a>',
                     reverse("skill_detail", args=(skill.slug,)),
                     skill.name,
                 )
