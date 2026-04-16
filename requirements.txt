@@ -22,6 +22,7 @@ django==6.0.3
     #   django-multiselectfield
     #   django-registration
     #   django-stubs-ext
+    #   django-tables2
 django-bootstrap5==26.2
     # via direct_webapp (pyproject.toml)
 django-crispy-forms==2.6
@@ -35,6 +36,8 @@ django-multiselectfield==1.0.1
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
 django-stubs-ext==6.0.2
+    # via direct_webapp (pyproject.toml)
+django-tables2==3.0.0
     # via direct_webapp (pyproject.toml)
 gunicorn==25.3.0
     # via direct_webapp (pyproject.toml)

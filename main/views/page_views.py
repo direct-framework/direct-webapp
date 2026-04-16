@@ -11,8 +11,16 @@ from typing import Any
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
+from django_tables2 import SingleTableView
 
-from ..models import CompetencyDomain, Skill, SkillLevel, ToolLanguageMethodology
+from ..models import (
+    CompetencyDomain,
+    LearningResource,
+    Skill,
+    SkillLevel,
+    ToolLanguageMethodology,
+)
+from ..tables import LearningResourcesTable
 
 logger = logging.getLogger(__name__)
 
@@ -85,9 +93,11 @@ class SkillLevelsPageView(TemplateView):
         return context
 
 
-class LearningResourcesPageView(TemplateView):
+class LearningResourcesPageView(SingleTableView):
     """View that renders the page with all learning resources."""
 
+    model = LearningResource
+    table_class = LearningResourcesTable
     template_name = "main/pages/learning-resources.html"
 
 
