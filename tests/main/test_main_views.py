@@ -414,7 +414,7 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
         assert thead.find(tag_with_text_filter("th", "Name"), class_="asc orderable")
         assert thead.find(tag_with_text_filter("th", "Language"), class_="orderable")
         assert thead.find(tag_with_text_filter("th", "Provider"), class_="orderable")
-        assert thead.find(tag_with_text_filter("th", "Related Skills"))
+        assert thead.find(tag_with_text_filter("th", "Skills"))
         tr = table.find("tbody").find("tr", class_="even")
         assert tr.find(
             tag_with_text_filter("a", "Learning Resource"), href=learning_resource.url

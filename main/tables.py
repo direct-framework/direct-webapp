@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class LearningResourcesTable(tables.Table):
     """Table class for the LearningResources model."""
 
-    skill_set = tables.ManyToManyColumn(verbose_name="Related Skills")
+    skill_set = tables.ManyToManyColumn(verbose_name="Skills")
 
     class Meta:
         """Meta options for the LearningResourcesTable."""
@@ -45,7 +45,7 @@ class LearningResourcesTable(tables.Table):
         )
 
     def render_skill_set(self, value: "ManyRelatedManager[Skill]") -> SafeString:
-        """Include the related skills as badges."""
+        """Include the relevant skills as badges."""
         return mark_safe(
             "".join(
                 format_html(
