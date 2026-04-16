@@ -8,7 +8,6 @@ from json import dumps
 from pathlib import Path
 from typing import Any
 
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
@@ -16,8 +15,6 @@ from django.views.generic.base import TemplateView
 from ..models import CompetencyDomain, Skill, SkillLevel, ToolLanguageMethodology
 
 logger = logging.getLogger(__name__)
-
-User = get_user_model()
 
 
 def _extract_and_combine_roles(
