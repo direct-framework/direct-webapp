@@ -84,6 +84,10 @@ module = ["django_registration.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
+module = ["django_tables2.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = ["main.io_resources"]
 disallow_any_generics = false
 
