@@ -46,3 +46,12 @@ html {
 .alert p {
   margin: 0;
 }
+
+.mermaid {
+  background-color: #f6f9fc;
+}
+
+.mermaid > svg {
+  display: block;
+  margin: auto;
+}
