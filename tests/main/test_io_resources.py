@@ -11,7 +11,7 @@ from main.io_resources import (
     ProviderResource,
     SkillLevelResource,
     SkillResource,
-    ToolResource,
+    ToolLanguageMethodologyResource,
     export_framework,
 )
 from main.models import (
@@ -21,7 +21,7 @@ from main.models import (
     Provider,
     Skill,
     SkillLevel,
-    Tool,
+    ToolLanguageMethodology,
 )
 
 
@@ -278,10 +278,12 @@ class TestLearningResourceResource:
 class TestToolResource:
     """Test suite for ToolResource."""
 
-    def test_export_tool(self, tool: Tool, learning_resource: LearningResource):
+    def test_export_tool(
+        self, tool: ToolLanguageMethodology, learning_resource: LearningResource
+    ):
         """Test exporting a tool."""
-        resource = ToolResource()
-        dataset = resource.export(Tool.objects.all())
+        resource = ToolLanguageMethodologyResource()
+        dataset = resource.export(ToolLanguageMethodology.objects.all())
 
         assert len(dataset) == 1
         assert dataset["name"][0] == "Tool"
@@ -293,7 +295,10 @@ class TestToolResource:
         assert "id" not in dataset.headers
 
     def test_export_tool_with_multiple_learning_resources(
-        self, tool: Tool, learning_resource: LearningResource, provider: Provider
+        self,
+        tool: ToolLanguageMethodology,
+        learning_resource: LearningResource,
+        provider: Provider,
     ):
         """Test exporting a tool with multiple learning resources."""
         lr2 = LearningResource.objects.create(
@@ -305,8 +310,8 @@ class TestToolResource:
         )
         tool.learning_resources.add(lr2)
 
-        resource = ToolResource()
-        dataset = resource.export(Tool.objects.all())
+        resource = ToolLanguageMethodologyResource()
+        dataset = resource.export(ToolLanguageMethodology.objects.all())
 
         assert len(dataset) == 1
         # The widget uses "|" as separator for many-to-many fields
@@ -317,7 +322,7 @@ class TestToolResource:
 
     def test_import_tool(self, learning_resource: LearningResource):
         """Test importing a new tool."""
-        resource = ToolResource()
+        resource = ToolLanguageMethodologyResource()
         dataset = Dataset()
         dataset.headers = [
             "slug",
@@ -341,8 +346,8 @@ class TestToolResource:
         result = resource.import_data(dataset, dry_run=False)
 
         assert not result.has_errors()
-        assert Tool.objects.filter(slug="imported-tool").exists()
-        tool = Tool.objects.get(slug="imported-tool")
+        assert ToolLanguageMethodology.objects.filter(slug="imported-tool").exists()
+        tool = ToolLanguageMethodology.objects.get(slug="imported-tool")
         assert tool.name == "Imported Tool"
         assert tool.kind == "methodology"
         assert tool.learning_resources.count() == 1
@@ -360,7 +365,7 @@ class TestToolResource:
             provider=provider,
         )
 
-        resource = ToolResource()
+        resource = ToolLanguageMethodologyResource()
         dataset = Dataset()
         dataset.headers = [
             "slug",
@@ -384,16 +389,16 @@ class TestToolResource:
         result = resource.import_data(dataset, dry_run=False)
 
         assert not result.has_errors()
-        tool = Tool.objects.get(slug="imported-tool")
+        tool = ToolLanguageMethodology.objects.get(slug="imported-tool")
         assert tool.learning_resources.count() == 2
         assert learning_resource in tool.learning_resources.all()
         assert lr2 in tool.learning_resources.all()
 
     def test_import_tool_update_existing(
-        self, tool: Tool, learning_resource: LearningResource
+        self, tool: ToolLanguageMethodology, learning_resource: LearningResource
     ):
         """Test updating an existing tool via import."""
-        resource = ToolResource()
+        resource = ToolLanguageMethodologyResource()
         dataset = Dataset()
         dataset.headers = [
             "slug",
@@ -430,7 +435,7 @@ class TestSkillResource:
         self,
         skill: Skill,
         competency: Competency,
-        tool: Tool,
+        tool: ToolLanguageMethodology,
         learning_resource: LearningResource,
     ):
         """Test exporting a skill."""
@@ -465,14 +470,17 @@ class TestSkillResource:
         assert dataset["related_skills"][0] == "related-skill"
 
     def test_export_skill_with_multiple_tools(
-        self, skill: Skill, tool: Tool, learning_resource: LearningResource
+        self,
+        skill: Skill,
+        tool: ToolLanguageMethodology,
+        learning_resource: LearningResource,
     ):
         """Test exporting a skill with multiple tools."""
-        tool2 = Tool.objects.create(
+        tool2 = ToolLanguageMethodology.objects.create(
             name="Second Tool",
             description="Second tool",
             slug="second-tool",
-            kind=Tool.Kind.LANGUAGE,
+            kind=ToolLanguageMethodology.Kind.LANGUAGE,
         )
         skill.tools.add(tool2)
 
@@ -486,7 +494,10 @@ class TestSkillResource:
         assert "second-tool" in tools
 
     def test_import_skill(
-        self, competency: Competency, tool: Tool, learning_resource: LearningResource
+        self,
+        competency: Competency,
+        tool: ToolLanguageMethodology,
+        learning_resource: LearningResource,
     ):
         """Test importing a new skill."""
         resource = SkillResource()
@@ -527,16 +538,16 @@ class TestSkillResource:
     def test_import_skill_with_multiple_relations(
         self,
         competency: Competency,
-        tool: Tool,
+        tool: ToolLanguageMethodology,
         learning_resource: LearningResource,
         provider: Provider,
     ):
         """Test importing a skill with multiple tools and learning resources."""
-        tool2 = Tool.objects.create(
+        tool2 = ToolLanguageMethodology.objects.create(
             name="Second Tool",
             description="Second tool",
             slug="second-tool",
-            kind=Tool.Kind.LANGUAGE,
+            kind=ToolLanguageMethodology.Kind.LANGUAGE,
         )
         lr2 = LearningResource.objects.create(
             name="Second Resource",
@@ -643,7 +654,7 @@ class TestSkillResource:
         self,
         skill: Skill,
         competency: Competency,
-        tool: Tool,
+        tool: ToolLanguageMethodology,
         learning_resource: LearningResource,
     ):
         """Test updating an existing skill via import."""
@@ -763,7 +774,10 @@ class TestResourceWidgets:
         assert not Competency.objects.filter(slug="invalid-comp").exists()
 
     def test_slugged_m2m_widget(
-        self, tool: Tool, learning_resource: LearningResource, provider: Provider
+        self,
+        tool: ToolLanguageMethodology,
+        learning_resource: LearningResource,
+        provider: Provider,
     ):
         """Test that SluggedM2MWidget uses slug field and pipe separator correctly."""
         LearningResource.objects.create(
@@ -774,7 +788,7 @@ class TestResourceWidgets:
             provider=provider,
         )
 
-        resource = ToolResource()
+        resource = ToolLanguageMethodologyResource()
         dataset = Dataset()
         dataset.headers = [
             "slug",
@@ -798,7 +812,7 @@ class TestResourceWidgets:
         result = resource.import_data(dataset, dry_run=False)
 
         assert not result.has_errors()
-        tool = Tool.objects.get(slug="multi-tool")
+        tool = ToolLanguageMethodology.objects.get(slug="multi-tool")
         assert tool.learning_resources.count() == 2
         slugs = [lr.slug for lr in tool.learning_resources.all()]
         assert "learning-resource" in slugs
@@ -821,7 +835,7 @@ class TestResourceWidgets:
         assert result.has_validation_errors()
 
         # The Tool object is still saved! We can get around this
-        assert Tool.objects.filter(slug="invalid-tool").exists()
+        assert ToolLanguageMethodology.objects.filter(slug="invalid-tool").exists()
 
     def test_multiple_choice_widget(self):
         """Test that the MultipleChoiceWidget operates as expected."""
