@@ -1,0 +1,77 @@
+{% extends "main/base.page.html" %}
+{% load static %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active" aria-current="page">Events</li>
+{% endblock breadcrumb_items %}
+{% block content %}
+    <section id="about">
+        <div class="row">
+            <h2 class="mb-4">Team Members</h2>
+            <div class="row mb-5">
+                {% for member in team_members %}
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="text-center">
+                            <img src="{{ member.image }}"
+                                 alt="{{ member.name }}"
+                                 class="img-fluid rounded-circle mb-3"
+                                 style="width: 160px;
+                                        height: 160px;
+                                        object-fit: cover" />
+                            <h5 class="fw-semibold mb-1">{{ member.name }}</h5>
+                            <p class="text-muted mb-2">{{ member.role }}</p>
+                            <p class="small">{{ member.bio }}</p>
+                            <ul class="list-inline mt-3">
+                                {% if member.email %}
+                                    <li class="list-inline-item">
+                                        <a href="mailto:{{ member.email }}" class="text-decoration-none px-1">
+                                            <i class="fa-solid fa-envelope"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if member.github %}
+                                    <li class="list-inline-item">
+                                        <a href="{{ member.github }}"
+                                           target="_blank"
+                                           class="text-decoration-none px-1">
+                                            <i class="fa-brands fa-github"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if member.twitter %}
+                                    <li class="list-inline-item">
+                                        <a href="{{ member.twitter }}"
+                                           target="_blank"
+                                           class="text-decoration-none px-1">
+                                            <i class="fa-brands fa-twitter"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if member.linkedin %}
+                                    <li class="list-inline-item">
+                                        <a href="{{ member.linkedin }}"
+                                           target="_blank"
+                                           class="text-decoration-none px-1">
+                                            <i class="fa-brands fa-linkedin"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <h2 class="mb-3">Contributors</h2>
+            <p class="mb-0">
+                {% for contributor in contributors %}
+                    {{ contributor }}
+                    {% if not forloop.last %},{% endif %}
+                {% empty %}
+                    No contributors listed.
+                {% endfor %}
+            </p>
+        </div>
+    </section>
+{% endblock content %}

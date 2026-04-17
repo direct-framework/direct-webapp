@@ -146,6 +146,85 @@ class EventsPageView(TemplateView):
         return context
 
 
+class TeamPageView(TemplateView):
+    """View that renders the team page from CSV."""
+
+    template_name = "main/pages/team.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+        """Add grouped team and contributor data to the template context."""
+        context = super().get_context_data(**kwargs)
+
+        csv_path = Path("data/team.csv")
+        team_members: list[dict[str, Any]] = []
+        contributors: list[str] = []
+
+        def _safe_get(row: list[str], index: int | None) -> str:
+            if index is None or index >= len(row):
+                return ""
+            return row[index].strip()
+
+        def _safe_int(value: str, default: int = 999) -> int:
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return default
+
+        if csv_path.exists():
+            with open(csv_path, newline="", encoding="utf-8") as csvfile:
+                reader = csv.reader(csvfile)
+                header = next(reader, None)
+
+                if header:
+                    header_map = {
+                        name.strip().lower(): idx for idx, name in enumerate(header)
+                    }
+                    role_indexes = [
+                        idx
+                        for idx, name in enumerate(header)
+                        if name.strip().lower() == "role"
+                    ]
+
+                    group_idx = role_indexes[0] if role_indexes else None
+                    member_role_idx = (
+                        role_indexes[1]
+                        if len(role_indexes) > 1
+                        else (role_indexes[0] if role_indexes else None)
+                    )
+
+                    for row in reader:
+                        if not row:
+                            continue
+
+                        image_path = _safe_get(row, header_map.get("image"))
+                        member = {
+                            "name": _safe_get(row, header_map.get("name")),
+                            "role": _safe_get(row, member_role_idx),
+                            "bio": _safe_get(row, header_map.get("bio")),
+                            "image": static(image_path) if image_path else None,
+                            "email": _safe_get(row, header_map.get("email")),
+                            "github": _safe_get(row, header_map.get("github")),
+                            "twitter": _safe_get(row, header_map.get("twitter")),
+                            "linkedin": _safe_get(row, header_map.get("linkedin")),
+                            "order": _safe_int(_safe_get(row, header_map.get("order"))),
+                        }
+
+                        group = _safe_get(row, group_idx).lower()
+                        if group in {"member", "contributor"}:
+                            if member["name"]:
+                                contributors.append(cast(str, member["name"]))
+                        else:
+                            team_members.append(member)
+
+        team_members.sort(key=lambda m: cast(str, m["name"]).casefold())
+        contributors.sort(key=str.casefold)
+
+        context["team_members"] = team_members
+        context["contributors"] = contributors
+
+        return context
+
+
 class RolesPageView(TemplateView):
     """View that renders the role profiles page."""
 
