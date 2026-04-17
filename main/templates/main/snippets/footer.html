@@ -25,10 +25,18 @@
                     <div class="mb-4 pb-lg-3">
                         <p class="fs-xs text-uppercase text-body-secondary fw-semibold mb-2">Current releases</p>
                         <div class="d-flex flex-wrap gap-2" aria-label="Current project releases">
-                            {% for release in footer_release_links %}
-                                <a class="badge rounded-pill text-bg-light border text-decoration-none px-3 py-2"
-                                   href="{{ release.url }}">{{ release.label }} {{ release.tag_name }}</a>
-                            {% endfor %}
+                            <a href="https://github.com/direct-framework/direct-webapp/releases"
+                               target="_blank"
+                               rel="noopener">
+                                <img alt="WebApp GitHub Release Badge"
+                                     src="https://img.shields.io/github/v/release/direct-framework/direct-webapp?style=flat&label=Web%20App&labelColor=%23fff&color=%23448c74">
+                            </a>
+                            <a href="https://github.com/direct-framework/digital-research-competencies-framework/releases"
+                               target="_blank"
+                               rel="noopener">
+                                <img alt="Competency Framework GitHub Release Badge"
+                                     src="https://img.shields.io/github/v/release/direct-framework/digital-research-competencies-framework?style=flat&label=Competency%20Framework&labelColor=%23fff&color=%23448c74">
+                            </a>
                         </div>
                     </div>
                     <div>
