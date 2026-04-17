@@ -1,32 +1,130 @@
 {% load static %}
-<footer class="footer bg-secondary py-3 py-md-4 mt-2">
-    <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center pt-1 py-sm-2 py-lg-4 py-xl-5">
-        <div class="d-flex gap-3 mb-3 mb-sm-4 mb-lg-0">
-            <a class="btn btn-icon btn-sm btn-secondary btn-github rounded-circle"
-               href="https://github.com/direct-framework"
-               aria-label="Github">
-                <i class="fa-brands fa-github"></i>
-            </a>
-            <a class="btn btn-icon btn-sm btn-secondary btn-slack rounded-circle"
-               href="https://ukrse.slack.com/archives/C05CY0YFWEL"
-               aria-label="Slack">
-                <i class="fa-brands fa-slack"></i>
-            </a>
-            <a class="btn btn-icon btn-sm btn-secondary btn-mail rounded-circle"
-               href="https://groups.google.com/g/direct-framework"
-               aria-label="Mailing List">
-                <i class="fa-solid fa-envelope"></i>
-            </a>
+<footer class="footer">
+    <div class="bg-primary py-4" data-bs-theme="dark">
+        <div class="container fs-lg text-body text-center">
+            Ready to map your skills and plan your development? <a class="text-white" href="#">Start Using the Framework</a>
         </div>
-        <div class="nav flex-sm-nowrap justify-content-center mb-3 mb-sm-4 mb-lg-0">
-            <a class="nav-link fw-normal border-end-lg px-2 px-sm-3 px-lg-4 py-1 py-sm-0 mx-0"
-               href="{% url 'get_involved' %}">Get in Touch</a>
-            <a class="nav-link fw-normal border-end-lg px-2 px-sm-3 px-lg-4 py-1 py-sm-0 mx-0"
-               href="{% url 'privacy' %}">Privacy Policy</a>
-            <a class="nav-link fw-normal px-2 px-sm-3 px-lg-4 py-1 py-sm-0 mx-0"
-               href="{% url 'terms' %}">Terms &amp; Conditions</a>
+    </div>
+    <div class="bg-secondary py-5">
+        <div class="container pt-sm-2 pt-md-3 pt-lg-4">
+            <div class="row gy-md-5 gy-4 mb-md-5 mb-4 pb-lg-2">
+                <div class="col-lg-3">
+                    <a class="navbar-brand d-inline-flex align-items-center mt-0 mb-lg-4 mb-3"
+                       href="{% url 'index' %}">
+                        <span class="text-primary flex-shrink-0 me-3">
+                            <img src="{% static 'assets/app-icons/logo.svg' %}"
+                                 alt="DIRECT"
+                                 width="40">
+                        </span>
+                        <span class="fw-semibold">DIRECT</span>
+                    </a>
+                    <p class="mb-4 pb-lg-3 fs-xs text-body-secondary">
+                        The Digital Research Competencies Framework provides a shared
+                        language for recognising and mapping digital skills across research roles.
+                    </p>
+                    <div class="mb-4 pb-lg-3">
+                        <p class="fs-xs text-uppercase text-body-secondary fw-semibold mb-2">Current releases</p>
+                        <div class="d-flex flex-wrap gap-2" aria-label="Current project releases">
+                            <a href="https://github.com/direct-framework/direct-webapp/releases"
+                               target="_blank"
+                               rel="noopener">
+                                <img alt="WebApp GitHub Release Badge"
+                                     src="https://img.shields.io/github/v/release/direct-framework/direct-webapp?style=flat&label=Web%20App&labelColor=%23fff&color=%23448c74">
+                            </a>
+                            <a href="https://github.com/direct-framework/digital-research-competencies-framework/releases"
+                               target="_blank"
+                               rel="noopener">
+                                <img alt="Competency Framework GitHub Release Badge"
+                                     src="https://img.shields.io/github/v/release/direct-framework/digital-research-competencies-framework?style=flat&label=Competency%20Framework&labelColor=%23fff&color=%23448c74">
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <a class="btn btn-icon btn-sm btn-secondary btn-github rounded-circle me-2"
+                           href="https://github.com/direct-framework"
+                           aria-label="Github">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                        <a class="btn btn-icon btn-sm btn-secondary btn-slack rounded-circle me-2"
+                           href="https://ukrse.slack.com/archives/C05CY0YFWEL"
+                           aria-label="Slack">
+                            <i class="fa-brands fa-slack"></i>
+                        </a>
+                        <a class="btn btn-icon btn-sm btn-secondary btn-mail rounded-circle me-2"
+                           href="https://groups.google.com/g/direct-framework"
+                           aria-label="Google Group">
+                            <i class="fa-brands fa-google"></i>
+                        </a>
+                        <a class="btn btn-icon btn-sm btn-secondary btn-mail rounded-circle me-2"
+                           href="#"
+                           data-email-user="hello"
+                           data-email-domain="directframework.com"
+                           aria-label="Email">
+                            <i class="fa-solid fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-8 offset-xl-1 col-lg-9">
+                    <div class="row row-cols-sm-3 row-cols-1">
+                        <div class="col">
+                            <h6 class="text-muted text-uppercase fs-xs fw-semibold mb-3">About</h6>
+                            <ul class="nav flex-column mb-0">
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'about' %}">Vision and roadmap</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="">Our team</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="">History of the project</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'get_involved' %}">Get involved</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'events' %}">Communtiy events</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <h6 class="text-muted text-uppercase fs-xs fw-semibold mb-3">Framework</h6>
+                            <ul class="nav flex-column mb-0">
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'skills_and_competencies' %}">Competencies framework</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'skill_levels' %}">Skill levels</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'learning_resources' %}">Learning resources</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'roles' %}">Roles and career pathways</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <h6 class="text-muted text-uppercase fs-xs fw-semibold mb-3">Policies</h6>
+                            <ul class="nav flex-column mb-0">
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="">Licensing</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="">Goverenance</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'privacy' %}">Privacy policy</a>
+                                </li>
+                                <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'terms' %}">Terms of use</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fs-sm text-body-secondary">© All rights reserved.</div>
         </div>
-        <p class="text-body-secondary mb-0">© All rights reserved</p>
     </div>
 </footer>
 <!-- Back to top button -->
