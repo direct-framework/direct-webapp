@@ -14,7 +14,7 @@ from .io_resources import (
     ProviderResource,
     SkillLevelResource,
     SkillResource,
-    ToolResource,
+    ToolLanguageMethodologyResource,
 )
 from .models import (
     Competency,
@@ -23,12 +23,23 @@ from .models import (
     Provider,
     Skill,
     SkillLevel,
-    Tool,
+    ToolLanguageMethodology,
     User,
     UserSkill,
 )
 
-admin.site.register(User, UserAdmin)
+
+@admin.register(User)
+class CustomUserAdmin(UserAdmin[User]):
+    """Override the UserAdmin to display extra fields."""
+
+    list_display = (*UserAdmin.list_display, "is_active", "agreed_to_tos")  # type: ignore[misc]
+    list_filter = (*UserAdmin.list_filter, "agreed_to_tos")
+    fieldsets = (  # type: ignore[misc]
+        *UserAdmin.fieldsets,
+        (("Terms and Conditions"), {"fields": ("agreed_to_tos", "date_agreed")}),
+    )
+    readonly_fields = ("agreed_to_tos", "date_agreed")
 
 
 class CompetencyInline(admin.TabularInline[Competency, Competency]):
@@ -90,10 +101,10 @@ class ProviderAdmin(ImportExportModelAdmin[Provider]):
     resource_classes = (ProviderResource,)
 
 
-class ToolInline(admin.TabularInline[Tool, LearningResource]):
+class ToolInline(admin.TabularInline[ToolLanguageMethodology, LearningResource]):
     """Inline admin class for the Tool model."""
 
-    model = Tool.learning_resources.through  # type: ignore[assignment]
+    model = ToolLanguageMethodology.learning_resources.through  # type: ignore[assignment]
     extra = 0
     verbose_name = "Tool, Methodology, Behaviour or Language"
     verbose_name_plural = "Tools, Methodologies, Behaviours and Languages"
@@ -114,14 +125,14 @@ class LearningResourceAdmin(ImportExportModelAdmin[LearningResource]):
         return obj.get_language_display()
 
 
-@admin.register(Tool)
-class ToolAdmin(ImportExportModelAdmin[Tool]):
+@admin.register(ToolLanguageMethodology)
+class ToolAdmin(ImportExportModelAdmin[ToolLanguageMethodology]):
     """Admin class for The Tool model."""
 
     list_display = ("name", "kind", "url")
     search_fields = ("name",)
     list_filter = ("kind",)
-    resource_classes = (ToolResource,)
+    resource_classes = (ToolLanguageMethodologyResource,)
 
 
 @admin.register(Skill)
@@ -161,12 +172,11 @@ class UserProxy(User):
         """Make model a proxy and set verbose names."""
 
         proxy = True
-        verbose_name = "User Skills"
-        verbose_name_plural = "User Skills"
+        verbose_name = "User skills profile"
 
 
 @admin.register(UserProxy)
-class CustomUserSkillAdmin(admin.ModelAdmin[UserProxy]):
+class CustomUserSkillsProfilesAdmin(admin.ModelAdmin[UserProxy]):
     """Admin class for adding UserSkills in bulk to individual Users."""
 
     exclude = (
@@ -182,13 +192,21 @@ class CustomUserSkillAdmin(admin.ModelAdmin[UserProxy]):
         "date_joined",
         "groups",
         "user_permissions",
+        "agreed_to_tos",
+        "date_agreed",
     )
     readonly_fields = ("username", "first_name", "last_name", "email", "is_active")
-    list_display = ("username", "first_name", "last_name", "email", "is_active")
-    search_fields = ("username", "first_name", "last_name", "email")
+    list_display = ("username", "is_active")
+    search_fields = ("username", "email")
     list_filter = ("is_active",)
     inlines = (UserSkillInline,)
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         """Do not allow adding new users from this view."""
+        return False
+
+    def has_delete_permission(
+        self, request: HttpRequest, obj: UserProxy | None = None
+    ) -> bool:
+        """Do not allow deleting users from this view."""
         return False

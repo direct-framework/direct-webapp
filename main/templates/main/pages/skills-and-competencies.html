@@ -8,19 +8,19 @@
 {% endblock title %}
 {% block breadcrumb_items %}
     <li class="breadcrumb-item">
-        <a href="{% url 'competencies' %}">Framework</a>
+        <a href="{% url 'framework_overview' %}">Framework</a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Competencies</li>
+    <li class="breadcrumb-item active" aria-current="page">Skills and competencies</li>
 {% endblock breadcrumb_items %}
 {% block content %}
     <section id="framework" class="container">
         <div class="row">
             <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
-                <h1 class="pb-2 pb-lg-3">Competencies framework</h1>
+                <h1 class="pb-2 pb-lg-3">Skills and competencies</h1>
                 <p class="fs-lg mb-3">
-                    This page outlines the Digital Research Competencies Framework. Skills and competencies are organised into a number of competencies and competency domains which you can explore using the links in the sidebar.
+                    Skills are organised into a number of competencies, which are in turn grouped into bigger competency domains which you can explore using the links in the sidebar.
                 </p>
-                <a class="btn btn-primary mb-4" href="{% url 'framework_json' %}">Download Framework JSON</a>
+                <a class="btn btn-primary mb-4" href="{% url 'framework_json' %}">Download framework JSON</a>
             </div>
         </div>
         <div class="row pt-sm-2 pt-lg-0">

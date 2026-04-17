@@ -41,6 +41,7 @@ django==6.0.3
     #   django-registration
     #   django-stubs
     #   django-stubs-ext
+    #   django-tables2
 django-bootstrap5==26.2
     # via direct_webapp (pyproject.toml)
 django-crispy-forms==2.6
@@ -61,6 +62,8 @@ django-stubs-ext==6.0.2
     # via
     #   direct_webapp (pyproject.toml)
     #   django-stubs
+django-tables2==3.0.0
+    # via direct_webapp (pyproject.toml)
 djlint==1.36.4
     # via direct_webapp (pyproject.toml)
 editorconfig==0.17.1

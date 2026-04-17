@@ -3,12 +3,18 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from .framework_models import Skill, SkillLevel
 
 
 class User(AbstractUser):
     """Custom user model for this project."""
+
+    agreed_to_tos = models.BooleanField(
+        _("agreed to terms and conditions"), default=False
+    )
+    date_agreed = models.DateTimeField(_("date agreed"), blank=True, null=True)
 
 
 class UserSkill(models.Model):

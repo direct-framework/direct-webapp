@@ -22,13 +22,13 @@ repos:
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.9
+    rev: v0.15.10
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.0
+    rev: v1.20.1
     hooks:
       - id: mypy
         exclude: manage.py
@@ -42,6 +42,7 @@ repos:
           - django-import-export
           - types-django-import-export
           - django-multiselectfield
+          - django-tables2
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.48.0
     hooks:

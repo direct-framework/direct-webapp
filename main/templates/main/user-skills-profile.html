@@ -1,0 +1,48 @@
+{% extends "main/base.page.html" %}
+{% block body_class %}
+    bg-secondary
+{% endblock body_class %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load django_bootstrap5 %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'profile' %}">Profile</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Skills profile</li>
+{% endblock breadcrumb_items %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block content %}
+    <!-- Page container -->
+    <section id="skill-profile" class="container">
+        <div class="row pt-sm-2 pt-lg-0">
+            <!-- Sidebar (offcanvas on screens < 992px) -->
+            {% include "main/snippets/profile-sidebar.html" %}
+            <!-- Page content -->
+            <div class="col-lg-9 pb-2 pb-sm-4">
+                <section class="card border-0 mb-4">
+                    <div class="card-body">
+                        <h1>Skills profile</h1>
+                        <p class="lead">
+                            Explore your skill levels in the Digital Research Competencies Framework
+                            using the interactive Skills Wheel. Each segment represents a competency,
+                            with size according to your self-assessed level.
+                        </p>
+                        <div id="dataviz_root" style="width:100%"></div>
+                        {% include "main/snippets/skill-wheel.html" %}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+    <!-- Sidebar toggle button -->
+    <button class="d-lg-none btn btn-sm fs-sm btn-primary w-100 rounded-0 fixed-bottom"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarAccount">
+        <i class="ai-menu me-2"></i>
+        Account menu
+    </button>
+{% endblock content %}

@@ -17,7 +17,8 @@ dependencies = [
     "whitenoise",
     "mysqlclient",
     "django-import-export",
-    "django-multiselectfield"
+    "django-multiselectfield",
+    "django-tables2"
 ]
 
 [project.optional-dependencies]
@@ -77,6 +78,14 @@ follow_untyped_imports = true
 [[tool.mypy.overrides]]
 module = ["multiselectfield.*"]
 follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["django_registration.*"]
+follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["django_tables2.*"]
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["main.io_resources"]

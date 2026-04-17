@@ -7,7 +7,10 @@
 {% endblock title %}
 {% block breadcrumb_items %}
     <li class="breadcrumb-item">
-        <a href="{% url 'competencies' %}">Framework</a>
+        <a href="{% url 'framework_overview' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{% url 'skills_and_competencies' %}">Skills and competencies</a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">{{ skill.name }}</li>
 {% endblock breadcrumb_items %}
@@ -15,7 +18,7 @@
     <section id="skill_details" class="container">
         <div class="row">
             <div class="col-lg-9 col-xl-8">
-                <h1 class="pb-2 pb-lg-3">{{ skill.name }}</h1>
+                <h1 class="pb-2 pb-lg-3">Skill: {{ skill.name }}</h1>
                 <p class="fs-lg mb-4">{{ skill.description }}</p>
                 {% if related_skills %}
                     <h2 class="h4 mt-5">Related skills</h2>

@@ -1,0 +1,36 @@
+{% extends "main/base.page.html" %}
+{% load static %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"
+        xmlns="http://www.w3.org/1999/html"
+        xmlns="http://www.w3.org/1999/html">
+        <a href="{% url 'framework_overview' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Overview</li>
+{% endblock breadcrumb_items %}
+{% block content %}
+    <section id="framework-overview">
+        <div class="row">
+            <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
+                <h1 class="pb-2 pb-lg-3">Framework overview</h1>
+                <p class="fs-lg mb-3">
+                    The <strong>DIgital REsearch CompeTencies (DIRECT)</strong> framework helps classify and describe the wide range of <strong>technical and non-technical skills</strong> used across various digital research roles.
+                </p>
+                <p class="fs-lg mb-3">
+                    <strong><a href="{% url 'skills_and_competencies' %}">Skills</a></strong> (abilities to perform tasks or behaviours we possess) are brought together with <strong>technology tools, programming and data languages, and methodologies</strong> that demonstrate
+                    knowledge and proficiency, alongside <strong><a href="{% url 'learning_resources' %}">learning resources</a></strong> to support skill development.
+                </p>
+                <p class="fs-lg mb-3">
+                    For easier classification and browsing, skills are organised into <strong><a href="{% url 'skills_and_competencies' %}">competencies</a></strong> - integrated set of skills - knowledge, behaviours and professional practices - required to perform effectively in a defined context.
+                    Competencies in turn are grouped into bigger <strong><a href="{% url 'skills_and_competencies' %}">competency domains</a></strong> - high-level thematic groupings of related competencies that together represent a broad area of professional capability.
+                </p>
+                <a class="btn btn-primary mb-4"
+                   href="{% url 'skills_and_competencies' %}">Browse framework</a>
+                {% include "main/snippets/framework-mermaid-diagram.html" %}
+            </div>
+        </div>
+    </section>
+{% endblock content %}
