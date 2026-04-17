@@ -149,7 +149,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
 class TestPrivacy(TemplateOkMixin):
     """Test suite for the privacy view."""
 
-    _template_name = "main/pages/privacy.html"
+    _template_name = "main/pages/policies/privacy.html"
 
     def _get_url(self):
         return reverse("privacy")
@@ -212,7 +212,7 @@ class TestAboutPageView(TemplateOkMixin, BS4Mixin):
 class TestTermsPageView(TemplateOkMixin):
     """Test suite for the TermsPageView."""
 
-    _template_name = "main/pages/terms.html"
+    _template_name = "main/pages/policies/terms.html"
 
     def _get_url(self):
         return reverse("terms")
