@@ -6,7 +6,7 @@ import logging
 from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, cast
 
 import markdown
 import requests
@@ -115,7 +115,7 @@ class EventsPageView(TemplateView):
 
     template_name = "main/pages/events.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
         """Add events from CSV to the template context."""
         context = super().get_context_data(**kwargs)
         csv_path = Path("data/events.csv")
@@ -125,20 +125,22 @@ class EventsPageView(TemplateView):
             with open(csv_path, newline="", encoding="utf-8") as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
+                    image_path = row.get("Image")
                     events.append(
                         {
                             "title": row.get("Title", ""),
                             "start_date": row.get("Start Date", ""),
                             "end_date": row.get("End Date", ""),
+                            "location": row.get("Location", ""),
+                            "event_link": row.get("Event Link", ""),
+                            "blog": row.get("Blog", ""),
                             "description": row.get("Description", ""),
                             "contributors": row.get("Contributors", ""),
-                            "image": static(
-                                row.get("Image", "assets/img/blog/single/image.jpg")
-                            ),
+                            "image": static(image_path) if image_path else None,
                         }
                     )
 
-        events.sort(key=lambda e: e["start_date"], reverse=True)
+        events.sort(key=lambda e: cast(str, e["start_date"]), reverse=True)
 
         context["events"] = events
         return context
