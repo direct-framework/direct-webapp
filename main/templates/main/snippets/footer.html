@@ -142,15 +142,3 @@
 <script src="{% static 'assets/js/vendor.bundle.js' %}"></script>
 <script src="{% static 'assets/js/theme-switcher.js' %}"></script>
 <script src="{% static 'assets/js/main.min.js' %}"></script>
-<script>
-    document.querySelectorAll("[data-email-user][data-email-domain]").forEach((link) => {
-        const user = link.dataset.emailUser;
-        const domain = link.dataset.emailDomain;
-        if (!user || !domain) {
-            return;
-        }
-
-        const email = `${user}@${domain}`;
-        link.href = `mailto:${email}`;
-    });
-</script>
