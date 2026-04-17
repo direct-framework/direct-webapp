@@ -4,13 +4,13 @@ import pytest
 from django.urls import reverse
 
 from main.models import LearningResource, Provider, Skill
-from main.tables import LearningResourcesTable
+from main.tables import LearningResourceTable
 
 
 @pytest.mark.django_db
 def test_learning_resources_table_render_name(learning_resource: LearningResource):
     """Test the learning resource name renders as an external link."""
-    table = LearningResourcesTable([])
+    table = LearningResourceTable([])
 
     rendered = table.render_name(learning_resource.name, learning_resource)
 
@@ -23,7 +23,7 @@ def test_learning_resources_table_render_name(learning_resource: LearningResourc
 @pytest.mark.django_db
 def test_learning_resources_table_render_provider(learning_resource: LearningResource):
     """Test the provider name renders as an external link when a URL exists."""
-    table = LearningResourcesTable([])
+    table = LearningResourceTable([])
 
     assert isinstance(learning_resource.provider, Provider)
 
@@ -40,7 +40,7 @@ def test_learning_resources_table_render_provider_without_url(
     learning_resource: LearningResource,
 ):
     """Test the provider name renders as plain text when no URL exists."""
-    table = LearningResourcesTable([])
+    table = LearningResourceTable([])
     learning_resource.provider = None
 
     rendered = table.render_provider("Provider", learning_resource)
@@ -53,7 +53,7 @@ def test_learning_resources_table_render_skill_set(
     learning_resource: LearningResource, skill: Skill
 ):
     """Test related skills render as badge links."""
-    table = LearningResourcesTable([])
+    table = LearningResourceTable([])
 
     rendered = table.render_skill_set(learning_resource.skill_set)  # type: ignore[arg-type]
 

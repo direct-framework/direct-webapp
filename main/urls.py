@@ -22,6 +22,11 @@ framework_patterns = [
         views.LearningResourcesPageView.as_view(),
         name="learning_resources",
     ),
+    path(
+        "tools-languages-methodologies/",
+        views.ToolsLanguagesMethodologiesPageView.as_view(),
+        name="tools_languages_methodologies",
+    ),
     path("roles/", views.RolesPageView.as_view(), name="roles"),
     path("skills/<slug:slug>/", views.SkillPageView.as_view(), name="skill_detail"),
 ]
