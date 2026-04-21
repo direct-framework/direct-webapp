@@ -235,6 +235,23 @@ class GitHubMarkdownPageView(TemplateView):
     unavailable_message = "Document is temporarily unavailable."
     markdown_extensions: ClassVar[list[str]] = ["fenced_code", "tables", "toc"]
 
+    def _strip_duplicate_heading(self, markdown_text: str) -> str:
+        """Remove leading H1 if it duplicates the configured page heading."""
+        lines = markdown_text.splitlines()
+        if not lines:
+            return markdown_text
+
+        first_line = lines[0].strip()
+        if self.page_heading not in first_line:
+            return markdown_text
+
+        # Remove the duplicate title line and one following blank line if present.
+        del lines[0]
+        if lines and lines[0].strip() == "":
+            del lines[0]
+
+        return "\n".join(lines)
+
     def get_markdown_content(self) -> str:
         """Fetch and convert remote markdown content to HTML."""
         if not self.github_raw_url:
@@ -242,8 +259,9 @@ class GitHubMarkdownPageView(TemplateView):
 
         response = requests.get(self.github_raw_url, timeout=5)
         response.raise_for_status()
+        markdown_text = self._strip_duplicate_heading(response.text)
         return markdown.markdown(
-            response.text,
+            markdown_text,
             extensions=self.markdown_extensions,
         )
 
