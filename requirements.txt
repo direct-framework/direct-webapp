@@ -6,6 +6,10 @@
 #
 asgiref==3.11.1
     # via django
+certifi==2026.4.22
+    # via requests
+charset-normalizer==3.4.7
+    # via requests
 confusable-homoglyphs==3.3.1
     # via django-registration
 crispy-bootstrap5==2026.3
@@ -41,15 +45,23 @@ django-tables2==3.0.0
     # via direct_webapp (pyproject.toml)
 gunicorn==25.3.0
     # via direct_webapp (pyproject.toml)
+idna==3.13
+    # via requests
+markdown==3.10.2
+    # via direct_webapp (pyproject.toml)
 mysqlclient==2.2.8
     # via direct_webapp (pyproject.toml)
 packaging==26.0
     # via gunicorn
+requests==2.33.1
+    # via direct_webapp (pyproject.toml)
 sqlparse==0.5.5
     # via django
 tablib==3.9.0
     # via django-import-export
 typing-extensions==4.15.0
     # via django-stubs-ext
+urllib3==2.6.3
+    # via requests
 whitenoise==6.12.0
     # via direct_webapp (pyproject.toml)

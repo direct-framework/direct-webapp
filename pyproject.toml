@@ -18,7 +18,9 @@ dependencies = [
     "mysqlclient",
     "django-import-export",
     "django-multiselectfield",
-    "django-tables2"
+    "django-tables2",
+    "markdown",
+    "requests"
 ]
 
 [project.optional-dependencies]

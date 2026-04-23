@@ -10,8 +10,12 @@ beautifulsoup4==4.14.3
     # via direct_webapp (pyproject.toml)
 build==1.4.2
     # via pip-tools
+certifi==2026.4.22
+    # via requests
 cfgv==3.5.0
     # via pre-commit
+charset-normalizer==3.4.7
+    # via requests
 click==8.3.1
     # via
     #   djlint
@@ -78,6 +82,8 @@ gunicorn==25.3.0
     # via direct_webapp (pyproject.toml)
 identify==2.6.18
     # via pre-commit
+idna==3.13
+    # via requests
 iniconfig==2.3.0
     # via pytest
 jsbeautifier==1.15.4
@@ -88,6 +94,8 @@ json5==0.14.0
     # via djlint
 librt==0.8.1
     # via mypy
+markdown==3.10.2
+    # via direct_webapp (pyproject.toml)
 mypy==1.20.0
     # via
     #   direct_webapp (pyproject.toml)
@@ -146,6 +154,8 @@ pyyaml==6.0.3
     #   pre-commit
 regex==2026.3.32
     # via djlint
+requests==2.33.1
+    # via direct_webapp (pyproject.toml)
 ruff==0.15.8
     # via direct_webapp (pyproject.toml)
 six==1.17.0
@@ -162,14 +172,22 @@ tqdm==4.67.3
     # via djlint
 types-django-import-export==4.4.0.20260325
     # via direct_webapp (pyproject.toml)
+types-markdown==3.10.2.20260408
+    # via direct_webapp (pyproject.toml)
 types-pyyaml==6.0.12.20250915
     # via django-stubs
+types-requests==2.33.0.20260408
+    # via direct_webapp (pyproject.toml)
 typing-extensions==4.15.0
     # via
     #   beautifulsoup4
     #   django-stubs
     #   django-stubs-ext
     #   mypy
+urllib3==2.6.3
+    # via
+    #   requests
+    #   types-requests
 virtualenv==21.2.0
     # via pre-commit
 wheel==0.46.3
