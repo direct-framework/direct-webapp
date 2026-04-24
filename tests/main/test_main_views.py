@@ -13,11 +13,7 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
-from main.models import (
-    Skill,
-    SkillLevel,
-    UserSkill,
-)
+from main.models import Skill, SkillLevel, UserSkill
 from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import (
@@ -82,7 +78,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             href=reverse("learning_resources"),
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Roles and job profiles"), href=reverse("roles")
+            tag_with_text_filter("a", "Roles & career pathways"), href=reverse("roles")
         )
 
         # Community Dropdown
