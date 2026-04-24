@@ -536,9 +536,27 @@ def test_extract_and_combine_roles():
 
 
 class TestFrameworkOverviewPageView(TemplateOkMixin):
-    """Test suite for the GetInvolvedPageView."""
+    """Test suite for the FrameworkOverviewPageView."""
 
     _template_name = "main/pages/framework-overview.html"
 
     def _get_url(self):
         return reverse("framework_overview")
+
+
+class TestGovernancePageView(TemplateOkMixin):
+    """Test suite for the GovernancePageView."""
+
+    _template_name = "main/pages/policies/governance.html"
+
+    def _get_url(self):
+        return reverse("governance")
+
+
+class TestLicensingPageView(TemplateOkMixin):
+    """Test suite for the LicensingPageView."""
+
+    _template_name = "main/pages/policies/licensing.html"
+
+    def _get_url(self):
+        return reverse("licensing")
