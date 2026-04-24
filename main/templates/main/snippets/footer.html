@@ -90,6 +90,9 @@
                             <h6 class="text-muted text-uppercase fs-xs fw-semibold mb-3">Framework</h6>
                             <ul class="nav flex-column mb-0">
                                 <li class="nav-item mb-2">
+                                    <a class="nav-link p-0" href="{% url 'framework_overview' %}">Overview</a>
+                                </li>
+                                <li class="nav-item mb-2">
                                     <a class="nav-link p-0" href="{% url 'skills_and_competencies' %}">Competencies framework</a>
                                 </li>
                                 <li class="nav-item mb-2">
@@ -107,10 +110,10 @@
                             <h6 class="text-muted text-uppercase fs-xs fw-semibold mb-3">Policies</h6>
                             <ul class="nav flex-column mb-0">
                                 <li class="nav-item mb-2">
-                                    <a class="nav-link p-0" href="">Licensing</a>
+                                    <a class="nav-link p-0" href="{% url 'licensing' %}">Licensing</a>
                                 </li>
                                 <li class="nav-item mb-2">
-                                    <a class="nav-link p-0" href="">Goverenance</a>
+                                    <a class="nav-link p-0" href="{% url 'governance' %}">Governance</a>
                                 </li>
                                 <li class="nav-item mb-2">
                                     <a class="nav-link p-0" href="{% url 'privacy' %}">Privacy policy</a>

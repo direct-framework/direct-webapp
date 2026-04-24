@@ -35,6 +35,8 @@ repos:
         additional_dependencies:
           - django-stubs[compatible-mypy]
           - django-stubs-ext
+          - types-Markdown
+          - types-requests
           - django-bootstrap5
           - django-registration
           - django-crispy-forms

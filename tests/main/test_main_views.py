@@ -13,11 +13,7 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
-from main.models import (
-    Skill,
-    SkillLevel,
-    UserSkill,
-)
+from main.models import Skill, SkillLevel, UserSkill
 from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import (
@@ -82,7 +78,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             href=reverse("learning_resources"),
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Roles and job profiles"), href=reverse("roles")
+            tag_with_text_filter("a", "Roles & career pathways"), href=reverse("roles")
         )
 
         # Community Dropdown
@@ -149,7 +145,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
 class TestPrivacy(TemplateOkMixin):
     """Test suite for the privacy view."""
 
-    _template_name = "main/pages/privacy.html"
+    _template_name = "main/pages/policies/privacy.html"
 
     def _get_url(self):
         return reverse("privacy")
@@ -212,7 +208,7 @@ class TestAboutPageView(TemplateOkMixin, BS4Mixin):
 class TestTermsPageView(TemplateOkMixin):
     """Test suite for the TermsPageView."""
 
-    _template_name = "main/pages/terms.html"
+    _template_name = "main/pages/policies/terms.html"
 
     def _get_url(self):
         return reverse("terms")
@@ -540,9 +536,27 @@ def test_extract_and_combine_roles():
 
 
 class TestFrameworkOverviewPageView(TemplateOkMixin):
-    """Test suite for the GetInvolvedPageView."""
+    """Test suite for the FrameworkOverviewPageView."""
 
     _template_name = "main/pages/framework-overview.html"
 
     def _get_url(self):
         return reverse("framework_overview")
+
+
+class TestGovernancePageView(TemplateOkMixin):
+    """Test suite for the GovernancePageView."""
+
+    _template_name = "main/pages/policies/governance.html"
+
+    def _get_url(self):
+        return reverse("governance")
+
+
+class TestLicensingPageView(TemplateOkMixin):
+    """Test suite for the LicensingPageView."""
+
+    _template_name = "main/pages/policies/licensing.html"
+
+    def _get_url(self):
+        return reverse("licensing")

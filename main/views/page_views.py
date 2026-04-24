@@ -6,10 +6,16 @@ import logging
 from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
+import markdown
+import nh3
+import requests
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
+from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_safe
+from django.views.decorators.cache import cache_page
 from django.views.generic.base import TemplateView
 from django_tables2 import SingleTableView
 
@@ -65,7 +71,7 @@ class IndexPageView(TemplateView):
 class PrivacyPageView(TemplateView):
     """View that renders the privacy page."""
 
-    template_name = "main/pages/privacy.html"
+    template_name = "main/pages/policies/privacy.html"
 
 
 class AboutPageView(TemplateView):
@@ -77,7 +83,7 @@ class AboutPageView(TemplateView):
 class TermsPageView(TemplateView):
     """View that renders the terms and conditions page."""
 
-    template_name = "main/pages/terms.html"
+    template_name = "main/pages/policies/terms.html"
 
 
 class SkillLevelsPageView(TemplateView):
@@ -222,3 +228,85 @@ class FrameworkOverviewPageView(TemplateView):
     """View that renders an overview page for the framework."""
 
     template_name = "main/pages/framework-overview.html"
+
+
+class GitHubMarkdownPageView(TemplateView):
+    """Base view for pages that render markdown content fetched from GitHub."""
+
+    github_raw_url = ""
+    page_heading = ""
+    unavailable_message = "Document is temporarily unavailable."
+    markdown_extensions: ClassVar[list[str]] = ["fenced_code", "tables", "toc"]
+
+    def _strip_duplicate_heading(self, markdown_text: str) -> str:
+        """Remove leading H1 if it duplicates the configured page heading."""
+        lines = markdown_text.splitlines()
+        if not lines:
+            return markdown_text
+
+        first_line = lines[0].strip()
+        if self.page_heading not in first_line:
+            return markdown_text
+
+        # Remove the duplicate title line and one following blank line if present.
+        del lines[0]
+        if lines and lines[0].strip() == "":
+            del lines[0]
+
+        return "\n".join(lines)
+
+    def get_markdown_content(self) -> str:
+        """Fetch and convert remote markdown content to HTML."""
+        if not self.github_raw_url:
+            raise ValueError("github_raw_url must be set on GitHubMarkdownPageView")
+
+        response = requests.get(self.github_raw_url, timeout=5)
+        response.raise_for_status()
+        markdown_text = self._strip_duplicate_heading(response.text)
+        return markdown.markdown(
+            markdown_text,
+            extensions=self.markdown_extensions,
+        )
+
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+        """Add rendered markdown content and page metadata to the context."""
+        context = super().get_context_data(**kwargs)
+        context["page_heading"] = self.page_heading
+
+        try:
+            context["markdown_content"] = mark_safe(
+                nh3.clean(self.get_markdown_content())
+            )
+        except requests.RequestException:
+            logger.exception("Failed to load markdown from %s", self.github_raw_url)
+            context["markdown_content"] = mark_safe(
+                f"<p>{self.unavailable_message}</p>"
+            )
+
+        return context
+
+
+@method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
+class GovernancePageView(GitHubMarkdownPageView):
+    """View that renders the governance page from GitHub Markdown."""
+
+    template_name = "main/pages/policies/governance.html"
+    page_heading = "DIRECT Governance"
+    unavailable_message = "Governance document is temporarily unavailable."
+
+    github_raw_url = (
+        "https://raw.githubusercontent.com/direct-framework/.github/main/GOVERNANCE.md"
+    )
+
+
+@method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
+class LicensingPageView(GitHubMarkdownPageView):
+    """View that renders the licensing page from GitHub Markdown."""
+
+    template_name = "main/pages/policies/licensing.html"
+    page_heading = "DIRECT Licensing"
+    unavailable_message = "Licensing document is temporarily unavailable."
+
+    github_raw_url = (
+        "https://raw.githubusercontent.com/direct-framework/.github/main/LICENSING.md"
+    )
