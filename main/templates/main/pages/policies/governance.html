@@ -4,16 +4,14 @@
     Digital Research Competencies Framework
 {% endblock title %}
 {% block breadcrumb_items %}
-    <li class="breadcrumb-item" aria-current="page">Policies</li>
+    <li class="breadcrumb-item">Policies</li>
     <li class="breadcrumb-item active" aria-current="page">Governance</li>
 {% endblock breadcrumb_items %}
 {% block content %}
-    <section id="governance" class="pt-5 text-center ">
-        <h1 class="display-4 pb-2 pb-lg-3">{{ page_heading }}</h1>
-    </section>
-    <section class="container pt-5 mt-md-2 mt-lg-3 mt-xl-4">
+    <section id="licensing" class="container">
+        <h1 class="display-4 text-center pb-2 pb-lg-3">{{ page_heading }}</h1>
         <div class="row justify-content-center pt-xxl-2">
-            <div class="col-lg-9 col-xl-8">{{ markdown_content|safe }}</div>
+            <div class="col-lg-9 col-xl-8">{{ markdown_content }}</div>
         </div>
     </section>
 {% endblock content %}
