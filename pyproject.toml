@@ -20,6 +20,7 @@ dependencies = [
     "django-multiselectfield",
     "django-tables2",
     "markdown",
+    "nh3",
     "requests"
 ]
 

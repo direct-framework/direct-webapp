@@ -104,6 +104,8 @@ mypy-extensions==1.1.0
     # via mypy
 mysqlclient==2.2.8
     # via direct_webapp (pyproject.toml)
+nh3==0.3.4
+    # via direct_webapp (pyproject.toml)
 nodeenv==1.10.0
     # via pre-commit
 packaging==26.0

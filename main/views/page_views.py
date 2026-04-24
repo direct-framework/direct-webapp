@@ -9,10 +9,13 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import markdown
+import nh3
 import requests
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
+from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
+from django.views.decorators.cache import cache_page
 from django.views.generic.base import TemplateView
 from django_tables2 import SingleTableView
 
@@ -271,7 +274,9 @@ class GitHubMarkdownPageView(TemplateView):
         context["page_heading"] = self.page_heading
 
         try:
-            context["markdown_content"] = mark_safe(self.get_markdown_content())
+            context["markdown_content"] = mark_safe(
+                nh3.clean(self.get_markdown_content())
+            )
         except requests.RequestException:
             logger.exception("Failed to load markdown from %s", self.github_raw_url)
             context["markdown_content"] = mark_safe(
@@ -281,7 +286,7 @@ class GitHubMarkdownPageView(TemplateView):
         return context
 
 
-# @method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
+@method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
 class GovernancePageView(GitHubMarkdownPageView):
     """View that renders the governance page from GitHub Markdown."""
 
@@ -294,7 +299,7 @@ class GovernancePageView(GitHubMarkdownPageView):
     )
 
 
-# @method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
+@method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
 class LicensingPageView(GitHubMarkdownPageView):
     """View that renders the licensing page from GitHub Markdown."""
 
