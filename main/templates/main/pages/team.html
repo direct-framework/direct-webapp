@@ -4,29 +4,38 @@
     Digital Research Competencies Framework
 {% endblock title %}
 {% block breadcrumb_items %}
-    <li class="breadcrumb-item active" aria-current="page">Events</li>
+    <li class="breadcrumb-item">About</li>
+    <li class="breadcrumb-item active" aria-current="page">Our Team</li>
 {% endblock breadcrumb_items %}
 {% block content %}
     <section id="about">
         <div class="row">
-            <h2 class="mb-4">Team Members</h2>
+            <h1 class="mb-5">Team Members</h1>
             <div class="row mb-5">
                 {% for member in team_members %}
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="text-center">
-                            <img src="{{ member.image }}"
-                                 alt="{{ member.name }}"
-                                 class="img-fluid rounded-circle mb-3"
-                                 style="width: 160px;
-                                        height: 160px;
-                                        object-fit: cover" />
+                            {% if member.image %}
+                                <img src="{{ member.image }}"
+                                     alt="{{ member.name }}"
+                                     class="img-fluid rounded-circle mb-3"
+                                     style="width: 160px;
+                                            height: 160px;
+                                            object-fit: cover" />
+                            {% else %}
+                                <div class="bg-secondary rounded-circle d-inline-flex justify-content-center align-items-center mb-3"
+                                     style="width: 160px;
+                                            height: 160px"></div>
+                            {% endif %}
                             <h5 class="fw-semibold mb-1">{{ member.name }}</h5>
                             <p class="text-muted mb-2">{{ member.role }}</p>
                             <p class="small">{{ member.bio }}</p>
                             <ul class="list-inline mt-3">
                                 {% if member.email %}
                                     <li class="list-inline-item">
-                                        <a href="mailto:{{ member.email }}" class="text-decoration-none px-1">
+                                        <a href="mailto:{{ member.email }}"
+                                           class="text-decoration-none px-1"
+                                           aria-label="Email {{ member.name }}">
                                             <i class="fa-solid fa-envelope"></i>
                                         </a>
                                     </li>
@@ -35,7 +44,8 @@
                                     <li class="list-inline-item">
                                         <a href="{{ member.github }}"
                                            target="_blank"
-                                           class="text-decoration-none px-1">
+                                           class="text-decoration-none px-1"
+                                           aria-label="View {{ member.name }} on GitHub">
                                             <i class="fa-brands fa-github"></i>
                                         </a>
                                     </li>
@@ -44,7 +54,8 @@
                                     <li class="list-inline-item">
                                         <a href="{{ member.twitter }}"
                                            target="_blank"
-                                           class="text-decoration-none px-1">
+                                           class="text-decoration-none px-1"
+                                           aria-label="View {{ member.name }} on Twitter">
                                             <i class="fa-brands fa-twitter"></i>
                                         </a>
                                     </li>
@@ -53,7 +64,8 @@
                                     <li class="list-inline-item">
                                         <a href="{{ member.linkedin }}"
                                            target="_blank"
-                                           class="text-decoration-none px-1">
+                                           class="text-decoration-none px-1"
+                                           aria-label="View {{ member.name }} on LinkedIn">
                                             <i class="fa-brands fa-linkedin"></i>
                                         </a>
                                     </li>
@@ -66,7 +78,7 @@
             <h2 class="mb-3">Contributors</h2>
             <p class="mb-0">
                 {% for contributor in contributors %}
-                    {{ contributor }}
+                    {{ contributor.name }}
                     {% if not forloop.last %},{% endif %}
                 {% empty %}
                     No contributors listed.
