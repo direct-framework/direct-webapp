@@ -160,67 +160,42 @@ class TeamPageView(TemplateView):
 
         csv_path = Path("data/team.csv")
         team_members: list[dict[str, Any]] = []
-        contributors: list[str] = []
+        contributors: list[dict[str, Any]] = []
 
-        def _safe_get(row: list[str], index: int | None) -> str:
-            if index is None or index >= len(row):
-                return ""
-            return row[index].strip()
+        if not csv_path.exists():
+            context["team_members"] = team_members
+            context["contributors"] = contributors
+            return context
 
-        def _safe_int(value: str, default: int = 999) -> int:
-            try:
-                return int(value)
-            except (TypeError, ValueError):
-                return default
+        with open(csv_path, newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
 
-        if csv_path.exists():
-            with open(csv_path, newline="", encoding="utf-8") as csvfile:
-                reader = csv.reader(csvfile)
-                header = next(reader, None)
+            for row in reader:
+                if not row:
+                    continue
 
-                if header:
-                    header_map = {
-                        name.strip().lower(): idx for idx, name in enumerate(header)
-                    }
-                    role_indexes = [
-                        idx
-                        for idx, name in enumerate(header)
-                        if name.strip().lower() == "role"
-                    ]
+                name = (row.get("name") or "").strip()
+                image_path = (row.get("image") or "").strip()
+                member = {
+                    "name": name,
+                    "role": (row.get("role") or "").strip(),
+                    "bio": (row.get("bio") or "").strip(),
+                    "image": static(image_path) if image_path else None,
+                    "email": (row.get("email") or "").strip(),
+                    "github": (row.get("github") or "").strip(),
+                    "twitter": (row.get("twitter") or "").strip(),
+                    "linkedin": (row.get("linkedin") or "").strip(),
+                }
 
-                    group_idx = role_indexes[0] if role_indexes else None
-                    member_role_idx = (
-                        role_indexes[1]
-                        if len(role_indexes) > 1
-                        else (role_indexes[0] if role_indexes else None)
-                    )
-
-                    for row in reader:
-                        if not row:
-                            continue
-
-                        image_path = _safe_get(row, header_map.get("image"))
-                        member = {
-                            "name": _safe_get(row, header_map.get("name")),
-                            "role": _safe_get(row, member_role_idx),
-                            "bio": _safe_get(row, header_map.get("bio")),
-                            "image": static(image_path) if image_path else None,
-                            "email": _safe_get(row, header_map.get("email")),
-                            "github": _safe_get(row, header_map.get("github")),
-                            "twitter": _safe_get(row, header_map.get("twitter")),
-                            "linkedin": _safe_get(row, header_map.get("linkedin")),
-                            "order": _safe_int(_safe_get(row, header_map.get("order"))),
-                        }
-
-                        group = _safe_get(row, group_idx).lower()
-                        if group in {"member", "contributor"}:
-                            if member["name"]:
-                                contributors.append(cast(str, member["name"]))
-                        else:
-                            team_members.append(member)
+                group = (row.get("group") or "").strip().lower()
+                if group == "contributor":
+                    if name:
+                        contributors.append(member)
+                else:
+                    team_members.append(member)
 
         team_members.sort(key=lambda m: cast(str, m["name"]).casefold())
-        contributors.sort(key=str.casefold)
+        contributors.sort(key=lambda m: cast(str, m["name"]).casefold())
 
         context["team_members"] = team_members
         context["contributors"] = contributors
