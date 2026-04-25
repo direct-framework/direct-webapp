@@ -76,14 +76,19 @@
                 {% endfor %}
             </div>
             <h2 class="mb-3">Contributors</h2>
-            <p class="mb-0">
+            <ul class="list-inline mb-0">
                 {% for contributor in contributors %}
-                    {{ contributor.name }}
-                    {% if not forloop.last %},{% endif %}
+                    <li class="list-inline-item me-3 mb-1">
+                        {% if contributor.github %}
+                            <a href="{{ contributor.github }}" target="_blank">{{ contributor.name }}</a>
+                        {% else %}
+                            {{ contributor.name }}
+                        {% endif %}
+                    </li>
                 {% empty %}
-                    No contributors listed.
+                    <li class="list-inline-item">No contributors listed.</li>
                 {% endfor %}
-            </p>
+            </ul>
         </div>
     </section>
 {% endblock content %}
