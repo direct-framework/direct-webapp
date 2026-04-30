@@ -26,7 +26,7 @@ from ..models import (
     SkillLevel,
     ToolLanguageMethodology,
 )
-from ..tables import LearningResourcesTable
+from ..tables import LearningResourceTable, ToolLanguageMethodologyTable
 
 logger = logging.getLogger(__name__)
 
@@ -103,8 +103,16 @@ class LearningResourcesPageView(SingleTableView):
     """View that renders the page with all learning resources."""
 
     model = LearningResource
-    table_class = LearningResourcesTable
+    table_class = LearningResourceTable
     template_name = "main/pages/learning-resources.html"
+
+
+class ToolsLanguagesMethodologiesPageView(SingleTableView):
+    """View that renders the page with all tools, languages and methodologies."""
+
+    model = ToolLanguageMethodology
+    table_class = ToolLanguageMethodologyTable
+    template_name = "main/pages/tools-languages-methodologies.html"
 
 
 class GetInvolvedPageView(TemplateView):
