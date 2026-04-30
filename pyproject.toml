@@ -15,7 +15,6 @@ dependencies = [
     "crispy-bootstrap5",
     "gunicorn",
     "whitenoise",
-    "mysqlclient",
     "django-import-export",
     "django-multiselectfield",
     "django-tables2",
@@ -40,6 +39,9 @@ dev = [
     "types-Markdown",
     "types-requests",
     "beautifulsoup4",
+]
+prod = [
+    "mysqlclient",
 ]
 doc = [
     "mkdocs<2",

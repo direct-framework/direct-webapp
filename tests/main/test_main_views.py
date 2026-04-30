@@ -78,7 +78,12 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             href=reverse("learning_resources"),
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Roles & career pathways"), href=reverse("roles")
+            tag_with_text_filter("a", "Tools, languages and methodologies"),
+            href=reverse("tools_languages_methodologies"),
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Roles and career pathways"),
+            href=reverse("roles"),
         )
 
         # Community Dropdown
@@ -415,13 +420,13 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
         assert tr.find(
             tag_with_text_filter("a", "Learning Resource"), href=learning_resource.url
         )
-        assert tr.find(tag_with_text_filter("td", "English"))
+        assert tr.find(tag_with_text_filter("span", "English"), class_="badge")
         assert tr.find(
             tag_with_text_filter("a", "Provider"), href=learning_resource.provider.url
         )
         assert tr.find(
             tag_with_text_filter("a", "Skill"),
-            class_="badge",
+            class_="btn",
             href=reverse("skill_detail", args=(skill.slug,)),
         )
 

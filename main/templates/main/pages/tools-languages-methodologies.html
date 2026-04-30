@@ -1,0 +1,22 @@
+{% extends "main/base.page.html" %}
+{% load static %}
+{% load render_table from django_tables2 %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'framework_overview' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Tools, languages and methodologies</li>
+{% endblock breadcrumb_items %}
+{% block content %}
+    <section id="learning-resources">
+        <div class="row">
+            <div class="col pe-lg-4 pe-xl-0">
+                <h1 class="pb-2 pb-lg-3">Tools, languages and methodologies</h1>
+                {% render_table table %}
+            </div>
+        </div>
+    </section>
+{% endblock content %}
