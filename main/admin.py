@@ -25,10 +25,13 @@ from .models import (
     Provider,
     Skill,
     SkillLevel,
+    Team,
+    TeamMembership,
     ToolLanguageMethodology,
     User,
     UserSkill,
 )
+
 
 
 @admin.register(User)
@@ -222,3 +225,13 @@ class CustomUserSkillsProfilesAdmin(admin.ModelAdmin[UserProxy]):
     ) -> bool:
         """Do not allow deleting users from this view."""
         return False
+
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin[Team]):
+    """Admin class for the Team model."""
+
+
+@admin.register(TeamMembership)
+class TeamMembershipAdmin(admin.ModelAdmin[TeamMembership]):
+    """Admin class for the TeamMembership model."""
