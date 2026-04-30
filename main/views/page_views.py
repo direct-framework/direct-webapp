@@ -13,11 +13,14 @@ import nh3
 import requests
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
 from django.views.generic.base import TemplateView
 from django_tables2 import SingleTableView
+
+from main.forms import CreateTeamForm
 
 from ..models import (
     CompetencyDomain,
@@ -318,3 +321,18 @@ class LicensingPageView(GitHubMarkdownPageView):
     github_raw_url = (
         "https://raw.githubusercontent.com/direct-framework/.github/main/LICENSING.md"
     )
+
+
+class MyTeamPageView(TemplateView):
+    """View that renders the my team page."""
+
+    template_name = "main/pages/my-teams.html"
+
+
+class CreateTeamPageView(TemplateView):
+    """View that renders the create team page."""
+
+    form = CreateTeamForm
+
+    template_name = "main/pages/create-team.html"
+    success_url = reverse_lazy("main:my-teams")
