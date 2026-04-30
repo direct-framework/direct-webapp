@@ -33,7 +33,6 @@ from .models import (
 )
 
 
-
 @admin.register(User)
 class CustomUserAdmin(UserAdmin[User]):
     """Override the UserAdmin to display extra fields."""
