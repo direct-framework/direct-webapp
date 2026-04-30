@@ -36,6 +36,8 @@ This Django project uses:
 
 ## Installation
 
+You must have **Python version 3.12 or later** installed.
+
 To get started:
 
 1. Create and activate a [virtual environment](https://docs.python.org/3/library/venv.html):
@@ -93,10 +95,10 @@ To get started:
    python manage.py createsuperuser
    ```
 
-8. To populate the db with Categories and Skills from a yaml or json version of the framework
+8. Populate the database using a snapshot of v2.0 of the framework (this is not necessarily the latest live version, so this is only used for development).
 
    ```bash
-   python -m scripts.populate_db [-j data.json]|[-y data.yaml]
+   python manage.py loaddata direct_webapp/fixtures/framework-2-0.json
    ```
 
 ### Installation with Docker
