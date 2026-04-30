@@ -80,7 +80,7 @@ class ToolLanguageMethodologyTable(tables.Table):
         fields = ("name", "kind")
         order_by = "name"
 
-    def render_name(self, value: str, record: LearningResource) -> SafeString:
+    def render_name(self, value: str, record: ToolLanguageMethodology) -> SafeString:
         """Include the URL in the name."""
         return format_html(external_link_html, record.url, "fs-lg", value)
 
