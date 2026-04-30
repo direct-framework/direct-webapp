@@ -55,7 +55,7 @@ repos:
     hooks:
       - id: codespell
         args: [-I, .codespell_ignore.txt]
-        exclude: ^main/static/assets/|^package-lock.json$
+        exclude: ^main/static/assets/|^package-lock.json$|^direct_webapp/fixtures/framework-2-0.json$
   - repo: https://github.com/djlint/djLint
     rev: v1.36.4
     hooks:
