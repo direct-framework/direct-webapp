@@ -1,0 +1,14 @@
+{% extends "main/base.account.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <section class="container">
+        <p>
+            <b>Create Team</b>
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="Create Team">
+        </form>
+    </section>
+{% endblock content %}
