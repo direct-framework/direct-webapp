@@ -65,7 +65,19 @@ To get started:
    pre-commit install
    ```
 
-5. Run the webapp:
+5. First-time database setup:
+
+   Before running the server for the first time, initialise the database tables as follows:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+   If you run into the following error, then you've missed this step:
+
+   `django.db.utils.OperationalError: no such table: main_skilllevel`
+
+6. Run the webapp:
 
    ```bash
    python manage.py runserver
@@ -83,19 +95,19 @@ To get started:
 
    then restart it.
 
-6. Run the tests:
+7. Run the tests:
 
    ```bash
    pytest
    ```
 
-7. Create an admin account to access admin backend:
+8. Create an admin account to access admin backend:
 
    ```bash
    python manage.py createsuperuser
    ```
 
-8. Populate the database using a snapshot of v2.0 of the framework (this is not necessarily the latest live version, so this is only used for development).
+9. Populate the database using a snapshot of v2.0 of the framework (this is not necessarily the latest live version, so this is only used for development).
 
    ```bash
    python manage.py loaddata direct_webapp/fixtures/framework-2-0.json
