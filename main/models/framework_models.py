@@ -1,4 +1,4 @@
-"""Models module for the main app."""
+"""Models for the core framework."""
 
 from collections.abc import Collection
 from typing import Any
