@@ -1,19 +1,19 @@
 {% extends "main/base.page.html" %}
 {% load static %}
 {% block title %}
-    DIRECT Framework - my Team
+    DIRECT Framework - My Teams
 {% endblock title %}
 {% block breadcrumb_items %}
     <li class="breadcrumb-item">
         <a href="{% url 'framework_overview' %}">Framework</a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">My Team</li>
+    <li class="breadcrumb-item active" aria-current="page">My Teams</li>
 {% endblock breadcrumb_items %}
 {% block content %}
     <section id="my-team">
         <div class="row">
             <div class="col-lg-9 col-xl-8 pe-lg-4 pe-xl-0">
-                <h1 class="pb-2 pb-lg-3">My Team</h1>
+                <h1 class="pb-2 pb-lg-3">My Teams</h1>
                 <a class="btn btn-primary mb-4" href="{% url 'create-team' %}">Create Team</a>
                 <p class="fs-lg mb-5">
                     This page presents the teams you are in in the Digital Research
@@ -22,9 +22,10 @@
                 <table class="table table-bordered table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" style="width: 20%;">Teams Name</th>
+                            <th scope="col" style="width: 20%;">Team Name</th>
+                            <th scope="col" style="width: 20%;">Description</th>
                             <th scope="col">Manager</th>
-                            <th scope="col" style="width: 30%;">Team Members</th>
+                            <th scope="col" style="width: 30%;">Members</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,6 +34,7 @@
                                 <td>
                                     <strong>{{ team.name }}</strong>
                                 </td>
+                                <td>{{ team.description }}</td>
                                 <td>{{ team.manager }}</td>
                                 <td>
                                     <ul class="list-unstyled mb-0">
