@@ -36,6 +36,8 @@ This Django project uses:
 
 ## Installation
 
+You must have **Python version 3.12 or later** installed.
+
 To get started:
 
 1. Create and activate a [virtual environment](https://docs.python.org/3/library/venv.html):
