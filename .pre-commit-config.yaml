@@ -18,7 +18,7 @@ repos:
         args: [--autofix, --indent, '2', --offset, '2']
         exclude: manage.py|^main/static/assets/
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.37.1
+    rev: 0.37.2
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
