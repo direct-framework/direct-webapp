@@ -16,7 +16,7 @@ crispy-bootstrap5==2026.3
     # via direct_webapp (pyproject.toml)
 diff-match-patch==20241021
     # via django-import-export
-django==6.0.3
+django==6.0.4
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
@@ -39,7 +39,7 @@ django-multiselectfield==1.0.1
     # via direct_webapp (pyproject.toml)
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
-django-stubs-ext==6.0.2
+django-stubs-ext==6.0.3
     # via direct_webapp (pyproject.toml)
 django-tables2==3.0.0
     # via direct_webapp (pyproject.toml)
@@ -51,9 +51,9 @@ markdown==3.10.2
     # via direct_webapp (pyproject.toml)
 mysqlclient==2.2.8
     # via direct_webapp (pyproject.toml)
-nh3==0.3.4
+nh3==0.3.5
     # via direct_webapp (pyproject.toml)
-packaging==26.0
+packaging==26.2
     # via gunicorn
 requests==2.33.1
     # via direct_webapp (pyproject.toml)
