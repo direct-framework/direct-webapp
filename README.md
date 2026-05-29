@@ -30,8 +30,8 @@ This Django project uses:
 
 - [x] Initial research
 - [x] Initial development <-- We are here
-- [ ] Minimum viable product
-- [ ] Alpha release
+- [x] Minimum viable product
+- [x] Alpha release
 - [ ] Feature-complete release
 
 ## Installation
