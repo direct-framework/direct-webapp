@@ -75,6 +75,7 @@ class ToolLanguageMethodologyTable(tables.Table):
 
     class Meta:
         """Meta options for the ToolLanguageMethodologyTable."""
+
         model = ToolLanguageMethodology
         fields = ("name", "kind")
         order_by = "name"
