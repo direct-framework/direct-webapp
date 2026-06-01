@@ -53,7 +53,7 @@ class LearningResourceTable(tables.Table):
     def render_language(self, value: str) -> SafeString:
         """Render the language field as a badge."""
         return mark_safe(
-            " ".join(format_html(badge_html, val) for val in value.split(","))
+            " ".join(format_html(badge_html, val.strip()) for val in value.split(","))
         )
 
     def render_provider(self, value: str, record: LearningResource) -> SafeString:
