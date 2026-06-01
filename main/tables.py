@@ -69,13 +69,12 @@ class LearningResourceTable(tables.Table):
 
 
 class ToolLanguageMethodologyTable(tables.Table):
-    """Table class for the LearningResources model."""
+    """Table class for the ToolLanguageMethodology model."""
 
     skill_set = tables.ManyToManyColumn(verbose_name="Skills")
 
     class Meta:
-        """Meta options for the LearningResourcesTable."""
-
+        """Meta options for the ToolLanguageMethodologyTable."""
         model = ToolLanguageMethodology
         fields = ("name", "kind")
         order_by = "name"
