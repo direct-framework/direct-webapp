@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY prod-requirements.txt .
 RUN pip install --no-cache-dir -r prod-requirements.txt
 
 COPY --chown=nobody:nogroup . .
