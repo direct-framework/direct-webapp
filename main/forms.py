@@ -16,6 +16,8 @@ from django_registration.forms import (
     RegistrationFormUniqueEmail,
 )
 
+from main import models
+
 from .models import Skill, SkillLevel, UserSkill
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -267,3 +269,13 @@ class UserSkillsForm(forms.Form):
                     created_skills.append(user_skill)
 
         return created_skills, updated_skills
+
+
+class CreateTeamForm(forms.Form):
+    """Form for creating a new team."""
+
+    class Meta:
+        """Meta options for CreateTeamForm."""
+
+        model = models.Team
+        fields = "__all__"
