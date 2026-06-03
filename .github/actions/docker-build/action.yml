@@ -37,3 +37,4 @@ runs:
           type=gha
           type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
         cache-to: ${{ case(inputs.publish == 'true', format('type=registry,ref=ghcr.io/{0}:buildcache,mode=max', github.repository), 'type=gha,mode=max') }}
+        platforms: linux/amd64
