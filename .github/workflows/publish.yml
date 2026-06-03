@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Test Docker build
+      - name: Publish Docker build
         uses: ./.github/actions/docker-build
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
