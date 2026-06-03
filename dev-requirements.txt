@@ -10,13 +10,13 @@ beautifulsoup4==4.14.3
     # via direct_webapp (pyproject.toml)
 build==1.5.0
     # via pip-tools
-certifi==2026.4.22
+certifi==2026.5.20
     # via requests
 cfgv==3.5.0
     # via pre-commit
 charset-normalizer==3.4.7
     # via requests
-click==8.3.3
+click==8.4.1
     # via
     #   djlint
     #   pip-tools
@@ -24,7 +24,7 @@ colorama==0.4.6
     # via djlint
 confusable-homoglyphs==3.3.1
     # via django-registration
-coverage[toml]==7.13.5
+coverage[toml]==7.14.1
     # via pytest-cov
 crispy-bootstrap5==2026.3
     # via direct_webapp (pyproject.toml)
@@ -32,9 +32,9 @@ cssbeautifier==1.15.4
     # via djlint
 diff-match-patch==20241021
     # via django-import-export
-distlib==0.4.0
+distlib==0.4.1
     # via virtualenv
-django==6.0.4
+django==6.0.5
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
@@ -52,17 +52,17 @@ django-crispy-forms==2.6
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
-django-import-export==4.4.0
+django-import-export==4.4.1
     # via direct_webapp (pyproject.toml)
 django-multiselectfield==1.0.1
     # via direct_webapp (pyproject.toml)
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
-django-stubs[compatible-mypy]==6.0.3
+django-stubs[compatible-mypy]==6.0.5
     # via
     #   direct_webapp (pyproject.toml)
     #   types-django-import-export
-django-stubs-ext==6.0.3
+django-stubs-ext==6.0.5
     # via
     #   direct_webapp (pyproject.toml)
     #   django-stubs
@@ -78,11 +78,11 @@ filelock==3.29.0
     # via
     #   python-discovery
     #   virtualenv
-gunicorn==25.3.0
+gunicorn==26.0.0
     # via direct_webapp (pyproject.toml)
 identify==2.6.19
     # via pre-commit
-idna==3.13
+idna==3.18
     # via requests
 iniconfig==2.3.0
     # via pytest
@@ -92,11 +92,11 @@ jsbeautifier==1.15.4
     #   djlint
 json5==0.14.0
     # via djlint
-librt==0.9.0
+librt==0.11.0
     # via mypy
 markdown==3.10.2
     # via direct_webapp (pyproject.toml)
-mypy==1.20.2
+mypy==2.1.0
     # via
     #   direct_webapp (pyproject.toml)
     #   django-stubs
@@ -120,7 +120,7 @@ pathspec==1.1.1
     #   mypy
 pip-tools==7.5.3
     # via direct_webapp (pyproject.toml)
-platformdirs==4.9.6
+platformdirs==4.10.0
     # via
     #   python-discovery
     #   virtualenv
@@ -148,23 +148,23 @@ pytest-django==4.12.0
     # via direct_webapp (pyproject.toml)
 pytest-mock==3.15.1
     # via direct_webapp (pyproject.toml)
-python-discovery==1.2.2
+python-discovery==1.4.0
     # via virtualenv
 pyyaml==6.0.3
     # via
     #   djlint
     #   pre-commit
-regex==2026.4.4
+regex==2026.5.9
     # via djlint
-requests==2.33.1
+requests==2.34.2
     # via direct_webapp (pyproject.toml)
-ruff==0.15.12
+ruff==0.15.15
     # via direct_webapp (pyproject.toml)
 six==1.17.0
     # via
     #   cssbeautifier
     #   jsbeautifier
-soupsieve==2.8.3
+soupsieve==2.8.4
     # via beautifulsoup4
 sqlparse==0.5.5
     # via django
@@ -172,13 +172,13 @@ tablib==3.9.0
     # via django-import-export
 tqdm==4.67.3
     # via djlint
-types-django-import-export==4.4.0.20260408
+types-django-import-export==4.4.0.20260518
     # via direct_webapp (pyproject.toml)
-types-markdown==3.10.2.20260408
+types-markdown==3.10.2.20260518
     # via direct_webapp (pyproject.toml)
-types-pyyaml==6.0.12.20260408
+types-pyyaml==6.0.12.20260518
     # via django-stubs
-types-requests==2.33.0.20260408
+types-requests==2.33.0.20260518
     # via direct_webapp (pyproject.toml)
 typing-extensions==4.15.0
     # via
@@ -186,11 +186,11 @@ typing-extensions==4.15.0
     #   django-stubs
     #   django-stubs-ext
     #   mypy
-urllib3==2.6.3
+urllib3==2.7.0
     # via
     #   requests
     #   types-requests
-virtualenv==21.3.0
+virtualenv==21.4.2
     # via pre-commit
 wheel==0.47.0
     # via pip-tools
