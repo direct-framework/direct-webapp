@@ -210,6 +210,15 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "kevinrue",
+      "name": "Kevin Rue-Albrecht",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5769108?v=4",
+      "profile": "http://kevinrue.github.io/",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
