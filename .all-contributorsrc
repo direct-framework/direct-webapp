@@ -41,7 +41,8 @@
       "contributions": [
         "code",
         "infra",
-        "tool"
+        "tool",
+        "maintenance"
       ]
     },
     {
@@ -208,6 +209,33 @@
       "contributions": [
         "maintenance",
         "test",
+        "code"
+      ]
+    },
+    {
+      "login": "max-gamill",
+      "name": "Max Gamill",
+      "avatar_url": "https://avatars.githubusercontent.com/u/91465918?v=4",
+      "profile": "https://github.com/Max-Gamill",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kevinrue",
+      "name": "Kevin Rue-Albrecht",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5769108?v=4",
+      "profile": "http://kevinrue.github.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mjademitchell",
+      "name": "mjademitchell",
+      "avatar_url": "https://avatars.githubusercontent.com/u/242165951?v=4",
+      "profile": "https://github.com/mjademitchell",
+      "contributions": [
         "code"
       ]
     },
