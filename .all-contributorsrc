@@ -210,6 +210,15 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "elichad",
+      "name": "Eli Chadwick",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20683271?v=4",
+      "profile": "https://github.com/elichad",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
