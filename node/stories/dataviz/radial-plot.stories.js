@@ -157,7 +157,6 @@ export const TestFontSize = {
   },
 }
 
-
 export const TestNoData = {
   args: {
     data: [],
@@ -172,10 +171,9 @@ export const TestNoData = {
   },
 }
 
-
 export const TestSingleDataPoint = {
   args: {
-    data: generateRandomData(1,1,5),
+    data: generateRandomData(1, 1, 5),
     levels: defaultLevels,
     height: 600,
     arcPercent: 0.98,

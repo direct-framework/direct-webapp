@@ -14,4 +14,5 @@ export const generateRandomData = (n, categoryCount, maxLvl) =>
         category: 'Really long category name that is about 30 chars',
         skill_level: maxLvl - 1,
       },
-    ]).slice(0, n)
+    ])
+    .slice(0, n)

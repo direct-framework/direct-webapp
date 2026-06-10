@@ -6,10 +6,12 @@ import { defaultConfig, levels as defaultLevels } from './defaults'
 import { generateRandomData } from './mock-data'
 
 function flushAllD3Transitions() {
-  var now = performance.now;
-  performance.now = function () { return Infinity; };
-  d3.timerFlush();
-  performance.now = now;
+  let now = performance.now
+  performance.now = function () {
+    return Infinity
+  }
+  d3.timerFlush()
+  performance.now = now
 }
 
 //  Mock the transition multiplier to speed up tests that involve transitions
@@ -78,7 +80,9 @@ describe('RadialBarChart', () => {
       config: config1,
     })
     const groupLabels = container.querySelectorAll('.annotation-cat-label')
-    const shapeDatas = Array.from(groupLabels).map((label) => parseFloat(label.getAttribute('x')))
+    const shapeDatas = Array.from(groupLabels).map((label) =>
+      parseFloat(label.getAttribute('x'))
+    )
 
     document.body.removeChild(container)
     container = null
@@ -93,13 +97,14 @@ describe('RadialBarChart', () => {
     })
 
     const groupLabels2 = container.querySelectorAll('.annotation-cat-label')
-    const shapeDatas2 = Array.from(groupLabels2).map((label) => parseFloat(label.getAttribute('x')))
+    const shapeDatas2 = Array.from(groupLabels2).map((label) =>
+      parseFloat(label.getAttribute('x'))
+    )
 
     shapeDatas.forEach((d, i) => {
       expect(d).not.toBeCloseTo(shapeDatas2[i], 0) // Should be different with different arcPercent
     })
   }
-
 
   describe('Basic Initialization', () => {
     /* Sense check we created a d3 svg container */
@@ -234,7 +239,10 @@ describe('RadialBarChart', () => {
     test('should create bar elements for each data point', () => {
       const skillCount = 10
       const skillsData = generateRandomData(skillCount, 3, 4)
-      const skillSegmentCount = skillsData.reduce((sum, skill) => sum + skill.skill_level, 0)
+      const skillSegmentCount = skillsData.reduce(
+        (sum, skill) => sum + skill.skill_level,
+        0
+      )
       RadialBarChart({
         target: container,
         data: skillsData,
@@ -368,7 +376,6 @@ describe('RadialBarChart', () => {
       flushAllD3Transitions() // Ensure all D3 transitions have completed
       const highlightCircle = container.querySelector('.skill-highlight-circle')
       expect(highlightCircle.getAttribute('opacity')).toBe('1')
-
     })
 
     test('should create highlight text elements', () => {
@@ -418,7 +425,6 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: { colourList: customColors },
       })
-      const svg = container.querySelector('svg')
       const barGroups = container.querySelectorAll('[class*="Bars-"]')
       barGroups.forEach((group) => {
         const fill = group.getAttribute('fill')
@@ -465,7 +471,8 @@ describe('RadialBarChart', () => {
       const longData = [
         {
           skill: 'skill 1',
-          category: 'Long Category with a long name that should be split into multiple lines',
+          category:
+            'Long Category with a long name that should be split into multiple lines',
           skill_level: 2,
         },
       ]
@@ -584,7 +591,6 @@ describe('RadialBarChart', () => {
       expect(barsGroups.length).toBe(1) // All in same category
     })
 
-
     test('should handle special characters in category names', () => {
       const specialData = [
         {
@@ -624,13 +630,19 @@ describe('RadialBarChart', () => {
     test('should use smart label positioning by default', () => {
       // This is tricky to test so should be tested visually
       // It should position the labels differently so we just check it changes the label positions
-      checkChangesGroupPosition({ useSmartLabelPositioning: true }, { useSmartLabelPositioning: false })
+      checkChangesGroupPosition(
+        { useSmartLabelPositioning: true },
+        { useSmartLabelPositioning: false }
+      )
     })
 
     test('should disable smart label positioning when configured', () => {
       // This is tricky to test so should be tested visually
       // It should position the labels differently so we just check it changes the label positions
-      checkChangesGroupPosition({ useSmartLabelPositioning: false }, { useSmartLabelPositioning: true })
+      checkChangesGroupPosition(
+        { useSmartLabelPositioning: false },
+        { useSmartLabelPositioning: true }
+      )
     })
   })
 

@@ -165,19 +165,19 @@ function renderAnnotationsD3({
     const labelHeight = catLabelWidthHeightMap[cat.id].height
     const labelAnchorPoint = useSmartLabelPositioning
       ? {
-        x:
-          (catAnnotationPointOuterLabel(cat.id).x > 0 ? 0 : -labelWidth) +
-          catAnnotationPointOuterLabel(cat.id).x * (outerRadius + annotationPadding),
-        y: catAnnotationPointOuterLabel(cat.id).y,
-      }
+          x:
+            (catAnnotationPointOuterLabel(cat.id).x > 0 ? 0 : -labelWidth) +
+            catAnnotationPointOuterLabel(cat.id).x * (outerRadius + annotationPadding),
+          y: catAnnotationPointOuterLabel(cat.id).y,
+        }
       : {
-        x:
-          (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -labelWidth) +
-          catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
-        y:
-          catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) +
-          labelYDir * fontSize,
-      }
+          x:
+            (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -labelWidth) +
+            catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
+          y:
+            catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) +
+            labelYDir * fontSize,
+        }
     const outerAnnotationLineAnchor = {
       x: catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
       y: catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding),
@@ -254,15 +254,15 @@ function renderAnnotationsD3({
       .attr(
         'x1',
         labelAnchorPoint.x +
-        labelXDir * highlightLineThickness +
-        (labelXDir === 1 ? labelWidth : 0)
+          labelXDir * highlightLineThickness +
+          (labelXDir === 1 ? labelWidth : 0)
       )
       .attr('y1', labelAnchorPoint.y)
       .attr(
         'x2',
         labelAnchorPoint.x +
-        labelXDir * highlightLineThickness +
-        (labelXDir === 1 ? labelWidth : 0)
+          labelXDir * highlightLineThickness +
+          (labelXDir === 1 ? labelWidth : 0)
       )
       .attr('y2', labelAnchorPoint.y + labelHeight * labelYDir)
       .attr('stroke', cat.color)
