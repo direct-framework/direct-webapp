@@ -5,8 +5,8 @@ export const generateRandomData = (n, categoryCount, maxLvl) =>
     skill_level: Math.floor(Math.random() * maxLvl),
   }))
     .concat([
-      { skill: 'Zero Skill', category: 'category-0', skill_level: 0 },
       { skill: 'Max Skill', category: 'category-0', skill_level: maxLvl - 1 },
+      { skill: 'Zero Skill', category: 'category-0', skill_level: 0 },
     ])
     .concat([
       {
@@ -14,4 +14,4 @@ export const generateRandomData = (n, categoryCount, maxLvl) =>
         category: 'Really long category name that is about 30 chars',
         skill_level: maxLvl - 1,
       },
-    ])
+    ]).slice(0, n)

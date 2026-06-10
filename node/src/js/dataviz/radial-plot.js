@@ -2,6 +2,7 @@ import * as d3 from 'd3'
 import { radialBarChartPreProcessing, getArcsFn } from './radial-plot-dataprocessing'
 import { splitTextToFitWidth } from './utils'
 import { transitionMultiplier } from './config'
+import { defaultConfig } from './defaults'
 
 /* D3js component to render the radial bar chart bars
 
@@ -111,8 +112,8 @@ function renderAnnotationsD3({
   } = config
 
   // Remove previous annotation for this category if any
-  svg.selectAll('.AnnotationContainer').remove()
-  const annotationContainer = svg.append('g').attr('class', 'AnnotationContainer')
+  svg.selectAll('.annotation-container').remove()
+  const annotationContainer = svg.append('g').attr('class', 'annotation-container')
 
   const filteredCategories = categoryFocus ? [categoryFocus] : sortedCategories
   const filteredCategoriesIds = filteredCategories.map((c) => c.id)
@@ -137,12 +138,12 @@ function renderAnnotationsD3({
   // Category lvl annotations
   const lvlsAnnotationContainer = annotationContainer
     .append('g')
-    .attr('class', 'AnnotationLvlsContainer')
+    .attr('class', 'annotation-lvls-container')
   if (lvlLabelType !== 'none')
     lvlsArray.forEach((lvl) => {
       lvlsAnnotationContainer
         .append('text')
-        .attr('class', 'AnnotationLvl')
+        .attr('class', 'annontation-lvl')
         .attr('x', 0)
         .attr('y', -getYPoint(lvl.level + 1) + fontSize / 2) // level + 1 as we want this at the top of the level
         .attr('fill', lvlTextColor)
@@ -155,7 +156,7 @@ function renderAnnotationsD3({
   filteredCategories.forEach((cat) => {
     const categoryAnnotationContainer = annotationContainer
       .append('g')
-      .attr('class', `AnnotationCat Annotation-${cat.id.replaceAll(' ', '-')}`)
+      .attr('class', `annotation-cat annotation-${cat.id.replaceAll(' ', '-')}`)
       .attr('fill', cat.color)
 
     const labelXDir = catAnnotationPointOuterLabel(cat.id).x > 0 ? 1 : -1
@@ -188,7 +189,7 @@ function renderAnnotationsD3({
     }
     const categoryAnnotationLine = categoryAnnotationContainer
       .append('g')
-      .attr('class', 'AnnotationCatLine')
+      .attr('class', 'annotation-cat-line')
 
     // Arc at base of category
     categoryAnnotationLine
@@ -281,6 +282,7 @@ function renderAnnotationsD3({
           'y',
           labelAnchorPoint.y + i * fontSize * labelYDir + (fontSize / 2) * labelYDir
         )
+        .attr('class', 'annotation-cat-label')
         .attr('fill', labelTextColor)
         .attr('font-weight', 700)
         .attr('font-size', fontSize)
@@ -292,30 +294,6 @@ function renderAnnotationsD3({
   })
 
   return svg
-}
-
-const defaultConfig = {
-  width: 640,
-  height: undefined,
-  innerRadius: 80, // Radius of the inner empty circle
-  outerPadding: 100, // Padding between the outermost bars and the edge of the svg
-  categoryPadding: 0.1, // Proportion of space between categories
-  skillPadding: 0.05, // Proportion of space between skills in a category
-  arcPercent: 0.8, // Proportion of the circle to use for the bars (1 = full circle, 0.5 = half circle)
-  arcStartOffset: 0.1, // Proportion of the circle to offset the start of the bars (0 = start at top, 0.25 = start at right)
-  annotationPadding: 10, // Padding between the outermost bars and the annotation lines
-  lineThickness: 2, // Thickness of the annotation lines
-  labelTextColor: 'black', // Color of the category label text
-  lvlTextColor: '#ccc', // Color of the level annotation text
-  lvlArcColor: '#444', // Color of the level annotation arcs
-  colourList: d3.schemeAccent, // List of colours to use for the categories
-  fontSize: 10, // Font size for the category and level labels
-  labelXOffset: 1.1, // Sets the distance of the category label from the outer radius as a multiple of the outer radius
-  labelYSpacing: 10, // Sets the spacing of the category labels from each other as a multiple of the font size
-  maxLabelWidth: 150, // Maximum width of the category label in pixels
-  lvlLabelType: 'name', // 'none' | 'name' | 'level' - Whether to show the lvl name or lvl number in the lvl annotation
-  useSmartLabelPositioning: true, // Whether to use smart positioning for the category labels to avoid overlap
-  plotYOffset: 0, // Y offset for the entire plot to allow for annotations above the plot
 }
 
 /**
@@ -364,6 +342,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
   config.height = height // Update config with calculated height
   config.outerRadius = config.outerRadius || outerRadius
 
+  /* Create the SVG element and a group element to hold the chart, centered in the SVG. */
   const svg = d3
     .select(target)
     .append('svg')
@@ -381,6 +360,8 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
     .attr('role', 'img')
     .attr('aria-describedby', 'radial-bar-chart-description')
 
+  /* Run the data pre-processing to get the data in the format needed for the chart
+  and calculate the arcs for the bars and annotations */
   const { skillsData, sortedCategories, groupedByCategory } =
     radialBarChartPreProcessing({
       data,
@@ -401,6 +382,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
     labelYSpacing,
     fontSize: config.fontSize,
   })
+
   const { lvlRing, lvlsArray } = getArcs({
     skillsData,
     levels,
@@ -408,12 +390,12 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
     groupedByCategory,
   })
 
-  // D3.js function to render the skill highlight
+  // D3.js function to render the skill highlight on hover
   // We set the text value to '' until it is filled on hover
   function renderSkillHighlightD3(svg) {
     const group = svg.append('g').attr('class', 'skill-highlight')
 
-    // Circle for skill highlight
+    // Circle in centre of skill wheel for skill highlight
     group
       .append('circle')
       .attr('cx', 0)
@@ -422,7 +404,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
       .attr('class', 'skill-highlight-circle')
       .attr('opacity', 0)
 
-    // Category text
+    // Category text shown in centre of skill wheel on hover
     group
       .append('text')
       .attr('y', -5)
@@ -431,6 +413,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
       .attr('class', 'skill-highlight-text-cat')
       .text('')
 
+    // Currently disabled to clean up UI
     // Skill text
     // group
     //   .append('text')
@@ -609,13 +592,14 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
   // D3.js function to render the background level rings for a category
   function renderBackgroundLvlRingsD3(svg) {
     // Remove previous rings for this category if any
-    svg.selectAll('.LvlRings').remove()
+    svg.selectAll('.lvl-rings').remove()
 
-    const ringGroup = svg.append('g').attr('class', 'LvlRings')
+    const ringGroup = svg.append('g').attr('class', 'lvl-rings')
 
     lvlsArray.forEach((lvl) => {
       ringGroup
         .append('path')
+        .attr('class', 'lvl-rings-ring')
         .attr('d', lvlRing(lvl.level))
         .attr('fill', lvlArcColor)
         .attr('stroke', 'none')

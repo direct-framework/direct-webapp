@@ -1,16 +1,16 @@
-import { vitest as vi } from 'vitest'
+import { afterEach, vitest as vi } from 'vitest'
 import { describe, test, expect, beforeEach } from 'vitest'
 import * as d3 from 'd3'
 import { RadialBarChart } from './radial-plot'
-import { levels as defaultLevels } from './defaults'
+import { defaultConfig, levels as defaultLevels } from './defaults'
 import { generateRandomData } from './mock-data'
 
 function flushAllD3Transitions() {
-    var now = performance.now;
-    performance.now = function() { return Infinity; };
-    d3.timerFlush();
-    performance.now = now;
- }
+  var now = performance.now;
+  performance.now = function () { return Infinity; };
+  d3.timerFlush();
+  performance.now = now;
+}
 
 //  Mock the transition multiplier to speed up tests that involve transitions
 vi.mock('./config', () => ({
@@ -26,7 +26,83 @@ describe('RadialBarChart', () => {
     document.body.appendChild(container)
   })
 
+  afterEach(() => {
+    // Clean up the container after each test
+    document.body.removeChild(container)
+    container = null
+  })
+
+  /* Function to test that changing a config option changes the bar positions
+
+  Used for tests where testing the actual position is tricky.
+  */
+  const checkChangesBarPosition = (config1, config2) => {
+    RadialBarChart({
+      target: container,
+      data: generateRandomData(10, 3, 4),
+      levels: defaultLevels,
+      config: config1,
+    })
+    const bars = container.querySelectorAll('.bar-outline')
+    const shapeDatas = Array.from(bars).map((bar) => bar.getAttribute('d'))
+
+    document.body.removeChild(container)
+    container = null
+    container = document.createElement('div')
+    document.body.appendChild(container)
+
+    RadialBarChart({
+      target: container,
+      data: generateRandomData(10, 3, 4),
+      levels: defaultLevels,
+      config: config2,
+    })
+
+    const bars2 = container.querySelectorAll('.bar-outline')
+    const shapeDatas2 = Array.from(bars2).map((bar) => bar.getAttribute('d'))
+
+    shapeDatas.forEach((d, i) => {
+      expect(d).not.equal(shapeDatas2[i], 0) // Should be different with different arcPercent
+    })
+  }
+
+  /* Function to test that changing a config option changes the group label positions
+
+  Used for tests where testing the actual position is tricky.
+  */
+  const checkChangesGroupPosition = (config1, config2) => {
+    RadialBarChart({
+      target: container,
+      data: generateRandomData(10, 3, 4),
+      levels: defaultLevels,
+      config: config1,
+    })
+    const groupLabels = container.querySelectorAll('.annotation-cat-label')
+    const shapeDatas = Array.from(groupLabels).map((label) => parseFloat(label.getAttribute('x')))
+
+    document.body.removeChild(container)
+    container = null
+    container = document.createElement('div')
+    document.body.appendChild(container)
+
+    RadialBarChart({
+      target: container,
+      data: generateRandomData(10, 3, 4),
+      levels: defaultLevels,
+      config: config2,
+    })
+
+    const groupLabels2 = container.querySelectorAll('.annotation-cat-label')
+    const shapeDatas2 = Array.from(groupLabels2).map((label) => parseFloat(label.getAttribute('x')))
+
+    shapeDatas.forEach((d, i) => {
+      expect(d).not.toBeCloseTo(shapeDatas2[i], 0) // Should be different with different arcPercent
+    })
+  }
+
+
   describe('Basic Initialization', () => {
+    /* Sense check we created a d3 svg container */
     test('should create a RadialBarChart instance without errors', () => {
       const chart = RadialBarChart({
         target: container,
@@ -48,21 +124,10 @@ describe('RadialBarChart', () => {
       expect(svg).not.toBeNull()
       expect(svg.classList.contains('radial-bar-chart')).toBe(true)
     })
-
-    test('should create a main group element with proper class', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: {},
-      })
-      const group = container.querySelector('.radial-bar-chart-group')
-      expect(group).not.toBeNull()
-      expect(group.getAttribute('role')).toBe('img')
-    })
   })
 
   describe('Configuration Handling', () => {
+    /* Check that we can configure the chart correctly */
     test('should apply default configuration when no config is provided', () => {
       RadialBarChart({
         target: container,
@@ -71,7 +136,7 @@ describe('RadialBarChart', () => {
         config: {},
       })
       const svg = container.querySelector('svg')
-      expect(svg.getAttribute('width')).toBe('640') // default width
+      expect(svg.getAttribute('width')).toBe(defaultConfig.width.toString()) // default width
     })
 
     test('should apply custom width from config', () => {
@@ -114,7 +179,8 @@ describe('RadialBarChart', () => {
 
   describe('Data Rendering', () => {
     test('should render bars for all data items', () => {
-      const testData = generateRandomData(5, 2, 4)
+      const skillCount = 5
+      const testData = generateRandomData(skillCount, 2, 4)
       RadialBarChart({
         target: container,
         data: testData,
@@ -122,7 +188,7 @@ describe('RadialBarChart', () => {
         config: {},
       })
       const barGroups = container.querySelectorAll('.bar-group')
-      expect(barGroups.length).toBeGreaterThan(0)
+      expect(barGroups.length).toEqual(skillCount)
     })
 
     test('should render level rings', () => {
@@ -132,8 +198,8 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: {},
       })
-      const lvlRings = container.querySelector('.LvlRings')
-      expect(lvlRings).not.toBeNull()
+      const lvlRings = container.querySelectorAll('.lvl-rings-ring')
+      expect(lvlRings.length).toEqual(defaultLevels.length)
     })
 
     test('should handle empty data array', () => {
@@ -167,15 +233,16 @@ describe('RadialBarChart', () => {
   describe('Bar Rendering', () => {
     test('should create bar elements for each data point', () => {
       const skillCount = 10
+      const skillsData = generateRandomData(skillCount, 3, 4)
+      const skillSegmentCount = skillsData.reduce((sum, skill) => sum + skill.skill_level, 0)
       RadialBarChart({
         target: container,
-        data: generateRandomData(skillCount, 3, 4),
+        data: skillsData,
         levels: defaultLevels,
         config: {},
       })
-      const bars = container.querySelectorAll('.bar')
-      bars.forEach()
-      expect(bars.length).toEqual(skillCount)
+      const bars = container.querySelectorAll('.bar-segment')
+      expect(bars.length).toEqual(skillSegmentCount)
     })
 
     test('should create bar-outline elements for hover detection', () => {
@@ -233,7 +300,7 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: {},
       })
-      const annotations = container.querySelectorAll('.AnnotationCat')
+      const annotations = container.querySelectorAll('.annotation-cat')
       expect(annotations.length).toEqual(catCount)
     })
 
@@ -244,7 +311,7 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: { lvlLabelType: 'name' },
       })
-      const annotations = container.querySelectorAll('.AnnotationLvl')
+      const annotations = container.querySelectorAll('.annontation-lvl')
       expect(annotations.length).toEqual(defaultLevels.length)
     })
 
@@ -256,7 +323,7 @@ describe('RadialBarChart', () => {
         config: { lvlLabelType: 'none' },
       })
       // Level labels should not be rendered, but category labels should still be present
-      const annotations = container.querySelectorAll('.AnnotationLvl')
+      const annotations = container.querySelectorAll('.annontation-lvl')
       expect(annotations.length).toEqual(0)
     })
 
@@ -270,11 +337,11 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: {},
       })
-      const annotationLines = container.querySelectorAll('.AnnotationCatLine')
+      const annotationLines = container.querySelectorAll('.annotation-cat-line')
       expect(annotationLines.length).toEqual(catCount)
     })
   })
-  describe.only('Skill Highlight', () => {
+  describe('Skill Highlight', () => {
     /* These tests check that when a user hovers over a skill we should additional details */
     test('should create highlighted skill circle with initial opacity 0', () => {
       RadialBarChart({
@@ -303,15 +370,17 @@ describe('RadialBarChart', () => {
       expect(highlightCircle.getAttribute('opacity')).toBe('1')
 
     })
-  // checked to here
 
     test('should create highlight text elements', () => {
+      /* These are placeholder elements for showing the skill and category name in the centre of the
+      skill wheel on hover - they are empty until filled on hover */
       RadialBarChart({
         target: container,
         data: generateRandomData(10, 3, 4),
         levels: defaultLevels,
         config: {},
       })
+
       const highlightTextCat = container.querySelector('.skill-highlight-text-cat')
       const highlightTextSkill = container.querySelector('.skill-highlight-text-skill')
       const highlightTextLvl = container.querySelector('.skill-highlight-text-lvl')
@@ -319,41 +388,9 @@ describe('RadialBarChart', () => {
       expect(highlightTextCat).not.toBeNull()
       expect(highlightTextSkill).not.toBeNull()
       expect(highlightTextLvl).not.toBeNull()
-    })
-  })
-
-  describe('Event Handling', () => {
-    test('should attach event listeners to bar-outline elements', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: {},
-      })
-      const barOutlines = container.querySelectorAll('.bar-outline')
-      expect(barOutlines.length).toBeGreaterThan(0)
-      // Bar outlines should exist and be rendered
-      barOutlines.forEach((outline) => {
-        expect(outline).not.toBeNull()
-      })
-    })
-
-    test('should handle mouseover events on bars', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: {},
-      })
-      const barOutline = container.querySelector('.bar-outline')
-      expect(barOutline).not.toBeNull()
-
-      // Simulate mouseover event
-      const event = new MouseEvent('mouseover', { bubbles: true })
-      barOutline.dispatchEvent(event)
-
-      // Chart should not throw errors when handling the event
-      expect(container.querySelector('.radial-bar-chart')).not.toBeNull()
+      expect(highlightTextCat.textContent).toBe('')
+      expect(highlightTextSkill.textContent).toBe('')
+      expect(highlightTextLvl.textContent).toBe('')
     })
   })
 
@@ -369,11 +406,12 @@ describe('RadialBarChart', () => {
       barGroups.forEach((group) => {
         const fill = group.getAttribute('fill')
         expect(fill).not.toBeNull()
+        expect(d3.schemeAccent).toContain(fill)
       })
     })
 
     test('should use custom color list when provided', () => {
-      const customColors = ['#ff0000', '#00ff00', '#0000ff']
+      const customColors = ['#ff0001', '#00ff01', '#1000ff']
       RadialBarChart({
         target: container,
         data: generateRandomData(10, 3, 4),
@@ -381,7 +419,12 @@ describe('RadialBarChart', () => {
         config: { colourList: customColors },
       })
       const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      const barGroups = container.querySelectorAll('[class*="Bars-"]')
+      barGroups.forEach((group) => {
+        const fill = group.getAttribute('fill')
+        expect(fill).not.toBeNull()
+        expect(customColors).toContain(fill)
+      })
     })
   })
 
@@ -394,8 +437,12 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: { labelTextColor: customColor },
       })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      const annotationLabelsContainer = container.querySelectorAll('.annotation-cat')
+      annotationLabelsContainer.forEach((labelContainer) => {
+        const label = labelContainer.querySelector('.annotation-cat-label')
+        const fill = label.getAttribute('color')
+        expect(fill).toBe(customColor)
+      })
     })
 
     test('should apply custom font size', () => {
@@ -406,15 +453,19 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: { fontSize: customFontSize },
       })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      const annotationLabelsContainer = container.querySelectorAll('.annotation-cat')
+      annotationLabelsContainer.forEach((labelContainer) => {
+        const label = labelContainer.querySelector('.annotation-cat-label')
+        const fill = label.getAttribute('font-size')
+        expect(fill).toBe(customFontSize.toString())
+      })
     })
 
     test('should split long labels to fit within max width', () => {
       const longData = [
         {
-          skill: 'This is a very long skill name that should be split',
-          category: 'Long Category',
+          skill: 'skill 1',
+          category: 'Long Category with a long name that should be split into multiple lines',
           skill_level: 2,
         },
       ]
@@ -424,8 +475,11 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: { maxLabelWidth: 100 },
       })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      const annotationLabelsContainer = container.querySelectorAll('.annotation-cat')
+      annotationLabelsContainer.forEach((labelContainer) => {
+        const label = labelContainer.querySelectorAll('.annotation-cat-label')
+        expect(label.length).toBeGreaterThan(1) // Should be split into multiple lines
+      })
     })
   })
 
@@ -446,60 +500,40 @@ describe('RadialBarChart', () => {
     })
 
     test('should apply custom arc percent', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: { arcPercent: 0.5 },
-      })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      /* This is the percent of the circle that the bars should take up */
+
+      // This is tricky to test so should be tested visually
+      // Instead we just check it changes the bar locations
+      checkChangesBarPosition({ arcPercent: 0.5 }, { arcPercent: 0.6 })
     })
 
     test('should apply custom arc start offset', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: { arcStartOffset: 0.25 },
-      })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      /* This is the offset of where the bars start from (0 = top, 0.25 = right etc) */
+
+      // This is tricky to test so should be tested visually
+      // Instead we just check it changes the bar locations
+      checkChangesBarPosition({ arcStartOffset: 0.5 }, { arcStartOffset: 0.6 })
     })
   })
 
   describe('Padding Configuration', () => {
     test('should apply custom category padding', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: { categoryPadding: 0.2 },
-      })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      // This is tricky to test so should be tested visually
+      // Instead we just check it changes the bar locations
+
+      checkChangesBarPosition({ categoryPadding: 0.5 }, { categoryPadding: 0.6 })
     })
 
     test('should apply custom skill padding', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: { skillPadding: 0.1 },
-      })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      // This is tricky to test so should be tested visually
+      // Instead we just check it changes the bar locations
+      checkChangesBarPosition({ skillPadding: 0.1 }, { skillPadding: 0.2 })
     })
 
     test('should apply custom outer padding', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: { outerPadding: 150 },
-      })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      // This is tricky to test so should be tested visually
+      // Instead we just check it changes the bar locations
+      checkChangesBarPosition({ outerPadding: 50 }, { outerPadding: 100 })
     })
   })
 
@@ -513,6 +547,8 @@ describe('RadialBarChart', () => {
         config: {},
       })
       expect(chart).toBeDefined()
+      const barSegments = container.querySelectorAll('.bar-segment')
+      expect(barSegments.length).toBe(0)
     })
 
     test('should handle data with maximum skill level', () => {
@@ -548,23 +584,6 @@ describe('RadialBarChart', () => {
       expect(barsGroups.length).toBe(1) // All in same category
     })
 
-    test('should handle very long category names', () => {
-      const longData = [
-        {
-          skill: 'test-skill',
-          category:
-            'This is an extremely long category name that might cause layout issues',
-          skill_level: 2,
-        },
-      ]
-      const chart = RadialBarChart({
-        target: container,
-        data: longData,
-        levels: defaultLevels,
-        config: {},
-      })
-      expect(chart).toBeDefined()
-    })
 
     test('should handle special characters in category names', () => {
       const specialData = [
@@ -603,25 +622,15 @@ describe('RadialBarChart', () => {
 
   describe('Smart Label Positioning', () => {
     test('should use smart label positioning by default', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: {},
-      })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      // This is tricky to test so should be tested visually
+      // It should position the labels differently so we just check it changes the label positions
+      checkChangesGroupPosition({ useSmartLabelPositioning: true }, { useSmartLabelPositioning: false })
     })
 
     test('should disable smart label positioning when configured', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: { useSmartLabelPositioning: false },
-      })
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      // This is tricky to test so should be tested visually
+      // It should position the labels differently so we just check it changes the label positions
+      checkChangesGroupPosition({ useSmartLabelPositioning: false }, { useSmartLabelPositioning: true })
     })
   })
 

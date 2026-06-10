@@ -156,3 +156,33 @@ export const TestFontSize = {
     labelYSpacing: 1.2, // Sets the spacing of the category labels from each other as a multiple of the font size
   },
 }
+
+
+export const TestNoData = {
+  args: {
+    data: [],
+    levels: defaultLevels,
+    height: 600,
+    arcPercent: 0.98,
+    arcStartOffset: 0.01,
+    lvlLabelType: 'none',
+    innerRadius: 140,
+    fontSize: 20,
+    labelYSpacing: 1.2, // Sets the spacing of the category labels from each other as a multiple of the font size
+  },
+}
+
+
+export const TestSingleDataPoint = {
+  args: {
+    data: generateRandomData(1,1,5),
+    levels: defaultLevels,
+    height: 600,
+    arcPercent: 0.98,
+    arcStartOffset: 0.01,
+    lvlLabelType: 'none',
+    innerRadius: 140,
+    fontSize: 20,
+    labelYSpacing: 1.2, // Sets the spacing of the category labels from each other as a multiple of the font size
+  },
+}
