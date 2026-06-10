@@ -4,5 +4,5 @@ export const levels = [
   { level: 2, name: 'Intermediate' },
   { level: 3, name: 'Advanced' },
   { level: 4, name: 'Advanced Plus' },
-  { level: 5, name: 'Advanced Plus' },
+  { level: 5, name: 'Advanced Plus 2' },
 ]

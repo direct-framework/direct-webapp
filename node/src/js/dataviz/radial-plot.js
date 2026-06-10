@@ -1,6 +1,7 @@
 import * as d3 from 'd3'
 import { radialBarChartPreProcessing, getArcsFn } from './radial-plot-dataprocessing'
 import { splitTextToFitWidth } from './utils'
+import { transitionMultiplier } from './config'
 
 /* D3js component to render the radial bar chart bars
 
@@ -82,7 +83,7 @@ function refreshBarsD3({
   return svg
 }
 
-/* D3 component to render the annotations for each category
+/* D3 component to render the category labels
   Each annotation consists of a path for the arc, a line to the outer radius,
   a line to the label, a box around the label and the label itself.
   The label is positioned at the outer radius and is centered on the line
@@ -110,7 +111,8 @@ function renderAnnotationsD3({
   } = config
 
   // Remove previous annotation for this category if any
-  svg.selectAll('.Annotation').remove()
+  svg.selectAll('.AnnotationContainer').remove()
+  const annotationContainer = svg.append('g').attr('class', 'AnnotationContainer')
 
   const filteredCategories = categoryFocus ? [categoryFocus] : sortedCategories
   const filteredCategoriesIds = filteredCategories.map((c) => c.id)
@@ -132,10 +134,28 @@ function renderAnnotationsD3({
     groupedByCategory,
   })
 
+  // Category lvl annotations
+  const lvlsAnnotationContainer = annotationContainer
+    .append('g')
+    .attr('class', 'AnnotationLvlsContainer')
+  if (lvlLabelType !== 'none')
+    lvlsArray.forEach((lvl) => {
+      lvlsAnnotationContainer
+        .append('text')
+        .attr('class', 'AnnotationLvl')
+        .attr('x', 0)
+        .attr('y', -getYPoint(lvl.level + 1) + fontSize / 2) // level + 1 as we want this at the top of the level
+        .attr('fill', lvlTextColor)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', fontSize)
+        .text(lvl.name)
+    })
+
+  /* Category Annotations */
   filteredCategories.forEach((cat) => {
-    const annotationGroup = svg
+    const categoryAnnotationContainer = annotationContainer
       .append('g')
-      .attr('class', `Annotation Annotation-${cat.id.replaceAll(' ', '-')}`)
+      .attr('class', `AnnotationCat Annotation-${cat.id.replaceAll(' ', '-')}`)
       .attr('fill', cat.color)
 
     const labelXDir = catAnnotationPointOuterLabel(cat.id).x > 0 ? 1 : -1
@@ -144,19 +164,19 @@ function renderAnnotationsD3({
     const labelHeight = catLabelWidthHeightMap[cat.id].height
     const labelAnchorPoint = useSmartLabelPositioning
       ? {
-          x:
-            (catAnnotationPointOuterLabel(cat.id).x > 0 ? 0 : -labelWidth) +
-            catAnnotationPointOuterLabel(cat.id).x * (outerRadius + annotationPadding),
-          y: catAnnotationPointOuterLabel(cat.id).y,
-        }
+        x:
+          (catAnnotationPointOuterLabel(cat.id).x > 0 ? 0 : -labelWidth) +
+          catAnnotationPointOuterLabel(cat.id).x * (outerRadius + annotationPadding),
+        y: catAnnotationPointOuterLabel(cat.id).y,
+      }
       : {
-          x:
-            (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -labelWidth) +
-            catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
-          y:
-            catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) +
-            labelYDir * fontSize,
-        }
+        x:
+          (catAnnotationPointOuter(cat.id).x > 0 ? 0 : -labelWidth) +
+          catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
+        y:
+          catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding) +
+          labelYDir * fontSize,
+      }
     const outerAnnotationLineAnchor = {
       x: catAnnotationPointOuter(cat.id).x * (outerRadius + annotationPadding),
       y: catAnnotationPointOuter(cat.id).y * (outerRadius + annotationPadding),
@@ -166,9 +186,12 @@ function renderAnnotationsD3({
       x: catAnnotationPointInner(cat.id).x * (innerRadius - 3),
       y: catAnnotationPointInner(cat.id).y * (innerRadius - 3),
     }
+    const categoryAnnotationLine = categoryAnnotationContainer
+      .append('g')
+      .attr('class', 'AnnotationCatLine')
 
     // Arc at base of category
-    annotationGroup
+    categoryAnnotationLine
       .append('path')
       .attr('d', categoryBaseArc(cat.id))
       .attr('fill', cat.color)
@@ -176,7 +199,7 @@ function renderAnnotationsD3({
       .attr('stroke-width', lineThickness)
 
     // Line from base of category to outer radius
-    annotationGroup
+    categoryAnnotationLine
       .append('line')
       .attr('x1', baseOfCategoryAnchor.x)
       .attr('y1', baseOfCategoryAnchor.y)
@@ -188,7 +211,7 @@ function renderAnnotationsD3({
       .attr('opacity', 1)
 
     // Line from outer radius to category label
-    annotationGroup
+    categoryAnnotationLine
       .append('line')
       .attr('x1', outerAnnotationLineAnchor.x)
       .attr('y1', outerAnnotationLineAnchor.y)
@@ -200,7 +223,7 @@ function renderAnnotationsD3({
       .attr('opacity', 1)
 
     // Line beneath category label
-    annotationGroup
+    categoryAnnotationContainer
       .append('line')
       .attr('x1', labelAnchorPoint.x)
       .attr('y1', labelAnchorPoint.y)
@@ -211,7 +234,7 @@ function renderAnnotationsD3({
       .attr('stroke-width', lineThickness)
 
     // Category label text box
-    annotationGroup
+    categoryAnnotationContainer
       .append('rect')
       .attr('class', 'label-box')
       .attr('x', labelAnchorPoint.x)
@@ -224,21 +247,21 @@ function renderAnnotationsD3({
 
     const highlightLineThickness = 10
     // Line On Side of category label
-    annotationGroup
+    categoryAnnotationContainer
       .append('line')
       .attr('class', 'highlight-line')
       .attr(
         'x1',
         labelAnchorPoint.x +
-          labelXDir * highlightLineThickness +
-          (labelXDir === 1 ? labelWidth : 0)
+        labelXDir * highlightLineThickness +
+        (labelXDir === 1 ? labelWidth : 0)
       )
       .attr('y1', labelAnchorPoint.y)
       .attr(
         'x2',
         labelAnchorPoint.x +
-          labelXDir * highlightLineThickness +
-          (labelXDir === 1 ? labelWidth : 0)
+        labelXDir * highlightLineThickness +
+        (labelXDir === 1 ? labelWidth : 0)
       )
       .attr('y2', labelAnchorPoint.y + labelHeight * labelYDir)
       .attr('stroke', cat.color)
@@ -251,7 +274,7 @@ function renderAnnotationsD3({
     const newLabel = splitTextToFitWidth(cat.id, config.maxLabelWidth, fontSize)
     const labelDirected = labelYDir === 1 ? newLabel : newLabel.reverse()
     labelDirected.forEach((line, i) => {
-      annotationGroup
+      categoryAnnotationContainer
         .append('text')
         .attr('x', labelAnchorPoint.x + labelWidth / 2)
         .attr(
@@ -266,32 +289,6 @@ function renderAnnotationsD3({
         .attr('color', labelTextColor)
         .text(line)
     })
-    // annotationGroup
-    //   .append('text')
-    //   .attr('x', labelAnchorPoint.x + labelWidth / 2)
-    //   .attr(
-    //     'y',
-    //     labelAnchorPoint.y + labelHeight / 2 + (labelYDir === 1 ? 0 : labelHeight)
-    //   )
-    //   .attr('fill', labelTextColor)
-    //   .attr('font-weight', 700)
-    //   .attr('font-size', fontSize)
-    //   .attr('text-anchor', 'middle')
-    //   .attr('color', labelTextColor)
-    //   .text(newLabel)
-
-    // Category lvl annotations
-    if (lvlLabelType !== 'none')
-      lvlsArray.forEach((lvl) => {
-        annotationGroup
-          .append('text')
-          .attr('x', 0)
-          .attr('y', -getYPoint(lvl.level + 1) + fontSize / 2) // level + 1 as we want this at the top of the level
-          .attr('fill', lvlTextColor)
-          .attr('text-anchor', 'middle')
-          .attr('font-size', fontSize)
-          .text(lvl.name)
-      })
   })
 
   return svg
@@ -412,6 +409,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
   })
 
   // D3.js function to render the skill highlight
+  // We set the text value to '' until it is filled on hover
   function renderSkillHighlightD3(svg) {
     const group = svg.append('g').attr('class', 'skill-highlight')
 
@@ -469,10 +467,16 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
   // D3.js function to render the skill highlight
   function refreshSkillHighlightD3(svg, highlightedSkill, innerCircleWidth, fontSize) {
     const group = svg.select('.skill-highlight')
+    const t = d3
+      .transition()
+      .delay(200 * transitionMultiplier)
+      .duration(200 * transitionMultiplier)
+      .ease(d3.easeLinear)
 
     if (!highlightedSkill) {
-      const t = d3.transition().delay(200).duration(200).ease(d3.easeLinear)
-      // Renders a circle
+      /* Set all highlight elements to opacity 0 and text to '' when no skill is highlighted */
+
+      /* Renders a circle in the centre of the skill wheel */
       group
         .select('.skill-highlight-circle')
         .transition(t) // Transition to the new highlight
@@ -485,7 +489,7 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
       //   .attr('opacity', 0)
       //   .text('')
 
-      // Skill text
+      /* Skill text */
       group
         .select('.skill-highlight-text-skill')
         .transition(t)
@@ -506,9 +510,11 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
 
       group.selectAll('.skill-highlight-text-skill-central').remove()
     } else {
-      const t = d3.transition().duration(200).ease(d3.easeLinear)
+      /* User hovered over a skill so we show additional details
+      in the centre of the plot and highlight the category annotation */
 
-      // Circle for skill highlight
+      /* Renders a circle in the centre of the skill wheel to show
+       additional details about the skill */
       group
         .select('.skill-highlight-circle')
         .transition(t) // Transition to the new highlight
@@ -523,7 +529,6 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
       //   .text(highlightedSkill.category)
 
       // Skill text
-
       const skillTextSplit = splitTextToFitWidth(
         highlightedSkill.skill,
         innerCircleWidth * 2.5,
@@ -536,8 +541,8 @@ export function RadialBarChart({ target, data, levels, config: configIn }) {
         .data(skillTextSplit)
         .enter()
         .append('text')
-        .attr('x', 0)
         .attr('font-size', fontSize)
+        .attr('x', 0)
         .attr(
           'y',
           (_, i) => -((0.5 * fontSize * skillTextSplit.length) / 2) + i * fontSize * 1.2

@@ -1,7 +1,7 @@
 export const generateRandomData = (n, categoryCount, maxLvl) =>
-  Array.from({ length: n }, (_, i) => ({
+  Array.from({ length: n - 3 }, (_, i) => ({
     skill: `skill-${i}`,
-    category: `category-${Math.floor(Math.random() * categoryCount)}`,
+    category: `category-${Math.floor(Math.random() * (categoryCount - 1))}`,
     skill_level: Math.floor(Math.random() * maxLvl),
   }))
     .concat([

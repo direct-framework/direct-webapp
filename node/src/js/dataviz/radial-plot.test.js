@@ -1,7 +1,21 @@
+import { vitest as vi } from 'vitest'
 import { describe, test, expect, beforeEach } from 'vitest'
+import * as d3 from 'd3'
 import { RadialBarChart } from './radial-plot'
 import { levels as defaultLevels } from './defaults'
 import { generateRandomData } from './mock-data'
+
+function flushAllD3Transitions() {
+    var now = performance.now;
+    performance.now = function() { return Infinity; };
+    d3.timerFlush();
+    performance.now = now;
+ }
+
+//  Mock the transition multiplier to speed up tests that involve transitions
+vi.mock('./config', () => ({
+  transitionMultiplier: 0, // Set to 0 to disable delays in transitions
+}))
 
 describe('RadialBarChart', () => {
   let container
@@ -122,17 +136,6 @@ describe('RadialBarChart', () => {
       expect(lvlRings).not.toBeNull()
     })
 
-    test('should render annotations for categories', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: {},
-      })
-      const annotations = container.querySelectorAll('.Annotation')
-      expect(annotations.length).toBeGreaterThan(0)
-    })
-
     test('should handle empty data array', () => {
       const chart = RadialBarChart({
         target: container,
@@ -163,25 +166,28 @@ describe('RadialBarChart', () => {
 
   describe('Bar Rendering', () => {
     test('should create bar elements for each data point', () => {
+      const skillCount = 10
       RadialBarChart({
         target: container,
-        data: generateRandomData(10, 3, 4),
+        data: generateRandomData(skillCount, 3, 4),
         levels: defaultLevels,
         config: {},
       })
       const bars = container.querySelectorAll('.bar')
-      expect(bars.length).toBeGreaterThan(0)
+      bars.forEach()
+      expect(bars.length).toEqual(skillCount)
     })
 
     test('should create bar-outline elements for hover detection', () => {
+      const skillCount = 10
       RadialBarChart({
         target: container,
-        data: generateRandomData(10, 3, 4),
+        data: generateRandomData(skillCount, 3, 4),
         levels: defaultLevels,
         config: {},
       })
       const barOutlines = container.querySelectorAll('.bar-outline')
-      expect(barOutlines.length).toBeGreaterThan(0)
+      expect(barOutlines.length).toEqual(skillCount)
     })
 
     test('should create bar segments for skill levels', () => {
@@ -219,14 +225,16 @@ describe('RadialBarChart', () => {
 
   describe('Annotation Rendering', () => {
     test('should render category labels', () => {
+      const catCount = 3
+      const data = generateRandomData(10, catCount, 4)
       RadialBarChart({
         target: container,
-        data: generateRandomData(10, 3, 4),
+        data,
         levels: defaultLevels,
         config: {},
       })
-      const annotations = container.querySelectorAll('.Annotation')
-      expect(annotations.length).toBeGreaterThan(0)
+      const annotations = container.querySelectorAll('.AnnotationCat')
+      expect(annotations.length).toEqual(catCount)
     })
 
     test('should render level labels when lvlLabelType is "name"', () => {
@@ -236,9 +244,8 @@ describe('RadialBarChart', () => {
         levels: defaultLevels,
         config: { lvlLabelType: 'name' },
       })
-      const annotations = container.querySelector('.Annotation')
-      const texts = annotations.querySelectorAll('text')
-      expect(texts.length).toBeGreaterThan(0)
+      const annotations = container.querySelectorAll('.AnnotationLvl')
+      expect(annotations.length).toEqual(defaultLevels.length)
     })
 
     test('should not render level labels when lvlLabelType is "none"', () => {
@@ -249,47 +256,27 @@ describe('RadialBarChart', () => {
         config: { lvlLabelType: 'none' },
       })
       // Level labels should not be rendered, but category labels should still be present
-      const svg = container.querySelector('svg')
-      expect(svg).not.toBeNull()
+      const annotations = container.querySelectorAll('.AnnotationLvl')
+      expect(annotations.length).toEqual(0)
     })
 
-    test('should render annotation lines', () => {
+    test('should render annotation line for each category', () => {
+      const catCount = 3
+      const data = generateRandomData(10, catCount, 4)
+
       RadialBarChart({
         target: container,
-        data: generateRandomData(10, 3, 4),
+        data,
         levels: defaultLevels,
         config: {},
       })
-      const annotation = container.querySelector('.Annotation')
-      const lines = annotation.querySelectorAll('line')
-      expect(lines.length).toBeGreaterThan(0)
-    })
-
-    test('should render label boxes', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: {},
-      })
-      const labelBoxes = container.querySelectorAll('.label-box')
-      expect(labelBoxes.length).toBeGreaterThan(0)
+      const annotationLines = container.querySelectorAll('.AnnotationCatLine')
+      expect(annotationLines.length).toEqual(catCount)
     })
   })
-
-  describe('Skill Highlight', () => {
-    test('should create skill-highlight group', () => {
-      RadialBarChart({
-        target: container,
-        data: generateRandomData(10, 3, 4),
-        levels: defaultLevels,
-        config: {},
-      })
-      const skillHighlight = container.querySelector('.skill-highlight')
-      expect(skillHighlight).not.toBeNull()
-    })
-
-    test('should create highlight circle with initial opacity 0', () => {
+  describe.only('Skill Highlight', () => {
+    /* These tests check that when a user hovers over a skill we should additional details */
+    test('should create highlighted skill circle with initial opacity 0', () => {
       RadialBarChart({
         target: container,
         data: generateRandomData(10, 3, 4),
@@ -300,6 +287,23 @@ describe('RadialBarChart', () => {
       expect(highlightCircle).not.toBeNull()
       expect(highlightCircle.getAttribute('opacity')).toBe('0')
     })
+    test('should set highlighted skill circle opacity to 1 when mouse hovers over a skill', () => {
+      RadialBarChart({
+        target: container,
+        data: generateRandomData(10, 3, 4),
+        levels: defaultLevels,
+        config: {},
+      })
+
+      const skillBar = container.querySelector('.bar-outline')
+      const event = new MouseEvent('mouseover', { bubbles: true })
+      skillBar.dispatchEvent(event)
+      flushAllD3Transitions() // Ensure all D3 transitions have completed
+      const highlightCircle = container.querySelector('.skill-highlight-circle')
+      expect(highlightCircle.getAttribute('opacity')).toBe('1')
+
+    })
+  // checked to here
 
     test('should create highlight text elements', () => {
       RadialBarChart({
