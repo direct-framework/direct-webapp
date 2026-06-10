@@ -16,7 +16,9 @@
         "build-storybook": "storybook build",
         "test": "vitest",
         "test-ui": "vitest --ui",
-        "test-ci": "vitest --run"
+        "test-ci": "vitest --run",
+        "lint": "eslint node --ext .js",
+        "lint:fix": "eslint node --ext .js --fix"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.23.3",
