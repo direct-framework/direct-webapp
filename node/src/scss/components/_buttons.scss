@@ -180,9 +180,9 @@
     mask: escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M8.667 12.667c.4-.4 1.067-.4 1.467 0l6 6 6-6c.4-.4 1.067-.4 1.467 0s.4 1.067 0 1.467l-6.667 6.667c-.4.4-1.067.4-1.467 0L8.8 14.134c-.533-.533-.533-1.067-.133-1.467z'/></svg>")) no-repeat 50% 50%;
     -webkit-mask-size: cover; // stylelint-disable-line property-no-vendor-prefix
     mask-size: cover;
-    will-change: transform;
     transition: transform .2s ease-in-out;
     transform: rotate(180deg);
+    will-change: transform;
   }
   &.fs-2,
   &.fs-3,
