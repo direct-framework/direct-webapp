@@ -1,23 +1,7 @@
-import { RadialBarChart } from '../src/js/dataviz/radial-plot'
+import { RadialBarChart } from '../../src/js/dataviz/radial-plot'
+import { generateRandomData } from '../../src/js/dataviz/mock-data'
+import { levels as defaultLevels } from '../../src/js/dataviz/defaults'
 import '../src/scss/dataviz.scss'
-
-const generateRandomData = (n, categoryCount, maxLvl) =>
-  Array.from({ length: n }, (_, i) => ({
-    skill: `skill-${i}`,
-    category: `category-${Math.floor(Math.random() * categoryCount)}`,
-    skill_level: Math.floor(Math.random() * maxLvl),
-  }))
-    .concat([
-      { skill: 'Zero Skill', category: 'category-0', skill_level: 0 },
-      { skill: 'Max Skill', category: 'category-0', skill_level: maxLvl - 1 },
-    ])
-    .concat([
-      {
-        skill: 'long name skill using max char count of about 20 etc',
-        category: 'Really long category name that is about 30 chars',
-        skill_level: maxLvl - 1,
-      },
-    ])
 
 export default {
   title: 'Dataviz/radial-plot',
@@ -100,17 +84,11 @@ export default {
     useSmartLabelPositioning: {
       control: 'boolean',
     },
+    plotYOffset: {
+      control: 'number',
+    },
   },
 }
-
-const defaultLevels = [
-  // { level: 0, name: 'None' },
-  { level: 1, name: 'Beginner' },
-  { level: 2, name: 'Intermediate' },
-  { level: 3, name: 'Advanced' },
-  { level: 4, name: 'Advanced Plus' },
-  { level: 5, name: 'Advanced Plus' },
-]
 
 export const Primary = {
   args: {
@@ -169,11 +147,12 @@ export const TestFontSize = {
   args: {
     data: generateRandomData(10, 4, 4),
     levels: defaultLevels,
-    height: 474,
+    height: 600,
     arcPercent: 0.98,
     arcStartOffset: 0.01,
     lvlLabelType: 'none',
-    fontSize: 24,
+    innerRadius: 140,
+    fontSize: 20,
     labelYSpacing: 1.2, // Sets the spacing of the category labels from each other as a multiple of the font size
   },
 }
