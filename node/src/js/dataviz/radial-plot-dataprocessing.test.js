@@ -152,7 +152,7 @@ describe('RadialBarChart-dataprocessing', () => {
       expect(point.y).toBeDefined()
     })
 
-    test.only('should position labels on correct side based on angle', () => {
+    test('should position labels on correct side based on angle', () => {
       const categoryStartAngleMap = {
         cat1: 0.1, // Upper right
         cat2: 2 * Math.PI - 0.1, // Upper left
