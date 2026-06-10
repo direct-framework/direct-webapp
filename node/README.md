@@ -53,10 +53,6 @@ The above script performs all the following tasks, which are available as indivi
 - **Build Minified Scripts**: `npm run scripts:minified` (builds minified javascript files, optimised for production)
 - **Build Vendor Files**: `npm run vendor` (bundles and optimises third-party libraries)
 
-```bash
-npm run styles:expanded
-```
-
 Built files are output to the `main/static/assets` directory, which is where the Django application expects to find them.
 
 ## Running Tests
