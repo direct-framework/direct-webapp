@@ -1,4 +1,4 @@
-<!-- This template implements a export button to export the current user's skill profile as a CSV file.
+<!-- This template implements an export button to export the current user's skill profile as a CSV file.
  It works on the skill profile page.
 
 
@@ -15,7 +15,7 @@ To use add a button with the class "export-skill-profile" to the page and includ
       const charts = {{ chart_data|safe }};
 
       const csvRows = [];
-      csvRows.push(['Category', 'Subcategory', 'Skill', 'Level'].join(','));
+      csvRows.push(['Competency Domain', 'Competency', 'Skill', 'Level'].join(','));
       charts.forEach(({user_data, user_id}) => {
         user_data.forEach(({category, skill, skill_level, subcategory}) => {
           csvRows.push([`"${category}"`, `"${subcategory}"`, `"${skill}"`, skill_level].join(','));
