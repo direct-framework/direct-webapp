@@ -34,5 +34,6 @@ plugins:
 
 nav:
   - DIRECT WebApp documentation: index.md
+  - Node: node/
   # defer to gen-files + literate-nav
   - Code Reference: reference/
