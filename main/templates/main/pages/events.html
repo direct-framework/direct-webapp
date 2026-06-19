@@ -31,17 +31,33 @@
                 <div class="col-12">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0 me-3">
-                            <img src="{{ event.image }}"
-                                 alt="Event image"
-                                 class="rounded-2"
-                                 width="150">
+                            {% if event.image %}
+                                <img src="{{ event.image }}"
+                                     alt="Event image"
+                                     class="rounded-2"
+                                     width="150">
+                            {% else %}
+                                <div class="bg-dark rounded-2 d-flex justify-content-center align-items-center"
+                                     style="width: 150px;
+                                            height: 100px">
+                                    <span class="text-muted text-light small">No image</span>
+                                </div>
+                            {% endif %}
                         </div>
                         <div>
-                            <h4 class="mb-1">{{ event.title }}</h4>
+                            <h4 class="mb-1">
+                                {% if event.blog %}
+                                    <a href="{{ event.blog }}" target="_blank">{{ event.title }}</a>
+                                {% else %}
+                                    {{ event.title }}
+                                {% endif %}
+                            </h4>
                             <p class="mb-2">{{ event.description }}</p>
                             <p class="text-muted mb-1 small">
                                 <strong>Date:</strong> {{ event.start_date }}
-                                {% if event.end_date and event.end_date != event.start_date %}– {{ event.end_date }}{% endif %}
+                                {% if event.location %}| {{ event.location }}{% endif %}
+                                {% if event.event_link %}| <a href="{{ event.event_link }}" target="_blank">Event</a>{% endif %}
+                                {% if event.blog %}| <a href="{{ event.blog }}" target="_blank">Blog</a>{% endif %}
                             </p>
                             <p class="text-muted mb-2 small">
                                 <strong>Contributors:</strong> {{ event.contributors }}
