@@ -560,3 +560,12 @@ class TestLicensingPageView(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("licensing")
+
+
+class TestViewSkillProfilePageView(TemplateOkMixin):
+    """Test suite for the ViewSkillProfilePageView."""
+
+    _template_name = "main/shared-skills-profile.html"
+
+    def _get_url(self):
+        return reverse("view_skill_profile")
