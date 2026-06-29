@@ -22,7 +22,7 @@ repos:
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.18
+    rev: v0.15.20
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -57,7 +57,7 @@ repos:
         args: [-I, .codespell_ignore.txt]
         exclude: ^main/static/assets/|^package-lock.json$
   - repo: https://github.com/djlint/djLint
-    rev: v1.39.2
+    rev: v1.39.5
     hooks:
       - id: djlint-django
       - id: djlint-reformat-django
