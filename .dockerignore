@@ -2,7 +2,7 @@
 !entrypoint.sh
 !main
 !manage.py
-!requirements.txt
+!prod-requirements.txt
 !direct_webapp
 !db
 db/*
