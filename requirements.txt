@@ -6,7 +6,7 @@
 #
 asgiref==3.11.1
     # via django
-certifi==2026.5.20
+certifi==2026.6.17
     # via requests
 charset-normalizer==3.4.7
     # via requests
@@ -39,7 +39,7 @@ django-multiselectfield==1.0.1
     # via direct_webapp (pyproject.toml)
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
-django-stubs-ext==6.0.5
+django-stubs-ext==6.0.6
     # via direct_webapp (pyproject.toml)
 django-tables2==3.0.0
     # via direct_webapp (pyproject.toml)
@@ -51,7 +51,7 @@ markdown==3.10.2
     # via direct_webapp (pyproject.toml)
 mysqlclient==2.2.8
     # via direct_webapp (pyproject.toml)
-nh3==0.3.5
+nh3==0.3.6
     # via direct_webapp (pyproject.toml)
 packaging==26.2
     # via gunicorn
