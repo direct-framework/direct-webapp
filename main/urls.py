@@ -61,4 +61,9 @@ urlpatterns = [
     path("get-involved/", views.GetInvolvedPageView.as_view(), name="get_involved"),
     path("events/", views.EventsPageView.as_view(), name="events"),
     path("framework-json/", views.FrameworkView.as_view(), name="framework_json"),
+    path(
+        "view_skill_profile/",
+        views.ViewSkillProfilePageView.as_view(),
+        name="view_skill_profile",
+    ),
 ]

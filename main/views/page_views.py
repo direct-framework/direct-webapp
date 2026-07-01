@@ -310,3 +310,26 @@ class LicensingPageView(GitHubMarkdownPageView):
     github_raw_url = (
         "https://raw.githubusercontent.com/direct-framework/.github/main/LICENSING.md"
     )
+
+
+class ViewSkillProfilePageView(TemplateView):
+    """View that renders a shared skill profile based on query parameters."""
+
+    template_name = "main/shared-skills-profile.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+        """Add skill profile data from query parameters to the context."""
+        context = super().get_context_data(**kwargs)
+
+        chart_data_json = nh3.clean(self.request.GET.get("chart_data", "[]"))
+        skill_levels_json = nh3.clean(self.request.GET.get("skill_levels", "[]"))
+
+        try:
+            context["chart_data"] = json.loads(chart_data_json)
+            context["skill_levels"] = json.loads(skill_levels_json)
+        except json.JSONDecodeError:
+            logger.error("Invalid JSON in query parameters")
+            context["chart_data"] = []
+            context["skill_levels"] = []
+
+        return context
