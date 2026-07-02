@@ -163,6 +163,11 @@ This project includes an NPM-based setup for managing front-end assets like styl
 
 See [Frontend Node](node/README.md) for details on working with the NPM-based frontend asset pipeline.
 
+## Acknowledgements
+
+_This work was supported by the [DisCouRSE Network+](https://discourse-network.github.io/), which received funding through the UKRI
+Digital Research Infrastructure Programme_
+
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
