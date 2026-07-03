@@ -336,8 +336,8 @@ class ViewSkillProfilePageView(TemplateView):
             context["chart_data"] = json.loads(chart_data_json)
             context["skill_levels"] = json.loads(skill_levels_json)
         except json.JSONDecodeError:
-            logger.error("Invalid JSON in query parameters")
             context["chart_data"] = []
             context["skill_levels"] = []
+            context["error_message"] = "Invalid data provided in query parameters."
 
         return context

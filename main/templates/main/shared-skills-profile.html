@@ -30,6 +30,11 @@
                                 with size according to the self-assessed level.
                             </p>
                             <div id="dataviz_root" style="width:100%"></div>
+                            {% if error_message %}
+                                <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+                            {% else %}
+                                {% include "main/snippets/skill-wheel.html" %}
+                            {% endif %}
                             {% include "main/snippets/skill-wheel.html" %}
                         </div>
                     </section>
