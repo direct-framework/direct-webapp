@@ -328,12 +328,11 @@ class ViewSkillProfilePageView(TemplateView):
     def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add skill profile data from query parameters to the context."""
         context = super().get_context_data(**kwargs)
-        chart_data_json = self.request.GET.get("chart_data", "[]")
-        skill_levels_json = self.request.GET.get("skill_levels", "[]")
+
+        chart_data_json = nh3.clean(self.request.GET.get("chart_data", "[]"))
+        skill_levels_json = nh3.clean(self.request.GET.get("skill_levels", "[]"))
 
         try:
-            # TODO: We should validate this data more robustly before rendering
-            # it in the template
             context["chart_data"] = json.loads(chart_data_json)
             context["skill_levels"] = json.loads(skill_levels_json)
         except json.JSONDecodeError:
