@@ -76,7 +76,9 @@
                                                 class="card-title d-flex align-items-center">
                                                 <span class="me-2">{{ competency.name }}</span>
                                             </h5>
-                                            {% if competency.description %}<p class="card-text">{{ competency.description }}</p>{% endif %}
+                                            {% if competency.description %}
+                                                <p class="card-text">{{ competency.description }}</p>
+                                            {% endif %}
                                             {% with skills=competency.skill_set.all %}
                                                 {% if skills %}
                                                     <table class="table mt-2">
