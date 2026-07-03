@@ -30,3 +30,17 @@ class UserSkill(models.Model):
         constraints = (
             models.UniqueConstraint(fields=["user", "skill"], name="unique_user_skill"),
         )
+
+
+class Team(models.Model):
+    """Model for representing a team of users working together."""
+
+    name = models.CharField(max_length=255)
+    manager = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="managed_teams"
+    )
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="teams")
+
+    def __str__(self) -> str:
+        """Return the string representation of the team."""
+        return self.name
