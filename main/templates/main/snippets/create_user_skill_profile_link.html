@@ -12,6 +12,7 @@ To use add a button with the class "export-skill-profile-link" to the page and i
   // On document load we convert the skill levels and chart data into a query string and set it as the href of the export link.
   document.addEventListener('DOMContentLoaded', function () {
     const exportSkillProfileLink = document.querySelector('.export-skill-profile-link');
+    const exportSkillProfileLinkCopyButton = document.querySelector('.export-skill-profile-link-copy');
     const skillLevels = {{ skill_levels|safe }};
     const charts = {{ chart_data|safe }};
 
@@ -21,10 +22,10 @@ To use add a button with the class "export-skill-profile-link" to the page and i
     queryParams.set('skill_levels', JSON.stringify(skillLevels));
     queryParams.set('chart_data', JSON.stringify(charts));
 
-    exportSkillProfileLink.href = `${window.location.origin}/view_skill_profile?${queryParams.toString()}`;
     const shareableLink = `${window.location.origin}/view_skill_profile?${queryParams.toString()}`;
-    // exportSkillProfileLink.textContent = `Shareable Link: ${shareableLink}`;
-    exportSkillProfileLink.addEventListener('click', function (event) {
+    exportSkillProfileLink.href = shareableLink;
+    exportSkillProfileLinkCopyButton.href = shareableLink;
+    exportSkillProfileLinkCopyButton.addEventListener('click', function (event) {
       event.preventDefault();
       navigator.clipboard.writeText(shareableLink).then(function() {
         alert('Shareable link copied to clipboard!');
