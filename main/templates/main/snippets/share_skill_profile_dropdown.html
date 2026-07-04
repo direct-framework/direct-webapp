@@ -22,9 +22,12 @@
                 {% include "main/snippets/create_user_skill_profile_link.html" %}
             </li>
             <li>
-                <button class="dropdown-item export-skill-profile" href="#">Export as CSV</button>
-                {% include "main/snippets/export_user_skill_profile.html" %}
+                <button class="dropdown-item export-skill-profile-csv" href="#">Export as CSV</button>
             </li>
+            <li>
+                <button class="dropdown-item export-skill-profile-json" href="#">Export as JSON</button>
+            </li>
+            {% include "main/snippets/export_user_skill_profile.html" %}
         </ul>
     </li>
 </div>
