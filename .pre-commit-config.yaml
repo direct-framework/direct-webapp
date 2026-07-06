@@ -18,7 +18,7 @@ repos:
         args: [--autofix, --indent, '2', --offset, '2']
         exclude: manage.py|^main/static/assets/
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.37.3
+    rev: 0.37.4
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -57,7 +57,7 @@ repos:
         args: [-I, .codespell_ignore.txt]
         exclude: ^main/static/assets/|^package-lock.json$|^direct_webapp/fixtures/framework-2-0.json$
   - repo: https://github.com/djlint/djLint
-    rev: v1.39.5
+    rev: v1.40.3
     hooks:
       - id: djlint-django
       - id: djlint-reformat-django
