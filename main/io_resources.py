@@ -15,6 +15,7 @@ from tablib import Dataset
 from .models import (
     Competency,
     CompetencyDomain,
+    Event,
     LearningResource,
     Provider,
     Skill,
@@ -256,6 +257,18 @@ class SkillLevelResource(resources.ModelResource):
         model = SkillLevel
         skip_unchanged = True
         import_id_fields = ("level",)
+        exclude = ("id",)
+
+
+class EventResource(resources.ModelResource):
+    """A ModelResource to facilitate importing and exporting Events."""
+
+    class Meta:
+        """Meta options for EventResource."""
+
+        model = Event
+        skip_unchanged = True
+        import_id_fields = ("title", "start_date")
         exclude = ("id",)
 
 

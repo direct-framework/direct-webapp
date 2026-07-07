@@ -24,48 +24,65 @@
                 </p>
             </div>
         </div>
-        <!-- Events list -->
-        <div class="row gy-4">
-            <!-- Event item -->
-            {% for event in events %}
-                <div class="col-12">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-shrink-0 me-3">
-                            {% if event.image %}
-                                <img src="{{ event.image }}"
-                                     alt="Event image"
-                                     class="rounded-2"
-                                     width="150">
-                            {% else %}
-                                <div class="bg-dark rounded-2 d-flex justify-content-center align-items-center"
-                                     style="width: 150px;
-                                            height: 100px">
-                                    <span class="text-muted text-light small">No image</span>
+        {% regroup events by start_date.year as year_groups %}
+        {% if year_groups %}
+            <div class="d-flex flex-column gap-5">
+                {% for year_group in year_groups %}
+                    <div>
+                        <h2 class="h4 text-uppercase text-body-secondary pb-2 border-bottom mb-4">{{ year_group.grouper }}</h2>
+                        <div class="d-flex flex-column gap-4">
+                            {% for event in year_group.list %}
+                                <div class="card card-hover card-lifted shadow-sm h-100">
+                                    <div class="row g-0">
+                                        <div class="col-md-3">
+                                            <img src="{% static event.image|default:'assets/img/blog/placeholder.png' %}"
+                                                 alt="Event image"
+                                                 class="rounded-start w-100 h-100"
+                                                 style="object-fit: cover">
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="card-body">
+                                                <h4 class="card-title mb-2">
+                                                    {{ event.title }}
+                                                </h4>
+                                                <p class="card-text text-body-secondary small mb-2">
+                                                    <i class="fa-solid fa-calendar-days me-2"></i>{{ event.start_date }}
+                                                    {% if event.end_date and event.end_date != event.start_date %}– {{ event.end_date }}{% endif %}
+                                                    {% if event.location %}
+                                                        <span class="ms-3"><i class="fa-solid fa-location-dot me-2"></i>{{ event.location }}</span>
+                                                    {% endif %}
+                                                </p>
+                                                <p class="card-text mb-2">{{ event.description|truncatewords:35 }}</p>
+                                                {% if event.contributors %}
+                                                    <p class="card-text text-body-secondary small mb-2">
+                                                        <i class="fa-solid fa-users me-2"></i>{{ event.contributors }}
+                                                    </p>
+                                                {% endif %}
+                                                {% if event.event_link or event.blog %}
+                                                    <div class="d-flex gap-3 mt-2">
+                                                        {% if event.event_link %}
+                                                            <a href="{{ event.event_link }}" target="_blank" class="small fw-medium">
+                                                                <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Event page
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if event.blog %}
+                                                            <a href="{{ event.blog }}" target="_blank" class="small fw-medium">
+                                                                <i class="fa-solid fa-newspaper me-1"></i>Blog post
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <h4 class="mb-1">
-                                {% if event.blog %}
-                                    <a href="{{ event.blog }}" target="_blank">{{ event.title }}</a>
-                                {% else %}
-                                    {{ event.title }}
-                                {% endif %}
-                            </h4>
-                            <p class="mb-2">{{ event.description }}</p>
-                            <p class="text-muted mb-1 small">
-                                <strong>Date:</strong> {{ event.start_date }}
-                                {% if event.location %}| {{ event.location }}{% endif %}
-                                {% if event.event_link %}| <a href="{{ event.event_link }}" target="_blank">Event</a>{% endif %}
-                                {% if event.blog %}| <a href="{{ event.blog }}" target="_blank">Blog</a>{% endif %}
-                            </p>
-                            <p class="text-muted mb-2 small">
-                                <strong>Contributors:</strong> {{ event.contributors }}
-                            </p>
+                            {% endfor %}
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-body-secondary">No events yet.</p>
+        {% endif %}
     </section>
 {% endblock content %}
