@@ -9,7 +9,7 @@ from main.models import (
     Provider,
     Skill,
     SkillLevel,
-    Tool,
+    ToolLanguageMethodology,
     UserSkill,
 )
 
@@ -18,7 +18,7 @@ from main.models import (
 def competency_domain() -> CompetencyDomain:
     """Fixture for creating a Competency Domain instance."""
     return CompetencyDomain.objects.create(
-        name="Competency Domain", description="A competency domain"
+        name="Competency Domain", description="A competency domain", rank=1
     )
 
 
@@ -29,6 +29,7 @@ def competency(competency_domain: CompetencyDomain) -> Competency:
         name="Competency",
         description="A competency",
         competency_domain=competency_domain,
+        rank=1,
     )
 
 
@@ -56,12 +57,12 @@ def learning_resource(provider: Provider) -> LearningResource:
 
 
 @pytest.fixture
-def tool(learning_resource: LearningResource) -> Tool:
+def tool(learning_resource: LearningResource) -> ToolLanguageMethodology:
     """Fixture for creating a Tool instance."""
-    tool = Tool.objects.create(
+    tool = ToolLanguageMethodology.objects.create(
         name="Tool",
         description="A tool, methodology, behaviour or language",
-        kind=Tool.Kind.TOOL,
+        kind=ToolLanguageMethodology.Kind.TOOL,
         url="https://example.com/tool",
     )
     tool.learning_resources.add(learning_resource)
@@ -70,13 +71,16 @@ def tool(learning_resource: LearningResource) -> Tool:
 
 @pytest.fixture
 def skill(
-    competency: Competency, tool: Tool, learning_resource: LearningResource
+    competency: Competency,
+    tool: ToolLanguageMethodology,
+    learning_resource: LearningResource,
 ) -> Skill:
     """Fixture for creating a Skill instance."""
     skill = Skill.objects.create(
         name="Skill",
         description="A skill",
         competency=competency,
+        rank=1,
     )
     skill.tools.add(tool)
     skill.learning_resources.add(learning_resource)

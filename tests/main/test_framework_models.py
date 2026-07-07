@@ -13,7 +13,7 @@ from main.models import (
     Skill,
     SkillLevel,
     SluggedModel,
-    Tool,
+    ToolLanguageMethodology,
 )
 
 
@@ -91,7 +91,7 @@ def test_competency_model(
 def test_skill_model(
     skill: Skill,
     competency: Competency,
-    tool: Tool,
+    tool: ToolLanguageMethodology,
     learning_resource: LearningResource,
 ) -> None:
     """Test the Skill model."""
@@ -157,13 +157,15 @@ def test_learning_resource_model(
 
 
 @pytest.mark.django_db
-def test_tool_model(tool: Tool, learning_resource: LearningResource) -> None:
+def test_tool_model(
+    tool: ToolLanguageMethodology, learning_resource: LearningResource
+) -> None:
     """Test the Tool model."""
     assert isinstance(tool, SluggedModel)
     assert tool.name == str(tool) == "Tool"
     assert tool.description == "A tool, methodology, behaviour or language"
     assert tool.slug == "tool"
-    assert tool.kind == Tool.Kind.TOOL
+    assert tool.kind == ToolLanguageMethodology.Kind.TOOL
     assert tool.url == "https://example.com/tool"
     assert learning_resource in tool.learning_resources.all()
 

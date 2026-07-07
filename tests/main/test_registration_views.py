@@ -160,7 +160,7 @@ class TestPasswordChangeDone(LoginRequiredMixin, TemplateOkMixin):
 
 
 class TestRegisterUser(TemplateOkMixin):
-    """Test suite for the CreateUserView."""
+    """Test suite for the Registration View."""
 
     _template_name = "django_registration/registration_form.html"
 
@@ -189,6 +189,7 @@ class TestRegisterUser(TemplateOkMixin):
                 username=user.username,
                 password1=user.password,
                 password2=user.password,
+                tos=True,
             ),
         )
 

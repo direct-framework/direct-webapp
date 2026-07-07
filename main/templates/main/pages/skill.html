@@ -1,18 +1,24 @@
 {% extends "main/base.page.html" %}
+{% block body_class %}
+    bg-secondary
+{% endblock body_class %}
 {% block title %}
     {{ skill.name }} - Digital Research Competencies Framework
 {% endblock title %}
 {% block breadcrumb_items %}
     <li class="breadcrumb-item">
-        <a href="{% url 'competencies' %}">Framework</a>
+        <a href="{% url 'framework_overview' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{% url 'skills_and_competencies' %}">Skills and competencies</a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">{{ skill.name }}</li>
 {% endblock breadcrumb_items %}
 {% block content %}
-    <section class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+    <section id="skill_details" class="container">
         <div class="row">
             <div class="col-lg-9 col-xl-8">
-                <h1 class="pb-2 pb-lg-3">{{ skill.name }}</h1>
+                <h1 class="pb-2 pb-lg-3">Skill: {{ skill.name }}</h1>
                 <p class="fs-lg mb-4">{{ skill.description }}</p>
                 {% if related_skills %}
                     <h2 class="h4 mt-5">Related skills</h2>
@@ -42,19 +48,43 @@
                 {% if tools %}
                     <h2 class="h4 mt-5">Tools</h2>
                     <ul>
-                        {% for item in tools %}<li>{{ item.name }}</li>{% endfor %}
+                        {% for item in tools %}
+                            <li>
+                                {% if item.url %}
+                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                {% else %}
+                                    {{ item.name }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
                     </ul>
                 {% endif %}
                 {% if languages %}
                     <h2 class="h4 mt-5">Languages</h2>
                     <ul>
-                        {% for item in languages %}<li>{{ item.name }}</li>{% endfor %}
+                        {% for item in languages %}
+                            <li>
+                                {% if item.url %}
+                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                {% else %}
+                                    {{ item.name }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
                     </ul>
                 {% endif %}
                 {% if methodologies %}
                     <h2 class="h4 mt-5">Methodologies</h2>
                     <ul>
-                        {% for item in methodologies %}<li>{{ item.name }}</li>{% endfor %}
+                        {% for item in methodologies %}
+                            <li>
+                                {% if item.url %}
+                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                {% else %}
+                                    {{ item.name }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
                     </ul>
                 {% endif %}
             </div>

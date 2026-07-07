@@ -6,17 +6,46 @@ import logging
 from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
+from typing import Any, ClassVar
 
-from django.contrib.auth import get_user_model
+import markdown
+import nh3
+import requests
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
+from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_safe
+from django.views.decorators.cache import cache_page
 from django.views.generic.base import TemplateView
+from django_tables2 import SingleTableView
 
-from ..models import CompetencyDomain, Skill, SkillLevel, Tool
+from ..models import (
+    CompetencyDomain,
+    LearningResource,
+    Skill,
+    SkillLevel,
+    ToolLanguageMethodology,
+)
+from ..tables import LearningResourceTable, ToolLanguageMethodologyTable
 
 logger = logging.getLogger(__name__)
 
-User = get_user_model()
+
+def _extract_and_combine_roles(
+    sample_data_files: list[str | Path],
+) -> list[dict[str, Any]]:
+    """Read and combine multiple JSON files with sample user data."""
+    combined_sample_data = []
+    for file_path in sample_data_files:
+        json_path = Path(file_path)
+        if json_path.exists():
+            with json_path.open() as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    combined_sample_data.extend(data)
+                else:
+                    combined_sample_data.append(data)
+    return combined_sample_data
 
 
 class IndexPageView(TemplateView):
@@ -24,47 +53,25 @@ class IndexPageView(TemplateView):
 
     template_name = "main/index.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add skill levels and sample profile data to the template context."""
         context = super().get_context_data(**kwargs)
         logger.info("Rendering index page.")
 
-        skill_levels = SkillLevel.objects.all()
-        skill_levels_data = [
-            {
-                "level": sl.level,
-                "name": sl.name,
-                "description": sl.description,
-            }
-            for sl in skill_levels
-        ]
-
-        sample_data_files = [
-            "main/static/assets/sample_data/sample_profile_1.json",
-            "main/static/assets/sample_data/sample_profile_41.json",
-            "main/static/assets/sample_data/sample_profile_59.json",
-        ]
-
-        combined_sample_data = []
-        for file_path in sample_data_files:
-            json_path = Path(file_path)
-            if json_path.exists():
-                with open(json_path) as f:
-                    data = json.load(f)
-                    if isinstance(data, list):
-                        combined_sample_data.extend(data)
-                    else:
-                        combined_sample_data.append(data)
-
-        context["skill_levels"] = dumps(skill_levels_data)
-        context["sample_data"] = dumps(combined_sample_data)
+        sample_data = _extract_and_combine_roles(
+            ["main/static/assets/sample_data/sample_profile_1.json"]
+        )
+        context["chart_data"] = dumps(sample_data)
+        context["skill_levels"] = dumps(
+            list(SkillLevel.objects.values("level", "name"))
+        )
         return context
 
 
 class PrivacyPageView(TemplateView):
     """View that renders the privacy page."""
 
-    template_name = "main/pages/privacy.html"
+    template_name = "main/pages/policies/privacy.html"
 
 
 class AboutPageView(TemplateView):
@@ -76,7 +83,7 @@ class AboutPageView(TemplateView):
 class TermsPageView(TemplateView):
     """View that renders the terms and conditions page."""
 
-    template_name = "main/pages/terms.html"
+    template_name = "main/pages/policies/terms.html"
 
 
 class SkillLevelsPageView(TemplateView):
@@ -84,7 +91,7 @@ class SkillLevelsPageView(TemplateView):
 
     template_name = "main/pages/skill-levels.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add skill levels to the template context."""
         context = super().get_context_data(**kwargs)
         skill_levels = SkillLevel.objects.all().order_by("level")
@@ -92,10 +99,20 @@ class SkillLevelsPageView(TemplateView):
         return context
 
 
-class TrainingPageView(TemplateView):
-    """View that renders the training page."""
+class LearningResourcesPageView(SingleTableView):
+    """View that renders the page with all learning resources."""
 
-    template_name = "main/pages/training.html"
+    model = LearningResource
+    table_class = LearningResourceTable
+    template_name = "main/pages/learning-resources.html"
+
+
+class ToolsLanguagesMethodologiesPageView(SingleTableView):
+    """View that renders the page with all tools, languages and methodologies."""
+
+    model = ToolLanguageMethodology
+    table_class = ToolLanguageMethodologyTable
+    template_name = "main/pages/tools-languages-methodologies.html"
 
 
 class GetInvolvedPageView(TemplateView):
@@ -109,7 +126,7 @@ class EventsPageView(TemplateView):
 
     template_name = "main/pages/events.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add events from CSV to the template context."""
         context = super().get_context_data(**kwargs)
         csv_path = Path("data/events.csv")
@@ -143,50 +160,30 @@ class RolesPageView(TemplateView):
 
     template_name = "main/pages/roles.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add sample profile data to the template context."""
         context = super().get_context_data(**kwargs)
 
-        # Skill levels from the database
-        skill_levels = SkillLevel.objects.all()
-        skill_levels_data = [
-            {
-                "level": sl.level,
-                "name": sl.name,
-                "description": sl.description,
-            }
-            for sl in skill_levels
-        ]
-
-        # Combine multiple sample JSON files
-        sample_data_files = [
-            "main/static/assets/sample_data/sample_profile_1.json",
-            "main/static/assets/sample_data/sample_profile_41.json",
-            "main/static/assets/sample_data/sample_profile_59.json",
-        ]
-
-        combined_sample_data = []
-        for file_path in sample_data_files:
-            json_path = Path(file_path)
-            if json_path.exists():
-                with open(json_path) as f:
-                    data = json.load(f)
-                    if isinstance(data, list):
-                        combined_sample_data.extend(data)
-                    else:
-                        combined_sample_data.append(data)
-
-        context["skill_levels"] = skill_levels_data
-        context["sample_data"] = combined_sample_data
+        sample_data = _extract_and_combine_roles(
+            [
+                "main/static/assets/sample_data/sample_profile_1.json",
+                "main/static/assets/sample_data/sample_profile_41.json",
+                "main/static/assets/sample_data/sample_profile_59.json",
+            ]
+        )
+        context["chart_data"] = sample_data
+        context["skill_levels"] = dumps(
+            list(SkillLevel.objects.values("level", "name"))
+        )
         return context
 
 
-class CompetenciesPageView(TemplateView):
+class SkillsAndCompetenciesPageView(TemplateView):
     """View that renders the competencies page."""
 
-    template_name = "main/pages/competencies.html"
+    template_name = "main/pages/skills-and-competencies.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add the competencies framework data to the template context."""
         context = super().get_context_data(**kwargs)
 
@@ -203,7 +200,7 @@ class SkillPageView(TemplateView):
 
     template_name = "main/pages/skill.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add the selected skill and related data to the template context."""
         context = super().get_context_data(**kwargs)
 
@@ -224,8 +221,123 @@ class SkillPageView(TemplateView):
         context["skill"] = skill
         context["related_skills"] = skill.related_skills.all().order_by("name")
         context["learning_resources"] = skill.learning_resources.all().order_by("name")
-        context["tools"] = tools_qs.filter(kind=Tool.Kind.TOOL)
-        context["languages"] = tools_qs.filter(kind=Tool.Kind.LANGUAGE)
-        context["methodologies"] = tools_qs.filter(kind=Tool.Kind.METHODOLOGY)
+        context["tools"] = tools_qs.filter(kind=ToolLanguageMethodology.Kind.TOOL)
+        context["languages"] = tools_qs.filter(
+            kind=ToolLanguageMethodology.Kind.LANGUAGE
+        )
+        context["methodologies"] = tools_qs.filter(
+            kind=ToolLanguageMethodology.Kind.METHODOLOGY
+        )
+
+        return context
+
+
+class FrameworkOverviewPageView(TemplateView):
+    """View that renders an overview page for the framework."""
+
+    template_name = "main/pages/framework-overview.html"
+
+
+class GitHubMarkdownPageView(TemplateView):
+    """Base view for pages that render markdown content fetched from GitHub."""
+
+    github_raw_url = ""
+    page_heading = ""
+    unavailable_message = "Document is temporarily unavailable."
+    markdown_extensions: ClassVar[list[str]] = ["fenced_code", "tables", "toc"]
+
+    def _strip_duplicate_heading(self, markdown_text: str) -> str:
+        """Remove leading H1 if it duplicates the configured page heading."""
+        lines = markdown_text.splitlines()
+        if not lines:
+            return markdown_text
+
+        first_line = lines[0].strip()
+        if self.page_heading not in first_line:
+            return markdown_text
+
+        # Remove the duplicate title line and one following blank line if present.
+        del lines[0]
+        if lines and lines[0].strip() == "":
+            del lines[0]
+
+        return "\n".join(lines)
+
+    def get_markdown_content(self) -> str:
+        """Fetch and convert remote markdown content to HTML."""
+        if not self.github_raw_url:
+            raise ValueError("github_raw_url must be set on GitHubMarkdownPageView")
+
+        response = requests.get(self.github_raw_url, timeout=5)
+        response.raise_for_status()
+        markdown_text = self._strip_duplicate_heading(response.text)
+        return markdown.markdown(
+            markdown_text,
+            extensions=self.markdown_extensions,
+        )
+
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+        """Add rendered markdown content and page metadata to the context."""
+        context = super().get_context_data(**kwargs)
+        context["page_heading"] = self.page_heading
+
+        try:
+            context["markdown_content"] = mark_safe(
+                nh3.clean(self.get_markdown_content())
+            )
+        except requests.RequestException:
+            logger.exception("Failed to load markdown from %s", self.github_raw_url)
+            context["markdown_content"] = mark_safe(
+                f"<p>{self.unavailable_message}</p>"
+            )
+
+        return context
+
+
+@method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
+class GovernancePageView(GitHubMarkdownPageView):
+    """View that renders the governance page from GitHub Markdown."""
+
+    template_name = "main/pages/policies/governance.html"
+    page_heading = "DIRECT Governance"
+    unavailable_message = "Governance document is temporarily unavailable."
+
+    github_raw_url = (
+        "https://raw.githubusercontent.com/direct-framework/.github/main/GOVERNANCE.md"
+    )
+
+
+@method_decorator(cache_page(60 * 60), name="dispatch")  # cache 1 hour
+class LicensingPageView(GitHubMarkdownPageView):
+    """View that renders the licensing page from GitHub Markdown."""
+
+    template_name = "main/pages/policies/licensing.html"
+    page_heading = "DIRECT Licensing"
+    unavailable_message = "Licensing document is temporarily unavailable."
+
+    github_raw_url = (
+        "https://raw.githubusercontent.com/direct-framework/.github/main/LICENSING.md"
+    )
+
+
+class ViewSkillProfilePageView(TemplateView):
+    """View that renders a shared skill profile based on query parameters."""
+
+    template_name = "main/shared-skills-profile.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+        """Add skill profile data from query parameters to the context."""
+        context = super().get_context_data(**kwargs)
+
+        chart_data_json = nh3.clean(self.request.GET.get("chart_data", "[]"))
+        skill_levels_json = nh3.clean(self.request.GET.get("skill_levels", "[]"))
+
+        try:
+            context["chart_data"] = json.loads(chart_data_json)
+            context["skill_levels"] = json.loads(skill_levels_json)
+        except json.JSONDecodeError:
+            context["chart_data"] = []
+            context["skill_levels"] = []
+            context["error_message"] = "Invalid data provided in query parameters."
 
         return context

@@ -71,12 +71,12 @@ class SluggedModel(NamedModel):
 class CompetencyDomain(SluggedModel):
     """Model for competency domains."""
 
-    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
-
     class Meta:
         """Meta options for CompetencyDomain model."""
 
         ordering = ("rank", "name")
+
+    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
 
 
 class Competency(SluggedModel):
@@ -86,8 +86,10 @@ class Competency(SluggedModel):
         """Meta options for Competency model."""
 
         verbose_name_plural = "competencies"
+        ordering = ("rank", "name")
 
     competency_domain = models.ForeignKey(CompetencyDomain, on_delete=models.CASCADE)
+    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
 
 
 class Provider(SluggedModel):
@@ -111,20 +113,20 @@ class LearningResource(SluggedModel):
     description = models.TextField(blank=True, null=True)  # type: ignore[assignment]
 
 
-class Tool(SluggedModel):
+class ToolLanguageMethodology(SluggedModel):
     """Model for tools, languages and methodologies."""
 
     class Meta:
         """Meta options for Tool model."""
 
-        verbose_name = _("Tool, Language or Methodology")
-        verbose_name_plural = _("Tools, Languages and Methodologies")
+        verbose_name = _("Tool, language or methodology")
+        verbose_name_plural = _("Tools, languages and methodologies")
 
     class Kind(models.TextChoices):
         """Enumeration of Kind choices."""
 
-        TOOL = "tool", "Tool"
-        LANGUAGE = "language", "Language"
+        TOOL = "tool", "Computational tool"
+        LANGUAGE = "language", "Programming or data language"
         METHODOLOGY = "methodology", "Methodology"
 
     kind = models.CharField(max_length=12, choices=Kind, default=Kind.TOOL)
@@ -135,14 +137,20 @@ class Tool(SluggedModel):
 class Skill(SluggedModel):
     """Model for skills."""
 
+    class Meta:
+        """Meta options for Skill model."""
+
+        ordering = ("rank", "name")
+
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE)
     tools = models.ManyToManyField(
-        Tool,
+        ToolLanguageMethodology,
         blank=True,
-        verbose_name="tools, methodologies, behaviours and languages",
+        verbose_name="tools, languages and methodologies",
     )
     learning_resources = models.ManyToManyField(LearningResource, blank=True)
     related_skills = models.ManyToManyField("self", blank=True)
+    rank = models.PositiveSmallIntegerField(blank=True, default=1000)
 
     def __str__(self) -> str:
         """Return the name of the skill and the competency."""

@@ -13,11 +13,8 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
-from main.models import (
-    Skill,
-    SkillLevel,
-    UserSkill,
-)
+from main.models import Skill, SkillLevel, UserSkill
+from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import (
     BS4Mixin,
@@ -35,11 +32,14 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
     def _get_url(self):
         return reverse("index")
 
-    def test_provides_required_context(self, admin_client):
+    def test_provides_required_context(self, admin_client, skill_level):
         """Test the view provides skill_levels and sample_data context."""
         response = admin_client.get(self._get_url())
-        assert "skill_levels" in response.context
-        assert "sample_data" in response.context
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
+        assert response.context["skill_levels"] == json.dumps(
+            [{"level": skill_level.level, "name": skill_level.name}]
+        )
 
     @pytest.mark.django_db
     def test_navbar_contents(self, soup, auth_soup, admin_soup):
@@ -63,17 +63,27 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("li", "Framework"), class_="nav-item dropdown"
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Competencies framework"),
-            href=reverse("competencies"),
+            tag_with_text_filter("a", "Overview"),
+            href=reverse("framework_overview"),
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Skills and competencies"),
+            href=reverse("skills_and_competencies"),
         )
         assert framework_dropdown.find(
             tag_with_text_filter("a", "Skill levels"), href=reverse("skill_levels")
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Training resources"), href=reverse("training")
+            tag_with_text_filter("a", "Learning resources"),
+            href=reverse("learning_resources"),
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Roles and job profiles"), href=reverse("roles")
+            tag_with_text_filter("a", "Tools, languages and methodologies"),
+            href=reverse("tools_languages_methodologies"),
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Roles and career pathways"),
+            href=reverse("roles"),
         )
 
         # Community Dropdown
@@ -109,17 +119,17 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Update Profile"), href=reverse("profile")
+            tag_with_text_filter("a", "Update profile"), href=reverse("profile")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Change Password"),
+            tag_with_text_filter("a", "Change password"),
             href=reverse("password_change"),
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "Assess Skills"), href=reverse("self_assess")
+            tag_with_text_filter("a", "Assessment"), href=reverse("self_assess")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("a", "View Skills"), href=reverse("skill_profile")
+            tag_with_text_filter("a", "Skills profile"), href=reverse("skills_profile")
         )
         assert account_dropdown.find(
             tag_with_text_filter("form", "Sign out"), action=reverse("logout")
@@ -132,7 +142,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             admin_soup.find("header", class_="navbar")
             .find(tag_with_text_filter("div", "Hello,"), class_="dropdown")
             .find(
-                tag_with_text_filter("a", "Admin Backend"), href=reverse("admin:index")
+                tag_with_text_filter("a", "Admin backend"), href=reverse("admin:index")
             )
         )
 
@@ -140,7 +150,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
 class TestPrivacy(TemplateOkMixin):
     """Test suite for the privacy view."""
 
-    _template_name = "main/pages/privacy.html"
+    _template_name = "main/pages/policies/privacy.html"
 
     def _get_url(self):
         return reverse("privacy")
@@ -149,7 +159,7 @@ class TestPrivacy(TemplateOkMixin):
 class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the UserUpdateView."""
 
-    _template_name = "main/user_update_form.html"
+    _template_name = "main/user-update-form.html"
 
     def _get_url(self):
         return reverse("profile")
@@ -203,16 +213,50 @@ class TestAboutPageView(TemplateOkMixin, BS4Mixin):
 class TestTermsPageView(TemplateOkMixin):
     """Test suite for the TermsPageView."""
 
-    _template_name = "main/pages/terms.html"
+    _template_name = "main/pages/policies/terms.html"
 
     def _get_url(self):
         return reverse("terms")
 
 
+class TestTermsAcceptanceView(TemplateOkMixin, LoginRequiredMixin):
+    """Test suite for the terms acceptance view."""
+
+    _template_name = "main/terms_acceptance.html"
+
+    def _get_url(self):
+        return reverse("terms_acceptance")
+
+    def test_post_updates_user_and_redirects_to_overview(self, client, user):
+        """Test that posting acceptance updates user fields and redirects."""
+        user.agreed_to_tos = False
+        user.save(update_fields=["agreed_to_tos"])
+        client.force_login(user)
+
+        response = client.post(self._get_url(), data={"tos": True})
+
+        user.refresh_from_db()
+        assert user.agreed_to_tos is True
+        assert user.date_agreed is not None
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("account-overview")
+
+    def test_post_redirects_to_overview_without_next(self, client, user):
+        """Test that posting acceptance without next redirects to account overview."""
+        user.agreed_to_tos = False
+        user.save(update_fields=["agreed_to_tos"])
+        client.force_login(user)
+
+        response = client.post(self._get_url(), data={"tos": True})
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("account-overview")
+
+
 class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
     """Test suite for the SelfAssessPageView."""
 
-    _template_name = "main/user_self_assess.html"
+    _template_name = "main/user-self-assess.html"
 
     def _get_url(self):
         return reverse("self_assess")
@@ -254,53 +298,73 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
         assert response.url == reverse("self_assess")
 
 
+@pytest.mark.parametrize(
+    "url_name",
+    ["skills_profile", "self_assess", "profile", "account-overview"],
+)
+def test_unaccepted_users_are_redirected_to_terms_acceptance(client, user, url_name):
+    """Unaccepted users should be redirected from gated account pages."""
+    user.agreed_to_tos = False
+    user.save(update_fields=["agreed_to_tos"])
+    client.force_login(user)
+    target_url = reverse(url_name)
+
+    response = client.get(target_url)
+
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == reverse("terms_acceptance")
+
+
 class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
     """Test suite for the user skill profile view."""
 
-    _template_name = "main/user_skill_profile.html"
+    _template_name = "main/user-skills-profile.html"
 
     def _get_url(self):
-        return reverse("skill_profile")
+        return reverse("skills_profile")
 
-    def test_provides_required_context(self, admin_client):
+    def test_provides_required_context(self, admin_client, skill_level):
         """Test that the skill profile view send the correct context data."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
-        assert "user_data" in response.context
-        assert isinstance(response.context["user_data"], str)
-        assert "skill_levels" in response.context
-        assert isinstance(response.context["skill_levels"], str)
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
+        assert response.context["skill_levels"] == json.dumps(
+            [{"level": skill_level.level, "name": skill_level.name}]
+        )
 
     def test_skill_wheel_script(self, user_skill, auth_soup):
         """Test that the skill profile view contains the correct script."""
         card = auth_soup.find("div", class_="card-body")
 
-        assert card.find(tag_with_text_filter("h1", "Skills Wheel Visualisation"))
+        assert card.find(tag_with_text_filter("h1", "Skills profile"))
         assert card.find("div", id="dataviz_root")
 
+        skill_level_list = list(SkillLevel.objects.values("level", "name"))
         user_skill_dict = {
             "skill": user_skill.skill.name,
-            "category": user_skill.skill.competency.name,
+            "category": user_skill.skill.competency.competency_domain.name,
+            "subcategory": user_skill.skill.competency.name,
             "skill_level": user_skill.skill_level.level,
         }
-        assert card.find(
-            tag_with_text_filter(
-                "script", f"userDataLoadedFromContext = [{json.dumps(user_skill_dict)}]"
-            )
-        )
-        skill_level_list = list(
-            SkillLevel.objects.values("level", "name", "description")
-        )
+        chart_data = [{"user_id": "root", "user_data": [user_skill_dict]}]
+
         assert card.find(
             tag_with_text_filter(
                 "script",
-                f"skillLevelsLoadedFromContext = {json.dumps(skill_level_list)}",
+                f"const skillLevels = {json.dumps(skill_level_list)};",
             )
         )
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "main().RadialBarChart(",
+                f"const charts = {json.dumps(chart_data)};",
+            )
+        )
+        assert card.find(
+            tag_with_text_filter(
+                "script",
+                "renderRadialBarChart(target, charts[i].user_data, skillLevels);",
             )
         )
 
@@ -313,15 +377,15 @@ class TestRolesPageView(TemplateOkMixin):
     def _get_url(self):
         return reverse("roles")
 
-    def test_provides_required_context(self, admin_client):
+    def test_provides_required_context(self, admin_client, skill_level):
         """Test that the role profiles view renders the data visualization."""
         response = admin_client.get(self._get_url())
         assert response.status_code == 200
-        assert "sample_data" in response.context
-        assert isinstance(response.context["sample_data"], list)
-        assert "skill_levels" in response.context
-        assert isinstance(response.context["skill_levels"], list)
-        # TODO: Improve this test
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], list)
+        assert response.context["skill_levels"] == json.dumps(
+            [{"level": skill_level.level, "name": skill_level.name}]
+        )
 
 
 class TestSkillLevelsPageView(TemplateOkMixin):
@@ -333,13 +397,38 @@ class TestSkillLevelsPageView(TemplateOkMixin):
         return reverse("skill_levels")
 
 
-class TestTrainingPageView(TemplateOkMixin):
-    """Test suite for the TrainingPageView."""
+class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
+    """Test suite for the LearningResourcesPageView."""
 
-    _template_name = "main/pages/training.html"
+    _template_name = "main/pages/learning-resources.html"
 
     def _get_url(self):
-        return reverse("training")
+        return reverse("learning_resources")
+
+    @pytest.mark.django_db
+    def test_page_content(self, learning_resource, skill, soup):
+        """Test that the learning page contains a table with learning resources."""
+        assert "Learning resources" == soup.find("h1").text
+
+        table = soup.find("table")
+        thead = table.find("thead")
+        assert thead.find(tag_with_text_filter("th", "Name"), class_="asc orderable")
+        assert thead.find(tag_with_text_filter("th", "Language"), class_="orderable")
+        assert thead.find(tag_with_text_filter("th", "Provider"), class_="orderable")
+        assert thead.find(tag_with_text_filter("th", "Skills"))
+        tr = table.find("tbody").find("tr", class_="even")
+        assert tr.find(
+            tag_with_text_filter("a", "Learning Resource"), href=learning_resource.url
+        )
+        assert tr.find(tag_with_text_filter("span", "English"), class_="badge")
+        assert tr.find(
+            tag_with_text_filter("a", "Provider"), href=learning_resource.provider.url
+        )
+        assert tr.find(
+            tag_with_text_filter("a", "Skill"),
+            class_="btn",
+            href=reverse("skill_detail", args=(skill.slug,)),
+        )
 
 
 class TestGetInvolvedPageView(TemplateOkMixin):
@@ -387,16 +476,16 @@ class TestAccountOverviewView(LoginRequiredMixin):
 
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("skill_profile")
+        assert response.url == reverse("skills_profile")
 
 
-class TestCompetenciesPageView(TemplateOkMixin):
-    """Test suite for the CompetenciesPageView."""
+class TestSkillsAndCompetenciesPageView(TemplateOkMixin):
+    """Test suite for the SkillsAndCompetenciesPageView."""
 
-    _template_name = "main/pages/competencies.html"
+    _template_name = "main/pages/skills-and-competencies.html"
 
     def _get_url(self):
-        return reverse("competencies")
+        return reverse("skills_and_competencies")
 
     @pytest.mark.django_db
     def test_provides_required_context(self, client, competency_domain):
@@ -435,3 +524,53 @@ class TestSkillPageView(TemplateOkMixin):
         """Test that requesting a non-existent skill returns a 404."""
         response = client.get(self._get_url(slug="nonexistent-skill"))
         assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_extract_and_combine_roles():
+    """Test the _extract_and_combine_roles function."""
+    data = _extract_and_combine_roles(
+        ["./tests/data/example_role.json", "./tests/data/example_role.json"]
+    )
+
+    assert isinstance(data, list)
+    assert len(data) == 2
+    assert isinstance(data[0], dict)
+    assert data[0]["name"] == "User 1"
+    assert data[0]["user_data"][0]["skill"] == "Skill 1"
+    assert data[1]["user_data"][1]["category"] == "Category 2"
+
+
+class TestFrameworkOverviewPageView(TemplateOkMixin):
+    """Test suite for the FrameworkOverviewPageView."""
+
+    _template_name = "main/pages/framework-overview.html"
+
+    def _get_url(self):
+        return reverse("framework_overview")
+
+
+class TestGovernancePageView(TemplateOkMixin):
+    """Test suite for the GovernancePageView."""
+
+    _template_name = "main/pages/policies/governance.html"
+
+    def _get_url(self):
+        return reverse("governance")
+
+
+class TestLicensingPageView(TemplateOkMixin):
+    """Test suite for the LicensingPageView."""
+
+    _template_name = "main/pages/policies/licensing.html"
+
+    def _get_url(self):
+        return reverse("licensing")
+
+
+class TestViewSkillProfilePageView(TemplateOkMixin):
+    """Test suite for the ViewSkillProfilePageView."""
+
+    _template_name = "main/shared-skills-profile.html"
+
+    def _get_url(self):
+        return reverse("view_skill_profile")

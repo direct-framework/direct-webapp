@@ -15,9 +15,12 @@ dependencies = [
     "crispy-bootstrap5",
     "gunicorn",
     "whitenoise",
-    "mysqlclient",
     "django-import-export",
-    "django-multiselectfield"
+    "django-multiselectfield",
+    "django-tables2",
+    "markdown",
+    "nh3",
+    "requests"
 ]
 
 [project.optional-dependencies]
@@ -33,7 +36,12 @@ dev = [
     "django-stubs[compatible-mypy]",
     "djlint",
     "types-django-import-export",
+    "types-Markdown",
+    "types-requests",
     "beautifulsoup4",
+]
+prod = [
+    "mysqlclient",
 ]
 doc = [
     "mkdocs<2",
@@ -77,6 +85,14 @@ follow_untyped_imports = true
 [[tool.mypy.overrides]]
 module = ["multiselectfield.*"]
 follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["django_registration.*"]
+follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["django_tables2.*"]
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["main.io_resources"]
