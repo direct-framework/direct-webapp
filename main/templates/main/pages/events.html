@@ -42,9 +42,7 @@
                                         </div>
                                         <div class="col-md-9">
                                             <div class="card-body">
-                                                <h4 class="card-title mb-2">
-                                                    {{ event.title }}
-                                                </h4>
+                                                <h4 class="card-title mb-2">{{ event.title }}</h4>
                                                 <p class="card-text text-body-secondary small mb-2">
                                                     <i class="fa-solid fa-calendar-days me-2"></i>{{ event.start_date }}
                                                     {% if event.end_date and event.end_date != event.start_date %}– {{ event.end_date }}{% endif %}

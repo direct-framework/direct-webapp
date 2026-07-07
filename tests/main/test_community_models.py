@@ -21,7 +21,5 @@ def test_event_model(event: Event) -> None:
 @pytest.mark.django_db
 def test_event_ordering(event: Event) -> None:
     """Test that events are ordered by most recent start date first."""
-    earlier_event = Event.objects.create(
-        title="Earlier Event", start_date="2023-01-01"
-    )
+    earlier_event = Event.objects.create(title="Earlier Event", start_date="2023-01-01")
     assert list(Event.objects.all()) == [event, earlier_event]
