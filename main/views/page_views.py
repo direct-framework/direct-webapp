@@ -316,7 +316,7 @@ class LicensingPageView(GitHubMarkdownPageView):
     unavailable_message = "Licensing document is temporarily unavailable."
 
     github_raw_url = (
-        "https://raw.githubusercontent.com/direct-framework/.github/main/LICENSING.md"
+        "https://raw.githubusercontent.com/direct-framework/.github/main/LICENSE.md"
     )
 
 
