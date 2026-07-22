@@ -1,0 +1,44 @@
+{% extends "main/base.page.html" %}
+{% block body_class %}
+    bg-secondary
+{% endblock body_class %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load django_bootstrap5 %}
+{% block title %}
+    Digital Research Competencies Framework
+{% endblock title %}
+{% block content %}
+    <!-- Page container -->
+    <section id="skill-profile" class="container">
+        <div class="row pt-sm-2 pt-lg-0">
+            <!-- Page content -->
+            <div class="col-lg-9 pb-2 pb-sm-4">
+                <section class="card border-0 mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-8">
+                                <h1>Shared Skills profile</h1>
+                            </div>
+                            <div class="col-4 text-md-end justify-content-end">
+                                <!-- Share dropdown -->
+                                {% include "main/snippets/share_skill_profile_dropdown.html" %}
+                            </div>
+                            <p class="lead">
+                                Explore a shared skill level profile in the Digital Research Competencies Framework
+                                using the interactive Skills Wheel. Each segment represents a competency,
+                                with size according to the self-assessed level.
+                            </p>
+                            <div id="dataviz_root" style="width:100%"></div>
+                            {% if error_message %}
+                                <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+                            {% else %}
+                                {% include "main/snippets/skill-wheel.html" %}
+                            {% endif %}
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

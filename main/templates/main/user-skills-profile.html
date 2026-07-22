@@ -24,16 +24,24 @@
             <div class="col-lg-9 pb-2 pb-sm-4">
                 <section class="card border-0 mb-4">
                     <div class="card-body">
-                        <h1>Skills profile</h1>
-                        <p class="lead">
-                            Explore your skill levels in the Digital Research Competencies Framework
-                            using the interactive Skills Wheel. Each segment represents a competency,
-                            with size according to your self-assessed level.
-                        </p>
-                        <div id="dataviz_root" style="width:100%"></div>
-                        {% include "main/snippets/skill-wheel.html" %}
-                    </div>
-                </section>
+                        <div class="row">
+                            <div class="col-8">
+                                <h1>Skills profile</h1>
+                            </div>
+                            <div class="col-4 text-md-end justify-content-end">
+                                <!-- Share dropdown -->
+                                {% include "main/snippets/share_skill_profile_dropdown.html" %}
+                            </div>
+                            <p class="lead">
+                                Explore your skill levels in the Digital Research Competencies Framework
+                                using the interactive Skills Wheel. Each segment represents a competency,
+                                with size according to your self-assessed level.
+                            </p>
+                            <div id="dataviz_root" style="width:100%"></div>
+                            {% include "main/snippets/skill-wheel.html" %}
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
     </section>

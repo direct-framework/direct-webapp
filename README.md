@@ -30,11 +30,13 @@ This Django project uses:
 
 - [x] Initial research
 - [x] Initial development <-- We are here
-- [ ] Minimum viable product
-- [ ] Alpha release
+- [x] Minimum viable product
+- [x] Alpha release
 - [ ] Feature-complete release
 
 ## Installation
+
+You must have **Python version 3.12 or later** installed.
 
 To get started:
 
@@ -63,7 +65,19 @@ To get started:
    pre-commit install
    ```
 
-5. Run the webapp:
+5. First-time database setup:
+
+   Before running the server for the first time, initialise the database tables as follows:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+   If you run into the following error, then you've missed this step:
+
+   `django.db.utils.OperationalError: no such table: main_skilllevel`
+
+6. Run the webapp:
 
    ```bash
    python manage.py runserver
@@ -81,22 +95,22 @@ To get started:
 
    then restart it.
 
-6. Run the tests:
+7. Run the tests:
 
    ```bash
    pytest
    ```
 
-7. Create an admin account to access admin backend:
+8. Create an admin account to access admin backend:
 
    ```bash
    python manage.py createsuperuser
    ```
 
-8. To populate the db with Categories and Skills from a yaml or json version of the framework
+9. Populate the database using a snapshot of v2.0 of the framework (this is not necessarily the latest live version, so this is only used for development).
 
    ```bash
-   python -m scripts.populate_db [-j data.json]|[-y data.yaml]
+   python manage.py loaddata direct_webapp/fixtures/framework-2-0.json
    ```
 
 ### Installation with Docker
@@ -143,45 +157,16 @@ Versions can be restricted from updating within the `pyproject.toml` using stand
 
 [`pip-tools`]: https://pip-tools.readthedocs.io/en/latest/
 
-## Working with NPM
+## Frontend Node
 
 This project includes an NPM-based setup for managing front-end assets like styles, scripts, and other resources. The `package.json` file contains predefined scripts to help with building and managing assets. You don't need to run these NPM commands if you are developing the Django app locally. You should only run these commands when needed, for example if you are changing javascript dependencies or modifying SCSS files.
 
-### Prerequisites
+See [Frontend Node](node/README.md) for details on working with the NPM-based frontend asset pipeline.
 
-Ensure you have Node.js (v16 or higher) and NPM installed. You can verify their installation with:
+## Acknowledgements
 
-```bash
-npm version
-```
-
-### Installing Dependencies
-
-After cloning the repository, navigate to the project directory and install the required NPM dependencies:
-
-```bash
-npm install
-```
-
-### Building all frontend assets
-
-To build all styles, scripts, and vendor files, run:
-
-```bash
-npm run build
-```
-
-The above script performs all the following tasks, which are available as individual commands:
-
-- **Build Expanded Styles**: `npm run styles:expanded` (builds expanded human-readable css files)
-- **Build Minified Styles**: `npm run styles:minified` (builds minified css files, optimised for production)
-- **Build Expanded Scripts**: `npm run scripts:expanded` (builds expanded human-readable javascript files)
-- **Build Minified Scripts**: `npm run scripts:minified` (builds minified javascript files, optimised for production)
-- **Build Vendor Files**: `npm run vendor` (bundles and optimises third-party libraries)
-
-```bash
-npm run styles:expanded
-```
+_This work was supported by the [DisCouRSE Network+](https://discourse-network.github.io/), which received funding through the UKRI
+Digital Research Infrastructure Programme_
 
 ## Contributors
 
@@ -193,7 +178,7 @@ npm run styles:expanded
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://horsfall.dev"><img src="https://avatars.githubusercontent.com/u/1079934?v=4?s=100" width="100px;" alt="Dave Horsfall"/><br /><sub><b>Dave Horsfall</b></sub></a><br /><a href="#design-davehorsfall" title="Design">🎨</a> <a href="#code-davehorsfall" title="Code">💻</a> <a href="#projectManagement-davehorsfall" title="Project Management">📆</a> <a href="#maintenance-davehorsfall" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/AdrianDAlessandro"><img src="https://avatars.githubusercontent.com/u/40875798?v=4?s=100" width="100px;" alt="Adrian D'Alessandro"/><br /><sub><b>Adrian D'Alessandro</b></sub></a><br /><a href="#design-AdrianDAlessandro" title="Design">🎨</a> <a href="#code-AdrianDAlessandro" title="Code">💻</a> <a href="#test-AdrianDAlessandro" title="Tests">⚠️</a> <a href="#maintenance-AdrianDAlessandro" title="Maintenance">🚧</a> <a href="#projectManagement-AdrianDAlessandro" title="Project Management">📆</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TinyMarsh"><img src="https://avatars.githubusercontent.com/u/13540127?v=4?s=100" width="100px;" alt="Ryan"/><br /><sub><b>Ryan</b></sub></a><br /><a href="#code-TinyMarsh" title="Code">💻</a> <a href="#infra-TinyMarsh" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#tool-TinyMarsh" title="Tools">🔧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TinyMarsh"><img src="https://avatars.githubusercontent.com/u/13540127?v=4?s=100" width="100px;" alt="Ryan"/><br /><sub><b>Ryan</b></sub></a><br /><a href="#code-TinyMarsh" title="Code">💻</a> <a href="#infra-TinyMarsh" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#tool-TinyMarsh" title="Tools">🔧</a> <a href="#maintenance-TinyMarsh" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tdjames1"><img src="https://avatars.githubusercontent.com/u/10053102?v=4?s=100" width="100px;" alt="T D James"/><br /><sub><b>T D James</b></sub></a><br /><a href="#code-tdjames1" title="Code">💻</a> <a href="#test-tdjames1" title="Tests">⚠️</a> <a href="#maintenance-tdjames1" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/connoraird"><img src="https://avatars.githubusercontent.com/u/61978554?v=4?s=100" width="100px;" alt="Connor Aird"/><br /><sub><b>Connor Aird</b></sub></a><br /><a href="#code-connoraird" title="Code">💻</a> <a href="#test-connoraird" title="Tests">⚠️</a> <a href="#maintenance-connoraird" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://personalpages.manchester.ac.uk/staff/Andrew.Gait/"><img src="https://avatars.githubusercontent.com/u/13529420?v=4?s=100" width="100px;" alt="Andrew Gait"/><br /><sub><b>Andrew Gait</b></sub></a><br /><a href="#ideas-andrewgait" title="Ideas, Planning, & Feedback">🤔</a> <a href="#code-andrewgait" title="Code">💻</a></td>
@@ -215,6 +200,12 @@ npm run styles:expanded
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/GeoDaoyu"><img src="https://avatars.githubusercontent.com/u/34641603?v=4?s=100" width="100px;" alt="geodaoyu"/><br /><sub><b>geodaoyu</b></sub></a><br /><a href="#code-geodaoyu" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/cc-a"><img src="https://avatars.githubusercontent.com/u/16690296?v=4?s=100" width="100px;" alt="Christopher Cave-Ayland"/><br /><sub><b>Christopher Cave-Ayland</b></sub></a><br /><a href="#maintenance-cc-a" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Sahil590"><img src="https://avatars.githubusercontent.com/u/56438860?v=4?s=100" width="100px;" alt="Sahil Raja"/><br /><sub><b>Sahil Raja</b></sub></a><br /><a href="#maintenance-sahil590" title="Maintenance">🚧</a> <a href="#test-sahil590" title="Tests">⚠️</a> <a href="#code-sahil590" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Max-Gamill"><img src="https://avatars.githubusercontent.com/u/91465918?v=4?s=100" width="100px;" alt="Max Gamill"/><br /><sub><b>Max Gamill</b></sub></a><br /><a href="#code-max-gamill" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://kevinrue.github.io/"><img src="https://avatars.githubusercontent.com/u/5769108?v=4?s=100" width="100px;" alt="Kevin Rue-Albrecht"/><br /><sub><b>Kevin Rue-Albrecht</b></sub></a><br /><a href="#code-kevinrue" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mjademitchell"><img src="https://avatars.githubusercontent.com/u/242165951?v=4?s=100" width="100px;" alt="mjademitchell"/><br /><sub><b>mjademitchell</b></sub></a><br /><a href="#code-mjademitchell" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/elichad"><img src="https://avatars.githubusercontent.com/u/20683271?v=4?s=100" width="100px;" alt="Eli Chadwick"/><br /><sub><b>Eli Chadwick</b></sub></a><br /><a href="#code-elichad" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

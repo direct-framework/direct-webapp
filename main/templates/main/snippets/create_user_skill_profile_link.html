@@ -1,0 +1,37 @@
+<!-- This template implements a share user profile link
+ It works by storing the users skill profile in the url query parameters which can then be
+ viewed in a read only non logged in view. This allows users to share their skill profile
+ with others without requiring them to log in or create an account.
+
+
+To use add a button with the class "export-skill-profile-link" to the page and include the following script at the end of the page.
+"{ % include "main/snippets/create_user_skill_profile_link.html" %}"
+
+-->
+<script>
+  // On document load we convert the skill levels and chart data into a query string and set it as the href of the export link.
+  document.addEventListener('DOMContentLoaded', function () {
+    const exportSkillProfileLink = document.querySelector('.export-skill-profile-link');
+    const exportSkillProfileLinkCopyButton = document.querySelector('.export-skill-profile-link-copy');
+    const skillLevels = {{ skill_levels|safe }};
+    const charts = {{ chart_data|safe }};
+
+    const queryParams = new URLSearchParams();
+    // We probably don't need to add skill levels to the query params as they can be derived from the chart data,
+    // but we include them for completeness.
+    queryParams.set('skill_levels', JSON.stringify(skillLevels));
+    queryParams.set('chart_data', JSON.stringify(charts));
+
+    const shareableLink = `${window.location.origin}/view_skill_profile?${queryParams.toString()}`;
+    exportSkillProfileLink.href = shareableLink;
+    exportSkillProfileLinkCopyButton.href = shareableLink;
+    exportSkillProfileLinkCopyButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      navigator.clipboard.writeText(shareableLink).then(function() {
+        alert('Shareable link copied to clipboard!');
+      }, function(err) {
+        console.error('Could not copy text: ', err);
+      });
+    });
+  });
+</script>

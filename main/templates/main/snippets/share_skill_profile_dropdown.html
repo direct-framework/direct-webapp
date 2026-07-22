@@ -1,0 +1,30 @@
+<!-- Share dropdown -->
+<div class="dropdown nav d-none d-sm-block order-lg-3  justify-content-end">
+    <li class="nav-item d-flex align-items-center justify-content-end">
+        <a class="nav-link dropdown-toggle justify-content-end"
+           href="#"
+           data-bs-toggle="dropdown"
+           data-bs-auto-close="outside"
+           aria-expanded="false">Share</a>
+        <ul class="dropdown-menu">
+            <li>
+                <a class="dropdown-item export-skill-profile-link"
+                   id="shareable-link"
+                   href="#"
+                   target="_blank"
+                   rel="noopener noreferrer">Open Link <i aria-label="Copy sharable link" class="fa-solid fa-link"></i></a>
+            </li>
+            <li>
+                <button class="dropdown-item export-skill-profile-link-copy"
+                        id="copy-link-button">
+                    Copy Link <i aria-label="Copy sharable link" class="fa-solid fa-copy"></i>
+                </button>
+                {% include "main/snippets/create_user_skill_profile_link.html" %}
+            </li>
+            <li>
+                <button class="dropdown-item export-skill-profile" href="#">Export as CSV</button>
+                {% include "main/snippets/export_user_skill_profile.html" %}
+            </li>
+        </ul>
+    </li>
+</div>

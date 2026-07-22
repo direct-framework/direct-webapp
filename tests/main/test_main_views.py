@@ -78,7 +78,12 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             href=reverse("learning_resources"),
         )
         assert framework_dropdown.find(
-            tag_with_text_filter("a", "Roles & career pathways"), href=reverse("roles")
+            tag_with_text_filter("a", "Tools, languages and methodologies"),
+            href=reverse("tools_languages_methodologies"),
+        )
+        assert framework_dropdown.find(
+            tag_with_text_filter("a", "Roles and career pathways"),
+            href=reverse("roles"),
         )
 
         # Community Dropdown
@@ -415,13 +420,13 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
         assert tr.find(
             tag_with_text_filter("a", "Learning Resource"), href=learning_resource.url
         )
-        assert tr.find(tag_with_text_filter("td", "English"))
+        assert tr.find(tag_with_text_filter("span", "English"), class_="badge")
         assert tr.find(
             tag_with_text_filter("a", "Provider"), href=learning_resource.provider.url
         )
         assert tr.find(
             tag_with_text_filter("a", "Skill"),
-            class_="badge",
+            class_="btn",
             href=reverse("skill_detail", args=(skill.slug,)),
         )
 
@@ -537,9 +542,36 @@ def test_extract_and_combine_roles():
 
 
 class TestFrameworkOverviewPageView(TemplateOkMixin):
-    """Test suite for the GetInvolvedPageView."""
+    """Test suite for the FrameworkOverviewPageView."""
 
     _template_name = "main/pages/framework-overview.html"
 
     def _get_url(self):
         return reverse("framework_overview")
+
+
+class TestGovernancePageView(TemplateOkMixin):
+    """Test suite for the GovernancePageView."""
+
+    _template_name = "main/pages/policies/governance.html"
+
+    def _get_url(self):
+        return reverse("governance")
+
+
+class TestLicensingPageView(TemplateOkMixin):
+    """Test suite for the LicensingPageView."""
+
+    _template_name = "main/pages/policies/licensing.html"
+
+    def _get_url(self):
+        return reverse("licensing")
+
+
+class TestViewSkillProfilePageView(TemplateOkMixin):
+    """Test suite for the ViewSkillProfilePageView."""
+
+    _template_name = "main/shared-skills-profile.html"
+
+    def _get_url(self):
+        return reverse("view_skill_profile")

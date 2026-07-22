@@ -22,6 +22,11 @@ framework_patterns = [
         views.LearningResourcesPageView.as_view(),
         name="learning_resources",
     ),
+    path(
+        "tools-languages-methodologies/",
+        views.ToolsLanguagesMethodologiesPageView.as_view(),
+        name="tools_languages_methodologies",
+    ),
     path("roles/", views.RolesPageView.as_view(), name="roles"),
     path("skills/<slug:slug>/", views.SkillPageView.as_view(), name="skill_detail"),
 ]
@@ -61,4 +66,9 @@ urlpatterns = [
     path("get-involved/", views.GetInvolvedPageView.as_view(), name="get_involved"),
     path("events/", views.EventsPageView.as_view(), name="events"),
     path("framework-json/", views.FrameworkView.as_view(), name="framework_json"),
+    path(
+        "view_skill_profile/",
+        views.ViewSkillProfilePageView.as_view(),
+        name="view_skill_profile",
+    ),
 ]

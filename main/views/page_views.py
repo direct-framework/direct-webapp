@@ -25,7 +25,7 @@ from ..models import (
     SkillLevel,
     ToolLanguageMethodology,
 )
-from ..tables import LearningResourcesTable
+from ..tables import LearningResourceTable, ToolLanguageMethodologyTable
 
 logger = logging.getLogger(__name__)
 
@@ -102,8 +102,16 @@ class LearningResourcesPageView(SingleTableView):
     """View that renders the page with all learning resources."""
 
     model = LearningResource
-    table_class = LearningResourcesTable
+    table_class = LearningResourceTable
     template_name = "main/pages/learning-resources.html"
+
+
+class ToolsLanguagesMethodologiesPageView(SingleTableView):
+    """View that renders the page with all tools, languages and methodologies."""
+
+    model = ToolLanguageMethodology
+    table_class = ToolLanguageMethodologyTable
+    template_name = "main/pages/tools-languages-methodologies.html"
 
 
 class GetInvolvedPageView(TemplateView):
@@ -285,5 +293,28 @@ class LicensingPageView(GitHubMarkdownPageView):
     unavailable_message = "Licensing document is temporarily unavailable."
 
     github_raw_url = (
-        "https://raw.githubusercontent.com/direct-framework/.github/main/LICENSING.md"
+        "https://raw.githubusercontent.com/direct-framework/.github/main/LICENSE.md"
     )
+
+
+class ViewSkillProfilePageView(TemplateView):
+    """View that renders a shared skill profile based on query parameters."""
+
+    template_name = "main/shared-skills-profile.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+        """Add skill profile data from query parameters to the context."""
+        context = super().get_context_data(**kwargs)
+
+        chart_data_json = nh3.clean(self.request.GET.get("chart_data", "[]"))
+        skill_levels_json = nh3.clean(self.request.GET.get("skill_levels", "[]"))
+
+        try:
+            context["chart_data"] = json.loads(chart_data_json)
+            context["skill_levels"] = json.loads(skill_levels_json)
+        except json.JSONDecodeError:
+            context["chart_data"] = []
+            context["skill_levels"] = []
+            context["error_message"] = "Invalid data provided in query parameters."
+
+        return context

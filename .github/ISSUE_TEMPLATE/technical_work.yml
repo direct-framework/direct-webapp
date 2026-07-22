@@ -1,0 +1,29 @@
+name: Technical work
+description: Technical work that needs to be done to complete work on a (large) user story or feature
+title: '[TECHNICAL] <title>'
+labels: [technical]
+body:
+  - type: textarea
+    attributes:
+      label: Related user story or feature
+      description: Links to the user story or feature issue this technical work is related to.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Description
+      description: A clear and concise description of what you plan to do in this technical work and why it's needed.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Implementation approach (if known)
+      description: Optional. Describe your planned approach to solving this technical work.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Add any other context, diagrams, or references about the technical work here.
+    validations:
+      required: false
