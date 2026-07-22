@@ -1,27 +1,75 @@
 {% extends "main/base.html" %}
 {% load static %}
 {% load django_bootstrap5 %}
-{% block title %}
-    Digital Research Competencies Framework
-{% endblock title %}
+<!--{% block title %}-->
+<!--DIgital REsearch CompeTencies Framework-->
+<!--{% endblock title %}-->
 {% block content %}
     <!-- Hero -->
+    <!--    {% include "main/snippets/hero.html" %}-->
     {% include "main/snippets/hero.html" %}
     <!-- Features grid -->
     <section class="container pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
+        <h2 class="h1 text-center pt-2 pt-sm-3 pt-md-4 pb-sm-2 pb-lg-3 mt-lg-2 mx-auto"
+            style="max-width: 740px">Chart and manage professional development with skill profiles</h2>
         <div class="row pt-2 pt-md-4 pt-lg-3 pt-xl-4 g-4 g-sm-3 g-md-4">
-            <div class="col-lg-8 order-lg-1">
-                <div class="d-md-flex h-100 bg-primary rounded-5 overflow-hidden px-4 px-sm-5 pt-5 pb-5">
-                    <div class="d-md-flex row">
-                        <div class="text-center text-md-start pe-sm-3 col-5">
-                            <h2 class="h1 text-white pb-2 pb-md-3 mb-lg-4 col-4">Track and manage your professional development</h2>
+            <div class="col-lg-8 order-lg-2">
+                <div class="d-md-flex h-100 bg-primary rounded-5 overflow-hidden px-4 px-sm-5 pt-5">
+                    <div class="d-md-flex px-2 px-sm-0 px-xl-2 px-xxl-4 pt-xl-3">
+                        <div class="text-center text-md-start pe-md-5 pb-3 pb-md-0 me-xxl-3 mb-4 md-0">
+                            <h2 class="text-white pb-2 pb-md-3 mb-lg-4">How does it work?</h2>
                             <a class="btn btn-icon btn-xl btn-warning rounded-circle"
                                href="#"
                                data-bs-toggle="modal"
                                data-bs-target="#videoModal"
                                aria-label="Play video">
-                                <i class="fa-solid fa-play fs-lg"></i>
+                                <i class="fa-solid fa-play"></i>
                             </a>
+                        </div>
+                        <div class="w-100 flex-md-shrink-0 mx-auto" style="max-width: 472px;">
+                            <img src="{% static 'assets/img/landing/skills-wheel-usage.png' %}"
+                                 alt="Skills wheel example"
+                                 class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 order-lg-1">
+                <div class="card border-0 bg-secondary h-100 py-lg-2 py-xl-4">
+                    <div class="card-body">
+                        <h3>Chart and manage professional development</h3>
+                        <p>Create individual skill profiles.</p>
+                        <a class="btn btn-lg btn-primary" href="{% url 'self_assess' %}">Create
+                        a skills profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Features grid -->
+    <section class="container pt-5 mt-lg-3 mt-xl-4 mt-xxl-5 mb-5">
+        <h2 class="h1 text-center pt-2 pt-sm-3 pt-md-4 pb-sm-2 pb-lg-3 mt-lg-2 mx-auto"
+            style="max-width: 740px">Explore roles and career profiles</h2>
+        <div class="row pt-2 pt-md-4 pt-lg-3 pt-xl-4 g-4 g-sm-3 g-md-4">
+            <div class="col-lg-8 order-lg-2">
+                <div class="d-md-flex h-100 bg-secondary rounded-5 overflow-hidden px-4 px-sm-5 pt-5 pb-5">
+                    <div class="d-md-flex row">
+                        <div class="text-center text-md-start pe-sm-3 col-5">
+                            <h3>Plan your career</h3>
+                            <ul class="list-unstyled d-flex flex-wrap mb-0">
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Define roles and structured career pathways
+                                </li>
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Support specialities, good practices, and community values
+                                </li>
+                                <li class="d-flex text-body py-1 me-4">
+                                    <i class="fa-solid fa-check fs-lg text-primary me-2"></i>
+                                    Enable organisations to build stronger, more inclusive teams
+                                </li>
+                            </ul>
                         </div>
                         <div class="col">
                             <img src="{% static 'assets/img/landing/workshop-breakout.webp' %}"
@@ -33,37 +81,15 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-4 order-lg-2">
+            <div class="col-sm-6 col-lg-4 order-lg-1">
                 <div class="card border-0 bg-secondary h-100 py-lg-2 py-xl-4 text-center">
                     <div class="card-body">
-                        <h3>A framework for success</h3>
-                        <p class="mb-4">
-                            The DIRECT Framework is a community model that defines the knowledge, skills, and behaviours that individuals need to attain to succeed in research software roles.
-                        </p>
-                        <a class="btn btn-lg btn-primary"
-                           href="{% url 'skills_and_competencies' %}">View Framework</a>
+                        <h3>Building a stronger future for digital research</h3>
+                        <p class="mb-4">Browser a variety of roles across digital research themes</p>
+                        <a class="btn btn-lg btn-primary" href="{% url 'roles' %}">Explore
+                        roles</a>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-    <!-- Features list -->
-    <section class="container pt-5 pb-4 mb-2 my-lg-3 my-xl-4 my-xxl-5">
-        <div class="row justify-content-center pt-2 pt-sm-3 pt-md-4 mt-lg-2 pb-lg-2 pb-xl-0">
-            <div class="col-sm-11 col-md-9 col-lg-8 col-xl-7 col-xxl-6 text-center">
-                <h2 class="h1 mb-0"></h2>
-            </div>
-        </div>
-        <div class="col-md-6 col-xl-5 order-md-1 pt-xl-2"
-             data-aos="fade-up"
-             data-aos-duration="850"
-             data-aos-offset="200"
-             data-disable-parallax-down="md">
-            <div class="pe-md-3 pe-xl-0">
-                <h3 class="h2 mb-lg-4">A competencies framework for Digital Research Technical Professionals</h3>
-                <p class="mb-0">
-                    The DIRECT Framework is a community resource to support dRTPs (Digital Research Technical Professionals) in tracking and managing their professional development.
-                </p>
             </div>
         </div>
     </section>
@@ -77,6 +103,7 @@
                                 src=""
                                 title="YouTube video"
                                 allow="autoplay; encrypted-media"
+                                referrerpolicy="strict-origin-when-cross-origin"
                                 allowfullscreen></iframe>
                     </div>
                 </div>
@@ -86,7 +113,7 @@
     <script>
     const videoModal = document.getElementById('videoModal');
     const iframe = document.getElementById('videoFrame');
-    const videoUrl = "https://www.youtube.com/embed/NpQFhwqBgg4?autoplay=1";
+    const videoUrl = "https://www.youtube-nocookie.com/embed/NpQFhwqBgg4?autoplay=1";
 
     // Load video when modal opens
     videoModal.addEventListener('shown.bs.modal', function () {
