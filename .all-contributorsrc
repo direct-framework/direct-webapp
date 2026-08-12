@@ -247,6 +247,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ens-lgil",
+      "name": "Laurent Gil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6085223?v=4",
+      "profile": "https://github.com/ens-lgil",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
