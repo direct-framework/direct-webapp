@@ -206,6 +206,7 @@ Digital Research Infrastructure Programme_
       <td align="center" valign="top" width="14.28%"><a href="http://kevinrue.github.io/"><img src="https://avatars.githubusercontent.com/u/5769108?v=4?s=100" width="100px;" alt="Kevin Rue-Albrecht"/><br /><sub><b>Kevin Rue-Albrecht</b></sub></a><br /><a href="#code-kevinrue" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mjademitchell"><img src="https://avatars.githubusercontent.com/u/242165951?v=4?s=100" width="100px;" alt="mjademitchell"/><br /><sub><b>mjademitchell</b></sub></a><br /><a href="#code-mjademitchell" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/elichad"><img src="https://avatars.githubusercontent.com/u/20683271?v=4?s=100" width="100px;" alt="Eli Chadwick"/><br /><sub><b>Eli Chadwick</b></sub></a><br /><a href="#code-elichad" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ens-lgil"><img src="https://avatars.githubusercontent.com/u/6085223?v=4?s=100" width="100px;" alt="Laurent Gil"/><br /><sub><b>Laurent Gil</b></sub></a><br /><a href="#code-ens-lgil" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
