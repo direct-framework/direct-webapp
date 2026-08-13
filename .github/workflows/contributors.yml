@@ -10,6 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: All Contributors Auto Action
-        uses: JoshuaKGoldberg/all-contributors-auto-action@v0.6.0
+        uses: JoshuaKGoldberg/all-contributors-auto-action@v0.6.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
