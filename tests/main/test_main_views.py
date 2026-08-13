@@ -448,12 +448,13 @@ class TestEventsPageView(TemplateOkMixin):
     def _get_url(self):
         return reverse("events")
 
+    @pytest.mark.django_db
     def test_provides_required_context(self, client):
         """Test that the events view provides the events context."""
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.OK
         assert "events" in response.context
-        assert isinstance(response.context["events"], list)
+        assert isinstance(response.context["events"], QuerySet)
 
 
 class TestAccountOverviewView(LoginRequiredMixin):

@@ -5,6 +5,7 @@ import pytest
 from main.models import (
     Competency,
     CompetencyDomain,
+    Event,
     LearningResource,
     Provider,
     Skill,
@@ -103,3 +104,18 @@ def skill_level() -> SkillLevel:
 def user_skill(user, skill: Skill, skill_level: SkillLevel) -> UserSkill:
     """Fixture for creating a UserSkill instance."""
     return UserSkill.objects.create(user=user, skill=skill, skill_level=skill_level)
+
+
+@pytest.fixture
+def event() -> Event:
+    """Fixture for creating an Event instance."""
+    return Event.objects.create(
+        title="Collaborations Workshop",
+        start_date="2026-04-01",
+        end_date="2026-04-02",
+        location="Manchester",
+        description="A workshop about the framework.",
+        event_link="https://example.com/event",
+        blog="https://example.com/blog",
+        contributors="Test Contributor",
+    )
