@@ -1,14 +1,14 @@
-<!-- This template implements an export button to export the current user's skill profile as a CSV file.
- It works on the skill profile page.
+<!-- This template implements an export button to export the current user's skill profile as a CSV or json file.
 
 
-To use add a button with the class "export-skill-profile" to the page and include the following script at the end of the page.
-"{ % include "main/snippets/export_user_skill_profile.html" %}"
+To use add a button with the class `export-skill-profile-csv` and `export-skill-profile-json`
+ to the page and include the following script at the end of the page.
+`{ % include "main/snippets/export_user_skill_profile.html" %}`
 
 -->
 <script>
-    const exportSkillProfileButton = document.querySelector('.export-skill-profile');
-    exportSkillProfileButton.addEventListener('click', function () {
+    const exportSkillProfileCsvButton = document.querySelector('.export-skill-profile-csv');
+    exportSkillProfileCsvButton.addEventListener('click', function () {
       // The skill levels and chart data are passed from the Django view
       // We assume we receive the same data as the skill wheel.
       const skillLevels = {{ skill_levels|safe }};
@@ -26,6 +26,31 @@ To use add a button with the class "export-skill-profile" to the page and includ
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
       link.setAttribute("download", "skill_profile.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+    const exportSkillProfileJSONButton = document.querySelector('.export-skill-profile-json');
+    exportSkillProfileJSONButton.addEventListener('click', function () {
+      // The skill levels and chart data are passed from the Django view
+      // We assume we receive the same data as the skill wheel.
+      const skillLevels = {{ skill_levels|safe }};
+      const charts = {{ chart_data|safe }};
+
+      const jsonData = charts.map(({user_data, user_id}) => {
+        return user_data.map(({category, skill, skill_level, subcategory}) => {
+          return {
+            category,
+            subcategory,
+            skill,
+            level: skill_level
+          };
+        });
+      }).flat();
+      const jsonContent = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonData, null, 2));
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "skill_profile.json");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
