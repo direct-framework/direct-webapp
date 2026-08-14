@@ -131,7 +131,7 @@ docker compose up
 
 The app will be available at <http://127.0.0.1:8000/> <!-- markdown-link-check-disable-line -->
 
-check this bad link - should fail! <https://directframework.com/notapage>
+check this bad link - should fail! <https://directframework.com/notapage-alsonotapage>
 
 As above, create a superuser with
 
