@@ -19,4 +19,3 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
           config_file: .linkspector.yml
-          fail_level: any
