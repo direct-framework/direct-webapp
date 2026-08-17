@@ -42,13 +42,15 @@ class TestPasswordReset(TemplateOkMixin):
 
     _template_name = "registration/password_reset_form.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse("password_reset")
 
-    def test_post(self, client, user):
+    def test_post(self, client, user, url):
         """Test the view POST request redirects correctly."""
         # Request a password reset email
-        response = client.post(self._get_url(), data={"email": user.email})
+        response = client.post(url, data={"email": user.email})
 
         # Assert redirects to password_reset/done
         assert response.status_code == HTTPStatus.FOUND
@@ -93,7 +95,9 @@ class TestPasswordResetDone(TemplateOkMixin):
 
     _template_name = "registration/password_reset_done.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse("password_reset_done")
 
 
@@ -102,15 +106,17 @@ class TestPasswordResetConfirm(TemplateOkMixin):
 
     _template_name = "registration/password_reset_confirm.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse(
             "password_reset_confirm", kwargs={"token": "some", "uidb64": "thing"}
         )
 
-    def test_get(self, client, set_password_url):
+    def test_get(self, client, set_password_url, url):
         """Test the view GET request fails and succeeds depending on the token."""
         # Expect our custom error page if an incorrect token/uid is used
-        response = client.get(self._get_url())
+        response = client.get(url)
         assertContains(response, "<h1>Password reset failed</h1>")
 
         # Expect our custom password_reset_confirm page
@@ -137,7 +143,9 @@ class TestPasswordResetComplete(TemplateOkMixin):
 
     _template_name = "registration/password_reset_complete.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse("password_reset_complete")
 
 
@@ -146,7 +154,9 @@ class TestPasswordChangeForm(LoginRequiredMixin, TemplateOkMixin):
 
     _template_name = "registration/password_change_form.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse("password_change")
 
 
@@ -155,7 +165,9 @@ class TestPasswordChangeDone(LoginRequiredMixin, TemplateOkMixin):
 
     _template_name = "registration/password_change_done.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse("password_change_done")
 
 
@@ -164,10 +176,12 @@ class TestRegisterUser(TemplateOkMixin):
 
     _template_name = "django_registration/registration_form.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse("django_registration_register")
 
-    def test_post(self, client, django_user_model):
+    def test_post(self, client, django_user_model, url):
         """Test the view POST request creates a user and redirects correctly."""
         from django.contrib import auth
 
@@ -183,7 +197,7 @@ class TestRegisterUser(TemplateOkMixin):
             django_user_model.objects.get(email=user.email)
 
         response = client.post(
-            self._get_url(),
+            url,
             data=dict(
                 email=user.email,
                 username=user.username,
@@ -202,10 +216,10 @@ class TestRegisterUser(TemplateOkMixin):
         assert logged_in_user.is_authenticated
         assert logged_in_user == django_user_model.objects.get(email=user.email)
 
-    def test_closed(self, client, settings):
+    def test_closed(self, client, settings, url):
         """Test the view when registration is closed."""
         settings.REGISTRATION_OPEN = False
-        response = client.get(self._get_url())
+        response = client.get(url)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse("django_registration_disallowed")
 
@@ -215,7 +229,9 @@ class TestRegistrationComplete(TemplateOkMixin):
 
     _template_name = "django_registration/registration_complete.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse("django_registration_complete")
 
 
@@ -224,5 +240,7 @@ class TestRegistrationClosed(TemplateOkMixin):
 
     _template_name = "django_registration/registration_closed.html"
 
-    def _get_url(self):
+    @pytest.fixture
+    def url(self):
+        """Fixture to get the test url."""
         return reverse("django_registration_disallowed")
