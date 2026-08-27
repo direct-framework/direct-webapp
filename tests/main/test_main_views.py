@@ -7,6 +7,7 @@ This test module includes tests for main views of the app ensuring that:
 
 import json
 from http import HTTPStatus
+from urllib import parse as parseUrl
 
 import pytest
 from django.db.models import QuerySet
@@ -567,10 +568,98 @@ class TestLicensingPageView(TemplateOkMixin):
         return reverse("licensing")
 
 
-class TestViewSkillProfilePageView(TemplateOkMixin):
+class TestViewSkillProfilePageView(BS4Mixin):
     """Test suite for the ViewSkillProfilePageView."""
 
     _template_name = "main/shared-skills-profile.html"
 
-    def _get_url(self):
-        return reverse("view_skill_profile")
+    def _example_chart_data(self, user_skill):
+        return [
+            {
+                "user_id": "root",
+                "user_data": [
+                    {
+                        "skill": user_skill.skill.name,
+                        "category": user_skill.skill.competency.competency_domain.name,
+                        "subcategory": user_skill.skill.competency.name,
+                        "skill_level": user_skill.skill_level.level,
+                    }
+                ],
+            }
+        ]
+
+    def _get_url(self, chart_data):
+        """Construct the URL for the view skill profile page with query parameters."""
+        skill_levels = json.dumps(list(SkillLevel.objects.values("level", "name")))
+        chart_data_str = json.dumps(chart_data)
+        url = f"{reverse('view_skill_profile')}"
+        params = parseUrl.urlencode(
+            {
+                "skill_levels": skill_levels,
+                "chart_data": chart_data_str,
+            }
+        )
+        url = f"{url}?{params}"
+        return url
+
+    def test_template_used(self, admin_client, user_skill):
+        """Test the correct template is used by the GET request."""
+        with assertTemplateUsed(template_name=self._template_name):
+            response = admin_client.get(
+                self._get_url(self._example_chart_data(user_skill))
+            )
+        assert response.status_code == HTTPStatus.OK
+
+    def test_provides_required_context(self, client, user_skill):
+        """Test that the view skill profile view provides the correct context."""
+        url = self._get_url(self._example_chart_data(user_skill))
+        response = client.get(url)
+        assert response.status_code == HTTPStatus.OK
+        assert "chart_data" in response.context
+        assert isinstance(response.context["chart_data"], str)
+        assert response.context["chart_data"] == json.dumps(
+            self._example_chart_data(user_skill)
+        )
+        assert "skill_levels" in response.context
+        assert isinstance(response.context["skill_levels"], str)
+        assert response.context["skill_levels"] == json.dumps(
+            list(SkillLevel.objects.values("level", "name"))
+        )
+
+    def test_skill_wheel_script(self, soup_factory, user_skill):
+        """Test that the skill profile view contains the correct script."""
+        soup = soup_factory(
+            authenticated=True, chart_data=self._example_chart_data(user_skill)
+        )
+        card = soup.find("div", class_="card-body")
+
+        assert card.find(tag_with_text_filter("h1", "Skills profile"))
+        assert card.find("div", id="dataviz_root")
+
+        skill_level_list = list(SkillLevel.objects.values("level", "name"))
+        user_skill_dict = {
+            "skill": user_skill.skill.name,
+            "category": user_skill.skill.competency.competency_domain.name,
+            "subcategory": user_skill.skill.competency.name,
+            "skill_level": user_skill.skill_level.level,
+        }
+        chart_data = [{"user_id": "root", "user_data": [user_skill_dict]}]
+
+        assert card.find(
+            tag_with_text_filter(
+                "script",
+                f"const skillLevels = {json.dumps(skill_level_list)};",
+            )
+        )
+        assert card.find(
+            tag_with_text_filter(
+                "script",
+                f"const charts = {json.dumps(chart_data)};",
+            )
+        )
+        assert card.find(
+            tag_with_text_filter(
+                "script",
+                "renderRadialBarChart(target, charts[i].user_data, skillLevels);",
+            )
+        )
