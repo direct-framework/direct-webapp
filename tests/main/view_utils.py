@@ -65,14 +65,17 @@ class BS4Mixin(ABC):
         return BeautifulSoup(response.content, "html.parser")
 
     @pytest.fixture
-    def soup_factory(self, client) -> Callable[..., BeautifulSoup]:
+    def soup_factory(self, client, admin_client, user) -> Callable[..., BeautifulSoup]:
         """A fixture factory for the BeautifulSoup4 object of the requested page."""
 
-        def get_soup(**kwargs) -> BeautifulSoup:
+        def get_soup(authenticated=False, admin=False, **kwargs) -> BeautifulSoup:
+            _client = admin_client if admin else client
+            if authenticated:
+                _client.force_login(user)
             if kwargs:
-                response = client.get(self._get_url(kwargs=kwargs))
+                response = _client.get(self._get_url(**kwargs))
             else:
-                response = client.get(self._get_url())
+                response = _client.get(self._get_url())
             return BeautifulSoup(response.content, "html.parser")
 
         return get_soup
