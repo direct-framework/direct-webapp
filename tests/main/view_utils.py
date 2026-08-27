@@ -1,6 +1,7 @@
 """Utility module for view tests."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from http import HTTPStatus
 
 import pytest
@@ -54,7 +55,7 @@ class BS4Mixin(ABC):
     """
 
     @abstractmethod
-    def _get_url(self) -> str:
+    def _get_url(self, **kwargs) -> str:
         return NotImplemented
 
     @pytest.fixture
@@ -62,6 +63,19 @@ class BS4Mixin(ABC):
         """A fixture of the BeautifulSoup4 object of the requested page."""
         response = client.get(self._get_url())
         return BeautifulSoup(response.content, "html.parser")
+
+    @pytest.fixture
+    def soup_factory(self, client) -> Callable[..., BeautifulSoup]:
+        """A fixture factory for the BeautifulSoup4 object of the requested page."""
+
+        def get_soup(**kwargs) -> BeautifulSoup:
+            if kwargs:
+                response = client.get(self._get_url(kwargs=kwargs))
+            else:
+                response = client.get(self._get_url())
+            return BeautifulSoup(response.content, "html.parser")
+
+        return get_soup
 
     @pytest.fixture
     def auth_soup(self, client, user) -> BeautifulSoup:
