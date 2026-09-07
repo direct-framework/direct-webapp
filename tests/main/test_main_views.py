@@ -568,7 +568,7 @@ class TestLicensingPageView(TemplateOkMixin):
         return reverse("licensing")
 
 
-class TestViewSkillProfilePageView(BS4Mixin):
+class TestViewSkillProfilePageView(TemplateOkMixin, BS4Mixin):
     """Test suite for the ViewSkillProfilePageView."""
 
     _template_name = "main/shared-skills-profile.html"
@@ -588,7 +588,7 @@ class TestViewSkillProfilePageView(BS4Mixin):
             }
         ]
 
-    def _get_url(self, chart_data):
+    def _get_url(self, chart_data=None):
         """Construct the URL for the view skill profile page with query parameters."""
         skill_levels = json.dumps(list(SkillLevel.objects.values("level", "name")))
         chart_data_str = json.dumps(chart_data)
@@ -601,14 +601,6 @@ class TestViewSkillProfilePageView(BS4Mixin):
         )
         url = f"{url}?{params}"
         return url
-
-    def test_template_used(self, admin_client, user_skill):
-        """Test the correct template is used by the GET request."""
-        with assertTemplateUsed(template_name=self._template_name):
-            response = admin_client.get(
-                self._get_url(self._example_chart_data(user_skill))
-            )
-        assert response.status_code == HTTPStatus.OK
 
     def test_provides_required_context(self, client, user_skill):
         """Test that the view skill profile view provides the correct context."""
