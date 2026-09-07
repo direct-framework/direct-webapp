@@ -608,21 +608,17 @@ class TestViewSkillProfilePageView(TemplateOkMixin, BS4Mixin):
         response = client.get(url)
         assert response.status_code == HTTPStatus.OK
         assert "chart_data" in response.context
-        assert isinstance(response.context["chart_data"], str)
-        assert response.context["chart_data"] == json.dumps(
-            self._example_chart_data(user_skill)
-        )
+        assert isinstance(response.context["chart_data"], list)
+        assert response.context["chart_data"] == self._example_chart_data(user_skill)
         assert "skill_levels" in response.context
-        assert isinstance(response.context["skill_levels"], str)
-        assert response.context["skill_levels"] == json.dumps(
-            list(SkillLevel.objects.values("level", "name"))
+        assert isinstance(response.context["skill_levels"], list)
+        assert response.context["skill_levels"] == list(
+            SkillLevel.objects.values("level", "name")
         )
 
     def test_skill_wheel_script(self, soup_factory, user_skill):
         """Test that the skill profile view contains the correct script."""
-        soup = soup_factory(
-            authenticated=True, chart_data=self._example_chart_data(user_skill)
-        )
+        soup = soup_factory(chart_data=self._example_chart_data(user_skill))
         card = soup.find("div", class_="card-body")
 
         assert card.find(tag_with_text_filter("h1", "Skills profile"))
@@ -638,16 +634,10 @@ class TestViewSkillProfilePageView(TemplateOkMixin, BS4Mixin):
         chart_data = [{"user_id": "root", "user_data": [user_skill_dict]}]
 
         assert card.find(
-            tag_with_text_filter(
-                "script",
-                f"const skillLevels = {json.dumps(skill_level_list)};",
-            )
+            tag_with_text_filter("script", f"const skillLevels = {skill_level_list};")
         )
         assert card.find(
-            tag_with_text_filter(
-                "script",
-                f"const charts = {json.dumps(chart_data)};",
-            )
+            tag_with_text_filter("script", f"const charts = {chart_data};")
         )
         assert card.find(
             tag_with_text_filter(
