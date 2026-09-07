@@ -1,6 +1,7 @@
 """Utility module for view tests."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from http import HTTPStatus
 
 import pytest
@@ -13,11 +14,15 @@ class TemplateOkMixin(ABC):
     """Mixin for tests that verify the correct template usage.
 
     Note: Using this requires the test class to define:
-        - A `_get_url` method
+        - A `_get_url` method that can be called with no arguments
         - A `_template_name` variable
     """
 
     _template_name: str
+
+    @abstractmethod
+    def _get_url(self, **kwargs) -> str:
+        return NotImplemented
 
     def test_template_used(self, admin_client):
         """Test the correct template is used by the GET request."""
@@ -30,13 +35,13 @@ class LoginRequiredMixin(ABC):
     """Mixin for tests that require a user to be logged in.
 
     Note: Using this requires the test class to define:
-        - A `_get_url` method
+        - A `_get_url` method that can be called with no arguments
     """
 
     _template_name: str
 
     @abstractmethod
-    def _get_url(self) -> str:
+    def _get_url(self, **kwargs) -> str:
         return NotImplemented
 
     def test_login_required(self, client):
@@ -54,27 +59,46 @@ class BS4Mixin(ABC):
     """
 
     @abstractmethod
-    def _get_url(self) -> str:
+    def _get_url(self, **kwargs) -> str:
         return NotImplemented
 
     @pytest.fixture
-    def soup(self, client) -> BeautifulSoup:
+    def soup_factory(self, client, admin_client, user) -> Callable[..., BeautifulSoup]:
+        """A fixture factory for the BeautifulSoup4 object of the requested page.
+
+        Returns a function that can be called with kwargs provided if the get_url method
+        requires them. Possible kwargs:
+            - authenticated: `True` if user should be logged-in
+            - admin: `True` if user should be an admin
+            - Any other kwargs: passed to `get_url` method
+        """
+
+        def get_soup(admin=False, authenticated=False, **kwargs) -> BeautifulSoup:
+            _client = admin_client if admin else client
+            if authenticated:
+                _client.force_login(user)
+            if kwargs:
+                response = _client.get(self._get_url(**kwargs))
+            else:
+                response = _client.get(self._get_url())
+            return BeautifulSoup(response.content, "html.parser")
+
+        return get_soup
+
+    @pytest.fixture
+    def soup(self, soup_factory) -> BeautifulSoup:
         """A fixture of the BeautifulSoup4 object of the requested page."""
-        response = client.get(self._get_url())
-        return BeautifulSoup(response.content, "html.parser")
+        return soup_factory()
 
     @pytest.fixture
-    def auth_soup(self, client, user) -> BeautifulSoup:
+    def auth_soup(self, soup_factory) -> BeautifulSoup:
         """A BeautifulSoup4 object of the requested page viewed by a logged-in user."""
-        client.force_login(user)
-        response = client.get(self._get_url())
-        return BeautifulSoup(response.content, "html.parser")
+        return soup_factory(authenticated=True)
 
     @pytest.fixture
-    def admin_soup(self, admin_client) -> BeautifulSoup:
+    def admin_soup(self, soup_factory) -> BeautifulSoup:
         """A BeautifulSoup4 object of the requested page viewed by an admin user."""
-        response = admin_client.get(self._get_url())
-        return BeautifulSoup(response.content, "html.parser")
+        return soup_factory(admin=True)
 
 
 def tag_with_text_filter(tag_name: str, text: str):
