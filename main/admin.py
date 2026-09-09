@@ -10,6 +10,7 @@ from import_export.admin import ImportExportModelAdmin
 from .io_resources import (
     CompetencyDomainResource,
     CompetencyResource,
+    EventResource,
     LearningResourceResource,
     ProviderResource,
     SkillLevelResource,
@@ -19,6 +20,7 @@ from .io_resources import (
 from .models import (
     Competency,
     CompetencyDomain,
+    Event,
     LearningResource,
     Provider,
     Skill,
@@ -160,6 +162,16 @@ class UserSkillInline(admin.TabularInline[UserSkill, User]):
 
     model = UserSkill
     extra = 1
+
+
+@admin.register(Event)
+class EventAdmin(ImportExportModelAdmin[Event]):
+    """Admin class for the Event model."""
+
+    list_display = ("title", "start_date", "end_date", "location")
+    search_fields = ("title", "description", "contributors")
+    ordering = ("-start_date",)
+    resource_classes = (EventResource,)
 
 
 class UserProxy(User):
