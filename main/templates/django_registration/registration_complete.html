@@ -4,7 +4,8 @@
         <h2>Success!</h2>
         <p>Welcome {{ user }}! You have registered and are now logged in.</p>
         <p>
-            <a class="btn btn-lg btn-primary" href="{% url 'index' %}">Start exploring</a>
+            <a class="btn btn-lg btn-primary"
+               href="{% url 'index' %}">Start exploring</a>
         </p>
     {% else %}
         <h2>Oops!</h2>
