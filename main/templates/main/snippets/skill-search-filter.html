@@ -1,0 +1,44 @@
+<!-- This template implements a search filter for the skills and competencies lists
+
+It works on the skill Self Assessment and Framework pages.
+
+To use ensure that the skill and competency elements have the following classes:
+- competency domain headings: "competency-domain-container"
+- competency headings: "competency-card"
+- skill rows: "skill-item"
+
+Then add a text input with name "skill_filter" and include the following script at the end of the page.
+{% include "main/snippets/skill-search-filter.html" %}
+
+-->
+<script>
+    const skillFilterInput = document.querySelector('input[name="skill_filter"]');
+    skillFilterInput.addEventListener('input', function () {
+        const filterValue = this.value.toLowerCase();
+        const skillRows = document.querySelectorAll('.skill-item');
+        const competencyDomainContainers = document.querySelectorAll('.competency-domain-container');
+        const competencyContainers = document.querySelectorAll('.competency-card');
+        competencyDomainContainers.forEach(heading => {
+            if (heading.textContent.toLowerCase().includes(filterValue)) {
+                heading.style.display = '';
+            } else {
+                heading.style.display = 'none';
+            }
+        });
+        competencyContainers.forEach(heading => {
+            if (heading.textContent.toLowerCase().includes(filterValue)) {
+                heading.style.display = '';
+            } else {
+                heading.style.display = 'none';
+            }
+        });
+        skillRows.forEach(row => {
+            const skillName = row.textContent.toLowerCase();
+            if (skillName.includes(filterValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        })
+    });
+</script>
