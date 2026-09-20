@@ -24,15 +24,20 @@ It includes options to open a shareable link, copy the link, and export the skil
                         id="copy-link-button">
                     Copy Link <i aria-label="Copy sharable link" class="fa-solid fa-copy"></i>
                 </button>
-                {% include "main/snippets/create_user_skill_profile_link.html" %}
             </li>
-            <li>
-                <button class="dropdown-item export-skill-profile-csv" href="#">Export as CSV</button>
-            </li>
-            <li>
-                <button class="dropdown-item export-skill-profile-json" href="#">Export as JSON</button>
-            </li>
-            {% include "main/snippets/export_user_skill_profile.html" %}
+            {% include "main/snippets/create_user_skill_profile_link.html" %}
+            {% if allow_export %}
+                <li>
+                    <a class="dropdown-item export-skill-profile-csv"
+                       href="{% url 'download-csv-data-link' %}"
+                       id="copy-link-button">Export as CSV</a>
+                </li>
+                <li>
+                    <a class="dropdown-item export-skill-profile-json"
+                       href="{% url 'download-json-data-link' %}"
+                       id="copy-link-button">Export as JSON</a>
+                </li>
+            {% endif %}
         </ul>
     </li>
 </div>

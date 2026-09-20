@@ -104,6 +104,10 @@ class SkillProfileView(TermsAcceptedMixin, TemplateView):
         context["skill_levels"] = dumps(
             list(SkillLevel.objects.values("level", "name"))
         )
+
+        context["allow_export"] = (
+            True  # Allow exporting skill profile data as CSV or JSON
+        )
         return context
 
 
