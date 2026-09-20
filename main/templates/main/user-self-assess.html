@@ -29,13 +29,14 @@
                             You can leave skills blank if they are not applicable to you.
                         </p>
                         <!-- Skill Search Filter -->
-                        <p>
-                            <label for="skill_filter">Search skills:</label>
+                        <div class="form-group d-flex flex-row align-items-center gap-2">
+                            <label for="skill_filter" class="form-label">Search</label>
                             <input type="text"
                                    name="skill_filter"
+                                   class="form-control"
                                    value=""
                                    placeholder="Enter search term...">
-                        </p>
+                        </div>
                         {% if messages %}
                             {% for message in messages %}
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
