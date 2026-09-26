@@ -1,0 +1,48 @@
+{% extends "main/base.page.html" %}
+{% load render_table from django_tables2 %}
+{% block title %}
+    {{ provider.name }}
+{% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'framework_overview' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{% url 'learning_providers' %}">Learning providers</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">{{ provider.name }}</li>
+{% endblock breadcrumb_items %}
+{% block content %}
+    <section id="learning-provider">
+        <h1>{{ provider.name }}</h1>
+        {% if provider.description %}
+            <p>{{ provider.description }}</p>
+        {% endif %}
+        {% if provider.url %}
+            <p>
+                <a href="{{ provider.url }}" target="_blank" rel="noopener noreferrer">
+                    Visit provider website
+                </a>
+            </p>
+        {% endif %}
+        <h2>Learning resources</h2>
+        <form method="get" class="d-flex justify-content-end mb-4">
+            <div class="input-group w-auto">
+                <label for="resource-filter" class="visually-hidden">Filter learning resources</label>
+                <input id="resource-filter"
+                       name="q"
+                       type="search"
+                       value="{{ query }}"
+                       class="form-control"
+                       size="25"
+                       placeholder="Filter learning resources">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+        {% if learning_resources.rows %}
+            {% render_table learning_resources %}
+        {% else %}
+            <p>No learning resources found.</p>
+        {% endif %}
+    </section>
+{% endblock content %}
