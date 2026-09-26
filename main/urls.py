@@ -18,6 +18,16 @@ framework_patterns = [
     ),
     path("skill-levels/", views.SkillLevelsPageView.as_view(), name="skill_levels"),
     path(
+        "learning-providers/",
+        views.LearningProvidersPageView.as_view(),
+        name="learning_providers",
+    ),
+    path(
+        "learning-providers/<slug:slug>/",
+        views.LearningProviderDetailPageView.as_view(),
+        name="learning_provider_detail",
+    ),
+    path(
         "learning-resources/",
         views.LearningResourcesPageView.as_view(),
         name="learning_resources",

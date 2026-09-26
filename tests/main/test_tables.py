@@ -22,30 +22,31 @@ def test_learning_resources_table_render_name(learning_resource: LearningResourc
 
 @pytest.mark.django_db
 def test_learning_resources_table_render_provider(learning_resource: LearningResource):
-    """Test the provider name renders as an external link when a URL exists."""
+    """Test the provider name renders as an internal link to its detail page."""
     table = LearningResourceTable([])
 
-    assert isinstance(learning_resource.provider, Provider)
+    provider = learning_resource.provider
+    assert isinstance(provider, Provider)
 
-    rendered = table.render_provider(learning_resource.provider.name, learning_resource)
-
-    assert str(rendered) == (
-        f'<a href="{learning_resource.provider.url}" target="_blank" '
-        'rel="noopener noreferrer" class="">Provider</a>'
+    rendered = table.render_provider(provider, learning_resource)
+    provider_detail_url = reverse(
+        "learning_provider_detail", kwargs={"slug": provider.slug}
     )
+
+    assert str(rendered) == f'<a href="{provider_detail_url}">{provider.name}</a>'
 
 
 @pytest.mark.django_db
-def test_learning_resources_table_render_provider_without_url(
+def test_learning_resources_table_render_provider_none(
     learning_resource: LearningResource,
 ):
-    """Test the provider name renders as plain text when no URL exists."""
+    """Test the provider name renders as a blank string when no provider is passed."""
     table = LearningResourceTable([])
     learning_resource.provider = None
 
-    rendered = table.render_provider("Provider", learning_resource)
+    rendered = table.render_provider(learning_resource.provider, learning_resource)
 
-    assert str(rendered) == "Provider"
+    assert str(rendered) == ""
 
 
 @pytest.mark.django_db
@@ -58,8 +59,7 @@ def test_learning_resources_table_render_skill_set(
     rendered = table.render_skill_set(learning_resource.skill_set)  # type: ignore[arg-type]
 
     assert str(rendered) == (
-        '<a href="{}" target="_blank" rel="noopener noreferrer" '
-        'class="btn btn-outline-primary rounded-pill btn-sm">Skill</a>'
+        '<a href="{}" class="btn btn-outline-primary rounded-pill btn-sm">Skill</a>'
     ).format(reverse("skill_detail", args=(skill.slug,)))
 
 
@@ -100,6 +100,5 @@ def test_tool_language_methodology_table_render_skill_set(
     rendered = table.render_skill_set(tool.skill_set)  # type: ignore[arg-type]
 
     assert str(rendered) == (
-        '<a href="{}" target="_blank" rel="noopener noreferrer" '
-        'class="btn btn-outline-primary rounded-pill btn-sm">Skill</a>'
+        '<a href="{}" class="btn btn-outline-primary rounded-pill btn-sm">Skill</a>'
     ).format(reverse("skill_detail", args=(skill.slug,)))
