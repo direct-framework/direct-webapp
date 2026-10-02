@@ -36,6 +36,16 @@ accounts_patterns = [
     path("skills-profile/", views.SkillProfileView.as_view(), name="skills_profile"),
     path("profile/", views.UserUpdateView.as_view(), name="profile"),
     path("overview/", views.AccountOverviewView.as_view(), name="account-overview"),
+    path(
+        "download-skills-data/csv/",
+        views.DownloadUserSkillDataCsvView.as_view(),
+        name="download-csv-data-link",
+    ),
+    path(
+        "download-skills-data/json/",
+        views.DownloadUserSkillDataJSONView.as_view(),
+        name="download-json-data-link",
+    ),
 ]
 
 policies_patterns = [
