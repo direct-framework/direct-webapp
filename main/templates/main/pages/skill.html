@@ -36,7 +36,9 @@
                         {% for resource in learning_resources %}
                             <li>
                                 {% if resource.url %}
-                                    <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.name }}</a>
+                                    <a href="{{ resource.url }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer">{{ resource.name }}</a>
                                 {% else %}
                                     {{ resource.name }}
                                 {% endif %}
@@ -51,7 +53,9 @@
                         {% for item in tools %}
                             <li>
                                 {% if item.url %}
-                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                    <a href="{{ item.url }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer">{{ item.name }}</a>
                                 {% else %}
                                     {{ item.name }}
                                 {% endif %}
@@ -65,7 +69,9 @@
                         {% for item in languages %}
                             <li>
                                 {% if item.url %}
-                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                    <a href="{{ item.url }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer">{{ item.name }}</a>
                                 {% else %}
                                     {{ item.name }}
                                 {% endif %}
@@ -79,7 +85,9 @@
                         {% for item in methodologies %}
                             <li>
                                 {% if item.url %}
-                                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.name }}</a>
+                                    <a href="{{ item.url }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer">{{ item.name }}</a>
                                 {% else %}
                                     {{ item.name }}
                                 {% endif %}
