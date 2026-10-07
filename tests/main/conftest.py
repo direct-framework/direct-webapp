@@ -103,3 +103,10 @@ def skill_level() -> SkillLevel:
 def user_skill(user, skill: Skill, skill_level: SkillLevel) -> UserSkill:
     """Fixture for creating a UserSkill instance."""
     return UserSkill.objects.create(user=user, skill=skill, skill_level=skill_level)
+
+
+@pytest.fixture
+def client_logged_in(client, user):
+    """Fixture for a client that is logged in as a user."""
+    client.force_login(user)
+    return client
