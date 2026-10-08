@@ -50,7 +50,7 @@
                                                         <span class="ms-3"><i class="fa-solid fa-location-dot me-2"></i>{{ event.location }}</span>
                                                     {% endif %}
                                                 </p>
-                                                <p class="card-text mb-2">{{ event.description|truncatewords:35 }}</p>
+                                                <p class="card-text mb-2">{{ event.description|truncatewords:60 }}</p>
                                                 {% if event.contributors %}
                                                     <p class="card-text text-body-secondary small mb-2">
                                                         <i class="fa-solid fa-users me-2"></i>{{ event.contributors }}
