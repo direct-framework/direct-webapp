@@ -20,7 +20,8 @@
                 <p class="fs-lg mb-3">
                     Skills are organised into a number of competencies, which are in turn grouped into bigger competency domains which you can explore using the links in the sidebar.
                 </p>
-                <a class="btn btn-primary mb-4" href="{% url 'framework_json' %}">Download framework JSON</a>
+                <a class="btn btn-primary mb-4"
+                   href="{% url 'framework_json' %}">Download framework JSON</a>
             </div>
         </div>
         <div class="row pt-sm-2 pt-lg-0">
@@ -36,7 +37,8 @@
                             <nav class="nav flex-column pb-2 pb-lg-4 mb-3">
                                 {% for domain in domains %}
                                     <div class="mb-2">
-                                        <a class="nav-link fw-semibold py-2 px-0" href="#{{ domain.slug }}">
+                                        <a class="nav-link fw-semibold py-2 px-0"
+                                           href="#{{ domain.slug }}">
                                             <i class="ai-user-check fs-5 opacity-60 me-2"></i>
                                             {{ domain.name }}
                                         </a>
@@ -63,7 +65,8 @@
                 {% for domain in domains %}
                     <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
                         <div class="card-body">
-                            <h2 id="{{ domain.slug }}" class="card-title text-primary">{{ domain.name }}</h2>
+                            <h2 id="{{ domain.slug }}"
+                                class="card-title text-primary">{{ domain.name }}</h2>
                             <p class="card-text">{{ domain.description }}</p>
                             {% with competencies=domain.competency_set.all %}
                                 <p class="card-text">

@@ -34,11 +34,9 @@
                                     <strong>{{ skill_level.name }}</strong>
                                 </td>
                                 <td>
-                                    {{ skill_level.short_description }}
+                                    <p>{{ skill_level.short_description }}</p>
                                     {% if skill_level.focus %}
-                                        <br>
-                                        <br>
-                                        <strong>Focus:</strong> {{ skill_level.focus }}
+                                        <p><strong>Focus:</strong> {{ skill_level.focus }}</p>
                                     {% endif %}
                                 </td>
                                 <td>{{ skill_level.description }}</td>
