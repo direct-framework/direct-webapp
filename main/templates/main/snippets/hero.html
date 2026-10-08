@@ -1,5 +1,5 @@
 {% load static %}
-<section class="position-relative pt-5">
+<section class="position-relative pt-5 pb-4">
     <div class="position-absolute top-0 start-0 w-100" style="height: 79%;">
         <div class="bg-primary position-absolute top-0 start-0 w-100 h-100"
              style="background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('{% static 'assets/img/background_v2.svg' %}');
@@ -11,7 +11,8 @@
             <svg class="position-absolute start-0 bottom-0 w-100 h-100"
                  viewBox="0 0 3000 185.4"
                  xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="M3000,0v185.4H0V0c496.4,115.6,996.4,173.4,1500,173.4S2503.6,115.6,3000,0z"></path>
+                <path fill="currentColor" d="M3000,0v185.4H0V0c496.4,115.6,996.4,173.4,1500,173.4S2503.6,115.6,3000,0z">
+                </path>
             </svg>
         </div>
     </div>
@@ -34,7 +35,8 @@
                             <p class="mb-4">
                                 Define the knowledge and behaviours individuals need to succeed in digital research and technical roles in academia.
                             </p>
-                            <a class="btn btn-lg btn-primary" href="{% url 'framework_overview' %}">Explore
+                            <a class="btn btn-lg btn-primary"
+                               href="{% url 'framework_overview' %}">Explore
                             the framework</a>
                         </div>
                     </div>
@@ -72,6 +74,5 @@
             </div>
         </div>
     </div>
-    <br />
 </section>
 {% include "main/snippets/skill-wheel.html" %}

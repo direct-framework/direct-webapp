@@ -1,0 +1,6 @@
+dirs:
+  - .
+useGitIgnore: true
+ignorePatterns:
+  - pattern: .*http://127.0.0.1:8000/.*
+baseUrl: https://github.com/direct-framework/direct-webapp
