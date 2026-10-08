@@ -103,12 +103,16 @@ class LearningResourceTable(tables.Table):
     def render_provider(
         self, value: Provider | None, record: LearningResource
     ) -> SafeString:
-        """Render the provider as a link to its detail page."""
+        """Render the provider as button link to its detail page."""
         if value is None:
             return mark_safe("")
 
+        provider_link_html = (
+            '<a href="{}" class="btn btn-outline-secondary rounded-pill btn-sm">{}</a>'
+        )
+
         return format_html(
-            '<a href="{}">{}</a>',
+            provider_link_html,
             reverse(
                 "learning_provider_detail",
                 kwargs={"slug": value.slug},
