@@ -39,6 +39,22 @@ def _render_skills(qs: QuerySet[Skill]) -> SafeString:
     )
 
 
+def render_provider(provider: Provider | None) -> SafeString:
+    """Helper function for rendering a provider as a button link to its detail page."""
+    if provider is None:
+        return mark_safe("")
+
+    provider_link_html = (
+        '<a href="{}" class="btn btn-outline-secondary rounded-pill btn-sm">{}</a>'
+    )
+
+    return format_html(
+        provider_link_html,
+        reverse("learning_provider_detail", args=(provider.slug,)),
+        provider.name,
+    )
+
+
 class ProviderTable(tables.Table):
     """Table class for the Learning Provider model."""
 
@@ -51,11 +67,7 @@ class ProviderTable(tables.Table):
 
     def render_name(self, value: str, record: Provider) -> SafeString:
         """Link the provider name to its detail page."""
-        return format_html(
-            '<a href="{}">{}</a>',
-            reverse("learning_provider_detail", args=(record.slug,)),
-            value,
-        )
+        return render_provider(record)
 
     def render_description(self, value: str) -> SafeString:
         """Render the description field."""
@@ -103,22 +115,8 @@ class LearningResourceTable(tables.Table):
     def render_provider(
         self, value: Provider | None, record: LearningResource
     ) -> SafeString:
-        """Render the provider as button link to its detail page."""
-        if value is None:
-            return mark_safe("")
-
-        provider_link_html = (
-            '<a href="{}" class="btn btn-outline-secondary rounded-pill btn-sm">{}</a>'
-        )
-
-        return format_html(
-            provider_link_html,
-            reverse(
-                "learning_provider_detail",
-                kwargs={"slug": value.slug},
-            ),
-            value.name,
-        )
+        """Render the learning resource's provider as button link to its detail page."""
+        return render_provider(value)
 
     def render_skill_set(self, value: "ManyRelatedManager[Skill]") -> SafeString:
         """Include the relevant skills as button links."""
