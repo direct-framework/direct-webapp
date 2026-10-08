@@ -33,7 +33,11 @@ def test_learning_resources_table_render_provider(learning_resource: LearningRes
         "learning_provider_detail", kwargs={"slug": provider.slug}
     )
 
-    assert str(rendered) == f'<a href="{provider_detail_url}">{provider.name}</a>'
+    assert str(rendered) == (
+        f'<a href="{provider_detail_url}" '
+        'class="btn btn-outline-secondary rounded-pill btn-sm">'
+        f"{provider.name}</a>"
+    )
 
 
 @pytest.mark.django_db
