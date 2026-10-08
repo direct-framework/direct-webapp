@@ -15,7 +15,8 @@
                    rel="noopener noreferrer">Open Link <i aria-label="Copy sharable link" class="fa-solid fa-link"></i></a>
             </li>
             <li>
-                <button class="dropdown-item export-skill-profile-link-copy"
+                <button type="button"
+                        class="dropdown-item export-skill-profile-link-copy"
                         id="copy-link-button">
                     Copy Link <i aria-label="Copy sharable link"
     class="fa-solid fa-copy"></i>
@@ -23,7 +24,8 @@
                 {% include "main/snippets/create_user_skill_profile_link.html" %}
             </li>
             <li>
-                <button class="dropdown-item export-skill-profile"
+                <button type="button"
+                        class="dropdown-item export-skill-profile"
                         href="#">Export as CSV</button>
                 {% include "main/snippets/export_user_skill_profile.html" %}
             </li>
