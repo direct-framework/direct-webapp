@@ -20,8 +20,8 @@ class Event(models.Model):
     event_link = models.URLField(max_length=500, blank=True, null=True)
     blog = models.URLField(max_length=500, blank=True, null=True)
     contributors = models.TextField(blank=True)
-    # Placeholder until image storage (static path vs. uploaded file) is decided.
-    image = models.CharField(max_length=500, blank=True)
+    # Images will need to be served from a not-yet-set-up media server. Add later
+    # image = models.FileField(..., blank=True)
 
     def __str__(self) -> str:
         """Return the event title and start date."""
