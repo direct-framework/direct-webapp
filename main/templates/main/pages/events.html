@@ -1,7 +1,7 @@
 {% extends "main/base.page.html" %}
 {% load static %}
 {% block title %}
-    Digital Research Competencies Framework
+    Events
 {% endblock title %}
 {% block breadcrumb_items %}
     <li class="breadcrumb-item active" aria-current="page">Events</li>
@@ -35,7 +35,7 @@
                                 <div class="card card-hover card-lifted shadow-sm h-100">
                                     <div class="row g-0">
                                         <div class="col-md-3">
-                                            <img src="{% static event.image|default:'assets/img/blog/placeholder.png' %}"
+                                            <img src="{% static event.image|default:'assets/app-icons/logo.svg' %}"
                                                  alt="Event image"
                                                  class="rounded-start w-100 h-100"
                                                  style="object-fit: cover">
@@ -59,12 +59,16 @@
                                                 {% if event.event_link or event.blog %}
                                                     <div class="d-flex gap-3 mt-2">
                                                         {% if event.event_link %}
-                                                            <a href="{{ event.event_link }}" target="_blank" class="small fw-medium">
+                                                            <a href="{{ event.event_link }}"
+                                                               target="_blank"
+                                                               class="small fw-medium">
                                                                 <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Event page
                                                             </a>
                                                         {% endif %}
                                                         {% if event.blog %}
-                                                            <a href="{{ event.blog }}" target="_blank" class="small fw-medium">
+                                                            <a href="{{ event.blog }}"
+                                                               target="_blank"
+                                                               class="small fw-medium">
                                                                 <i class="fa-solid fa-newspaper me-1"></i>Blog post
                                                             </a>
                                                         {% endif %}
