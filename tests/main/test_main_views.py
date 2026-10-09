@@ -133,7 +133,7 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Skills profile"), href=reverse("skills_profile")
         )
         assert account_dropdown.find(
-            tag_with_text_filter("form", "Sign out"), action=reverse("logout")
+            tag_with_text_filter("form", "Log out"), action=reverse("logout")
         )
 
         # Admin link (requires admin user)
