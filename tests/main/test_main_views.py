@@ -12,6 +12,7 @@ from urllib import parse as parseUrl
 import pytest
 from bs4 import BeautifulSoup
 from django.db.models import QuerySet
+from django.test import TestCase
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
@@ -399,145 +400,211 @@ class TestSkillLevelsPageView(TemplateOkMixin):
         return reverse("skill_levels")
 
 
-@pytest.fixture
-def learning_provider_view_data():
-    """Create providers and resources used by learning provider view tests."""
-    provider = Provider.objects.create(
-        name="Provider One",
-        slug="provider-one",
-        description="A learning provider",
-        url="https://provider-one.example.com",
-    )
-    other_provider = Provider.objects.create(
-        name="Provider Two",
-        slug="provider-two",
-    )
+class TestLearningResourcesLearningProvidersAndIndividualProviderPageView(TestCase):
+    """Test views for learning resources, learning providers and individual provider."""
 
-    LearningResource.objects.create(
-        name="Python course",
-        slug="python-course",
-        description="Learn Python",
-        provider=provider,
-    )
-    LearningResource.objects.create(
-        name="R course",
-        slug="r-course",
-        description="Learn R",
-        provider=provider,
-    )
-    LearningResource.objects.create(
-        name="Unrelated course",
-        slug="unrelated-course",
-        provider=other_provider,
-    )
-    return provider, other_provider
+    @classmethod
+    def setUpTestData(cls):
+        """Create providers and learning resources used by the tests."""
+        cls.provider = Provider.objects.create(
+            name="Provider One",
+            slug="provider-one",
+            description="A learning provider",
+            url="https://provider-one.example.com",
+        )
+        cls.other_provider = Provider.objects.create(
+            name="Provider Two",
+            slug="provider-two",
+        )
 
+        cls.resource = LearningResource.objects.create(
+            name="Python course",
+            slug="python-course",
+            description="Learn Python",
+            provider=cls.provider,
+        )
+        cls.other_resource = LearningResource.objects.create(
+            name="R course",
+            slug="r-course",
+            description="Learn R",
+            provider=cls.provider,
+        )
+        cls.unrelated_resource = LearningResource.objects.create(
+            name="Unrelated course",
+            slug="unrelated-course",
+            provider=cls.other_provider,
+        )
 
-@pytest.mark.django_db
-class TestLearningProvidersPageView:
-    """Test the learning providers list view."""
+    def test_learning_resources_page_lists_resources(self):
+        """Test that the learning resources page lists resources."""
+        response = self.client.get(reverse("learning_resources"))
 
-    def test_page_lists_providers(self, client, learning_provider_view_data):
-        """Test that the learning providers page lists providers."""
-        response = client.get(reverse("learning_providers"))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(response, "Python course")
+        self.assertContains(response, "R course")
+        self.assertContains(response, "Unrelated course")
 
-        assert response.status_code == HTTPStatus.OK
-        assert "Provider One" in response.content.decode()
-        assert "Provider Two" in response.content.decode()
-
+        #  test the HTML structure of the page
         soup = BeautifulSoup(response.content, "html.parser")
+
         heading = soup.find("h1")
-        assert heading is not None
-        assert heading.get_text(strip=True).lower() == "learning providers"
+        self.assertIsNotNone(heading)
+        self.assertEqual(heading.get_text(strip=True).lower(), "learning resources")
 
         table = soup.find("table")
-        assert table is not None
+        self.assertIsNotNone(table)
+
         headers = {header.get_text(" ", strip=True) for header in table.find_all("th")}
-        assert {"Name", "Description", "Url"} <= headers
+        self.assertIn("Name", headers)
+        self.assertIn("Description", headers)
+        self.assertIn("Language", headers)
+        self.assertIn("Provider", headers)
+        self.assertIn("Skills", headers)
 
-    def test_page_filters_by_name(self, client, learning_provider_view_data):
+    def test_learning_resources_page_filters_by_name(self):
+        """Test filtering learning resources by name."""
+        response = self.client.get(
+            reverse("learning_resources"),
+            {"q": "Python"},
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(response, "Python course")
+        self.assertNotContains(response, "R course")
+        self.assertNotContains(response, "Unrelated course")
+
+    def test_learning_resources_page_preserves_filter_value(self):
+        """Test that the resource filter value is preserved."""
+        response = self.client.get(
+            reverse("learning_resources"),
+            {"q": "Python"},
+        )
+
+        self.assertContains(response, 'value="Python"')
+
+    def test_learning_providers_page_lists_providers(self):
+        """Test that the learning providers page lists providers."""
+        response = self.client.get(reverse("learning_providers"))
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(response, "Provider One")
+        self.assertContains(response, "Provider Two")
+
+        #  test the HTML structure of the page
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        heading = soup.find("h1")
+        self.assertIsNotNone(heading)
+        self.assertEqual(heading.get_text(strip=True).lower(), "learning providers")
+
+        table = soup.find("table")
+        self.assertIsNotNone(table)
+
+        headers = {header.get_text(" ", strip=True) for header in table.find_all("th")}
+        self.assertIn("Name", headers)
+        self.assertIn("Description", headers)
+        self.assertIn("Url", headers)
+
+    def test_learning_providers_page_filters_by_name(self):
         """Test filtering learning providers by name."""
-        response = client.get(reverse("learning_providers"), {"q": "Provider One"})
+        response = self.client.get(
+            reverse("learning_providers"),
+            {"q": "Provider One"},
+        )
 
-        assert response.status_code == HTTPStatus.OK
-        assert "Provider One" in response.content.decode()
-        assert "Provider Two" not in response.content.decode()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(response, "Provider One")
+        self.assertNotContains(response, "Provider Two")
 
-    def test_page_is_paginated(self, client, learning_provider_view_data):
-        """Test the learning providers page is paginated."""
+    def test_learning_provider_detail_page_displays_provider(self):
+        """Test that the provider detail page displays provider data."""
+        response = self.client.get(
+            reverse(
+                "learning_provider_detail",
+                kwargs={"slug": self.provider.slug},
+            )
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(response, "Provider One")
+        self.assertContains(response, "A learning provider")
+        self.assertContains(response, "Python course")
+        self.assertContains(response, "R course")
+        self.assertNotContains(response, "Unrelated course")
+
+        #  test the HTML structure of the page
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        heading = soup.find("h2")
+        self.assertIsNotNone(heading)
+        self.assertEqual(heading.get_text(strip=True).lower(), "learning resources")
+
+        table = soup.find("table")
+        self.assertIsNotNone(table)
+
+        headers = {header.get_text(" ", strip=True) for header in table.find_all("th")}
+        self.assertIn("Name", headers)
+        self.assertIn("Description", headers)
+        self.assertIn("Language", headers)
+        self.assertIn("Skills", headers)
+
+    def test_learning_provider_detail_page_filters_resources(self):
+        """Test filtering resources on the provider detail page."""
+        response = self.client.get(
+            reverse(
+                "learning_provider_detail",
+                kwargs={"slug": self.provider.slug},
+            ),
+            {"q": "Python"},
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertContains(response, "Python course")
+        self.assertNotContains(response, "R course")
+        self.assertNotContains(response, "Unrelated course")
+
+    def test_learning_provider_detail_page_hides_provider_column(self):
+        """Test that the detail resource table hides the provider column.
+
+        Provider is not needed in the table as this is the provider detail page.
+        """
+        response = self.client.get(
+            reverse(
+                "learning_provider_detail",
+                kwargs={"slug": self.provider.slug},
+            )
+        )
+
+        table = response.context["learning_resources"]
+        column_names = table.columns.names()
+
+        self.assertNotIn("provider", column_names)
+        self.assertIn("skill_set", column_names)
+
+    def test_learning_provider_detail_page_returns_404_for_unknown_provider(self):
+        """Test that an unknown provider returns HTTP 404 Not Found status code."""
+        response = self.client.get(
+            reverse(
+                "learning_provider_detail",
+                kwargs={"slug": "does-not-exist"},
+            )
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_learning_providers_page_is_paginated(self):
+        """Test that view rendering the list of all learning providers is paginated."""
         for index in range(25):
             Provider.objects.create(
                 name=f"Provider {index + 3}",
                 slug=f"provider-{index + 3}",
             )
 
-        response = client.get(reverse("learning_providers"))
+        response = self.client.get(reverse("learning_providers"))
 
-        assert response.status_code == HTTPStatus.OK
-        assert response.context["is_paginated"]
-        assert response.context["paginator"].per_page == 20
-
-
-@pytest.mark.django_db
-class TestLearningProviderDetailPageView:
-    """Test the individual learning-provider detail view."""
-
-    def test_page_displays_provider(self, client, learning_provider_view_data):
-        """Test that the provider detail page displays provider data."""
-        provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug})
-        )
-
-        assert response.status_code == HTTPStatus.OK
-        assert "Provider One" in response.content.decode()
-        assert "A learning provider" in response.content.decode()
-        assert "Python course" in response.content.decode()
-        assert "R course" in response.content.decode()
-        assert "Unrelated course" not in response.content.decode()
-
-        soup = BeautifulSoup(response.content, "html.parser")
-        heading = soup.find("h2")
-        assert heading is not None
-        assert heading.get_text(strip=True).lower() == "learning resources"
-
-        table = soup.find("table")
-        assert table is not None
-        headers = {header.get_text(" ", strip=True) for header in table.find_all("th")}
-        assert {"Name", "Description", "Language", "Skills"} <= headers
-
-    def test_page_filters_resources(self, client, learning_provider_view_data):
-        """Test filtering resources on the provider detail page."""
-        provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug}),
-            {"q": "Python"},
-        )
-
-        assert response.status_code == HTTPStatus.OK
-        assert "Python course" in response.content.decode()
-        assert "R course" not in response.content.decode()
-        assert "Unrelated course" not in response.content.decode()
-
-    def test_page_hides_provider_column(self, client, learning_provider_view_data):
-        """Test that the detail resource table hides the provider column."""
-        provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug})
-        )
-
-        table = response.context["learning_resources"]
-        column_names = table.columns.names()
-        assert "provider" not in column_names
-        assert "skill_set" in column_names
-
-    def test_page_returns_404_for_unknown_provider(self, client):
-        """Test that an unknown provider returns HTTP 404 Not Found."""
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": "does-not-exist"})
-        )
-
-        assert response.status_code == HTTPStatus.NOT_FOUND
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["is_paginated"])
+        self.assertEqual(response.context["paginator"].per_page, 20)
 
 
 class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
@@ -547,45 +614,6 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
 
     def _get_url(self):
         return reverse("learning_resources")
-
-    @pytest.mark.django_db
-    def test_page_lists_resources(self, client, learning_provider_view_data):
-        """Test that the learning resources page lists its resources."""
-        response = client.get(self._get_url())
-
-        assert response.status_code == HTTPStatus.OK
-        content = response.content.decode()
-        assert "Python course" in content
-        assert "R course" in content
-        assert "Unrelated course" in content
-
-        soup = BeautifulSoup(response.content, "html.parser")
-        heading = soup.find("h1")
-        assert heading is not None
-        assert heading.get_text(strip=True).lower() == "learning resources"
-
-        table = soup.find("table")
-        assert table is not None
-        headers = {header.get_text(" ", strip=True) for header in table.find_all("th")}
-        assert {"Name", "Description", "Language", "Provider", "Skills"} <= headers
-
-    @pytest.mark.django_db
-    def test_page_filters_by_name(self, client, learning_provider_view_data):
-        """Test filtering learning resources by name."""
-        response = client.get(self._get_url(), {"q": "Python"})
-        content = response.content.decode()
-
-        assert response.status_code == HTTPStatus.OK
-        assert "Python course" in content
-        assert "R course" not in content
-        assert "Unrelated course" not in content
-
-    @pytest.mark.django_db
-    def test_page_preserves_filter_value(self, client):
-        """Test that the resource filter value is preserved."""
-        response = client.get(self._get_url(), {"q": "Python"})
-
-        assert 'value="Python"' in response.content.decode()
 
     @pytest.mark.django_db
     def test_page_content(self, learning_resource, skill, soup):

@@ -16,6 +16,7 @@ dependencies = [
     "gunicorn",
     "whitenoise",
     "django-import-export",
+    "django-filter",
     "django-multiselectfield",
     "django-tables2",
     "markdown",
