@@ -1,6 +1,5 @@
 """Views for the page-related pages of the main app."""
 
-import csv
 import json
 import logging
 from collections.abc import Mapping
@@ -13,7 +12,6 @@ import nh3
 import requests
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
-from django.templatetags.static import static
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
@@ -25,6 +23,7 @@ from django_tables2 import RequestConfig, SingleTableMixin, SingleTableView
 from ..filters import LearningResourceFilter, ProviderFilter
 from ..models import (
     CompetencyDomain,
+    Event,
     LearningResource,
     Provider,
     Skill,
@@ -203,32 +202,10 @@ class EventsPageView(TemplateView):
 
     template_name = "main/pages/events.html"
 
-    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
-        """Add events from CSV to the template context."""
+    def get_context_data(self, **kwargs: Mapping[str, object]) -> dict[str, object]:
+        """Add events from the database to the template context."""
         context = super().get_context_data(**kwargs)
-        csv_path = Path("data/events.csv")
-        events = []
-
-        if csv_path.exists():
-            with open(csv_path, newline="", encoding="utf-8") as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    events.append(
-                        {
-                            "title": row.get("Title", ""),
-                            "start_date": row.get("Start Date", ""),
-                            "end_date": row.get("End Date", ""),
-                            "description": row.get("Description", ""),
-                            "contributors": row.get("Contributors", ""),
-                            "image": static(
-                                row.get("Image", "assets/img/blog/single/image.jpg")
-                            ),
-                        }
-                    )
-
-        events.sort(key=lambda e: e["start_date"], reverse=True)
-
-        context["events"] = events
+        context["events"] = Event.objects.all()
         return context
 
 

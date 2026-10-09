@@ -22,11 +22,11 @@ colorama==0.4.6
     # via mkdocs-material
 confusable-homoglyphs==3.3.1
     # via django-registration
-crispy-bootstrap5==2026.3
+crispy-bootstrap5==2026.9
     # via direct_webapp (pyproject.toml)
 diff-match-patch==20241021
     # via django-import-export
-django==6.1
+django==6.1.1
     # via
     #   crispy-bootstrap5
     #   direct_webapp (pyproject.toml)
@@ -49,19 +49,19 @@ django-multiselectfield==1.0.1
     # via direct_webapp (pyproject.toml)
 django-registration==5.2.1
     # via direct_webapp (pyproject.toml)
-django-stubs-ext==6.1.0
+django-stubs-ext==6.1.1
     # via direct_webapp (pyproject.toml)
-django-tables2==3.0.0
+django-tables2==3.0.1
     # via direct_webapp (pyproject.toml)
 ghp-import==2.1.0
     # via
     #   mkdocs
     #   properdocs
-griffelib==2.2.0
+griffelib==2.3.0
     # via mkdocstrings-python
 gunicorn==26.2.0
     # via direct_webapp (pyproject.toml)
-idna==3.19
+idna==3.20
     # via requests
 jinja2==3.1.6
     # via
@@ -69,7 +69,7 @@ jinja2==3.1.6
     #   mkdocs-material
     #   mkdocstrings
     #   properdocs
-markdown==3.10.3
+markdown==3.11
     # via
     #   direct_webapp (pyproject.toml)
     #   mkdocs
@@ -118,7 +118,7 @@ mkdocstrings==1.0.6
     # via
     #   direct_webapp (pyproject.toml)
     #   mkdocstrings-python
-mkdocstrings-python==2.0.7
+mkdocstrings-python==2.0.9
     # via direct_webapp (pyproject.toml)
 nh3==0.3.7
     # via direct_webapp (pyproject.toml)
@@ -133,7 +133,7 @@ pathspec==1.1.1
     # via
     #   mkdocs
     #   properdocs
-platformdirs==4.11.5
+platformdirs==4.12.1
     # via
     #   mkdocs-get-deps
     #   properdocs
@@ -144,7 +144,7 @@ properdocs==1.6.7
     #   mkdocs-section-index
 pygments==2.21.0
     # via mkdocs-material
-pymdown-extensions==11.0.2
+pymdown-extensions==12.1
     # via
     #   mkdocs-material
     #   mkdocstrings
@@ -173,7 +173,7 @@ tablib==3.10.0
     # via django-import-export
 typing-extensions==4.16.0
     # via django-stubs-ext
-urllib3==2.7.0
+urllib3==2.8.0
     # via requests
 watchdog==6.0.0
     # via

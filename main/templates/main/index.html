@@ -1,12 +1,11 @@
 {% extends "main/base.html" %}
 {% load static %}
 {% load django_bootstrap5 %}
-<!--{% block title %}-->
+{#{% block title %}#}
 <!--DIgital REsearch CompeTencies Framework-->
-<!--{% endblock title %}-->
+{#{% endblock title %}#}
 {% block content %}
     <!-- Hero -->
-    <!--    {% include "main/snippets/hero.html" %}-->
     {% include "main/snippets/hero.html" %}
     <!-- Features grid -->
     <section class="container pt-5 mt-lg-3 mt-xl-4 mt-xxl-5">
@@ -26,7 +25,8 @@
                                 <i class="fa-solid fa-play"></i>
                             </a>
                         </div>
-                        <div class="w-100 flex-md-shrink-0 mx-auto" style="max-width: 472px;">
+                        <div class="w-100 flex-md-shrink-0 mx-auto"
+                             style="max-width: 472px">
                             <img src="{% static 'assets/img/landing/skills-wheel-usage.png' %}"
                                  alt="Skills wheel example"
                                  class="img-fluid">
@@ -39,7 +39,8 @@
                     <div class="card-body">
                         <h3>Chart and manage professional development</h3>
                         <p>Create individual skill profiles.</p>
-                        <a class="btn btn-lg btn-primary" href="{% url 'self_assess' %}">Create
+                        <a class="btn btn-lg btn-primary"
+                           href="{% url 'self_assess' %}">Create
                         a skills profile</a>
                     </div>
                 </div>
@@ -86,7 +87,8 @@
                     <div class="card-body">
                         <h3>Building a stronger future for digital research</h3>
                         <p class="mb-4">Browse a variety of roles across digital research themes</p>
-                        <a class="btn btn-lg btn-primary" href="{% url 'roles' %}">Explore
+                        <a class="btn btn-lg btn-primary"
+                           href="{% url 'roles' %}">Explore
                         roles</a>
                     </div>
                 </div>
@@ -126,7 +128,6 @@
                 <div class="modal-body p-0">
                     <div class="ratio ratio-16x9">
                         <iframe id="videoFrame"
-                                src=""
                                 title="YouTube video"
                                 allow="autoplay; encrypted-media"
                                 referrerpolicy="strict-origin-when-cross-origin"
