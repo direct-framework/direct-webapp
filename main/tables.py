@@ -13,10 +13,14 @@ from .models import LearningResource, Provider, Skill, ToolLanguageMethodology
 if TYPE_CHECKING:  # pragma: no cover
     from django.db.models.fields.related_descriptors import ManyRelatedManager
 
+
 external_link_html = (
-    '<a href="{}" target="_blank" rel="noopener noreferrer" class="{}">{}</a>'
+    '<a href="{}" target="_blank" rel="noopener noreferrer" '
+    'class="text-decoration-none fs-xs fw-semibold">'
+    '{}<i class="fa-solid fa-arrow-up-right-from-square ms-1" '
+    'aria-hidden="true"></i></a>'
 )
-badge_html = '<span class="badge bg-secondary fs-sm">{}</span>'
+badge_html = '<span class="badge bg-secondary">{}</span>'
 
 
 def _render_skills(qs: QuerySet[Skill]) -> SafeString:
@@ -78,12 +82,7 @@ class ProviderTable(tables.Table):
         if not value:
             return mark_safe("")
 
-        return format_html(
-            external_link_html,
-            value,
-            "",
-            "Visit website",
-        )
+        return format_html(external_link_html, value, "Visit website")
 
 
 class LearningResourceTable(tables.Table):
@@ -100,7 +99,7 @@ class LearningResourceTable(tables.Table):
 
     def render_name(self, value: str, record: LearningResource) -> SafeString:
         """Include the URL in the name."""
-        return format_html(external_link_html, record.url, "fs-lg", value)
+        return format_html(external_link_html, record.url, value)
 
     def render_description(self, value: str) -> SafeString:
         """Render the description field."""
@@ -137,7 +136,7 @@ class ToolLanguageMethodologyTable(tables.Table):
 
     def render_name(self, value: str, record: ToolLanguageMethodology) -> SafeString:
         """Include the URL in the name."""
-        return format_html(external_link_html, record.url, "fs-lg", value)
+        return format_html(external_link_html, record.url, value)
 
     def render_kind(self, value: str) -> SafeString:
         """Render the kind field as a badge."""
