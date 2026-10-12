@@ -1,7 +1,10 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
-    <head>{% include "main/snippets/head.html" %}</head>
+    <head>
+        <title>{% block title %}{{ site_title }}{% endblock title %} | {{ site_title }}</title>
+        {% include "main/snippets/head.html" %}
+    </head>
     <body>
         {% include "main/snippets/page-loading.html" %}
         <main class="page-wrapper">
