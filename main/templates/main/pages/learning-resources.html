@@ -15,7 +15,25 @@
         <div class="row">
             <div class="col pe-lg-4 pe-xl-0">
                 <h1 class="pb-2 pb-lg-3">Learning resources</h1>
-                {% render_table table %}
+                <form method="get" class="d-flex justify-content-end mb-4">
+                    <div class="input-group w-auto">
+                        <label for="resource-filter"
+                               class="visually-hidden">Search learning resources</label>
+                        <input id="resource-filter"
+                               name="q"
+                               type="search"
+                               value="{{ query }}"
+                               class="form-control"
+                               size="25"
+                               placeholder="Filter learning resources">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+                {% if table.rows %}
+                    {% render_table table %}
+                {% else %}
+                    <p>No learning resources found.</p>
+                {% endif %}
             </div>
         </div>
     </section>

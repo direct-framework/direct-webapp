@@ -1,0 +1,39 @@
+{% extends "main/base.page.html" %}
+{% load render_table from django_tables2 %}
+{% block title %}
+    Learning Providers
+{% endblock title %}
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'framework_overview' %}">Framework</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Learning providers</li>
+{% endblock breadcrumb_items %}
+{% block content %}
+    <section id="learning-providers">
+        <div class="row">
+            <div class="col pe-lg-4 pe-xl-0">
+                <h1 class="pb-2 pb-lg-3">Learning providers</h1>
+                <form method="get" class="d-flex justify-content-end mb-4">
+                    <div class="input-group w-auto">
+                        <label for="provider-filter"
+                               class="visually-hidden">Search learning providers</label>
+                        <input id="provider-filter"
+                               name="q"
+                               type="search"
+                               value="{{ query }}"
+                               class="form-control"
+                               size="25"
+                               placeholder="Filter providers">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+                {% if table.rows %}
+                    {% render_table table %}
+                {% else %}
+                    <p>No learning providers found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock content %}
