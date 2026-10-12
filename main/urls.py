@@ -73,7 +73,7 @@ urlpatterns = [
     ),
     path("framework/", include(framework_patterns)),
     path("policies/", include(policies_patterns)),
-    path("team/", views.TeamPageView.as_view(), name="team"),
+    path("our-team/", views.TeamPageView.as_view(), name="team"),
     path("get-involved/", views.GetInvolvedPageView.as_view(), name="get_involved"),
     path("events/", views.EventsPageView.as_view(), name="events"),
     path("framework-json/", views.FrameworkView.as_view(), name="framework_json"),

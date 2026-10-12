@@ -1,7 +1,7 @@
 {% extends "main/base.page.html" %}
 {% load static %}
 {% block title %}
-    Digital Research Competencies Framework
+    Our Team
 {% endblock title %}
 {% block breadcrumb_items %}
     <li class="breadcrumb-item">About</li>
@@ -44,6 +44,7 @@
                                     <li class="list-inline-item">
                                         <a href="{{ member.github }}"
                                            target="_blank"
+                                           rel="noopener noreferrer"
                                            class="text-decoration-none px-1"
                                            aria-label="View {{ member.name }} on GitHub">
                                             <i class="fa-brands fa-github"></i>
@@ -54,6 +55,7 @@
                                     <li class="list-inline-item">
                                         <a href="{{ member.twitter }}"
                                            target="_blank"
+                                           rel="noopener noreferrer"
                                            class="text-decoration-none px-1"
                                            aria-label="View {{ member.name }} on Twitter">
                                             <i class="fa-brands fa-twitter"></i>
@@ -64,6 +66,7 @@
                                     <li class="list-inline-item">
                                         <a href="{{ member.linkedin }}"
                                            target="_blank"
+                                           rel="noopener noreferrer"
                                            class="text-decoration-none px-1"
                                            aria-label="View {{ member.name }} on LinkedIn">
                                             <i class="fa-brands fa-linkedin"></i>
@@ -80,7 +83,9 @@
                 {% for contributor in contributors %}
                     <li class="list-inline-item me-3 mb-1">
                         {% if contributor.github %}
-                            <a href="{{ contributor.github }}" target="_blank">{{ contributor.name }}</a>
+                            <a href="{{ contributor.github }}"
+                               target="_blank"
+                               rel="noopener noreferrer">{{ contributor.name }}</a>
                         {% else %}
                             {{ contributor.name }}
                         {% endif %}

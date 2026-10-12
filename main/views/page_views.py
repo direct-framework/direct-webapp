@@ -238,7 +238,7 @@ class EventsPageView(TemplateView):
 class TeamPageView(TemplateView):
     """View that renders the team page from CSV."""
 
-    template_name = "main/pages/team.html"
+    template_name = "main/pages/our-team.html"
 
     def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add grouped team and contributor data to the template context."""
