@@ -1,17 +1,19 @@
 """Views for the page-related pages of the main app."""
 
+import csv
 import json
 import logging
 from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, cast
 
 import markdown
 import nh3
 import requests
 from django.db.models import Q, QuerySet
 from django.shortcuts import get_object_or_404
+from django.templatetags.static import static
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
@@ -278,7 +280,6 @@ class TeamPageView(TemplateView):
                 else:
                     team_members.append(member)
 
-        team_members.sort(key=lambda m: cast(str, m["name"]).casefold())
         contributors.sort(key=lambda m: cast(str, m["name"]).casefold())
 
         context["team_members"] = team_members
