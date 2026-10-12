@@ -645,6 +645,24 @@ class TestEventsPageView(TemplateOkMixin):
         assert isinstance(response.context["events"], QuerySet)
 
 
+class TestTeamPageView(TemplateOkMixin):
+    """Test suite for the EventsPageView."""
+
+    _template_name = "main/pages/our-team.html"
+
+    def _get_url(self):
+        return reverse("our_team")
+
+    def test_provides_required_context(self, client):
+        """Test that the our team view provides the teams context."""
+        response = client.get(self._get_url())
+        assert response.status_code == HTTPStatus.OK
+        assert "team_members" in response.context
+        assert isinstance(response.context["team_members"], list)
+        assert "contributors" in response.context
+        assert isinstance(response.context["contributors"], list)
+
+
 class TestAccountOverviewView(LoginRequiredMixin):
     """Test suite for the account_overview view."""
 
