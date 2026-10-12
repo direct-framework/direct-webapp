@@ -1,17 +1,19 @@
 """Views for the page-related pages of the main app."""
 
+import csv
 import json
 import logging
 from collections.abc import Mapping
 from json import dumps
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, cast
 
 import markdown
 import nh3
 import requests
 from django.db.models import Q, QuerySet
 from django.shortcuts import get_object_or_404
+from django.templatetags.static import static
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
@@ -230,6 +232,59 @@ class EventsPageView(TemplateView):
         """Add events from the database to the template context."""
         context = super().get_context_data(**kwargs)
         context["events"] = Event.objects.all()
+        return context
+
+
+class TeamPageView(TemplateView):
+    """View that renders the team page from CSV."""
+
+    template_name = "main/pages/our-team.html"
+
+    def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
+        """Add grouped team and contributor data to the template context."""
+        context = super().get_context_data(**kwargs)
+
+        csv_path = Path("data/team.csv")
+        team_members: list[dict[str, Any]] = []
+        contributors: list[dict[str, Any]] = []
+
+        if not csv_path.exists():
+            context["team_members"] = team_members
+            context["contributors"] = contributors
+            return context
+
+        with open(csv_path, newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
+
+            for row in reader:
+                if not row:
+                    continue
+
+                name = (row.get("name") or "").strip()
+                image_path = (row.get("image") or "").strip()
+                member = {
+                    "name": name,
+                    "role": (row.get("role") or "").strip(),
+                    "bio": (row.get("bio") or "").strip(),
+                    "image": static(image_path) if image_path else None,
+                    "email": (row.get("email") or "").strip(),
+                    "github": (row.get("github") or "").strip(),
+                    "twitter": (row.get("twitter") or "").strip(),
+                    "linkedin": (row.get("linkedin") or "").strip(),
+                }
+
+                group = (row.get("group") or "").strip().lower()
+                if group == "contributor":
+                    if name:
+                        contributors.append(member)
+                else:
+                    team_members.append(member)
+
+        contributors.sort(key=lambda m: cast(str, m["name"]).casefold())
+
+        context["team_members"] = team_members
+        context["contributors"] = contributors
+
         return context
 
 
