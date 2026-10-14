@@ -13,8 +13,10 @@ class Team(SluggedModel):
 class TeamMembership(models.Model):
     """Model for mapping Users to Teams and including a manager flag."""
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name="teams", on_delete=models.CASCADE
+    )
+    team = models.ForeignKey(Team, related_name="members", on_delete=models.CASCADE)
     manager = models.BooleanField(blank=True, default=False)
 
     class Meta:
@@ -23,3 +25,7 @@ class TeamMembership(models.Model):
         constraints = (
             models.UniqueConstraint(fields=["user", "team"], name="unique_user_team"),
         )
+
+    def __str__(self) -> str:
+        """Return the name of the model instance."""
+        return f"{self.user.username} membership of {self.team.name}"

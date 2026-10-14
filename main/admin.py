@@ -46,7 +46,7 @@ class CustomUserAdmin(UserAdmin[User]):
     readonly_fields = ("agreed_to_tos", "date_agreed")
 
 
-class CompetencyInline(admin.TabularInline[Competency, Competency]):
+class CompetencyInline(admin.TabularInline[Competency, CompetencyDomain]):
     """Inline admin class for the Competency model."""
 
     model = Competency
@@ -226,11 +226,19 @@ class CustomUserSkillsProfilesAdmin(admin.ModelAdmin[UserProxy]):
         return False
 
 
+class TeamMembershipInline(admin.TabularInline[TeamMembership, Team]):
+    """Inline admin class for the Competency model."""
+
+    model = TeamMembership
+    extra = 0
+    show_change_link = False
+    verbose_name = "Team Member"
+
+
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin[Team]):
     """Admin class for the Team model."""
 
-
-@admin.register(TeamMembership)
-class TeamMembershipAdmin(admin.ModelAdmin[TeamMembership]):
-    """Admin class for the TeamMembership model."""
+    list_display = ("name", "description")
+    search_fields = ("name", "description")
+    inlines = (TeamMembershipInline,)
