@@ -38,11 +38,20 @@
                                 {% if resource.url %}
                                     <a href="{{ resource.url }}"
                                        target="_blank"
-                                       rel="noopener noreferrer">{{ resource.name }}</a>
+                                       rel="noopener noreferrer">
+                                        {{ resource.name }}
+                                        <i class="fa-solid fa-arrow-up-right-from-square fs-xs"
+                                           aria-hidden="true"></i>
+                                    </a>
                                 {% else %}
                                     {{ resource.name }}
                                 {% endif %}
-                                {% if resource.provider %}- {{ resource.provider.name }}{% endif %}
+                                {% if resource.provider %}
+                                    - Provider:
+                                    <a href="{% url 'learning_provider_detail' resource.provider.slug %}">
+                                        {{ resource.provider.name }}
+                                    </a>
+                                {% endif %}
                             </li>
                         {% endfor %}
                     </ul>
@@ -55,7 +64,11 @@
                                 {% if item.url %}
                                     <a href="{{ item.url }}"
                                        target="_blank"
-                                       rel="noopener noreferrer">{{ item.name }}</a>
+                                       rel="noopener noreferrer">
+                                        {{ item.name }}
+                                        <i class="fa-solid fa-arrow-up-right-from-square fs-xs"
+                                           aria-hidden="true"></i>
+                                    </a>
                                 {% else %}
                                     {{ item.name }}
                                 {% endif %}
@@ -71,7 +84,11 @@
                                 {% if item.url %}
                                     <a href="{{ item.url }}"
                                        target="_blank"
-                                       rel="noopener noreferrer">{{ item.name }}</a>
+                                       rel="noopener noreferrer">
+                                        {{ item.name }}
+                                        <i class="fa-solid fa-arrow-up-right-from-square fs-xs"
+                                           aria-hidden="true"></i>
+                                    </a>
                                 {% else %}
                                     {{ item.name }}
                                 {% endif %}
@@ -87,7 +104,11 @@
                                 {% if item.url %}
                                     <a href="{{ item.url }}"
                                        target="_blank"
-                                       rel="noopener noreferrer">{{ item.name }}</a>
+                                       rel="noopener noreferrer">
+                                        {{ item.name }}
+                                        <i class="fa-solid fa-arrow-up-right-from-square fs-xs"
+                                           aria-hidden="true"></i>
+                                    </a>
                                 {% else %}
                                     {{ item.name }}
                                 {% endif %}

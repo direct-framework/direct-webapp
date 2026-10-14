@@ -16,7 +16,10 @@ def test_learning_resources_table_render_name(learning_resource: LearningResourc
 
     assert str(rendered) == (
         f'<a href="{learning_resource.url}" target="_blank" '
-        'rel="noopener noreferrer" class="fs-lg">Learning Resource</a>'
+        'rel="noopener noreferrer" '
+        'class="text-decoration-none fs-xs fw-semibold">Learning Resource'
+        '<i class="fa-solid fa-arrow-up-right-from-square ms-1" '
+        'aria-hidden="true"></i></a>'
     )
 
 
@@ -78,7 +81,10 @@ def test_tool_language_methodology_table_render_name(
 
     assert str(rendered) == (
         f'<a href="{tool.url}" target="_blank" '
-        'rel="noopener noreferrer" class="fs-lg">Tool</a>'
+        'rel="noopener noreferrer" '
+        'class="text-decoration-none fs-xs fw-semibold">Tool'
+        '<i class="fa-solid fa-arrow-up-right-from-square ms-1" '
+        'aria-hidden="true"></i></a>'
     )
 
 
@@ -91,7 +97,7 @@ def test_tool_language_methodology_table_render_kind(
 
     rendered = table.render_kind(tool.kind)
 
-    assert str(rendered) == '<span class="badge bg-secondary fs-sm">tool</span>'
+    assert str(rendered) == '<span class="badge bg-secondary">tool</span>'
 
 
 @pytest.mark.django_db
