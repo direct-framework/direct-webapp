@@ -66,8 +66,8 @@ class TestDownloadCSVDataLinkView:
         assert response.status_code == HTTPStatus.OK
         content = response.content.decode("utf-8")
         assert content.startswith("skill")
-        assert "category" in content
-        assert "subcategory" in content
+        assert "competency_domain" in content
+        assert "competency" in content
         assert "skill_level" in content
         assert user_skill.skill.name in content
         assert (
@@ -103,8 +103,8 @@ class TestDownloadUserSkillDataJSONView:
         assert isinstance(content["user_data"], list)
         if content["user_data"]:
             assert "skill" in content["user_data"][0]
-            assert "category" in content["user_data"][0]
-            assert "subcategory" in content["user_data"][0]
+            assert "competency_domain" in content["user_data"][0]
+            assert "competency" in content["user_data"][0]
             assert "skill_level" in content["user_data"][0]
 
     def test_returns_anonymous_username_when_anonymous_param_is_true(

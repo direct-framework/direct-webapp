@@ -44,8 +44,8 @@ class DownloadUserSkillDataCsvView(View):
         user_skills_data = [
             {
                 "skill": user_skill.skill.name,
-                "category": user_skill.skill.competency.competency_domain.name,
-                "subcategory": user_skill.skill.competency.name,
+                "competency_domain": user_skill.skill.competency.competency_domain.name,
+                "competency": user_skill.skill.competency.name,
                 "skill_level": user_skill.skill_level.level,
             }
             for user_skill in user_skills
@@ -63,13 +63,13 @@ class DownloadUserSkillDataCsvView(View):
             headers={"Content-Disposition": 'attachment; filename="downloaded_.csv"'},
         )
         writer = csv.writer(response)
-        writer.writerow(["skill", "category", "subcategory", "skill_level"])
+        writer.writerow(["skill", "competency_domain", "competency", "skill_level"])
         for user_skill in user_skills_data:
             writer.writerow(
                 [
                     user_skill["skill"],
-                    user_skill["category"],
-                    user_skill["subcategory"],
+                    user_skill["competency_domain"],
+                    user_skill["competency"],
                     user_skill["skill_level"],
                 ]
             )
@@ -94,8 +94,8 @@ class DownloadUserSkillDataJSONView(View):
         user_skills_data = [
             {
                 "skill": user_skill.skill.name,
-                "category": user_skill.skill.competency.competency_domain.name,
-                "subcategory": user_skill.skill.competency.name,
+                "competency_domain": user_skill.skill.competency.competency_domain.name,
+                "competency": user_skill.skill.competency.name,
                 "skill_level": user_skill.skill_level.level,
             }
             for user_skill in user_skills
