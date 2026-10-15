@@ -120,6 +120,7 @@ def event() -> Event:
         contributors="Test Contributor",
     )
 
+
 @pytest.fixture
 def client_logged_in(client, user):
     """Fixture for a client that is logged in as a user."""
