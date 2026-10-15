@@ -41,7 +41,7 @@ class DownloadUserSkillDataCsvView(TermsAcceptedMixin, View):
         user_skills_data = format_user_skill_data_for_download(request.user)
         response = HttpResponse(
             content_type="text/csv",
-            headers={"Content-Disposition": 'attachment; filename="downloaded_.csv"'},
+            headers={"Content-Disposition": 'attachment; filename="skill_profile.csv"'},
         )
         writer = csv.writer(response)
         writer.writerow(["skill", "competency_domain", "competency", "skill_level"])
@@ -78,5 +78,7 @@ class DownloadUserSkillDataJSONView(TermsAcceptedMixin, View):
         return JsonResponse(
             returned_data,
             json_dumps_params=dict(indent=2),
-            headers={"Content-Disposition": 'attachment; filename="downloaded_.json"'},
+            headers={
+                "Content-Disposition": 'attachment; filename="skill_profile.json"'
+            },
         )
