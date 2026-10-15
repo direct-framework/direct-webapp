@@ -13,16 +13,16 @@ It includes options to open a shareable link, copy the link, and export the skil
            aria-expanded="false">Share</a>
         <ul class="dropdown-menu">
             <li>
-                <a class="dropdown-item export-skill-profile-link"
-                   id="shareable-link"
+                <a class="dropdown-item"
+                   id="export-skill-profile-link"
                    href="#"
                    target="_blank"
                    rel="noopener noreferrer">Open Link <i aria-label="Copy sharable link" class="fa-solid fa-link"></i></a>
             </li>
             <li>
                 <button type="button"
-                        class="dropdown-item export-skill-profile-link-copy"
-                        id="copy-link-button">
+                        class="dropdown-item"
+                        id="export-skill-profile-link-copy">
                     Copy Link <i aria-label="Copy sharable link"
     class="fa-solid fa-copy"></i>
                 </button>
@@ -30,14 +30,14 @@ It includes options to open a shareable link, copy the link, and export the skil
             {% include "main/snippets/create_user_skill_profile_link.html" %}
             {% if allow_export %}
                 <li>
-                    <a class="dropdown-item export-skill-profile-csv"
+                    <a class="dropdown-item"
                        href="{% url 'download-csv-data-link' %}"
-                       id="copy-link-button">Export as CSV</a>
+                       id="download-csv-button">Export as CSV</a>
                 </li>
                 <li>
-                    <a class="dropdown-item export-skill-profile-json"
+                    <a class="dropdown-item"
                        href="{% url 'download-json-data-link' %}"
-                       id="copy-link-button">Export as JSON</a>
+                       id="download-json-button">Export as JSON</a>
                 </li>
             {% endif %}
         </ul>
