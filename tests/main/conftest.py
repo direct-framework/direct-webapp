@@ -119,3 +119,10 @@ def event() -> Event:
         blog="https://example.com/blog",
         contributors="Test Contributor",
     )
+
+
+@pytest.fixture
+def client_logged_in(client, user):
+    """Fixture for a client that is logged in as a user."""
+    client.force_login(user)
+    return client

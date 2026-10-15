@@ -11,8 +11,8 @@ To use add a button with the class "export-skill-profile-link" to the page and i
 <script>
   // On document load we convert the skill levels and chart data into a query string and set it as the href of the export link.
   document.addEventListener('DOMContentLoaded', function () {
-    const exportSkillProfileLink = document.querySelector('.export-skill-profile-link');
-    const exportSkillProfileLinkCopyButton = document.querySelector('.export-skill-profile-link-copy');
+    const exportSkillProfileLink = document.querySelector('#export-skill-profile-link');
+    const exportSkillProfileLinkCopyButton = document.querySelector('#export-skill-profile-link-copy');
     const skillLevels = {{ skill_levels|safe }};
     const charts = {{ chart_data|safe }};
 
