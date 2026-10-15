@@ -1,58 +1,15 @@
 """Views for getting account-related data from the framework database."""
 
 import csv
-import logging
-from typing import TYPE_CHECKING, Any
 
 from django.http import (
-    HttpRequest,
     HttpResponse,
-    HttpResponseForbidden,
     JsonResponse,
 )
-from django.http.response import HttpResponseBase
 from django.views import View
 
 from ..models import User, UserSkill
-
-logger = logging.getLogger(__name__)
-
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..models import User as UserType
-
-
-class _AuthenticatedHttpRequest(HttpRequest):
-    """Custom HttpRequest type for authenticated users."""
-
-    user: "UserType"
-
-
-class _TermsAcceptedMixin:
-    """Require authenticated users to accept terms before accessing endpoints."""
-
-    terms_acceptance_url_name = "terms_acceptance"
-
-    def dispatch(
-        self, request: HttpRequest, *args: Any, **kwargs: Any
-    ) -> HttpResponseBase:
-        """Redirect to terms acceptance page when the user has not accepted terms."""
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden(
-                "User must be authenticated to access this resource."
-            )
-
-        if not request.user.agreed_to_tos:
-            return HttpResponseForbidden(
-                "User must accept the terms of service to access this resource."
-            )
-        return super().dispatch(request, *args, **kwargs)  # type: ignore
-
-
-class AuthenticatedDataView(_TermsAcceptedMixin, View):
-    """A base view that ensures the user is authenticated formats user data."""
-
-    request: _AuthenticatedHttpRequest
+from .account_views import AuthenticatedHttpRequest, TermsAcceptedMixin
 
 
 class DownloadUserSkillDataMixin:
@@ -73,10 +30,12 @@ class DownloadUserSkillDataMixin:
         ]
 
 
-class DownloadUserSkillDataCsvView(AuthenticatedDataView, DownloadUserSkillDataMixin):
+class DownloadUserSkillDataCsvView(
+    TermsAcceptedMixin, DownloadUserSkillDataMixin, View
+):
     """A view that returns the user skill data as a CSV file."""
 
-    def get(self, request: _AuthenticatedHttpRequest) -> HttpResponse:
+    def get(self, request: AuthenticatedHttpRequest) -> HttpResponse:
         """Handle GET request to download user skill data as CSV.
 
         Args:
@@ -104,10 +63,12 @@ class DownloadUserSkillDataCsvView(AuthenticatedDataView, DownloadUserSkillDataM
         return response
 
 
-class DownloadUserSkillDataJSONView(AuthenticatedDataView, DownloadUserSkillDataMixin):
+class DownloadUserSkillDataJSONView(
+    TermsAcceptedMixin, DownloadUserSkillDataMixin, View
+):
     """A view that returns the user skill data as a JSON file."""
 
-    def get(self, request: _AuthenticatedHttpRequest) -> JsonResponse:
+    def get(self, request: AuthenticatedHttpRequest) -> JsonResponse:
         """Define the GET response.
 
         Args:

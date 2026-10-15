@@ -7,17 +7,10 @@ from http import HTTPStatus
 
 from django.urls import reverse
 
-
-class ViewRequiresAuthenticationMixin:
-    """Mixin to test that views require authentication."""
-
-    def test_unauthenticated_user_gets_403(self, client):
-        """Test that an unauthenticated user receives a 403 Forbidden response."""
-        response = client.get(self._get_url())
-        assert response.status_code == HTTPStatus.FORBIDDEN
+from .test_main_views import LoginRequiredMixin
 
 
-class DownloadUserSkillDataMixin(ViewRequiresAuthenticationMixin):
+class DownloadUserSkillDataMixin(LoginRequiredMixin):
     """Test suite for the GetUserSkillsDataMixin."""
 
     _url: str
