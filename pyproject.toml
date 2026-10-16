@@ -21,8 +21,8 @@ dependencies = [
     "markdown",
     "nh3",
     "requests",
-    "django-filter"
-
+    "django-filter",
+    "django-guardian",
 ]
 
 [project.optional-dependencies]
