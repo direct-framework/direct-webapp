@@ -92,4 +92,6 @@ urlpatterns = [
         views.ViewSkillProfilePageView.as_view(),
         name="view_skill_profile",
     ),
+    path("my-teams/", views.MyTeamPageView.as_view(), name="my-teams"),
+    path("create-team/", views.CreateTeamPageView.as_view(), name="create-team"),
 ]
