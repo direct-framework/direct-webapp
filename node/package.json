@@ -7,18 +7,18 @@
     "main": "index.html",
     "scripts": {
         "build": "npm-run-all --silent -p styles:expanded styles:minified scripts:expanded scripts:minified vendor --silent",
-        "styles:expanded": "node node/build/styles.js expanded",
-        "styles:minified": "node node/build/styles.js minified",
-        "scripts:expanded": "node node/build/scripts.js expanded",
-        "scripts:minified": "node node/build/scripts.js minified",
-        "vendor": "node node/build/vendor.js",
+        "styles:expanded": "node build/styles.js expanded",
+        "styles:minified": "node build/styles.js minified",
+        "scripts:expanded": "node build/scripts.js expanded",
+        "scripts:minified": "node build/scripts.js minified",
+        "vendor": "node build/vendor.js",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
         "test": "vitest",
         "test-ui": "vitest --ui",
         "test-ci": "vitest --run",
-        "lint": "eslint node --ext .js",
-        "lint:fix": "eslint node --ext .js --fix"
+        "lint": "eslint build src stories --ext .js",
+        "lint:fix": "eslint build src stories --ext .js --fix"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.23.3",

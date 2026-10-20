@@ -1,4 +1,4 @@
-const { execSync } = require('child_process')
+const { execFileSync } = require('child_process')
 const path = require('./config')
 const stylelint = require('stylelint')
 const autoprefixer = require('autoprefixer')
@@ -10,9 +10,9 @@ const log = configureLogger('Styles')
 
 const output = process.argv[2] || 'expanded'
 
-function runScript(alias, script) {
+function runScript(alias, command, args) {
   try {
-    const stdout = execSync(script).toString()
+    const stdout = execFileSync(command, args).toString()
     log.success(`${alias}: ${stdout.trim()}`)
   } catch (error) {
     log.error('', `Task ${alias} hasn't been completed! ${error.stdout.toString()}`)
@@ -38,10 +38,18 @@ const lintScss = async () => {
 
 const runSass = async (outputStyle) => {
   const outputFile = outputStyle === 'compressed' ? '.min' : ''
-  const sassCommand = `sass --style ${outputStyle} --source-map --embed-sources --no-error-css --load-path=node_modules ${path.scss}/theme.scss:${path.css}/theme${outputFile}.css`
+  const sassArgs = [
+    '--style',
+    outputStyle,
+    '--source-map',
+    '--embed-sources',
+    '--no-error-css',
+    '--load-path=node_modules',
+    `${path.scss}/theme.scss:${path.css}/theme${outputFile}.css`,
+  ]
 
   log.info(`Building ${outputStyle} CSS...`)
-  runScript(`Compile SCSS to CSS (${outputStyle})`, sassCommand)
+  runScript(`Compile SCSS to CSS (${outputStyle})`, 'sass', sassArgs)
 
   const cssPath = `${path.css}/theme${outputFile}.css`
   const cssMapPath = `${path.css}/theme${outputFile}.css.map`

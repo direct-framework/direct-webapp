@@ -159,7 +159,14 @@ Versions can be restricted from updating within the `pyproject.toml` using stand
 
 ## Frontend Node
 
-This project includes an NPM-based setup for managing front-end assets like styles, scripts, and other resources. The `package.json` file contains predefined scripts to help with building and managing assets. You don't need to run these NPM commands if you are developing the Django app locally. You should only run these commands when needed, for example if you are changing javascript dependencies or modifying SCSS files.
+The front-end build is contained in [node/](node/README.md), including its package
+manifest, lockfile, tooling configuration, sources and tests. You do not need
+Node.js to develop Django pages using the committed assets. Only rebuild when
+changing front-end sources or dependencies.
+
+Run npm commands from `node/`, or use `npm --prefix node` from the repository root.
+Built assets remain in `main/static/assets/`; Django deployment still consumes
+those assets without running npm.
 
 See [Frontend Node](node/README.md) for details on working with the NPM-based frontend asset pipeline.
 
