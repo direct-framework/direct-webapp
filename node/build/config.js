@@ -1,8 +1,10 @@
+const { resolve } = require('node:path')
+
 const path = {
-  scss: 'node/src/scss',
-  src_js: 'node/src/js',
-  js: 'main/static/assets/js',
-  css: 'main/static/assets/css',
+  scss: resolve(__dirname, '../src/scss'),
+  src_js: resolve(__dirname, '../src/js'),
+  js: resolve(__dirname, '../../main/static/assets/js'),
+  css: resolve(__dirname, '../../main/static/assets/css'),
 }
 
 module.exports = path

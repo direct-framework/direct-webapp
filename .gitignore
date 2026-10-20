@@ -156,3 +156,4 @@ bower_components/
 main/static/assets/img2
 
 *storybook.log
+node/storybook-static/

@@ -33,7 +33,7 @@ const bundleJS = async (output) => {
     const outputFilename = isMinified ? 'main.min.js' : 'main.js'
 
     const inputOptions = {
-      input: `./${path.src_js}/theme.js`,
+      input: `${path.src_js}/theme.js`,
       plugins: [
         nodeResolve(),
         babel({
