@@ -56,6 +56,37 @@ A person's collection of skill assessments.
 A visualisation of a skill profile.
 _Alias_: Skill wheel.
 
+## Teams
+
+**Team**:
+A group of people who share their skill profiles for collaboration. A team is
+visible only to its members.
+
+**Team member**:
+A person who has accepted an invitation to a team. Members can see the team, its
+aggregate skill profile, the names of the other members and who the managers
+are, but not other members' skill profiles. A member may leave
+a team at any time, which ends any access others had to their skill profile
+through that team.
+
+**Team manager**:
+A team member who administers the team. Managers can see every member's whole
+skill profile, edit or delete the team, invite and remove members, and promote or
+demote managers. A team always has at least one manager; whoever creates a team is its
+first manager.
+_Avoid_: Owner, admin.
+
+**Team invitation**:
+An offer from a team manager for a registered person to join a team. The person
+becomes a team member only after accepting it; a pending invitation grants no
+access. The invitee may decline it and any manager may withdraw it. A person has
+at most one pending invitation per team.
+
+**Aggregate skill profile**:
+A combined view of the skill profiles of a team's members. It is only shown when
+enough members contribute that no individual's skill profile can be deduced
+from it.
+
 ## Sources
 
 Definitions are summarised locally so external access is optional:
