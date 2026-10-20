@@ -5,6 +5,7 @@ from typing import Any
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.http import HttpRequest
+from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
 
 from .io_resources import (
@@ -236,7 +237,7 @@ class TeamMembershipInline(admin.TabularInline[TeamMembership, Team]):
 
 
 @admin.register(Team)
-class TeamAdmin(admin.ModelAdmin[Team]):
+class TeamAdmin(GuardedModelAdmin):
     """Admin class for the Team model."""
 
     list_display = ("name", "description")
