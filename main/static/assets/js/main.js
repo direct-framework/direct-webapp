@@ -4259,9 +4259,8 @@ var main = (function () {
     categories,
     groupedByCategory
   }) => {
-    var _d3$max, _d3$min;
-    const maxLvl = (_d3$max = max$1(levels, d => d.level)) != null ? _d3$max : 0;
-    const minLvl = (_d3$min = min$1(levels, d => d.level)) != null ? _d3$min : 0;
+    const maxLvl = max$1(levels, d => d.level) ?? 0;
+    const minLvl = min$1(levels, d => d.level) ?? 0;
     const lvlsArray = levels.sort((a, b) => a.level - b.level);
 
     /* Total angle used by skills. Remaining is left blank */
@@ -4277,33 +4276,24 @@ var main = (function () {
     /* Calculate the start angle for each category based on the number of skills
         in each category and the position of previous categories
         */
-    const categoryStartAngle = categories.reduce((acc, category) => {
-      var _groupedByCategory$ge, _groupedByCategory$ge2, _groupedByCategory$ge3, _groupedByCategory$ge4;
-      return [...acc, (acc[acc.length - 1] + (((_groupedByCategory$ge = (_groupedByCategory$ge2 = groupedByCategory.get(category.id)) == null ? void 0 : _groupedByCategory$ge2.length) != null ? _groupedByCategory$ge : 0) * columnAngle + ((_groupedByCategory$ge3 = (_groupedByCategory$ge4 = groupedByCategory.get(category.id)) == null ? void 0 : _groupedByCategory$ge4.length) != null ? _groupedByCategory$ge3 : 0) * skillPadding + categoryPadding)) % (Math.PI * 2)];
-    }, [fullCircleAngle * arcStartOffset]);
+    const categoryStartAngle = categories.reduce((acc, category) => [...acc, (acc[acc.length - 1] + ((groupedByCategory.get(category.id)?.length ?? 0) * columnAngle + (groupedByCategory.get(category.id)?.length ?? 0) * skillPadding + categoryPadding)) % (Math.PI * 2)], [fullCircleAngle * arcStartOffset]);
 
     /* Convert the category start angles to a map for easy access
        categoryStartAngleMap: Record<Category, number>
       */
-    const categoryStartAngleMap = categoryStartAngle.slice(0, -1).reduce((acc, v, i) => {
-      var _categories$i;
-      return {
-        ...acc,
-        [(_categories$i = categories[i]) == null ? void 0 : _categories$i.id]: v
-      };
-    }, {});
+    const categoryStartAngleMap = categoryStartAngle.slice(0, -1).reduce((acc, v, i) => ({
+      ...acc,
+      [categories[i]?.id]: v
+    }), {});
     /* Calculate the start angle for each skill based on the category start angle
         and the position of previous skills.
         Stored as a map where key = category-skill
          skillAngleStart: Record<string, number>
       */
-    const skillAngleStart = skillsData.reduce((acc, d) => {
-      var _groupedByCategory$ge5, _groupedByCategory$ge6, _groupedByCategory$ge7, _groupedByCategory$ge8;
-      return {
-        ...acc,
-        [`${d.category}-${d.skill}`]: categoryStartAngleMap[d.category] + skillPadding + ((_groupedByCategory$ge5 = (_groupedByCategory$ge6 = groupedByCategory.get(d.category)) == null ? void 0 : _groupedByCategory$ge6.findIndex(s => s.skill == d.skill)) != null ? _groupedByCategory$ge5 : 0) * columnAngle + ((_groupedByCategory$ge7 = (_groupedByCategory$ge8 = groupedByCategory.get(d.category)) == null ? void 0 : _groupedByCategory$ge8.findIndex(s => s.skill == d.skill)) != null ? _groupedByCategory$ge7 : 0) * skillPadding
-      };
-    }, {});
+    const skillAngleStart = skillsData.reduce((acc, d) => ({
+      ...acc,
+      [`${d.category}-${d.skill}`]: categoryStartAngleMap[d.category] + skillPadding + (groupedByCategory.get(d.category)?.findIndex(s => s.skill == d.skill) ?? 0) * columnAngle + (groupedByCategory.get(d.category)?.findIndex(s => s.skill == d.skill) ?? 0) * skillPadding
+    }), {});
 
     /* Function to get skill AngleStart using the data item
        args:
@@ -4329,10 +4319,7 @@ var main = (function () {
     .padRadius(-1).padAngle(0.01);
 
     /* A d3.js arc generator for the arc that is at the base of the category. */
-    const categoryBaseArc = arc().innerRadius(innerRadius - 1).outerRadius(innerRadius - 3).startAngle(category => categoryStartAngleMap[category]).endAngle(category => {
-      var _groupedByCategory$ge9, _groupedByCategory$ge0, _groupedByCategory$ge1, _groupedByCategory$ge10;
-      return categoryStartAngleMap[category] + columnAngle * ((_groupedByCategory$ge9 = (_groupedByCategory$ge0 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge0.length) != null ? _groupedByCategory$ge9 : 0) + ((_groupedByCategory$ge1 = (_groupedByCategory$ge10 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge10.length) != null ? _groupedByCategory$ge1 : 0) * skillPadding;
-    });
+    const categoryBaseArc = arc().innerRadius(innerRadius - 1).outerRadius(innerRadius - 3).startAngle(category => categoryStartAngleMap[category]).endAngle(category => categoryStartAngleMap[category] + columnAngle * (groupedByCategory.get(category)?.length ?? 0) + (groupedByCategory.get(category)?.length ?? 0) * skillPadding);
     const thicknessOfLvlRing = 0.5;
     /* A d3.js arc generator for the ring that shows each level for the entire plot */
     const lvlRing = arc().innerRadius(lvl => lvlHeight(lvl + 1) - thicknessOfLvlRing) // use + 1 as ring at top of lvl
@@ -4398,14 +4385,11 @@ var main = (function () {
       color: colorFn(d.category)
     }));
     const groupedByCategory = group(augmentedData, d => d.category);
-    const categoriesData = sortedCategories.map(cat => {
-      var _groupedByCategory$ge11;
-      return {
-        id: cat,
-        skills: (_groupedByCategory$ge11 = groupedByCategory.get(cat)) != null ? _groupedByCategory$ge11 : [],
-        color: colorFn(cat)
-      };
-    });
+    const categoriesData = sortedCategories.map(cat => ({
+      id: cat,
+      skills: groupedByCategory.get(cat) ?? [],
+      color: colorFn(cat)
+    }));
     return {
       sortedCategories: categoriesData,
       groupedByCategory,
@@ -4670,7 +4654,7 @@ var main = (function () {
       plotYOffset = 0,
       fontSize = 14
     } = config;
-    const height = _height != null ? _height : width * 0.8; // Width needs to be larger than height to fit cat labels
+    const height = _height ?? width * 0.8; // Width needs to be larger than height to fit cat labels
     const outerRadius = Math.min(width, height) / 2 - outerPadding;
     config.height = height; // Update config with calculated height
     config.outerRadius = config.outerRadius || outerRadius;
@@ -4767,7 +4751,6 @@ var main = (function () {
         svg.selectAll('.label-box').transition(t).attr('opacity', 0.8);
         group.selectAll('.skill-highlight-text-skill-central').remove();
       } else {
-        var _lvlsArray$find;
         /* User hovered over a skill so we show additional details
         in the centre of the plot and highlight the category annotation */
 
@@ -4789,7 +4772,7 @@ var main = (function () {
         group.select('.skill-highlight-text-skill').selectAll('skill-highlight-text-skill-central').data(skillTextSplit).enter().append('text').attr('font-size', fontSize).attr('x', 0).attr('y', (_, i) => -(0.5 * fontSize * skillTextSplit.length / 2) + i * fontSize * 1.2).attr('class', 'skill-highlight-text-skill-central').attr('text-anchor', 'middle').attr('fill', labelTextColor).text(skillText => skillText);
 
         // Skill level text
-        group.select('.skill-highlight-text-lvl').transition(t).attr('opacity', 1).text((_lvlsArray$find = lvlsArray.find(lvl => lvl.level === highlightedSkill.skill_level)) == null ? void 0 : _lvlsArray$find.name);
+        group.select('.skill-highlight-text-lvl').transition(t).attr('opacity', 1).text(lvlsArray.find(lvl => lvl.level === highlightedSkill.skill_level)?.name);
         group.select('.skill-highlight-text-lvl-line').transition(t).attr('opacity', 1);
         svg.select(`.Annotation-${highlightedSkill.category.replaceAll(' ', '-')}`).selectAll('.highlight-line').transition(t)
         // .attr('fill', "#333")
