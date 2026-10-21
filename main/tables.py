@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 external_link_html = (
     '<a href="{}" target="_blank" rel="noopener noreferrer" '
-    'class="text-decoration-none fs-xs fw-semibold">'
+    'class="fs-xs fw-semibold">'
     '{}<i class="fa-solid fa-arrow-up-right-from-square ms-1" '
     'aria-hidden="true"></i></a>'
 )
@@ -131,7 +131,7 @@ class ToolLanguageMethodologyTable(tables.Table):
         """Meta options for the ToolLanguageMethodologyTable."""
 
         model = ToolLanguageMethodology
-        fields = ("name", "kind")
+        fields = ("name", "description", "kind")
         order_by = "name"
 
     def render_name(self, value: str, record: ToolLanguageMethodology) -> SafeString:
