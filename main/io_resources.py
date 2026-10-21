@@ -272,16 +272,38 @@ class EventResource(resources.ModelResource):
         exclude = ("id",)
 
 
-def export_framework() -> dict[str, list[dict[str, str]]]:
-    """Exports the core framework into one dictionary with each model as a key.
+def export_skills_competencies() -> dict[str, Any]:
+    """Export all competency domains, competencies and skills in the framework.
 
     Returns:
-        A dictionary containing the entire framework. Each model is labelled by a key
-            and is a list of dictionaries. This is JSON compatible.
+        A dictionary containing the list of competency domains and competencies
+        and skills in the framework.
     """
-    return dict(
-        competency_domains=CompetencyDomainResource().export().dict,
-        competencies=CompetencyResource().export().dict,
-        skills=SkillResource().export().dict,
-        skill_levels=SkillLevelResource().export().dict,
-    )
+    domains = CompetencyDomain.objects.prefetch_related("competency_set__skill_set")
+
+    return {
+        "competency_domains": [
+            {
+                "slug": domain.slug,
+                "name": domain.name,
+                "description": domain.description,
+                "competencies": [
+                    {
+                        "slug": competency.slug,
+                        "name": competency.name,
+                        "description": competency.description,
+                        "skills": [
+                            {
+                                "slug": skill.slug,
+                                "name": skill.name,
+                                "description": skill.description,
+                            }
+                            for skill in competency.skill_set.all()
+                        ],
+                    }
+                    for competency in domain.competency_set.all()
+                ],
+            }
+            for domain in domains
+        ]
+    }
