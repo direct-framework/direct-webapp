@@ -40,7 +40,6 @@ nav:
       - Testing: agents/testing.md
       - Templates and styling: agents/templates.md
       - Issue tracker: agents/issue-tracker.md
-      - Domain docs: agents/domain.md
   - Node: node/
   # defer to gen-files + literate-nav
   - Code Reference: reference/
