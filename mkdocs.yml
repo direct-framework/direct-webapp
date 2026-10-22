@@ -39,7 +39,6 @@ nav:
       - Development conventions: agents/development.md
       - Testing: agents/testing.md
       - Templates and styling: agents/templates.md
-      - Issue tracker: agents/issue-tracker.md
   - Node: node/
   # defer to gen-files + literate-nav
   - Code Reference: reference/

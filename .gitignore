@@ -156,6 +156,3 @@ bower_components/
 main/static/assets/img2
 
 *storybook.log
-
-# Agent task tracking from skills
-.scratch/

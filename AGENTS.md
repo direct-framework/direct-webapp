@@ -14,14 +14,7 @@ and [Development conventions](docs/agents/development.md).
 Keep changes scoped to the request and preserve existing behavior unless a change
 is agreed. Discuss new dependencies and substantial architectural changes first.
 
-## Agent workflows
-
-### Issue tracker
-
-Issues and specs live as markdown files under `.scratch/<feature>/`.
-See [Issue tracker](docs/agents/issue-tracker.md).
-
-### Domain docs
+## Domain docs
 
 Before framework or self-assessment work, read the
 [DIRECT glossary](GLOSSARY.md). It contains the minimal local definitions;
