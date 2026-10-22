@@ -40,8 +40,7 @@ the test still needs to assert the relevant content.
 These helpers are a starting point, not complete behavioral coverage. Add
 view-specific assertions for the behavior being changed, such as context values,
 POST validation and saves, redirects, emails, download payloads and headers, or
-access rules beyond anonymous login redirection. For download examples, see
-`tests/main/test_account_data_views.py`.
+access rules beyond anonymous login redirection.
 
 ## Running tests
 
