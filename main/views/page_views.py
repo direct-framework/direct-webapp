@@ -349,7 +349,7 @@ class SkillPageView(DetailView[Skill]):
         """Add the selected skill and related data to the template context."""
         context = super().get_context_data(**kwargs)
 
-        skill = cast(Skill, self.object)
+        skill = self.object
 
         tools_qs = skill.tools.all().order_by("name")
         context["skill"] = skill
