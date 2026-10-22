@@ -45,30 +45,35 @@ Use [Django architecture](architecture.md) for code placement, and
 ## Checks and handover
 
 Run commands from the repository root in the configured development environment.
-For changed files, invoke the configured checks with their actual paths, for
-example:
+For changed files, use the configured checks with their actual paths. Pre-commit
+hooks can modify files, so inspect their changes and rerun affected checks until
+they pass. Use the relevant checks for the files being changed rather than adding
+a parallel set of style rules. For example:
 
 ```bash
 pre-commit run --files main/forms.py tests/main/test_forms.py
 mypy .
 ```
 
-Pre-commit hooks can modify files. Inspect their changes and rerun affected checks
-until they pass. Use the relevant checks for the files being changed rather than
-adding a parallel set of style rules.
-
-Before handing over Python/Django changes, run the full Python test suite as
-specified in [Testing](testing.md), as well as applicable configured checks.
-Update directly related documentation and examples for feature changes, following
-`CONTRIBUTING.md`.
-
-For documentation changes, run the relevant Markdown/spelling checks and the
+For Python/Django changes, the full Python test suite is specified in
+[Testing](testing.md); applicable configured checks should also be run. For
+feature changes, update directly related documentation and examples, following
+`CONTRIBUTING.md`. For documentation changes, run the pre-commit checks and the
 documentation build:
 
 ```bash
+pre-commit run --files <relevant-file-paths>
 mkdocs build --strict
 ```
 
-At handover, report the commands run and their results, including failures or
-checks that could not run. Distinguish a pre-existing failure from one introduced
-by the change; an unrun check is not a passing check.
+At handover, report commands run and their results, including failures or checks
+that could not run. Distinguish a pre-existing failure from one introduced by
+the change; an unrun check is not a passing check.
+
+Before handover:
+
+- Run the full Python test suite for Python/Django changes.
+- Update directly related documentation and examples for feature changes.
+- Run pre-commit checks on changed files.
+- Run the documentation build for documentation changes.
+- Report commands run and their results.
