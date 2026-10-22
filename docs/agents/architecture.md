@@ -38,10 +38,6 @@ request's user for personal data. Existing access behavior includes authenticati
 and terms acceptance through `TermsAcceptedMixin`; inspect the relevant view and
 its tests before extending that behavior.
 
-For resolved terminology and significant domain decisions, follow the existing
-[domain documentation workflow](domain.md). This guide is not a replacement for a
-glossary.
-
 ## Defaults for new and changed code
 
 - Extend `main` and its existing module groups by default. Discuss a genuinely
