@@ -18,9 +18,8 @@ Match the relevant base's blocks instead of copying the page shell. Reuse
 without spreading them into new pages or refactoring them during unrelated work.
 
 Keep business rules in Python; templates render the context supplied by views and
-context processors. The project context processors include `site_title`.
-Coordinate view context, form layout, and template changes, using the shared
-view-test helpers described in [Testing](testing.md).
+context processors. Coordinate view context, form layout, and template changes, using
+the shared view-test helpers described in [Testing](testing.md).
 
 Use Django URL reversing for application links and the `static` template tag for
 static assets, following nearby templates.
