@@ -36,7 +36,7 @@ This Django project uses:
 
 ## Installation
 
-You must have **Python version 3.12 or later** installed.
+You must have **Python version 3.14 or later** installed.
 
 To get started:
 
