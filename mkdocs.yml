@@ -34,6 +34,11 @@ plugins:
 
 nav:
   - DIRECT WebApp documentation: index.md
+  - Developer Guide:
+      - Django architecture: dev-guide/architecture.md
+      - Development conventions: dev-guide/development.md
+      - Testing: dev-guide/testing.md
+      - Templates and styling: dev-guide/templates.md
   - Node: node/
   # defer to gen-files + literate-nav
   - Code Reference: reference/
