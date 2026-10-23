@@ -71,7 +71,7 @@ Run the configured `djlint-django` and `djlint-reformat-django` pre-commit hooks
 for changed templates. Use `pyproject.toml` as the authority for djlint rules and
 existing exceptions; do not add a separate formatting convention.
 
-For unavoidable SCSS changes, use the existing stylesheet scripts:
+For unavoidable SCSS changes, use the existing stylesheet scripts from `node/`:
 
 ```bash
 npm run styles:expanded
@@ -79,7 +79,8 @@ npm run styles:minified
 ```
 
 These scripts lint SCSS with Stylelint before compiling the theme. Stylelint
-rules live in `.stylelintrc.json`. The broader `npm run build` also builds
+rules live in `node/.stylelintrc.json`. From the repository root, use
+`npm --prefix node run <script>` instead. The broader `npm run build` also builds
 JavaScript and is not a CSS-only check.
 
 Inspect any generated stylesheet changes, exercise affected templates with the

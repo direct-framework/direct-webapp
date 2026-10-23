@@ -1,6 +1,6 @@
 *.scss
 *.html
 dist
-main/static/assets
+storybook-static
 node_modules
 .browserslistrc

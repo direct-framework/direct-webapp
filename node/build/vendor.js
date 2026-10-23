@@ -5,7 +5,7 @@ const commonjs = require('@rollup/plugin-commonjs')
 const terser = require('@rollup/plugin-terser')
 const virtual = require('@rollup/plugin-virtual')
 const fs = require('fs-extra')
-const packageFile = require('../../package.json')
+const packageFile = require('../package.json')
 const configureLogger = require('./logger')
 
 const log = configureLogger('Vendor')
