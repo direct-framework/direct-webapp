@@ -726,6 +726,14 @@ class TestSkillPageView(TemplateOkMixin):
         assert "skill" in response.context
         assert response.context["skill"] == skill
 
+        resource_table = response.context["learning_resources_table"]
+        assert "skill_set" not in resource_table.columns.names()
+
+        for table_name in ("tools_table", "languages_table", "methodologies_table"):
+            column_names = response.context[table_name].columns.names()
+            assert "skill_set" not in column_names
+            assert "kind" not in column_names
+
     @pytest.mark.django_db
     def test_404_for_nonexistent_skill(self, client):
         """Test that requesting a non-existent skill returns a 404."""

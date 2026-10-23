@@ -17734,4 +17734,9 @@ html {
   margin: auto;
 }
 
+.breadcrumb-item:hover > .competency-pathway-link,
+.breadcrumb-item > .competency-pathway-link:focus-visible {
+  color: var(--ar-primary);
+}
+
 /*# sourceMappingURL=theme.css.map */

@@ -12,7 +12,6 @@ import markdown
 import nh3
 import requests
 from django.db.models import Q, QuerySet
-from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
@@ -328,39 +327,46 @@ class SkillsAndCompetenciesPageView(TemplateView):
         return context
 
 
-class SkillPageView(TemplateView):
+class SkillPageView(DetailView[Skill]):
     """View that renders a single skill page."""
 
+    model = Skill
+    context_object_name = "skill"
     template_name = "main/pages/skill.html"
 
     def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add the selected skill and related data to the template context."""
         context = super().get_context_data(**kwargs)
 
-        slug = self.kwargs["slug"]
-        skill = get_object_or_404(
-            Skill.objects.select_related(
-                "competency",
-                "competency__competency_domain",
-            ).prefetch_related(
-                "related_skills",
-                "learning_resources__provider",
-                "tools",
-            ),
-            slug=slug,
-        )
-
+        skill = self.object
         tools_qs = skill.tools.all().order_by("name")
-        context["skill"] = skill
-        context["related_skills"] = skill.related_skills.all().order_by("name")
-        context["learning_resources"] = skill.learning_resources.all().order_by("name")
-        context["tools"] = tools_qs.filter(kind=ToolLanguageMethodology.Kind.TOOL)
-        context["languages"] = tools_qs.filter(
-            kind=ToolLanguageMethodology.Kind.LANGUAGE
-        )
-        context["methodologies"] = tools_qs.filter(
-            kind=ToolLanguageMethodology.Kind.METHODOLOGY
-        )
+
+        tables = {
+            "learning_resources_table": LearningResourceTable(
+                skill.learning_resources.all().order_by("name"),
+                exclude=("skill_set",),
+                prefix="resources-",
+            ),
+            "tools_table": ToolLanguageMethodologyTable(
+                tools_qs.filter(kind=ToolLanguageMethodology.Kind.TOOL),
+                exclude=("skill_set", "kind"),
+                prefix="tools-",
+            ),
+            "languages_table": ToolLanguageMethodologyTable(
+                tools_qs.filter(kind=ToolLanguageMethodology.Kind.LANGUAGE),
+                exclude=("skill_set", "kind"),
+                prefix="languages-",
+            ),
+            "methodologies_table": ToolLanguageMethodologyTable(
+                tools_qs.filter(kind=ToolLanguageMethodology.Kind.METHODOLOGY),
+                exclude=("skill_set", "kind"),
+                prefix="methodologies-",
+            ),
+        }
+        request_config = RequestConfig(self.request, paginate=False)
+        for name, table in tables.items():
+            request_config.configure(table)
+            context[name] = table
 
         return context
 
