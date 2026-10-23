@@ -334,54 +334,31 @@ class SkillPageView(DetailView[Skill]):
     context_object_name = "skill"
     template_name = "main/pages/skill.html"
 
-    def get_queryset(self) -> QuerySet[Skill]:
-        """Return the skill with related data needed by the page and table."""
-        return Skill.objects.select_related(
-            "competency",
-            "competency__competency_domain",
-        ).prefetch_related(
-            "related_skills",
-            "learning_resources__provider",
-            "tools",
-        )
-
     def get_context_data(self, **kwargs: Mapping[str, Any]) -> dict[str, Any]:
         """Add the selected skill and related data to the template context."""
         context = super().get_context_data(**kwargs)
 
         skill = self.object
-
         tools_qs = skill.tools.all().order_by("name")
-        context["skill"] = skill
-        context["related_skills"] = skill.related_skills.all().order_by("name")
-        learning_resources = skill.learning_resources.all().order_by("name")
-        context["learning_resources"] = learning_resources
-        context["tools"] = tools_qs.filter(kind=ToolLanguageMethodology.Kind.TOOL)
-        context["languages"] = tools_qs.filter(
-            kind=ToolLanguageMethodology.Kind.LANGUAGE
-        )
-        context["methodologies"] = tools_qs.filter(
-            kind=ToolLanguageMethodology.Kind.METHODOLOGY
-        )
 
         tables = {
             "learning_resources_table": LearningResourceTable(
-                learning_resources,
+                skill.learning_resources.all().order_by("name"),
                 exclude=("skill_set",),
                 prefix="resources-",
             ),
             "tools_table": ToolLanguageMethodologyTable(
-                context["tools"],
+                tools_qs.filter(kind=ToolLanguageMethodology.Kind.TOOL),
                 exclude=("skill_set", "kind"),
                 prefix="tools-",
             ),
             "languages_table": ToolLanguageMethodologyTable(
-                context["languages"],
+                tools_qs.filter(kind=ToolLanguageMethodology.Kind.LANGUAGE),
                 exclude=("skill_set", "kind"),
                 prefix="languages-",
             ),
             "methodologies_table": ToolLanguageMethodologyTable(
-                context["methodologies"],
+                tools_qs.filter(kind=ToolLanguageMethodology.Kind.METHODOLOGY),
                 exclude=("skill_set", "kind"),
                 prefix="methodologies-",
             ),

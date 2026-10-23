@@ -4330,8 +4330,8 @@ var main = (function () {
 
     /* A d3.js arc generator for the arc that is at the base of the category. */
     const categoryBaseArc = arc().innerRadius(innerRadius - 1).outerRadius(innerRadius - 3).startAngle(category => categoryStartAngleMap[category]).endAngle(category => {
-      var _groupedByCategory$ge9, _groupedByCategory$ge10, _groupedByCategory$ge11, _groupedByCategory$ge12;
-      return categoryStartAngleMap[category] + columnAngle * ((_groupedByCategory$ge9 = (_groupedByCategory$ge10 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge10.length) != null ? _groupedByCategory$ge9 : 0) + ((_groupedByCategory$ge11 = (_groupedByCategory$ge12 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge12.length) != null ? _groupedByCategory$ge11 : 0) * skillPadding;
+      var _groupedByCategory$ge9, _groupedByCategory$ge0, _groupedByCategory$ge1, _groupedByCategory$ge10;
+      return categoryStartAngleMap[category] + columnAngle * ((_groupedByCategory$ge9 = (_groupedByCategory$ge0 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge0.length) != null ? _groupedByCategory$ge9 : 0) + ((_groupedByCategory$ge1 = (_groupedByCategory$ge10 = groupedByCategory.get(category)) == null ? void 0 : _groupedByCategory$ge10.length) != null ? _groupedByCategory$ge1 : 0) * skillPadding;
     });
     const thicknessOfLvlRing = 0.5;
     /* A d3.js arc generator for the ring that shows each level for the entire plot */
@@ -4399,10 +4399,10 @@ var main = (function () {
     }));
     const groupedByCategory = group(augmentedData, d => d.category);
     const categoriesData = sortedCategories.map(cat => {
-      var _groupedByCategory$ge13;
+      var _groupedByCategory$ge11;
       return {
         id: cat,
-        skills: (_groupedByCategory$ge13 = groupedByCategory.get(cat)) != null ? _groupedByCategory$ge13 : [],
+        skills: (_groupedByCategory$ge11 = groupedByCategory.get(cat)) != null ? _groupedByCategory$ge11 : [],
         color: colorFn(cat)
       };
     });
@@ -12795,11 +12795,11 @@ var main = (function () {
    * Usage example:  main().RadialBarChart(...args)
    *
    */
-  var theme = (() => {
+  var theme = () => {
     return {
       RadialBarChart
     };
-  });
+  };
 
   return theme;
 

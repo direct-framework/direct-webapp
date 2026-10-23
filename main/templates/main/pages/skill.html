@@ -19,13 +19,33 @@
     <section id="skill_details" class="container">
         <div class="row">
             <h2>Skill: {{ skill.name }}</h2>
+            <div class="mb-4">
+                <span class="fw-semibold">Competency pathway</span>
+                <nav aria-label="Competency hierarchy">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a class="nav-link p-0 competency-pathway-link"
+                               href="{% url 'skills_and_competencies' %}#{{ skill.competency.competency_domain.slug }}">
+                                {{ skill.competency.competency_domain.name }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a class="nav-link p-0 competency-pathway-link"
+                               href="{% url 'skills_and_competencies' %}#competency-{{ skill.competency.slug }}">
+                                {{ skill.competency.name }}
+                            </a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
             <p class="fs-lg mb-4">{{ skill.description }}</p>
             {% if related_skills %}
                 <h3>Related skills</h3>
                 <ul>
                     {% for related in related_skills %}
                         <a href="{% url 'skill_detail' related.slug %}"
-                           class="btn btn-outline-primary rounded-pill btn-sm">{{ related.name }}</a>
+                           class="btn btn-outline-primary rounded-pill btn-sm">{{ related.name
+                        }}</a>
                     {% endfor %}
                 </ul>
             {% endif %}

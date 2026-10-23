@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 external_link_html = (
     '<a href="{}" target="_blank" rel="noopener noreferrer" '
-    'class="fs-xs fw-semibold">'
+    'class="fw-semibold">'
     '{}<i class="fa-solid fa-arrow-up-right-from-square ms-1" '
     'aria-hidden="true"></i></a>'
 )
@@ -134,7 +134,7 @@ class ToolLanguageMethodologyTable(tables.Table):
         fields = ("name", "description", "kind")
         order_by = "name"
 
-    def render_name(self, value: str, record: ToolLanguageMethodology) -> SafeString:
+    def rendername(self, value: str, record: ToolLanguageMethodology) -> SafeString:
         """Include the URL in the name."""
         return format_html(external_link_html, record.url, value)
 
