@@ -5,7 +5,7 @@ description = "A Django webapp for hosting the Digital Research Competencies Fra
 authors = [
     { name = "DIRECT Framework Group", email = "direct-framework@googlegroups.com" },
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
     "django",
     "django-bootstrap5",
