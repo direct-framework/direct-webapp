@@ -10,7 +10,7 @@ babel==2.18.0
     # via mkdocs-material
 backrefs==8.0
     # via mkdocs-material
-certifi==2026.10.19
+certifi==2026.10.23
     # via requests
 charset-normalizer==3.5.1
     # via requests
