@@ -77,7 +77,7 @@ def test_tool_language_methodology_table_render_name(
     """Test the tool name renders as an external link."""
     table = ToolLanguageMethodologyTable([])
 
-    rendered = table.rendername(tool.name, tool)
+    rendered = table.render_name(tool.name, tool)
 
     assert str(rendered) == (
         f'<a href="{tool.url}" target="_blank" '
