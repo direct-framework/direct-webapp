@@ -340,6 +340,7 @@ class SkillPageView(DetailView[Skill]):
 
         skill = self.object
         tools_qs = skill.tools.all().order_by("name")
+        context["related_skills"] = skill.related_skills.all().order_by("name")
 
         tables = {
             "learning_resources_table": LearningResourceTable(
