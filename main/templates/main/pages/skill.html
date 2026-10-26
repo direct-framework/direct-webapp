@@ -1,4 +1,5 @@
 {% extends "main/base.page.html" %}
+{% load render_table from django_tables2 %}
 {% block body_class %}
     bg-secondary
 {% endblock body_class %}
@@ -17,106 +18,60 @@
 {% block content %}
     <section id="skill_details" class="container">
         <div class="row">
-            <div class="col-lg-9 col-xl-8">
-                <h1 class="pb-2 pb-lg-3">Skill: {{ skill.name }}</h1>
-                <p class="fs-lg mb-4">{{ skill.description }}</p>
-                {% if related_skills %}
-                    <h2 class="h4 mt-5">Related skills</h2>
-                    <ul>
-                        {% for related in related_skills %}
-                            <li>
-                                <a href="{% url 'skill_detail' related.slug %}">{{ related.name }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                {% if learning_resources %}
-                    <h2 class="h4 mt-5">Learning resources</h2>
-                    <ul>
-                        {% for resource in learning_resources %}
-                            <li>
-                                {% if resource.url %}
-                                    <a href="{{ resource.url }}"
-                                       target="_blank"
-                                       rel="noopener noreferrer">
-                                        {{ resource.name }}
-                                        <i class="fa-solid fa-arrow-up-right-from-square fs-xs"
-                                           aria-hidden="true"></i>
-                                    </a>
-                                {% else %}
-                                    {{ resource.name }}
-                                {% endif %}
-                                {% if resource.provider %}
-                                    - Provider:
-                                    <a href="{% url 'learning_provider_detail' resource.provider.slug %}">
-                                        {{ resource.provider.name }}
-                                    </a>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                {% if tools %}
-                    <h2 class="h4 mt-5">Tools</h2>
-                    <ul>
-                        {% for item in tools %}
-                            <li>
-                                {% if item.url %}
-                                    <a href="{{ item.url }}"
-                                       target="_blank"
-                                       rel="noopener noreferrer">
-                                        {{ item.name }}
-                                        <i class="fa-solid fa-arrow-up-right-from-square fs-xs"
-                                           aria-hidden="true"></i>
-                                    </a>
-                                {% else %}
-                                    {{ item.name }}
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                {% if languages %}
-                    <h2 class="h4 mt-5">Languages</h2>
-                    <ul>
-                        {% for item in languages %}
-                            <li>
-                                {% if item.url %}
-                                    <a href="{{ item.url }}"
-                                       target="_blank"
-                                       rel="noopener noreferrer">
-                                        {{ item.name }}
-                                        <i class="fa-solid fa-arrow-up-right-from-square fs-xs"
-                                           aria-hidden="true"></i>
-                                    </a>
-                                {% else %}
-                                    {{ item.name }}
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                {% if methodologies %}
-                    <h2 class="h4 mt-5">Methodologies</h2>
-                    <ul>
-                        {% for item in methodologies %}
-                            <li>
-                                {% if item.url %}
-                                    <a href="{{ item.url }}"
-                                       target="_blank"
-                                       rel="noopener noreferrer">
-                                        {{ item.name }}
-                                        <i class="fa-solid fa-arrow-up-right-from-square fs-xs"
-                                           aria-hidden="true"></i>
-                                    </a>
-                                {% else %}
-                                    {{ item.name }}
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+            <h2>Skill: {{ skill.name }}</h2>
+            <div class="mb-4">
+                <span class="fw-semibold">Competency pathway</span>
+                <nav aria-label="Competency hierarchy">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a class="nav-link p-0 competency-pathway-link"
+                               href="{% url 'skills_and_competencies' %}#{{ skill.competency.competency_domain.slug }}">
+                                {{ skill.competency.competency_domain.name }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a class="nav-link p-0 competency-pathway-link"
+                               href="{% url 'skills_and_competencies' %}#competency-{{ skill.competency.slug }}">
+                                {{ skill.competency.name }}
+                            </a>
+                        </li>
+                    </ol>
+                </nav>
             </div>
+            <p class="fs-lg mb-4">{{ skill.description }}</p>
+            {% if related_skills %}
+                <h3>Related skills</h3>
+                <ul>
+                    {% for related in related_skills %}
+                        <a href="{% url 'skill_detail' related.slug %}"
+                           class="btn btn-outline-primary rounded-pill btn-sm">{{ related.name }}</a>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if learning_resources_table.rows %}
+                <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                    <h3>Learning resources</h3>
+                    {% render_table learning_resources_table %}
+                </section>
+            {% endif %}
+            {% if tools_table.rows %}
+                <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                    <h3>Computational tools</h3>
+                    {% render_table tools_table %}
+                </section>
+            {% endif %}
+            {% if languages_table.rows %}
+                <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                    <h3>Programming or data languages</h3>
+                    {% render_table languages_table %}
+                </section>
+            {% endif %}
+            {% if methodologies_table.rows %}
+                <section class="card border-0 py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                    <h3>Methodologies</h3>
+                    {% render_table methodologies_table %}
+                </section>
+            {% endif %}
         </div>
     </section>
 {% endblock content %}
