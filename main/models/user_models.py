@@ -1,4 +1,4 @@
-"""Models module for the main app."""
+"""Models for the user and authentication elements of the app."""
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser

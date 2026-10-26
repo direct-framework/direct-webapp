@@ -86,7 +86,8 @@ urlpatterns = [
     path("our-team/", views.TeamPageView.as_view(), name="our_team"),
     path("get-involved/", views.GetInvolvedPageView.as_view(), name="get_involved"),
     path("events/", views.EventsPageView.as_view(), name="events"),
-    path("framework-json/", views.FrameworkView.as_view(), name="framework_json"),
+    path("framework-json/", views.FrameworkJSONView.as_view(), name="framework_json"),
+    path("framework-csv/", views.FrameworkCSVView.as_view(), name="framework_csv"),
     path(
         "view_skill_profile/",
         views.ViewSkillProfilePageView.as_view(),

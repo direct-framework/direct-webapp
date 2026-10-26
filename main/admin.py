@@ -25,6 +25,8 @@ from .models import (
     Provider,
     Skill,
     SkillLevel,
+    Team,
+    TeamMembership,
     ToolLanguageMethodology,
     User,
     UserSkill,
@@ -44,7 +46,7 @@ class CustomUserAdmin(UserAdmin[User]):
     readonly_fields = ("agreed_to_tos", "date_agreed")
 
 
-class CompetencyInline(admin.TabularInline[Competency, Competency]):
+class CompetencyInline(admin.TabularInline[Competency, CompetencyDomain]):
     """Inline admin class for the Competency model."""
 
     model = Competency
@@ -222,3 +224,21 @@ class CustomUserSkillsProfilesAdmin(admin.ModelAdmin[UserProxy]):
     ) -> bool:
         """Do not allow deleting users from this view."""
         return False
+
+
+class TeamMembershipInline(admin.TabularInline[TeamMembership, Team]):
+    """Inline admin class for the Competency model."""
+
+    model = TeamMembership
+    extra = 0
+    show_change_link = False
+    verbose_name = "Team Member"
+
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin[Team]):
+    """Admin class for the Team model."""
+
+    list_display = ("name", "description")
+    search_fields = ("name", "description")
+    inlines = (TeamMembershipInline,)
