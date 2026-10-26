@@ -17,10 +17,21 @@ class User(AbstractUser):
     date_agreed = models.DateTimeField(_("date agreed"), blank=True, null=True)
 
 
+class Profile(models.Model):
+    """Profile model for individual user profiles and anonymous career profiles."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True
+    )
+
+
 class UserSkill(models.Model):
     """Model for mapping users to skills and skill levels."""
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True
+    )
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     skill_level = models.ForeignKey(SkillLevel, on_delete=models.CASCADE)
 
