@@ -44,7 +44,7 @@ body:
         - **Browser**: The browser you're using (e.g., Chrome 124, Safari 17, Firefox 123)
 
         **For developers contributing to this project** (optional):
-        - **Python version**: The Python version running the server (e.g., 3.12)
+        - **Python version**: The Python version running the server (e.g., 3.14)
         - **Software versions**: The release, branch, or commit you're running (e.g., main, v0.1.0)
       value: |
         - **OS**:
