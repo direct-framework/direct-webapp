@@ -44,8 +44,7 @@
                 <ul>
                     {% for related in related_skills %}
                         <a href="{% url 'skill_detail' related.slug %}"
-                           class="btn btn-outline-primary rounded-pill btn-sm">{{ related.name
-                        }}</a>
+                           class="btn btn-outline-primary rounded-pill btn-sm">{{ related.name }}</a>
                     {% endfor %}
                 </ul>
             {% endif %}
