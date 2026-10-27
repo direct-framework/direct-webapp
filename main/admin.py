@@ -4,7 +4,6 @@ from typing import Any
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.http import HttpRequest
 from import_export.admin import ImportExportModelAdmin
 
 from .io_resources import (
@@ -22,6 +21,7 @@ from .models import (
     CompetencyDomain,
     Event,
     LearningResource,
+    Profile,
     Provider,
     Skill,
     SkillLevel,
@@ -159,13 +159,6 @@ class SkillLevelAdmin(ImportExportModelAdmin[SkillLevel]):
     resource_classes = (SkillLevelResource,)
 
 
-class UserSkillInline(admin.TabularInline[UserSkill, User]):
-    """Inline admin class for the UserSkill model."""
-
-    model = UserSkill
-    extra = 1
-
-
 @admin.register(Event)
 class EventAdmin(ImportExportModelAdmin[Event]):
     """Admin class for the Event model."""
@@ -176,54 +169,69 @@ class EventAdmin(ImportExportModelAdmin[Event]):
     resource_classes = (EventResource,)
 
 
-class UserProxy(User):
-    """A proxy model of the User model to create a User Skills admin view.
+class SkillProfileInline(admin.TabularInline[UserSkill, Profile]):
+    """Inline admin class for the SkillProfile model."""
 
-    This is required to make a second admin view tied to the User model.
-    """
-
-    class Meta:
-        """Make model a proxy and set verbose names."""
-
-        proxy = True
-        verbose_name = "User skills profile"
+    model = UserSkill
+    extra = 1
 
 
-@admin.register(UserProxy)
-class CustomUserSkillsProfilesAdmin(admin.ModelAdmin[UserProxy]):
-    """Admin class for adding UserSkills in bulk to individual Users."""
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin[Profile]):
+    """Admin class for the Profile model."""
 
-    exclude = (
-        "username",
-        "password",
-        "first_name",
-        "last_name",
-        "email",
-        "last_login",
-        "is_superuser",
-        "is_staff",
-        "is_active",
-        "date_joined",
-        "groups",
-        "user_permissions",
-        "agreed_to_tos",
-        "date_agreed",
+    fields = (
+        "user",
+        "user_first_name",
+        "user_last_name",
+        "user_email",
+        "user_is_active",
     )
-    readonly_fields = ("username", "first_name", "last_name", "email", "is_active")
-    list_display = ("username", "is_active")
-    search_fields = ("username", "email")
-    list_filter = ("is_active",)
-    inlines = (UserSkillInline,)
+    list_display = (
+        "user",
+        "user__first_name",
+        "user__last_name",
+        "user__email",
+        "user__is_active",
+    )
+    search_fields = (
+        "user__username",
+        "user__first_name",
+        "user__last_name",
+        "user__email",
+        "user__is_active",
+    )
+    list_filter = ("user__is_active",)
+    readonly_fields = fields
+    inlines = (SkillProfileInline,)
 
-    def has_add_permission(self, request: HttpRequest) -> bool:
-        """Do not allow adding new users from this view."""
-        return False
+    @admin.display(description="First name", ordering="user__first_name")
+    def user_first_name(self, obj: Profile) -> str:
+        """Render user first name in the detail/edit view."""
+        if obj.user is None:
+            return ""
+        return obj.user.first_name
 
-    def has_delete_permission(
-        self, request: HttpRequest, obj: UserProxy | None = None
-    ) -> bool:
-        """Do not allow deleting users from this view."""
-        return False
+    @admin.display(description="Last name", ordering="user__last_name")
+    def user_last_name(self, obj: Profile) -> str:
+        """Render user last name in the detail/edit view."""
+        if obj.user is None:
+            return ""
+        return obj.user.last_name
+
+    @admin.display(description="Email", ordering="user__email")
+    def user_email(self, obj: Profile) -> str:
+        """Render user email in the detail/edit view."""
+        if obj.user is None:
+            return ""
+        return obj.user.email
+
+    @admin.display(description="Active", boolean=True, ordering="user__is_active")
+    def user_is_active(self, obj: Profile) -> bool:
+        """Render user is_active status in the detail/edit view."""
+        if obj.user is None:
+            return False
+        return obj.user.is_active
 
 
 class TeamMembershipInline(admin.TabularInline[TeamMembership, Team]):
