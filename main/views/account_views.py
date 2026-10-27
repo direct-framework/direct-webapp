@@ -15,8 +15,8 @@ from django.utils import timezone
 from django.views.generic.base import RedirectView, TemplateView
 from django.views.generic.edit import FormView, UpdateView
 
-from ..forms import TermsAcceptanceForm, UserSkillsForm
-from ..models import SkillLevel, UserSkill
+from ..forms import SkillProfileForm, TermsAcceptanceForm
+from ..models import SkillLevel, SkillProfile
 
 logger = logging.getLogger(__name__)
 
@@ -78,26 +78,28 @@ class SkillProfileView(TermsAcceptedMixin, TemplateView):
     template_name = "main/user-skills-profile.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Add user skills and skill levels to the template context."""
+        """Add skill profiles and skill levels to the template context."""
         context = super().get_context_data(**kwargs)
         logger.info("Rendering skills-profile page.")
 
-        user_skills = UserSkill.objects.filter(user=self.request.user.pk)
-        user_skills_data = [
+        skill_profiles = SkillProfile.objects.filter(
+            profile__user_id=self.request.user.pk
+        )
+        skill_profile_data = [
             {
-                "skill": user_skill.skill.name,
-                "category": user_skill.skill.competency.competency_domain.name,
-                "subcategory": user_skill.skill.competency.name,
-                "skill_level": user_skill.skill_level.level,
+                "skill": skill_profile.skill.name,
+                "category": skill_profile.skill.competency.competency_domain.name,
+                "subcategory": skill_profile.skill.competency.name,
+                "skill_level": skill_profile.skill_level.level,
             }
-            for user_skill in user_skills
+            for skill_profile in skill_profiles
         ]
 
         context["chart_data"] = dumps(
             [
                 {
                     "user_id": "root",
-                    "user_data": user_skills_data,
+                    "skill_profile_data": skill_profile_data,
                 }
             ]
         )
@@ -118,7 +120,7 @@ class AccountOverviewView(TermsAcceptedMixin, RedirectView):
 
     def get_redirect_url(self, *args: Any, **kwargs: Any) -> str:
         """Redirect to skill profile if skills exist, otherwise self-assess."""
-        if UserSkill.objects.filter(user=self.request.user).exists():
+        if SkillProfile.objects.filter(profile__user=self.request.user).exists():
             return reverse("skills_profile")
         return reverse("self_assess")
 
@@ -137,23 +139,23 @@ class UserUpdateView(TermsAcceptedMixin, UpdateView["UserType", ModelForm["UserT
         return self.request.user
 
 
-class SelfAssessPageView(TermsAcceptedMixin, FormView[UserSkillsForm]):
+class SelfAssessPageView(TermsAcceptedMixin, FormView[SkillProfileForm]):
     """View that renders the self-assessment questionnaire page."""
 
     request: AuthenticatedHttpRequest
     template_name = "main/user-self-assess.html"
-    form_class = UserSkillsForm
+    form_class = SkillProfileForm
     success_url = reverse_lazy("self_assess")
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """Return the keyword arguments for instantiating the form."""
         kwargs = super().get_form_kwargs()
-        kwargs["user"] = self.request.user
+        kwargs["profile"] = self.request.user.profile
         return kwargs
 
-    def form_valid(self, form: UserSkillsForm) -> HttpResponse:
+    def form_valid(self, form: SkillProfileForm) -> HttpResponse:
         """Handle valid form submission."""
-        created_skills, updated_skills = form.save(self.request.user)
+        created_skills, updated_skills = form.save(self.request.user.profile)
 
         # Add success messages
         if created_skills:

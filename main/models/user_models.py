@@ -25,7 +25,7 @@ class Profile(models.Model):
     )
 
 
-class UserSkill(models.Model):
+class SkillProfile(models.Model):
     """Model for mapping profiles to skills and skill levels."""
 
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
@@ -33,7 +33,7 @@ class UserSkill(models.Model):
     skill_level = models.ForeignKey(SkillLevel, on_delete=models.CASCADE)
 
     class Meta:
-        """Meta options for UserSkill model."""
+        """Meta options for SkillProfile model."""
 
         constraints = (
             models.UniqueConstraint(

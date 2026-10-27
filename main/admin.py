@@ -25,11 +25,11 @@ from .models import (
     Provider,
     Skill,
     SkillLevel,
+    SkillProfile,
     Team,
     TeamMembership,
     ToolLanguageMethodology,
     User,
-    UserSkill,
 )
 
 
@@ -169,10 +169,10 @@ class EventAdmin(ImportExportModelAdmin[Event]):
     resource_classes = (EventResource,)
 
 
-class SkillProfileInline(admin.TabularInline[UserSkill, Profile]):
+class SkillProfileInline(admin.TabularInline[SkillProfile, Profile]):
     """Inline admin class for the SkillProfile model."""
 
-    model = UserSkill
+    model = SkillProfile
     extra = 1
 
 
