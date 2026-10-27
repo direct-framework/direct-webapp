@@ -74,7 +74,7 @@ editorconfig==0.17.1
     # via
     #   cssbeautifier
     #   jsbeautifier
-filelock==4.0.5
+filelock==4.2.1
     # via
     #   python-discovery
     #   virtualenv
