@@ -1,12 +1,11 @@
 """Forms module for the main app."""
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Layout, Submit
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
@@ -16,10 +15,7 @@ from django_registration.forms import (
     RegistrationFormUniqueEmail,
 )
 
-from .models import Skill, SkillLevel, UserSkill
-
-if TYPE_CHECKING:  # pragma: no cover
-    from .models import User as UserType
+from .models import Profile, Skill, SkillLevel, SkillProfile
 
 
 def _build_tos_form_label() -> str:
@@ -73,20 +69,12 @@ class TermsAcceptanceForm(forms.Form):
         self.fields["tos"].label = _(_build_tos_form_label())
 
 
-class UserSkillForm(ModelForm[UserSkill]):
-    """Form for user skills."""
+class SkillProfileForm(forms.Form):
+    """Form for creating SkillProfiles for all skills in the database."""
 
-    class Meta:  # noqa: D106
-        model = UserSkill
-        fields = ("skill", "skill_level")
-
-
-class UserSkillsForm(forms.Form):
-    """Form for creating UserSkills for all skills in the database."""
-
-    def __init__(self, *args: Any, user: "UserType", **kwargs: Any) -> None:
+    def __init__(self, *args: Any, profile: Profile, **kwargs: Any) -> None:
         """Initialize the form with a field for each skill."""
-        self.user = user
+        self.profile = profile
         super().__init__(*args, **kwargs)
 
         # Get all skills, ordered by competency for better organization
@@ -107,19 +95,21 @@ class UserSkillsForm(forms.Form):
         for skill in skills:
             field_name = f"skill_{skill.id}"
 
-            # Check if user already has this skill
-            existing_user_skill = None
-            if self.user:
+            # Check if profile already has this skill
+            existing_skill_profile = None
+            if self.profile:
                 try:
-                    existing_user_skill = UserSkill.objects.get(
-                        user=self.user, skill=skill
+                    existing_skill_profile = SkillProfile.objects.get(
+                        profile=self.profile, skill=skill
                     )
-                except UserSkill.DoesNotExist:
+                except SkillProfile.DoesNotExist:
                     pass
 
             # Set initial value if user already has this skill
             initial_value = (
-                existing_user_skill.skill_level.id if existing_user_skill else None
+                existing_skill_profile.skill_level.id
+                if existing_skill_profile
+                else None
             )
 
             # Organize skills by competency hierarchy for layout
@@ -244,8 +234,8 @@ class UserSkillsForm(forms.Form):
 
         self.helper.layout = Layout(*layout_elements)
 
-    def save(self, user: "UserType") -> tuple[list[UserSkill], list[UserSkill]]:
-        """Save the form data as UserSkill instances."""
+    def save(self, profile: Profile) -> tuple[list[SkillProfile], list[SkillProfile]]:
+        """Save the form data as SkillProfile instances."""
         created_skills = []
         updated_skills = []
 
@@ -255,17 +245,17 @@ class UserSkillsForm(forms.Form):
                 skill = Skill.objects.get(id=skill_id)
                 skill_level = SkillLevel.objects.get(id=skill_level_id)
 
-                # Check if UserSkill already exists
-                user_skill, created = UserSkill.objects.get_or_create(
-                    user=user, skill=skill, defaults={"skill_level": skill_level}
+                # Check if SkillProfile already exists
+                skill_profile, created = SkillProfile.objects.get_or_create(
+                    profile=profile, skill=skill, defaults={"skill_level": skill_level}
                 )
 
                 if not created:
-                    # Update existing UserSkill
-                    user_skill.skill_level = skill_level
-                    user_skill.save()
-                    updated_skills.append(user_skill)
+                    # Update existing SkillProfile
+                    skill_profile.skill_level = skill_level
+                    skill_profile.save()
+                    updated_skills.append(skill_profile)
                 else:
-                    created_skills.append(user_skill)
+                    created_skills.append(skill_profile)
 
         return created_skills, updated_skills
