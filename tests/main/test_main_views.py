@@ -284,7 +284,7 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
         response = client.post(self._get_url(), data=form_data)
 
         # Assert skill profiles are created
-        skill_profiles = SkillProfile.objects.filter(user=user)
+        skill_profiles = SkillProfile.objects.filter(profile=user.profile)
         assert skill_profiles.count() == 2
 
         # Assert the skills are correctly associated
