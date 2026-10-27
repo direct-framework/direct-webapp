@@ -164,10 +164,3 @@ class TestProfileAdmin(AdminMixin):
     """Test suite for the SkillProfile admin views."""
 
     _model = Profile
-
-    def _create_object(self):
-        """Overwrite to also create the related user for the profile being changed."""
-        user = TestUserAdmin()._create_object()
-        self._data["user"] = user
-
-        return super()._create_object()

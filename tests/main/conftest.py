@@ -7,7 +7,6 @@ from main.models import (
     CompetencyDomain,
     Event,
     LearningResource,
-    Profile,
     Provider,
     Skill,
     SkillLevel,
@@ -104,9 +103,8 @@ def skill_level() -> SkillLevel:
 @pytest.fixture
 def skill_profile(user, skill: Skill, skill_level: SkillLevel) -> SkillProfile:
     """Fixture for creating a SkillProfile instance."""
-    profile, _ = Profile.objects.get_or_create(user=user)
     return SkillProfile.objects.create(
-        profile=profile, skill=skill, skill_level=skill_level
+        profile=user.profile, skill=skill, skill_level=skill_level
     )
 
 
