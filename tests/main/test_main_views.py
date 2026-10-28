@@ -15,7 +15,7 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
-from main.models import LearningResource, Provider, Skill, SkillLevel, UserSkill
+from main.models import LearningResource, Provider, Skill, SkillLevel, SkillProfile
 from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import (
@@ -265,7 +265,7 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
 
     @pytest.mark.django_db
     def test_post(self, client, user, competency, skill, skill_level):
-        """Test the view POST request creates new user skills and redirects."""
+        """Test the view POST request creates new skill profiles and redirects."""
         client.force_login(user)
 
         skill2 = Skill.objects.create(
@@ -283,17 +283,17 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
         # Make POST request
         response = client.post(self._get_url(), data=form_data)
 
-        # Assert user skills are created
-        user_skills = UserSkill.objects.filter(user=user)
-        assert user_skills.count() == 2
+        # Assert skill profiles are created
+        skill_profiles = SkillProfile.objects.filter(profile=user.profile)
+        assert skill_profiles.count() == 2
 
         # Assert the skills are correctly associated
-        skill_ids = set(us.skill.id for us in user_skills)
+        skill_ids = set(us.skill.id for us in skill_profiles)
         assert skill_ids == {skill.id, skill2.id}
 
-        # Assert all user skills have the correct level
-        for user_skill in user_skills:
-            assert user_skill.skill_level == skill_level
+        # Assert all skill profiles have the correct level
+        for skill_profile in skill_profiles:
+            assert skill_profile.skill_level == skill_level
 
         # Assert redirects to self_assess (success_url)
         assert response.status_code == HTTPStatus.FOUND
@@ -317,8 +317,8 @@ def test_unaccepted_users_are_redirected_to_terms_acceptance(client, user, url_n
     assert response.url == reverse("terms_acceptance")
 
 
-class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
-    """Test suite for the user skill profile view."""
+class TestSkillProfile(TemplateOkMixin, BS4Mixin):
+    """Test suite for the skill profile view."""
 
     _template_name = "main/user-skills-profile.html"
 
@@ -335,7 +335,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
             [{"level": skill_level.level, "name": skill_level.name}]
         )
 
-    def test_skill_wheel_script(self, user_skill, auth_soup):
+    def test_skill_wheel_script(self, skill_profile, auth_soup):
         """Test that the skill profile view contains the correct script."""
         card = auth_soup.find("div", class_="card-body")
 
@@ -343,13 +343,13 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         assert card.find("div", id="dataviz_root")
 
         skill_level_list = list(SkillLevel.objects.values("level", "name"))
-        user_skill_dict = {
-            "skill": user_skill.skill.name,
-            "category": user_skill.skill.competency.competency_domain.name,
-            "subcategory": user_skill.skill.competency.name,
-            "skill_level": user_skill.skill_level.level,
+        skill_profile_dict = {
+            "skill": skill_profile.skill.name,
+            "category": skill_profile.skill.competency.competency_domain.name,
+            "subcategory": skill_profile.skill.competency.name,
+            "skill_level": skill_profile.skill_level.level,
         }
-        chart_data = [{"user_id": "root", "user_data": [user_skill_dict]}]
+        chart_data = [{"user_id": "root", "skill_profile_data": [skill_profile_dict]}]
 
         assert card.find(
             tag_with_text_filter(
@@ -366,7 +366,7 @@ class TestUserSkillProfile(TemplateOkMixin, BS4Mixin):
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "renderRadialBarChart(target, charts[i].user_data, skillLevels);",
+                "renderRadialBarChart(target, charts[i].skill_profile_data, skillLevels);",  # noqa: E501
             )
         )
 
@@ -677,9 +677,9 @@ class TestAccountOverviewView(LoginRequiredMixin):
         assert response.url == reverse("self_assess")
 
     @pytest.mark.django_db
-    def test_redirects_to_skill_profile_when_skills_exist(self, client, user_skill):
+    def test_redirects_to_skill_profile_when_skills_exist(self, client, skill_profile):
         """Test that users with skills are redirected to their skill profile."""
-        client.force_login(user_skill.user)
+        client.force_login(skill_profile.profile.user)
 
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.FOUND
@@ -751,8 +751,8 @@ def test_extract_and_combine_roles():
     assert len(data) == 2
     assert isinstance(data[0], dict)
     assert data[0]["name"] == "User 1"
-    assert data[0]["user_data"][0]["skill"] == "Skill 1"
-    assert data[1]["user_data"][1]["category"] == "Category 2"
+    assert data[0]["skill_profile_data"][0]["skill"] == "Skill 1"
+    assert data[1]["skill_profile_data"][1]["category"] == "Category 2"
 
 
 class TestFrameworkOverviewPageView(TemplateOkMixin):
@@ -787,16 +787,16 @@ class TestViewSkillProfilePageView(TemplateOkMixin, BS4Mixin):
 
     _template_name = "main/shared-skills-profile.html"
 
-    def _example_chart_data(self, user_skill):
+    def _example_chart_data(self, skill_profile):
         return [
             {
                 "user_id": "root",
-                "user_data": [
+                "skill_profile_data": [
                     {
-                        "skill": user_skill.skill.name,
-                        "category": user_skill.skill.competency.competency_domain.name,
-                        "subcategory": user_skill.skill.competency.name,
-                        "skill_level": user_skill.skill_level.level,
+                        "skill": skill_profile.skill.name,
+                        "category": skill_profile.skill.competency.competency_domain.name,  # noqa: E501
+                        "subcategory": skill_profile.skill.competency.name,
+                        "skill_level": skill_profile.skill_level.level,
                     }
                 ],
             }
@@ -816,36 +816,36 @@ class TestViewSkillProfilePageView(TemplateOkMixin, BS4Mixin):
         url = f"{url}?{params}"
         return url
 
-    def test_provides_required_context(self, client, user_skill):
+    def test_provides_required_context(self, client, skill_profile):
         """Test that the view skill profile view provides the correct context."""
-        url = self._get_url(self._example_chart_data(user_skill))
+        url = self._get_url(self._example_chart_data(skill_profile))
         response = client.get(url)
         assert response.status_code == HTTPStatus.OK
         assert "chart_data" in response.context
         assert isinstance(response.context["chart_data"], list)
-        assert response.context["chart_data"] == self._example_chart_data(user_skill)
+        assert response.context["chart_data"] == self._example_chart_data(skill_profile)
         assert "skill_levels" in response.context
         assert isinstance(response.context["skill_levels"], list)
         assert response.context["skill_levels"] == list(
             SkillLevel.objects.values("level", "name")
         )
 
-    def test_skill_wheel_script(self, soup_factory, user_skill):
+    def test_skill_wheel_script(self, soup_factory, skill_profile):
         """Test that the skill profile view contains the correct script."""
-        soup = soup_factory(chart_data=self._example_chart_data(user_skill))
+        soup = soup_factory(chart_data=self._example_chart_data(skill_profile))
         card = soup.find("div", class_="card-body")
 
         assert card.find(tag_with_text_filter("h1", "Skills profile"))
         assert card.find("div", id="dataviz_root")
 
         skill_level_list = list(SkillLevel.objects.values("level", "name"))
-        user_skill_dict = {
-            "skill": user_skill.skill.name,
-            "category": user_skill.skill.competency.competency_domain.name,
-            "subcategory": user_skill.skill.competency.name,
-            "skill_level": user_skill.skill_level.level,
+        skill_profile_dict = {
+            "skill": skill_profile.skill.name,
+            "category": skill_profile.skill.competency.competency_domain.name,
+            "subcategory": skill_profile.skill.competency.name,
+            "skill_level": skill_profile.skill_level.level,
         }
-        chart_data = [{"user_id": "root", "user_data": [user_skill_dict]}]
+        chart_data = [{"user_id": "root", "skill_profile_data": [skill_profile_dict]}]
 
         assert card.find(
             tag_with_text_filter("script", f"const skillLevels = {skill_level_list};")
@@ -856,6 +856,6 @@ class TestViewSkillProfilePageView(TemplateOkMixin, BS4Mixin):
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "renderRadialBarChart(target, charts[i].user_data, skillLevels);",
+                "renderRadialBarChart(target, charts[i].skill_profile_data, skillLevels);",  # noqa: E501
             )
         )

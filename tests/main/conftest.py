@@ -10,8 +10,8 @@ from main.models import (
     Provider,
     Skill,
     SkillLevel,
+    SkillProfile,
     ToolLanguageMethodology,
-    UserSkill,
 )
 
 
@@ -101,9 +101,11 @@ def skill_level() -> SkillLevel:
 
 
 @pytest.fixture
-def user_skill(user, skill: Skill, skill_level: SkillLevel) -> UserSkill:
-    """Fixture for creating a UserSkill instance."""
-    return UserSkill.objects.create(user=user, skill=skill, skill_level=skill_level)
+def skill_profile(user, skill: Skill, skill_level: SkillLevel) -> SkillProfile:
+    """Fixture for creating a SkillProfile instance."""
+    return SkillProfile.objects.create(
+        profile=user.profile, skill=skill, skill_level=skill_level
+    )
 
 
 @pytest.fixture

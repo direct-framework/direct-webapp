@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     for (let i = 0; i < charts.length; i++) {
         const target = document.getElementById('dataviz_' + charts[i].user_id);
-        renderRadialBarChart(target, charts[i].user_data, skillLevels);
+        renderRadialBarChart(target, charts[i].skill_profile_data, skillLevels);
     }
 });
 </script>
