@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v7
         with:
-          node-version-file: node/.nvmrc
+          node-version-file: .nvmrc
       - name: Check out Git repository
         uses: actions/checkout@v7
       - name: Install dependencies
@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v7
         with:
-          node-version-file: node/.nvmrc
+          node-version-file: .nvmrc
       - name: Check out Git repository
         uses: actions/checkout@v7
       - name: Install dependencies
