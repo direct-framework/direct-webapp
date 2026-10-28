@@ -9,7 +9,8 @@ These assets are built using Node.js tools and libraries, and the resulting file
 
 Before you start working with the frontend assets, ensure that your development environment is set up correctly. This includes having the necessary tools and dependencies installed.
 
-Use Node.js 22, matching the Node CI workflow, and npm. You can verify their installation with:
+From this directory run `nvm use` to use the recommended node version.
+You can verify their installation with:
 
 ```bash
 npm version
