@@ -4,6 +4,7 @@ from typing import Any
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.http import HttpRequest
 from import_export.admin import ImportExportModelAdmin
 
 from .io_resources import (
@@ -232,6 +233,18 @@ class ProfileAdmin(admin.ModelAdmin[Profile]):
         if obj.user is None:
             return False
         return obj.user.is_active
+
+    def has_delete_permission(
+        self, request: HttpRequest, obj: Profile | None = None
+    ) -> bool:
+        """Prevent direct deletion of Profiles with associated users."""
+        # Show checkboxes for bulk-deletion
+        if obj is None:
+            return True
+        # Allow deletion via the User admin page and when there is no related user
+        if "user" in request.path or obj.user is None:
+            return True
+        return False
 
 
 class TeamMembershipInline(admin.TabularInline[TeamMembership, Team]):
