@@ -3135,8 +3135,8 @@ var main = (function () {
   // significant digits p, where x is positive and p is in [1, 21] or undefined.
   // For example, formatDecimalParts(1.23) returns ["123", 0].
   function formatDecimalParts(x, p) {
-    if ((i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e")) < 0) return null; // NaN, ±Infinity
-    var i, coefficient = x.slice(0, i);
+    if (!isFinite(x) || x === 0) return null; // NaN, ±Infinity, ±0
+    var i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e"), coefficient = x.slice(0, i);
 
     // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
     // (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
@@ -3241,7 +3241,7 @@ var main = (function () {
 
   function formatPrefixAuto(x, p) {
     var d = formatDecimalParts(x, p);
-    if (!d) return x + "";
+    if (!d) return prefixExponent = undefined, x.toPrecision(p);
     var coefficient = d[0],
         exponent = d[1],
         i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1,
@@ -3295,7 +3295,7 @@ var main = (function () {
         minus = locale.minus === undefined ? "−" : locale.minus + "",
         nan = locale.nan === undefined ? "NaN" : locale.nan + "";
 
-    function newFormat(specifier) {
+    function newFormat(specifier, options) {
       specifier = formatSpecifier(specifier);
 
       var fill = specifier.fill,
@@ -3320,8 +3320,8 @@ var main = (function () {
 
       // Compute the prefix and suffix.
       // For SI-prefix, the suffix is lazily computed.
-      var prefix = symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "",
-          suffix = symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "";
+      var prefix = (options && options.prefix !== undefined ? options.prefix : "") + (symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : ""),
+          suffix = (symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "") + (options && options.suffix !== undefined ? options.suffix : "");
 
       // What format function should we use?
       // Is this an integer type?
@@ -3362,7 +3362,7 @@ var main = (function () {
 
           // Compute the prefix and suffix.
           valuePrefix = (valueNegative ? (sign === "(" ? sign : minus) : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
-          valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
+          valueSuffix = (type === "s" && !isNaN(value) && prefixExponent !== undefined ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
 
           // Break the formatted value into the integer “value” part that can be
           // grouped, and fractional or exponential “suffix” part that is not.
@@ -3407,12 +3407,11 @@ var main = (function () {
     }
 
     function formatPrefix(specifier, value) {
-      var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)),
-          e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3,
+      var e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3,
           k = Math.pow(10, -e),
-          prefix = prefixes[8 + e / 3];
+          f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier), {suffix: prefixes[8 + e / 3]});
       return function(value) {
-        return f(k * value) + prefix;
+        return f(k * value);
       };
     }
 
@@ -4850,8 +4849,8 @@ var main = (function () {
   }
 
   /*!
-    * Bootstrap v5.3.2 (https://getbootstrap.com/)
-    * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+    * Bootstrap v5.3.8 (https://getbootstrap.com/)
+    * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
     * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
     */
   (function (global, factory) {
@@ -5055,12 +5054,11 @@ var main = (function () {
      * @param {HTMLElement} element
      * @return void
      *
-     * @see https://www.charistheo.io/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
+     * @see https://www.harrytheo.com/blog/2021/02/restart-a-css-animation-with-javascript/#restarting-a-css-animation
      */
     const reflow = element => {
       element.offsetHeight; // eslint-disable-line no-unused-expressions
     };
-
     const getjQuery = () => {
       if (window.jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
         return window.jQuery;
@@ -5101,7 +5099,7 @@ var main = (function () {
       });
     };
     const execute = (possibleCallback, args = [], defaultValue = possibleCallback) => {
-      return typeof possibleCallback === 'function' ? possibleCallback(...args) : defaultValue;
+      return typeof possibleCallback === 'function' ? possibleCallback.call(...args) : defaultValue;
     };
     const executeAfterTransition = (callback, transitionElement, waitForTransition = true) => {
       if (!waitForTransition) {
@@ -5423,7 +5421,7 @@ var main = (function () {
         const bsKeys = Object.keys(element.dataset).filter(key => key.startsWith('bs') && !key.startsWith('bsConfig'));
         for (const key of bsKeys) {
           let pureKey = key.replace(/^bs/, '');
-          pureKey = pureKey.charAt(0).toLowerCase() + pureKey.slice(1, pureKey.length);
+          pureKey = pureKey.charAt(0).toLowerCase() + pureKey.slice(1);
           attributes[pureKey] = normalizeData(element.dataset[key]);
         }
         return attributes;
@@ -5498,7 +5496,7 @@ var main = (function () {
      * Constants
      */
 
-    const VERSION = '5.3.2';
+    const VERSION = '5.3.8';
 
     /**
      * Class definition
@@ -5524,6 +5522,8 @@ var main = (function () {
           this[propertyName] = null;
         }
       }
+
+      // Private
       _queueCallback(callback, element, isAnimated = true) {
         executeAfterTransition(callback, element, isAnimated);
       }
@@ -5579,9 +5579,9 @@ var main = (function () {
         if (hrefAttribute.includes('#') && !hrefAttribute.startsWith('#')) {
           hrefAttribute = `#${hrefAttribute.split('#')[1]}`;
         }
-        selector = hrefAttribute && hrefAttribute !== '#' ? parseSelector(hrefAttribute.trim()) : null;
+        selector = hrefAttribute && hrefAttribute !== '#' ? hrefAttribute.trim() : null;
       }
-      return selector;
+      return selector ? selector.split(',').map(sel => parseSelector(sel)).join(',') : null;
     };
     const SelectorEngine = {
       find(selector, element = document.documentElement) {
@@ -6455,11 +6455,11 @@ var main = (function () {
         this._element.style[dimension] = '';
         this._queueCallback(complete, this._element, true);
       }
+
+      // Private
       _isShown(element = this._element) {
         return element.classList.contains(CLASS_NAME_SHOW$7);
       }
-
-      // Private
       _configAfterMerge(config) {
         config.toggle = Boolean(config.toggle); // Coerce string values
         config.parent = getElement(config.parent);
@@ -8550,7 +8550,7 @@ var main = (function () {
       }
       _createPopper() {
         if (typeof Popper === 'undefined') {
-          throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org)');
+          throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org/docs/v2/)');
         }
         let referenceElement = this._element;
         if (this._config.reference === 'parent') {
@@ -8629,7 +8629,7 @@ var main = (function () {
         }
         return {
           ...defaultBsPopperConfig,
-          ...execute(this._config.popperConfig, [defaultBsPopperConfig])
+          ...execute(this._config.popperConfig, [undefined, defaultBsPopperConfig])
         };
       }
       _selectMenuItem({
@@ -8764,7 +8764,6 @@ var main = (function () {
       // if false, we use the backdrop helper without adding any element to the dom
       rootElement: 'body' // give the choice to place backdrop under different elements
     };
-
     const DefaultType$8 = {
       className: 'string',
       clickCallback: '(function|null)',
@@ -8889,7 +8888,6 @@ var main = (function () {
       autofocus: true,
       trapElement: null // The element to trap focus inside of
     };
-
     const DefaultType$7 = {
       autofocus: 'boolean',
       trapElement: 'element'
@@ -9616,7 +9614,10 @@ var main = (function () {
       br: [],
       col: [],
       code: [],
+      dd: [],
       div: [],
+      dl: [],
+      dt: [],
       em: [],
       hr: [],
       h1: [],
@@ -9650,7 +9651,6 @@ var main = (function () {
      *
      * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
      */
-    // eslint-disable-next-line unicorn/better-regex
     const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i;
     const allowedAttribute = (attribute, allowedAttributeList) => {
       const attributeName = attribute.nodeName.toLowerCase();
@@ -9815,7 +9815,7 @@ var main = (function () {
         return this._config.sanitize ? sanitizeHtml(arg, this._config.allowList, this._config.sanitizeFn) : arg;
       }
       _resolvePossibleFunction(arg) {
-        return execute(arg, [this]);
+        return execute(arg, [undefined, this]);
       }
       _putElementInTemplate(element, templateElement) {
         if (this._config.html) {
@@ -9914,7 +9914,7 @@ var main = (function () {
     class Tooltip extends BaseComponent {
       constructor(element, config) {
         if (typeof Popper === 'undefined') {
-          throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org)');
+          throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org/docs/v2/)');
         }
         super(element, config);
 
@@ -9960,7 +9960,6 @@ var main = (function () {
         if (!this._isEnabled) {
           return;
         }
-        this._activeTrigger.click = !this._activeTrigger.click;
         if (this._isShown()) {
           this._leave();
           return;
@@ -10148,7 +10147,7 @@ var main = (function () {
         return offset;
       }
       _resolvePossibleFunction(arg) {
-        return execute(arg, [this._element]);
+        return execute(arg, [this._element, this._element]);
       }
       _getPopperConfig(attachment) {
         const defaultBsPopperConfig = {
@@ -10186,7 +10185,7 @@ var main = (function () {
         };
         return {
           ...defaultBsPopperConfig,
-          ...execute(this._config.popperConfig, [defaultBsPopperConfig])
+          ...execute(this._config.popperConfig, [undefined, defaultBsPopperConfig])
         };
       }
       _setListeners() {
@@ -10195,6 +10194,7 @@ var main = (function () {
           if (trigger === 'click') {
             EventHandler.on(this._element, this.constructor.eventName(EVENT_CLICK$1), this._config.selector, event => {
               const context = this._initializeOnDelegatedTarget(event);
+              context._activeTrigger[TRIGGER_CLICK] = !(context._isShown() && context._activeTrigger[TRIGGER_CLICK]);
               context.toggle();
             });
           } else if (trigger !== TRIGGER_MANUAL) {
@@ -11060,7 +11060,6 @@ var main = (function () {
       }
 
       // Private
-
       _maybeScheduleHide() {
         if (!this._config.autohide) {
           return;
