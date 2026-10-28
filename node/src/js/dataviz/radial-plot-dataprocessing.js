@@ -89,8 +89,8 @@ export const catAnnotationPointOuterLabel =
             ? 1
             : -1
           : categoryStartAngleMap[a] > categoryStartAngleMap[b]
-            ? -1
-            : 1
+          ? -1
+          : 1
       )
 
     const thisCatIndex =
