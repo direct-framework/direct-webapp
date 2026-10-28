@@ -9,7 +9,7 @@ These assets are built using Node.js tools and libraries, and the resulting file
 
 Before you start working with the frontend assets, ensure that your development environment is set up correctly. This includes having the necessary tools and dependencies installed.
 
-Ensure you have Node.js (v16 or higher) and NPM installed. You can verify their installation with:
+Use Node.js 22, matching the Node CI workflow, and npm. You can verify their installation with:
 
 ```bash
 npm version
@@ -17,13 +17,20 @@ npm version
 
 ### Installing Dependencies
 
-After cloning the repository, navigate to the project directory (where the `package.json` file is located) and install the required NPM dependencies:
+From the repository root, enter `node/` and install the locked dependencies:
 
 ```bash
-npm install
+cd node
+npm ci
 ```
 
-This command reads the `package.json` file and installs all listed dependencies into the `node_modules` directory.
+This installs dependencies into `node/node_modules/`. All commands below run from
+`node/`. Alternatively, run `npm --prefix node run <script>` from the repository
+root, for example `npm --prefix node run build`.
+
+The package manifest, lockfile, ESLint, Prettier, Stylelint, Vitest and Storybook
+configuration live here with the sources and build scripts. The repository-wide
+`.editorconfig` remains shared; Prettier also reads its formatting settings.
 
 ## Preview Components in Storybook
 
@@ -53,7 +60,18 @@ The above script performs all the following tasks, which are available as indivi
 - **Build Minified Scripts**: `npm run scripts:minified` (builds minified javascript files, optimised for production)
 - **Build Vendor Files**: `npm run vendor` (bundles and optimises third-party libraries)
 
-Built files are output to the `main/static/assets` directory, which is where the Django application expects to find them.
+Built files are output to `../main/static/assets/`, relative to `node/`, where
+Django expects to find them. Around and the competency wheel remain in one
+package with the same bundles. Commit rebuilt assets when changing their sources;
+the Django image collects the committed assets and does not run npm.
+
+Storybook's static build is separate from Django's assets:
+
+```bash
+npm run build-storybook
+```
+
+It writes to the ignored `node/storybook-static/` directory.
 
 ## Running Tests
 
@@ -64,10 +82,14 @@ npm run test
 ```
 
 This will run all tests files (files with a `.test.js` extension) and display the results in the console.
+Use `npm run test-ci` for a single run. In addition to the competency-wheel tests,
+the build regression test runs the actual build in an isolated temporary
+directory, checks the complete Django asset set and source maps, and cleans up
+afterwards without overwriting committed assets.
 The output will look like this:
 
 ``` > vitest run
- ✓ node/src/js/dataviz/radial-plot.test.js (46 tests) 345ms
+ ✓ src/js/dataviz/radial-plot.test.js (46 tests) 345ms
 ...
  Test Files  1 passed (1)
       Tests  46 passed (46)
@@ -81,7 +103,7 @@ The output will look like this:
 If any tests fail you will see a summary of the failures in the console output. See example below:
 
 ``` > vitest run
- FAIL  node/src/js/dataviz/radial-plot.test.js > RadialBarChart > Plot Offset > should apply custom plot Y offset
+ FAIL  src/js/dataviz/radial-plot.test.js > RadialBarChart > Plot Offset > should apply custom plot Y offset
 AssertionError: expected false to be true // Object.is equality
 
 - Expected
@@ -103,3 +125,9 @@ AssertionError: expected false to be true // Object.is equality
 ```
 
 If this occurs you will need to investigate the test failures and fix any issues in the code or tests before re-running the test suite.
+
+## Linting
+
+Run `npm run lint` to check the build scripts, browser sources and stories using
+this package's ESLint and Prettier configuration. Stylesheet builds run Stylelint
+before compiling SCSS.
