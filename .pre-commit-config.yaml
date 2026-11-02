@@ -18,17 +18,17 @@ repos:
         args: [--autofix, --indent, '2', --offset, '2']
         exclude: manage.py|^main/static/assets/
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.38.2
+    rev: 0.39.0
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.2
+    rev: v0.17.3
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.4.0
+    rev: v2.4.1
     hooks:
       - id: mypy
         exclude: manage.py
@@ -57,7 +57,7 @@ repos:
         args: [-I, .codespell_ignore.txt]
         exclude: ^main/static/assets/|^node/package-lock.json$|^direct_webapp/fixtures/framework-2-0.json$
   - repo: https://github.com/djlint/djLint
-    rev: v1.47.1
+    rev: v1.49.2
     hooks:
       - id: djlint-django
       - id: djlint-reformat-django
