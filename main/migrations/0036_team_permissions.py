@@ -66,8 +66,7 @@ class Migration(migrations.Migration):
             "guardian",
             "0003_remove_groupobjectpermission_guardian_gr_content_ae6aec_idx_and_more",
         ),
-        ("auth", "0012_alter_user_first_name_max_length"),
-        ("main", "0031_team_teammembership"),
+        ("main", "0035_rename_userskill_skillprofile"),
     ]
 
     operations = [
