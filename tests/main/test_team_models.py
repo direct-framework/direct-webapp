@@ -51,9 +51,8 @@ def test_membership_permissions_follow_manager_role(user, django_user_model) -> 
     membership.save()
     user = type(user).objects.get(pk=user.pk)
     assert all(user.has_perm(f"main.{perm}", team) for perm in TEAM_MANAGER_PERMISSIONS)
-    assert team in get_objects_for_user(
-        user, "main.view_team_member_profiles", klass=Team
-    )
+    for permission in TEAM_MANAGER_PERMISSIONS:
+        assert team in get_objects_for_user(user, f"main.{permission}", klass=Team)
 
     membership.manager = False
     membership.save()
@@ -96,3 +95,33 @@ def test_user_deletion_does_not_grant_permissions_to_recreated_user(user) -> Non
     assert team not in get_objects_for_user(
         recreated_user, "main.view_team", klass=Team
     )
+
+
+@pytest.mark.django_db
+def test_admin_membership_role_change_synchronizes_permissions(
+    admin_client, user
+) -> None:
+    """Changing a membership role in the admin updates team permissions."""
+    team = Team.objects.create(name="Admin team", description="Admin test team")
+    membership = TeamMembership.objects.create(user=user, team=team)
+
+    response = admin_client.post(
+        f"/admin/main/team/{team.pk}/change/",
+        {
+            "name": team.name,
+            "description": team.description,
+            "slug": team.slug,
+            "members-TOTAL_FORMS": "1",
+            "members-INITIAL_FORMS": "1",
+            "members-MIN_NUM_FORMS": "0",
+            "members-MAX_NUM_FORMS": "1000",
+            "members-0-id": str(membership.pk),
+            "members-0-user": str(user.pk),
+            "members-0-manager": "on",
+        },
+    )
+
+    assert response.status_code == 302
+    user.refresh_from_db()
+    assert user.has_perm("main.change_team", team)
+    assert user.has_perm("main.manage_team_members", team)

@@ -50,14 +50,19 @@ def backfill_team_permissions(
 def remove_team_permissions(
     apps: Apps, schema_editor: BaseDatabaseSchemaEditor
 ) -> None:
-    """Remove derived team permission assignments when reversing the migration."""
+    """Remove backfilled permissions for memberships when reversing the migration."""
+    TeamMembership = apps.get_model("main", "TeamMembership")
     UserObjectPermission = apps.get_model("guardian", "UserObjectPermission")
     database = schema_editor.connection.alias
-    UserObjectPermission.objects.using(database).filter(
-        content_type__app_label="main",
-        content_type__model="team",
-        permission__codename__in=TEAM_PERMISSION_NAMES,
-    ).delete()
+
+    for membership in TeamMembership.objects.using(database).all():
+        UserObjectPermission.objects.using(database).filter(
+            user_id=membership.user_id,
+            content_type__app_label="main",
+            content_type__model="team",
+            permission__codename__in=TEAM_PERMISSION_NAMES,
+            object_pk=str(membership.team_id),
+        ).delete()
 
 
 class Migration(migrations.Migration):
