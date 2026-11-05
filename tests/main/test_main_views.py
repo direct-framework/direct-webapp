@@ -588,6 +588,58 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
         assert 'value="Python"' in response.content.decode()
 
     @pytest.mark.django_db
+    def test_filter_form(self, client):
+        """Render a single labeled search control and a reset link."""
+        response = client.get(self._get_url(), {"q": "Provider", "sort": "-name"})
+        soup = BeautifulSoup(response.content, "html.parser")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form["method"] == "get"
+        assert form.find("input", attrs={"name": "q"})["value"] == "Provider"
+        assert len(form.select('input:not([type="hidden"])')) == 1
+        assert not form.find("input", attrs={"name": "name"})
+        assert form.find("label", attrs={"for": "resource-filter"})
+        assert form.find("input", attrs={"name": "sort"})["value"] == "-name"
+        assert form.find("a", href=self._get_url()).get_text(strip=True) == "Reset"
+        assert not form.find("input", attrs={"name": "page"})
+
+    @pytest.mark.django_db
+    def test_page_with_no_matches(self, client, learning_provider_view_data):
+        """Nonmatching filters display the existing empty-results message."""
+        response = client.get(self._get_url(), {"q": "Missing"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert "No learning resources found." in response.content.decode()
+
+    @pytest.mark.django_db
+    def test_filter_sorting_and_pagination(self, client, learning_provider_view_data):
+        """Sort and paginate filtered results while preserving the search."""
+        provider, _ = learning_provider_view_data
+        for index in range(25):
+            LearningResource.objects.create(
+                name=f"Course {index:02}", provider=provider
+            )
+        response = client.get(
+            self._get_url(),
+            {"q": "Provider One", "sort": "-name", "page": 2},
+        )
+        table = response.context["table"]
+
+        assert response.status_code == HTTPStatus.OK
+        assert table.paginator.per_page == 20
+        assert table.paginator.count == 27
+        assert [row.record.name for row in table.page.object_list] == [
+            f"Course {index:02}" for index in range(6, -1, -1)
+        ]
+        soup = BeautifulSoup(response.content, "html.parser")
+        for link in [
+            *soup.select("th.orderable a"),
+            *soup.select(".pagination a"),
+        ]:
+            params = parseUrl.parse_qs(parseUrl.urlparse(link["href"]).query)
+            assert params["q"] == ["Provider One"]
+
+    @pytest.mark.django_db
     def test_page_content(self, learning_resource, skill, soup):
         """Test that the learning page contains a table with learning resources."""
         assert "Learning resources" == soup.find("h1").text
