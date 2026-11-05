@@ -18,8 +18,10 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
-from django_tables2 import RequestConfig, SingleTableView
+from django_filters.views import FilterView
+from django_tables2 import RequestConfig, SingleTableMixin, SingleTableView
 
+from ..filters import LearningResourceFilter
 from ..models import (
     CompetencyDomain,
     Event,
@@ -174,7 +176,7 @@ class LearningProviderDetailPageView(DetailView[Provider]):
         return context
 
 
-class LearningResourcesPageView(SingleTableView):
+class LearningResourcesPageView(SingleTableMixin, FilterView):
     """View that renders a page with all learning resources.
 
     Learning resources are listed in a table that is searchable and paginated.
@@ -182,30 +184,13 @@ class LearningResourcesPageView(SingleTableView):
 
     model = LearningResource
     table_class = LearningResourceTable
+    filterset_class = LearningResourceFilter
     template_name = "main/pages/learning-resources.html"
     paginate_by = 20
 
     def get_queryset(self) -> QuerySet[LearningResource]:
         """Return learning resources filtered by the optional search query."""
-        queryset = LearningResource.objects.select_related("provider").order_by("name")
-        query = self.request.GET.get("q", "").strip()
-
-        if query:
-            queryset = queryset.filter(
-                Q(name__icontains=query)
-                | Q(description__icontains=query)
-                | Q(language__icontains=query)
-                | Q(provider__name__icontains=query)
-                | Q(skill__name__icontains=query)
-            ).distinct()
-
-        return queryset
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Add the current search query to the template context."""
-        context = super().get_context_data(**kwargs)
-        context["query"] = self.request.GET.get("q", "").strip()
-        return context
+        return LearningResource.objects.select_related("provider").order_by("name")
 
 
 class ToolsLanguagesMethodologiesPageView(SingleTableView):

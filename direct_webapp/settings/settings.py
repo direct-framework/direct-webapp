@@ -128,6 +128,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "import_export",
     "django_tables2",
+    "django_filters",
 ]
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 STATIC_ROOT = BASE_DIR / "staticfiles"
