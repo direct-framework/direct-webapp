@@ -1,5 +1,6 @@
 {% extends "main/base.page.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
 {% block title %}
     Learning Resources
@@ -16,17 +17,14 @@
             <div class="col pe-lg-4 pe-xl-0">
                 <h1 class="pb-2 pb-lg-3">Learning resources</h1>
                 <form method="get" class="d-flex justify-content-end mb-4">
-                    <div class="input-group w-auto">
-                        <label for="resource-filter"
-                               class="visually-hidden">Search learning resources</label>
-                        <input id="resource-filter"
-                               name="q"
-                               type="search"
-                               value="{{ query }}"
-                               class="form-control"
-                               size="25"
-                               placeholder="Filter learning resources">
+                    {{ filter.form.q|as_crispy_field }}
+                    {% if table.order_by %}
+                        <input type="hidden" name="sort" value="{{ table.order_by }}">
+                    {% endif %}
+                    <div class="d-flex gap-2 justify-content-end">
                         <button type="submit" class="btn btn-primary">Search</button>
+                        <a href="{% url 'learning_resources' %}"
+                           class="btn btn-outline-secondary">Reset</a>
                     </div>
                 </form>
                 {% if table.rows %}
