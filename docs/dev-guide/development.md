@@ -66,6 +66,12 @@ pre-commit run --files <relevant-file-paths>
 mkdocs build --strict
 ```
 
+Ensure the documentation that is built is deleted:
+
+```bash
+rm -r site/
+```
+
 At handover, report commands run and their results, including failures or checks
 that could not run. Distinguish a pre-existing failure from one introduced by
 the change; an unrun check is not a passing check.
@@ -76,4 +82,5 @@ Before handover:
 - Update directly related documentation and examples for feature changes.
 - Run pre-commit checks on changed files.
 - Run the documentation build for documentation changes.
+- Delete built documentation.
 - Report commands run and their results.
