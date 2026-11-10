@@ -7,11 +7,11 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.db.models import Model
 
-from main.admin import UserProxy
 from main.models import (
     Competency,
     CompetencyDomain,
     LearningResource,
+    Profile,
     Provider,
     Skill,
     SkillLevel,
@@ -160,19 +160,7 @@ class TestSkillLevelAdmin(AdminMixin):
     }
 
 
-class TestCustomUserSkillAdmin(AdminMixin):
-    """Test suite for the CustomUserSkill admin views.
+class TestProfileAdmin(AdminMixin):
+    """Test suite for the SkillProfile admin views."""
 
-    This Model should not have an add view.
-    """
-
-    _model = UserProxy
-    _data: ClassVar[dict[str, Any]] = {
-        "username": "TestUser",
-        "password": "testpassword",
-    }
-
-    def test_add_get(self, admin_client):
-        """Overwrite to test the GET request to add an object is forbidden."""
-        response = admin_client.get(f"/admin/main/{self._model._meta.model_name}/add/")
-        assert response.status_code == HTTPStatus.FORBIDDEN
+    _model = Profile

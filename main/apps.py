@@ -8,3 +8,7 @@ class MainConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "main"
+
+    def ready(self) -> None:
+        """Connect the app's signal receivers."""
+        from . import signals  # noqa: F401
