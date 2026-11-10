@@ -6,7 +6,7 @@ import pytest
 from bs4 import BeautifulSoup
 from django.urls import reverse
 
-from main.models import Skill, Team, TeamMembership, UserSkill
+from main.models import Skill, SkillProfile, Team, TeamMembership
 
 from .view_utils import LoginRequiredMixin, tag_with_text_filter
 
@@ -61,14 +61,14 @@ def test_account_sidebars_link_to_my_teams(client_logged_in, page):
 
 
 def test_overview_still_routes_by_skills_when_users_have_a_team(
-    client, user_skill, django_user_model
+    client, skill_profile, django_user_model
 ):
     """Keep the existing Overview destinations for users with team memberships."""
     team = Team.objects.create(name="Shared team", description="A shared team.")
     user_without_skills = django_user_model.objects.create_user(
         username="user_without_skills", agreed_to_tos=True
     )
-    TeamMembership.objects.create(user=user_skill.user, team=team)
+    TeamMembership.objects.create(user=skill_profile.profile.user, team=team)
     TeamMembership.objects.create(user=user_without_skills, team=team)
 
     client.force_login(user_without_skills)
@@ -76,7 +76,7 @@ def test_overview_still_routes_by_skills_when_users_have_a_team(
     assert response.status_code == HTTPStatus.FOUND
     assert response.url == reverse("self_assess")
 
-    client.force_login(user_skill.user)
+    client.force_login(skill_profile.profile.user)
     response = client.get(reverse("account-overview"))
     assert response.status_code == HTTPStatus.FOUND
     assert response.url == reverse("skills_profile")
@@ -174,7 +174,9 @@ def test_shared_team_does_not_show_other_members_or_assessments(
     )
     TeamMembership.objects.create(user=user, team=team, manager=manager)
     TeamMembership.objects.create(user=other_user, team=team)
-    UserSkill.objects.create(user=other_user, skill=skill, skill_level=skill_level)
+    SkillProfile.objects.create(
+        profile=other_user.profile, skill=skill, skill_level=skill_level
+    )
 
     response = client_logged_in.get(reverse("my_teams"))
 

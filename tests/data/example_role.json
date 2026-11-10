@@ -6,7 +6,7 @@
         "description": [
             "Description of the example role"
         ],
-        "user_data": [
+        "skill_profile_data": [
             {
                 "skill": "Skill 1",
                 "category": "Category 1",
