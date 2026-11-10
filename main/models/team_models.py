@@ -6,6 +6,8 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core import signing
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models.base import ModelBase
@@ -14,6 +16,35 @@ from .framework_models import SluggedModel
 
 if TYPE_CHECKING:
     from .user_models import User
+
+
+TEAM_INVITATION_LINK_MAX_AGE = 24 * 60 * 60
+TEAM_INVITATION_LINK_SALT = "main.team_invitation"
+INVALID_TEAM_INVITATION_LINK = (
+    "This team invitation link is invalid or expired. "
+    "Ask a current team manager to generate a new link."
+)
+
+
+def _decode_team_invitation_token(token: str) -> tuple[int, int]:
+    """Return the team and inviter IDs from a valid, unexpired link."""
+    try:
+        claims = signing.loads(
+            token,
+            salt=TEAM_INVITATION_LINK_SALT,
+            max_age=TEAM_INVITATION_LINK_MAX_AGE,
+        )
+    except signing.BadSignature as exc:
+        raise ValidationError(INVALID_TEAM_INVITATION_LINK) from exc
+
+    if (
+        not isinstance(claims, dict)
+        or set(claims) != {"team_id", "invited_by_id"}
+        or type(claims["team_id"]) is not int
+        or type(claims["invited_by_id"]) is not int
+    ):
+        raise ValidationError(INVALID_TEAM_INVITATION_LINK)
+    return claims["team_id"], claims["invited_by_id"]
 
 
 class TeamManager(models.Manager["Team"]):
@@ -33,20 +64,59 @@ class Team(SluggedModel):
     objects = TeamManager()
 
     @transaction.atomic
-    def invite_user(self, *, invited_by: User, invitee: User) -> TeamInvitation:
-        """Create a pending invitation from a team manager to a registered user."""
-        Team.objects.select_for_update().get(pk=self.pk)
-        if not invited_by.has_perm("main.manage_team_members", self):
-            raise ValidationError("Only a team manager can invite users.")
-        if TeamMembership.objects.filter(team=self, user=invitee).exists():
-            raise ValidationError("A team member cannot be invited.")
-        if TeamInvitation.objects.filter(
-            team=self, invitee=invitee, status=TeamInvitation.Status.PENDING
-        ).exists():
-            raise ValidationError("A pending invitation already exists.")
-        return TeamInvitation.objects.create(
-            team=self, invitee=invitee, invited_by=invited_by
+    def generate_invitation_token(self, *, invited_by: User) -> str:
+        """Create a signed, expiring team-wide link for a current manager."""
+        team = Team.objects.select_for_update().get(pk=self.pk)
+        user_model = get_user_model()
+        try:
+            current_inviter = user_model.objects.get(pk=invited_by.pk)
+        except user_model.DoesNotExist as exc:
+            raise ValidationError(
+                "Only a team manager can generate an invitation link."
+            ) from exc
+        if not current_inviter.has_perm("main.manage_team_members", team):
+            raise ValidationError(
+                "Only a team manager can generate an invitation link."
+            )
+        return signing.dumps(
+            {"team_id": team.pk, "invited_by_id": invited_by.pk},
+            salt=TEAM_INVITATION_LINK_SALT,
         )
+
+    @classmethod
+    def resolve_invitation_token(cls, *, token: str) -> Team:
+        """Return the team for a valid link whose generating manager is current."""
+        team_id, invited_by_id = _decode_team_invitation_token(token)
+        user_model = get_user_model()
+        try:
+            team = cls.objects.get(pk=team_id)
+            invited_by = user_model.objects.get(pk=invited_by_id)
+        except (cls.DoesNotExist, user_model.DoesNotExist) as exc:
+            raise ValidationError(INVALID_TEAM_INVITATION_LINK) from exc
+        if not invited_by.has_perm("main.manage_team_members", team):
+            raise ValidationError(INVALID_TEAM_INVITATION_LINK)
+        return team
+
+    @classmethod
+    @transaction.atomic
+    def accept_invitation_token(cls, *, token: str, user: User) -> tuple[Team, bool]:
+        """Accept a valid team link, creating regular membership at most once."""
+        team_id, invited_by_id = _decode_team_invitation_token(token)
+        user_model = get_user_model()
+        try:
+            team = cls.objects.select_for_update().get(pk=team_id)
+            invited_by = user_model.objects.get(pk=invited_by_id)
+        except (cls.DoesNotExist, user_model.DoesNotExist) as exc:
+            raise ValidationError(INVALID_TEAM_INVITATION_LINK) from exc
+        if not invited_by.has_perm("main.manage_team_members", team):
+            raise ValidationError(INVALID_TEAM_INVITATION_LINK)
+
+        _, created = TeamMembership.objects.get_or_create(
+            team=team,
+            user=user,
+            defaults={"manager": False},
+        )
+        return team, created
 
     @transaction.atomic
     def change_member_role(
@@ -180,165 +250,3 @@ class TeamMembership(models.Model):
     def __str__(self) -> str:
         """Return the name of the model instance."""
         return f"{self.user.username} membership of {self.team.name}"
-
-
-class TeamInvitation(models.Model):
-    """Offer for a registered user to join a team."""
-
-    _allow_status_transition = False
-
-    class Status(models.TextChoices):
-        """Available states of a team invitation."""
-
-        PENDING = "pending", "Pending"
-        ACCEPTED = "accepted", "Accepted"
-        DECLINED = "declined", "Declined"
-        WITHDRAWN = "withdrawn", "Withdrawn"
-
-    team = models.ForeignKey(Team, related_name="invitations", on_delete=models.CASCADE)
-    invitee = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="team_invitations",
-        on_delete=models.CASCADE,
-    )
-    invited_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="sent_team_invitations",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-    pending_invitee = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="pending_team_invitations",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-    )
-    status = models.CharField(
-        max_length=10, choices=Status.choices, default=Status.PENDING
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        """Meta options for the TeamInvitation model."""
-
-        constraints = (
-            models.UniqueConstraint(
-                fields=["team", "pending_invitee"],
-                name="unique_pending_team_invitation",
-            ),
-            models.CheckConstraint(
-                condition=models.Q(
-                    status__in=["pending", "accepted", "declined", "withdrawn"]
-                ),
-                name="team_invitation_status_valid",
-            ),
-            models.CheckConstraint(
-                condition=(
-                    models.Q(
-                        status="pending",
-                        pending_invitee__isnull=False,
-                        pending_invitee=models.F("invitee"),
-                    )
-                    | (
-                        ~models.Q(status="pending")
-                        & models.Q(pending_invitee__isnull=True)
-                    )
-                ),
-                name="team_invitation_pending_key_valid",
-            ),
-        )
-
-    def save(
-        self,
-        *,
-        force_insert: bool | tuple[ModelBase, ...] = False,
-        force_update: bool = False,
-        using: str | None = None,
-        update_fields: Iterable[str] | None = None,
-    ) -> None:
-        """Maintain a nullable uniqueness key for pending invitations."""
-        if self.pk is not None and (update_fields is None or "status" in update_fields):
-            previous_status = (
-                TeamInvitation.objects.filter(pk=self.pk)
-                .values_list("status", flat=True)
-                .first()
-            )
-            if (
-                previous_status is not None
-                and self.status != previous_status
-                and not self._allow_status_transition
-            ):
-                raise ValidationError(
-                    "Use an invitation operation to change its status."
-                )
-
-        self.pending_invitee_id = (
-            self.invitee_id if self.status == self.Status.PENDING else None
-        )
-        if update_fields is not None:
-            update_fields = {*update_fields, "pending_invitee"}
-        super().save(
-            force_insert=force_insert,
-            force_update=force_update,
-            using=using,
-            update_fields=update_fields,
-        )
-
-    def _transition_to(self, status: Status) -> None:
-        """Persist a state transition initiated by a validated invitation action."""
-        self.status = status
-        self._allow_status_transition = True
-        try:
-            self.save(update_fields=["status", "updated_at"])
-        finally:
-            self._allow_status_transition = False
-
-    @transaction.atomic
-    def accept(self, *, user: User) -> None:
-        """Accept this pending invitation and create a non-manager membership."""
-        Team.objects.select_for_update().get(pk=self.team_id)
-        invitation = TeamInvitation.objects.select_for_update().get(pk=self.pk)
-        invitation._ensure_pending()
-        if invitation.invitee_id != user.pk:
-            raise ValidationError("Only the invited user can accept this invitation.")
-        if TeamMembership.objects.filter(team=invitation.team, user=user).exists():
-            raise ValidationError("The invited user is already a team member.")
-        TeamMembership.objects.create(team=invitation.team, user=user, manager=False)
-        invitation._transition_to(self.Status.ACCEPTED)
-        self.status = invitation.status
-        self.pending_invitee_id = invitation.pending_invitee_id
-        self.updated_at = invitation.updated_at
-
-    @transaction.atomic
-    def decline(self, *, user: User) -> None:
-        """Decline this pending invitation without creating a membership."""
-        Team.objects.select_for_update().get(pk=self.team_id)
-        invitation = TeamInvitation.objects.select_for_update().get(pk=self.pk)
-        invitation._ensure_pending()
-        if invitation.invitee_id != user.pk:
-            raise ValidationError("Only the invited user can decline this invitation.")
-        invitation._transition_to(self.Status.DECLINED)
-        self.status = invitation.status
-        self.pending_invitee_id = invitation.pending_invitee_id
-        self.updated_at = invitation.updated_at
-
-    @transaction.atomic
-    def withdraw(self, *, user: User) -> None:
-        """Withdraw this pending invitation as a team manager."""
-        Team.objects.select_for_update().get(pk=self.team_id)
-        invitation = TeamInvitation.objects.select_for_update().get(pk=self.pk)
-        invitation._ensure_pending()
-        if not user.has_perm("main.manage_team_members", invitation.team):
-            raise ValidationError("Only a team manager can withdraw an invitation.")
-        invitation._transition_to(self.Status.WITHDRAWN)
-        self.status = invitation.status
-        self.pending_invitee_id = invitation.pending_invitee_id
-        self.updated_at = invitation.updated_at
-
-    def _ensure_pending(self) -> None:
-        """Reject state changes after an invitation stops being pending."""
-        if self.status != self.Status.PENDING:
-            raise ValidationError("Only a pending invitation can change state.")

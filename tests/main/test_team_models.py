@@ -1,11 +1,14 @@
 """Tests for the Team related models in the main app."""
 
+from types import SimpleNamespace
+
 import pytest
+from django.core import signing
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from guardian.shortcuts import get_objects_for_user
 
-from main.models import Team, TeamInvitation, TeamMembership
+from main.models import Team, TeamMembership
 
 TEAM_MANAGER_PERMISSIONS = (
     "change_team",
@@ -30,27 +33,25 @@ def test_creating_team_makes_creator_first_manager(user) -> None:
 
 
 @pytest.mark.django_db
-def test_accepting_invitation_creates_non_manager_membership(
+def test_accepting_a_valid_team_link_creates_member_access(
     user, django_user_model
 ) -> None:
-    """Pending invitations grant no access; acceptance grants member access."""
+    """A signed team link gives its acceptor regular membership and permissions."""
     invitee = django_user_model.objects.create_user(username="invitee")
     team = Team.objects.create_for_user(
         user=user, name="Invited team", description="Invitation test"
     )
-    invitation = team.invite_user(invited_by=user, invitee=invitee)
+    token = team.generate_invitation_token(invited_by=user)
 
-    assert invitation.status == TeamInvitation.Status.PENDING
     assert not TeamMembership.objects.filter(team=team, user=invitee).exists()
     assert not invitee.has_perm("main.view_team", team)
     assert not invitee.has_perm("main.view_team_member_profiles", team)
-    assert team not in get_objects_for_user(invitee, "main.view_team", klass=Team)
 
-    invitation.accept(user=invitee)
+    accepted_team, created = Team.accept_invitation_token(token=token, user=invitee)
 
-    invitation.refresh_from_db()
     membership = TeamMembership.objects.get(team=team, user=invitee)
-    assert invitation.status == TeamInvitation.Status.ACCEPTED
+    assert accepted_team == team
+    assert created
     assert not membership.manager
     assert invitee.has_perm("main.view_team", team)
     assert not invitee.has_perm("main.manage_team_members", team)
@@ -58,88 +59,112 @@ def test_accepting_invitation_creates_non_manager_membership(
 
 
 @pytest.mark.django_db
-def test_invitation_can_be_reissued_after_decline_or_withdrawal(
+def test_team_link_can_be_accepted_by_multiple_accounts(
     user, django_user_model
 ) -> None:
-    """Declined and withdrawn invitations do not block later invitations."""
-    invitee = django_user_model.objects.create_user(username="invitee")
+    """A team-wide link may add multiple distinct users before it expires."""
+    first = django_user_model.objects.create_user(username="first-invitee")
+    second = django_user_model.objects.create_user(username="second-invitee")
     team = Team.objects.create_for_user(
-        user=user, name="Re-invite team", description="Invitation test"
+        user=user, name="Shared link team", description="Invitation test"
     )
+    token = team.generate_invitation_token(invited_by=user)
 
-    declined = team.invite_user(invited_by=user, invitee=invitee)
-    declined.decline(user=invitee)
-    assert declined.status == TeamInvitation.Status.DECLINED
-    after_decline = team.invite_user(invited_by=user, invitee=invitee)
-
-    after_decline.withdraw(user=user)
-    assert after_decline.status == TeamInvitation.Status.WITHDRAWN
-    after_withdrawal = team.invite_user(invited_by=user, invitee=invitee)
-
-    assert after_withdrawal.status == TeamInvitation.Status.PENDING
-    assert not TeamMembership.objects.filter(team=team, user=invitee).exists()
+    assert Team.accept_invitation_token(token=token, user=first) == (team, True)
+    assert Team.accept_invitation_token(token=token, user=second) == (team, True)
+    assert TeamMembership.objects.filter(team=team, manager=False).count() == 2
 
 
 @pytest.mark.django_db
-def test_invitation_status_cannot_be_changed_with_model_save(
+def test_accepting_team_link_twice_does_not_duplicate_membership(
     user, django_user_model
 ) -> None:
-    """Invitation state changes must use acceptance or decline operations."""
+    """Accepting a link as an existing member is a harmless no-op."""
+    team = Team.objects.create_for_user(
+        user=user, name="Existing member team", description="Invitation test"
+    )
+    token = team.generate_invitation_token(invited_by=user)
+
+    accepted_team, created = Team.accept_invitation_token(token=token, user=user)
+
+    assert accepted_team == team
+    assert not created
+    assert TeamMembership.objects.filter(team=team, user=user).count() == 1
+
+
+@pytest.mark.django_db
+def test_team_link_requires_current_manager_at_acceptance(
+    user, django_user_model
+) -> None:
+    """A link is invalid if its generating manager is no longer a manager."""
+    other_manager = django_user_model.objects.create_user(username="other-manager")
     invitee = django_user_model.objects.create_user(username="invitee")
     team = Team.objects.create_for_user(
-        user=user, name="State transition team", description="Invitation test"
+        user=user, name="Manager changed", description="Invitation test"
     )
-    invitation = team.invite_user(invited_by=user, invitee=invitee)
-    invitation.status = TeamInvitation.Status.ACCEPTED
+    TeamMembership.objects.create(user=other_manager, team=team, manager=True)
+    token = team.generate_invitation_token(invited_by=user)
+
+    team.change_member_role(actor=user, member=user, is_manager=False)
 
     with pytest.raises(ValidationError):
-        invitation.save()
+        Team.accept_invitation_token(token=token, user=invitee)
 
-    invitation.refresh_from_db()
-    assert invitation.status == TeamInvitation.Status.PENDING
     assert not TeamMembership.objects.filter(team=team, user=invitee).exists()
 
 
 @pytest.mark.django_db
-def test_duplicate_or_unauthorized_team_invitations_are_rejected(
+def test_only_team_managers_can_generate_invitation_links(
     user, django_user_model
 ) -> None:
-    """Only managers may invite; members and pending invites cannot be repeated."""
+    """A regular member cannot create a team-wide invitation link."""
     member = django_user_model.objects.create_user(username="member")
-    invitee = django_user_model.objects.create_user(username="invitee")
     team = Team.objects.create_for_user(
         user=user, name="Invite checks", description="Invitation test"
     )
     TeamMembership.objects.create(user=member, team=team)
-    pending = team.invite_user(invited_by=user, invitee=invitee)
 
     with pytest.raises(ValidationError):
-        team.invite_user(invited_by=user, invitee=invitee)
-    with pytest.raises(IntegrityError), transaction.atomic():
-        TeamInvitation.objects.create(team=team, invitee=invitee, invited_by=user)
-    with pytest.raises(IntegrityError), transaction.atomic():
-        TeamInvitation.objects.bulk_create(
-            [TeamInvitation(team=team, invitee=invitee, invited_by=user)]
-        )
-    with pytest.raises(IntegrityError), transaction.atomic():
-        TeamInvitation.objects.create(
-            team=team,
-            invitee=invitee,
-            invited_by=user,
-            status="unknown",
-        )
-    with pytest.raises(ValidationError):
-        team.invite_user(invited_by=member, invitee=invitee)
-    with pytest.raises(ValidationError):
-        team.invite_user(invited_by=user, invitee=member)
-    with pytest.raises(ValidationError):
-        pending.withdraw(user=member)
-    with pytest.raises(ValidationError):
-        pending.accept(user=member)
+        team.generate_invitation_token(invited_by=member)
 
-    pending.decline(user=invitee)
+
+@pytest.mark.django_db
+def test_tampered_team_invitation_link_is_rejected(user, django_user_model) -> None:
+    """Changing signed invitation-link data invalidates the token."""
+    invitee = django_user_model.objects.create_user(username="invitee")
+    team = Team.objects.create_for_user(
+        user=user, name="Tampered link", description="Invitation test"
+    )
+    token = team.generate_invitation_token(invited_by=user)
+
     with pytest.raises(ValidationError):
-        pending.withdraw(user=user)
+        Team.accept_invitation_token(token=f"{token}x", user=invitee)
+
+    assert not TeamMembership.objects.filter(team=team, user=invitee).exists()
+
+
+@pytest.mark.django_db
+def test_team_invitation_link_expires_after_24_hours(
+    user, django_user_model, monkeypatch
+) -> None:
+    """A signed team link is no longer accepted more than 24 hours after issue."""
+    invitee = django_user_model.objects.create_user(username="invitee")
+    team = Team.objects.create_for_user(
+        user=user, name="Expired link", description="Invitation test"
+    )
+    clock = [1_000]
+    monkeypatch.setattr(
+        signing,
+        "time",
+        SimpleNamespace(time=lambda: clock[0]),
+    )
+    token = team.generate_invitation_token(invited_by=user)
+    clock[0] += 24 * 60 * 60 + 1
+
+    with pytest.raises(ValidationError):
+        Team.accept_invitation_token(token=token, user=invitee)
+
+    assert not TeamMembership.objects.filter(team=team, user=invitee).exists()
 
 
 @pytest.mark.django_db
