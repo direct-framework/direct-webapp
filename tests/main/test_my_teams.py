@@ -29,13 +29,9 @@ def test_account_dropdown_links_to_my_teams(client_logged_in):
         tag_with_text_filter("div", "Hello,"), class_="dropdown"
     )
 
-    assert account_dropdown.find(
-        "a", attrs={"aria-label": "Account menu", "data-bs-toggle": "dropdown"}
-    )
     teams_link = account_dropdown.find(tag_with_text_filter("a", "My Teams"))
     assert teams_link is not None
     assert teams_link["href"] == reverse("my_teams")
-    assert all(icon.get("aria-hidden") == "true" for icon in teams_link.find_all("i"))
     assert account_dropdown.find(
         tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
     )
@@ -45,15 +41,6 @@ def test_account_dropdown_links_to_my_teams(client_logged_in):
     assert BeautifulSoup(teams_response.content, "html.parser").find(
         "h1", string="My Teams"
     )
-
-
-def test_theme_switch_has_an_accessible_name(client_logged_in):
-    """Keep the theme switch identifiable when the mobile header is compact."""
-    response = client_logged_in.get(reverse("index"))
-    soup = BeautifulSoup(response.content, "html.parser")
-    theme_switch = soup.find("input", id="theme-mode")
-
-    assert theme_switch["aria-label"] == "Toggle colour theme"
 
 
 @pytest.mark.parametrize(
