@@ -1,9 +1,15 @@
 """Admin module for the main app."""
 
+from collections.abc import Sequence
 from typing import Any
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.db.models import QuerySet
+from django.forms import ModelForm
+from django.forms.models import BaseInlineFormSet
 from django.http import HttpRequest
 from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
@@ -46,6 +52,28 @@ class CustomUserAdmin(UserAdmin[User]):
         (("Terms and Conditions"), {"fields": ("agreed_to_tos", "date_agreed")}),
     )
     readonly_fields = ("agreed_to_tos", "date_agreed")
+
+    def get_deleted_objects(
+        self, objs: Sequence[User] | QuerySet[User], request: HttpRequest
+    ) -> tuple[list[str], dict[str, int], set[str], list[str]]:
+        """Show protected team memberships when deleting a last manager."""
+        deleted_objects, model_count, perms_needed, protected = (
+            super().get_deleted_objects(objs, request)
+        )
+        deleting_user_ids = [user.pk for user in objs]
+        for membership in (
+            TeamMembership.objects.filter(user_id__in=deleting_user_ids, manager=True)
+            .select_related("team")
+            .only("pk", "team__name", "team_id")
+        ):
+            has_other_manager = (
+                TeamMembership.objects.filter(team_id=membership.team_id, manager=True)
+                .exclude(user_id__in=deleting_user_ids)
+                .exists()
+            )
+            if not has_other_manager:
+                protected.append(f"{membership.team} must retain at least one manager.")
+        return deleted_objects, model_count, perms_needed, protected
 
 
 class CompetencyInline(admin.TabularInline[Competency, CompetencyDomain]):
@@ -248,10 +276,29 @@ class ProfileAdmin(admin.ModelAdmin[Profile]):
         return False
 
 
+class TeamMembershipInlineFormSet(
+    BaseInlineFormSet[TeamMembership, Team, ModelForm[TeamMembership]]
+):
+    """Keep each team manager-editable through admin membership changes."""
+
+    def clean(self) -> None:
+        """Reject inline edits that would leave a team without a manager."""
+        super().clean()
+        if any(self.errors):
+            return
+        if not any(
+            form.cleaned_data.get("manager")
+            for form in self.forms
+            if form.cleaned_data and not form.cleaned_data.get("DELETE", False)
+        ):
+            raise ValidationError("A team must retain at least one manager.")
+
+
 class TeamMembershipInline(admin.TabularInline[TeamMembership, Team]):
     """Inline admin class for the Competency model."""
 
     model = TeamMembership
+    formset = TeamMembershipInlineFormSet
     extra = 0
     show_change_link = False
     verbose_name = "Team Member"
@@ -264,3 +311,23 @@ class TeamAdmin(GuardedModelAdmin):
     list_display = ("name", "description")
     search_fields = ("name", "description")
     inlines = (TeamMembershipInline,)
+
+    @transaction.atomic
+    def save_formset(
+        self,
+        request: HttpRequest,
+        form: ModelForm[Team],
+        formset: BaseInlineFormSet[TeamMembership, Team, ModelForm[TeamMembership]],
+        change: bool,
+    ) -> None:
+        """Apply new or promoted managers before demotions and removals."""
+        memberships = formset.save(commit=False)
+        for membership in memberships:
+            if membership.manager:
+                membership.save()
+        for membership in memberships:
+            if not membership.manager:
+                membership.save()
+        for membership in formset.deleted_objects:
+            membership.delete()
+        formset.save_m2m()

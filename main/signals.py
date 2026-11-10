@@ -4,7 +4,8 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import post_delete, post_save, pre_delete
+from django.core.exceptions import ValidationError
+from django.db.models.signals import post_delete, post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from guardian.models import UserObjectPermission
 from guardian.shortcuts import assign_perm, remove_perm
@@ -62,7 +63,36 @@ def team_membership_saved(
 ) -> None:
     """Synchronize permissions when a membership is saved."""
     if not raw:
+        previous_membership = instance._previous_membership
+        if previous_membership is not None and previous_membership != (
+            instance.user_id,
+            instance.team_id,
+        ):
+            remove_team_membership_permissions(
+                TeamMembership(
+                    user_id=previous_membership[0],
+                    team_id=previous_membership[1],
+                )
+            )
+        instance._previous_membership = None
         synchronize_team_membership_permissions(instance, manager=instance.manager)
+
+
+@receiver(pre_save, sender=TeamMembership)
+def team_membership_before_save(
+    sender: type[TeamMembership],
+    instance: TeamMembership,
+    raw: bool = False,
+    **kwargs: Any,
+) -> None:
+    """Remember the previous membership owner for permission synchronization."""
+    instance._previous_membership = None
+    if not raw and instance.pk is not None:
+        instance._previous_membership = (
+            TeamMembership.objects.filter(pk=instance.pk)
+            .values_list("user_id", "team_id")
+            .first()
+        )
 
 
 @receiver(post_delete, sender=TeamMembership)
@@ -80,3 +110,19 @@ def team_deleted(sender: type[Team], instance: Team, **kwargs: Any) -> None:
     UserObjectPermission.objects.filter(
         content_type=content_type, object_pk=str(instance.pk)
     ).delete()
+
+
+@receiver(pre_delete, sender=settings.AUTH_USER_MODEL)
+def prevent_deleting_last_team_manager(
+    sender: type[User], instance: User, **kwargs: Any
+) -> None:
+    """Keep user deletion from leaving any team without a manager."""
+    for membership in TeamMembership.objects.filter(user=instance, manager=True).only(
+        "team_id"
+    ):
+        if (
+            not TeamMembership.objects.filter(team_id=membership.team_id, manager=True)
+            .exclude(user=instance)
+            .exists()
+        ):
+            raise ValidationError("A team must retain at least one manager.")

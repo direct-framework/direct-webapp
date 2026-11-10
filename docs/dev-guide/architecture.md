@@ -43,6 +43,23 @@ request's user for personal data. Existing access behavior includes authenticati
 and terms acceptance through `TermsAcceptedMixin`; inspect the relevant view and
 its tests before extending that behavior.
 
+## Team membership lifecycle
+
+Create a team for a person with `{TeamManager::create_for_user}` so the team and its
+first manager membership are saved atomically. Use `{Team::invite_user}` to invite a
+registered person, then `{TeamInvitation::accept}`, `{TeamInvitation::decline}` or
+`{TeamInvitation::withdraw}` for the corresponding invitation action. Managers use
+`{Team::change_member_role}` and `{Team::remove_member}` to administer membership;
+members use `{Team::leave}` to leave.
+
+These operations preserve the at-least-one-manager rule and synchronize the
+Guardian permissions derived from membership. Direct membership saves and deletes
+also enforce the manager rule. Do not use queryset updates or bulk membership
+operations, which bypass the model protections and permission synchronization.
+Admin inline saves promote or add managers before demotions and removals so a
+manager handover can be completed in one edit. The user admin also blocks deleting
+a person who is the sole manager of any team.
+
 ## Defaults for new and changed code
 
 - Extend `main` and its existing module groups by default. Discuss a genuinely
