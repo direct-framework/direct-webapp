@@ -7,16 +7,18 @@ from typing import TYPE_CHECKING, Any, cast
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import QuerySet
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseBase
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.views.generic import ListView
 from django.views.generic.base import RedirectView, TemplateView
 from django.views.generic.edit import FormView, UpdateView
 
 from ..forms import TermsAcceptanceForm, UserSkillsForm
-from ..models import SkillLevel, UserSkill
+from ..models import SkillLevel, TeamMembership, UserSkill
 
 logger = logging.getLogger(__name__)
 
@@ -121,6 +123,22 @@ class AccountOverviewView(TermsAcceptedMixin, RedirectView):
         if UserSkill.objects.filter(user=self.request.user).exists():
             return reverse("skills_profile")
         return reverse("self_assess")
+
+
+class MyTeamsPageView(TermsAcceptedMixin, ListView[TeamMembership]):
+    """Show the signed-in user's team memberships."""
+
+    request: AuthenticatedHttpRequest
+    template_name = "main/my-teams.html"
+    context_object_name = "memberships"
+
+    def get_queryset(self) -> QuerySet[TeamMembership]:
+        """Return the user's memberships with their teams, ordered by name."""
+        return (
+            TeamMembership.objects.filter(user=self.request.user)
+            .select_related("team")
+            .order_by("team__name")
+        )
 
 
 class UserUpdateView(TermsAcceptedMixin, UpdateView["UserType", ModelForm["UserType"]]):
