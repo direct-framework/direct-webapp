@@ -16,7 +16,12 @@
         <div class="row">
             <div class="col pe-lg-4 pe-xl-0">
                 <h1 class="pb-2 pb-lg-3">Tools, languages and methodologies</h1>
-                {% render_table table %}
+                {% include "main/snippets/table-filter.html" %}
+                {% if table.rows %}
+                    {% render_table table %}
+                {% else %}
+                    <p>No tools, languages or methodologies found.</p>
+                {% endif %}
             </div>
         </div>
     </section>
