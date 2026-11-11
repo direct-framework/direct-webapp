@@ -15,7 +15,14 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
-from main.models import LearningResource, Provider, Skill, SkillLevel, UserSkill
+from main.models import (
+    LearningResource,
+    Provider,
+    Skill,
+    SkillLevel,
+    ToolLanguageMethodology,
+    UserSkill,
+)
 from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import (
@@ -463,6 +470,25 @@ class TestLearningProvidersPageView:
         assert "Provider One" in response.content.decode()
         assert "Provider Two" not in response.content.decode()
 
+    def test_filter_form(self, client):
+        """Render the search field with its original input-group styling."""
+        response = client.get(reverse("learning_providers"), {"q": "Provider"})
+        soup = BeautifulSoup(response.content, "html.parser")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Provider"
+        assert form.find("label", attrs={"for": "provider-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
+
+    def test_page_with_no_matches(self, client, learning_provider_view_data):
+        """Show the empty-results message when no provider matches."""
+        response = client.get(reverse("learning_providers"), {"q": "Missing"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert "No learning providers found." in response.content.decode()
+
     def test_page_is_paginated(self, client, learning_provider_view_data):
         """Test the learning providers page is paginated."""
         for index in range(25):
@@ -518,6 +544,22 @@ class TestLearningProviderDetailPageView:
         assert "Python course" in response.content.decode()
         assert "R course" not in response.content.decode()
         assert "Unrelated course" not in response.content.decode()
+
+    def test_filter_form(self, client, learning_provider_view_data):
+        """Render the resource search with its original input-group styling."""
+        provider, _ = learning_provider_view_data
+        response = client.get(
+            reverse("learning_provider_detail", kwargs={"slug": provider.slug}),
+            {"q": "Python"},
+        )
+        soup = BeautifulSoup(response.content, "html.parser")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Python"
+        assert form.find("label", attrs={"for": "provider-resource-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
 
     def test_page_hides_provider_column(self, client, learning_provider_view_data):
         """Test that the detail resource table hides the provider column."""
@@ -589,19 +631,48 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
 
     @pytest.mark.django_db
     def test_filter_form(self, client):
-        """Render a single labeled search control and a reset link."""
+        """Render the original search input group and preserve sorting."""
         response = client.get(self._get_url(), {"q": "Provider", "sort": "-name"})
         soup = BeautifulSoup(response.content, "html.parser")
-        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+        search_input = soup.find("input", attrs={"name": "q"})
+        form = search_input.find_parent("form")
+        input_group = form.find("div", class_="input-group")
 
         assert form["method"] == "get"
-        assert form.find("input", attrs={"name": "q"})["value"] == "Provider"
+        assert input_group["class"] == ["input-group", "w-auto"]
+        assert search_input.parent == input_group
+        assert search_input["id"] == "resource-filter"
+        assert search_input["type"] == "search"
+        assert search_input["value"] == "Provider"
+        assert search_input["class"] == ["form-control"]
+        assert search_input["size"] == "25"
+        assert search_input["placeholder"] == "Filter learning resources"
         assert len(form.select('input:not([type="hidden"])')) == 1
         assert not form.find("input", attrs={"name": "name"})
-        assert form.find("label", attrs={"for": "resource-filter"})
-        assert form.find("input", attrs={"name": "sort"})["value"] == "-name"
-        assert form.find("a", href=self._get_url()).get_text(strip=True) == "Reset"
+        label = input_group.find("label", attrs={"for": "resource-filter"})
+        assert label["class"] == ["visually-hidden"]
+        assert label.get_text(strip=True) == "Search learning resources"
+        assert (
+            input_group.find("button", class_="btn-primary").get_text(strip=True)
+            == "Search"
+        )
+        sort_input = form.find("input", attrs={"name": "sort"})
+        assert sort_input["value"] == "-name"
+        assert sort_input.parent == form
+        assert not form.find("a")
         assert not form.find("input", attrs={"name": "page"})
+
+    @pytest.mark.django_db
+    def test_empty_search_restores_resources(self, client, learning_provider_view_data):
+        """Clearing the search restores the unfiltered table."""
+        response = client.get(self._get_url(), {"q": "", "sort": "-name"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert [row.record.name for row in response.context["table"].rows] == [
+            "Unrelated course",
+            "R course",
+            "Python course",
+        ]
 
     @pytest.mark.django_db
     def test_page_with_no_matches(self, client, learning_provider_view_data):
@@ -668,6 +739,62 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Skill"),
             class_="btn",
             href=reverse("skill_detail", args=(skill.slug,)),
+        )
+
+
+@pytest.mark.django_db
+class TestToolsLanguagesMethodologiesPageView:
+    """Test the tools, languages, and methodologies page."""
+
+    def test_page_lists_tools(self, client, tool):
+        """List framework tools in a table."""
+        response = client.get(reverse("tools_languages_methodologies"))
+
+        assert response.status_code == HTTPStatus.OK
+        assert "Tool" in response.content.decode()
+        assert response.context["table"].rows
+
+    def test_page_filters_tools(self, client, tool):
+        """Filter the table by tool details."""
+        ToolLanguageMethodology.objects.create(
+            name="Unrelated methodology",
+            description="Not a match",
+            kind="methodology",
+        )
+        response = client.get(
+            reverse("tools_languages_methodologies"),
+            {"q": "Tool"},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert "Tool" in response.content.decode()
+        assert "Unrelated methodology" not in response.content.decode()
+
+    def test_filter_form(self, client, tool):
+        """Render a labeled search field with the shared filter styling."""
+        response = client.get(
+            reverse("tools_languages_methodologies"),
+            {"q": "Tool"},
+        )
+        soup = BeautifulSoup(response.content, "html.parser")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Tool"
+        assert form.find("label", attrs={"for": "tool-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
+
+    def test_page_with_no_matches(self, client, tool):
+        """Show the empty-results message when no tool matches."""
+        response = client.get(
+            reverse("tools_languages_methodologies"),
+            {"q": "Missing"},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert (
+            "No tools, languages or methodologies found." in response.content.decode()
         )
 
 
