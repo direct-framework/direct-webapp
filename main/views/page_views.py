@@ -11,15 +11,21 @@ from typing import Any, ClassVar, cast
 import markdown
 import nh3
 import requests
-from django.db.models import Q, QuerySet
 from django.templatetags.static import static
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
-from django_tables2 import RequestConfig, SingleTableView
+from django_filters.views import FilterView
+from django_tables2 import RequestConfig, SingleTableMixin
 
+from ..filters import (
+    LearningProviderFilter,
+    LearningProviderResourceFilter,
+    LearningResourceFilter,
+    ToolLanguageMethodologyFilter,
+)
 from ..models import (
     CompetencyDomain,
     Event,
@@ -102,7 +108,7 @@ class SkillLevelsPageView(TemplateView):
         return context
 
 
-class LearningProvidersPageView(SingleTableView):
+class LearningProvidersPageView(SingleTableMixin, FilterView):
     """View that renders a page with all learning providers.
 
     Providers are listed in a table which is searchable and paginated.
@@ -110,26 +116,10 @@ class LearningProvidersPageView(SingleTableView):
 
     model = Provider
     table_class = ProviderTable
+    filterset_class = LearningProviderFilter
+    queryset = Provider.objects.order_by("name")
     template_name = "main/pages/learning-providers.html"
     paginate_by = 20
-
-    def get_queryset(self) -> QuerySet[Provider]:
-        """Return learning providers filtered by the optional search query."""
-        queryset = Provider.objects.order_by("name")
-        query = self.request.GET.get("q", "").strip()
-
-        if query:
-            queryset = queryset.filter(
-                Q(name__icontains=query) | Q(description__icontains=query)
-            ).distinct()
-
-        return queryset
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Add the current search query to the template context."""
-        context = super().get_context_data(**kwargs)
-        context["query"] = self.request.GET.get("q", "").strip()
-        return context
 
 
 class LearningProviderDetailPageView(DetailView[Provider]):
@@ -147,34 +137,28 @@ class LearningProviderDetailPageView(DetailView[Provider]):
         """Add the provider's learning resources and the search query to the context."""
         context = super().get_context_data(**kwargs)
 
-        query = self.request.GET.get("q", "").strip()
-
         resources = (
             LearningResource.objects.filter(provider=self.object)
             .prefetch_related("skill_set")
             .order_by("name")
         )
-
-        if query:
-            resources = resources.filter(
-                Q(name__icontains=query)
-                | Q(description__icontains=query)
-                | Q(language__icontains=query)
-                | Q(skill__name__icontains=query)
-            ).distinct()
+        resource_filter = LearningProviderResourceFilter(
+            self.request.GET,
+            queryset=resources,
+        )
 
         table = LearningResourceTable(
-            resources,
+            resource_filter.qs,
             exclude=("provider",),
         )
         RequestConfig(self.request).configure(table)
 
         context["learning_resources"] = table
-        context["query"] = query
+        context["filter"] = resource_filter
         return context
 
 
-class LearningResourcesPageView(SingleTableView):
+class LearningResourcesPageView(SingleTableMixin, FilterView):
     """View that renders a page with all learning resources.
 
     Learning resources are listed in a table that is searchable and paginated.
@@ -182,37 +166,18 @@ class LearningResourcesPageView(SingleTableView):
 
     model = LearningResource
     table_class = LearningResourceTable
+    filterset_class = LearningResourceFilter
     template_name = "main/pages/learning-resources.html"
     paginate_by = 20
-
-    def get_queryset(self) -> QuerySet[LearningResource]:
-        """Return learning resources filtered by the optional search query."""
-        queryset = LearningResource.objects.select_related("provider").order_by("name")
-        query = self.request.GET.get("q", "").strip()
-
-        if query:
-            queryset = queryset.filter(
-                Q(name__icontains=query)
-                | Q(description__icontains=query)
-                | Q(language__icontains=query)
-                | Q(provider__name__icontains=query)
-                | Q(skill__name__icontains=query)
-            ).distinct()
-
-        return queryset
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Add the current search query to the template context."""
-        context = super().get_context_data(**kwargs)
-        context["query"] = self.request.GET.get("q", "").strip()
-        return context
+    queryset = LearningResource.objects.select_related("provider").order_by("name")
 
 
-class ToolsLanguagesMethodologiesPageView(SingleTableView):
+class ToolsLanguagesMethodologiesPageView(SingleTableMixin, FilterView):
     """View that renders the page with all tools, languages and methodologies."""
 
     model = ToolLanguageMethodology
     table_class = ToolLanguageMethodologyTable
+    filterset_class = ToolLanguageMethodologyFilter
     template_name = "main/pages/tools-languages-methodologies.html"
 
 
