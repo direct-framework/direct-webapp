@@ -7,7 +7,21 @@ behavior. Do not use Django `TestCase` or its subclasses.
 ## Organization and fixtures
 
 Follow the existing `tests/` layout and nearby tests for the component being
-changed. Shared user fixtures live in `tests/conftest.py`, including users with
+changed. Place each test by the layer it exercises, not by the feature it
+belongs to:
+
+| Layer under test | Test module in `tests/main/` |
+| --- | --- |
+| Views (HTTP behavior) | The area's existing `test_*_views.py` module, otherwise `test_main_views.py`; use the [view-test helpers](#shared-view-test-helpers). |
+| Admin pages | `test_admin_views.py`; give each admin model a `Test<Model>Admin(AdminMixin)` class and add behavior tests beside it. |
+| Services (`main/<area>_services.py`) | `test_<area>_services.py` |
+| Models, managers and querysets | `test_<area>_models.py` |
+| Forms, tables, import/export resources | `test_forms.py`, `test_tables.py`, `test_io_resources.py` |
+| Data migrations | `test_<area>_migrations.py` |
+
+Add a new module only when no existing module covers that layer and area.
+
+Shared user fixtures live in `tests/conftest.py`, including users with
 different terms-acceptance states.
 
 Reuse appropriate fixtures rather than constructing a parallel setup pattern.
