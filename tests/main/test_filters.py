@@ -11,8 +11,6 @@ from main.filters import (
 )
 from main.models import LearningResource, Provider, Skill, ToolLanguageMethodology
 
-pytestmark = pytest.mark.django_db
-
 
 class SearchFilterTestMixin:
     """Share behavior tests across the framework search filters."""
@@ -24,6 +22,7 @@ class SearchFilterTestMixin:
         """Return the existing objects for this filter's model."""
         raise NotImplementedError
 
+    @pytest.mark.django_db
     @pytest.mark.parametrize("data", [{}, {"q": ""}, {"q": " "}])
     def test_empty_search_returns_all_objects(self, data, model_objects):
         """Empty and whitespace-only filters leave the queryset unchanged."""
@@ -32,6 +31,7 @@ class SearchFilterTestMixin:
         assert search_filter.is_valid()
         assert list(search_filter.qs) == model_objects
 
+    @pytest.mark.django_db
     def test_search_with_no_matches(self, model_objects):
         """A nonmatching search returns no objects."""
         search_filter = self.filterset_class({"q": "missing"})
@@ -54,6 +54,7 @@ class TestLearningResourceFilter(SearchFilterTestMixin):
         """Return the existing learning resource."""
         return [learning_resource]
 
+    @pytest.mark.django_db
     @pytest.mark.parametrize(
         "field",
         ["name", "description", "language", "provider__name", "skill__name"],
@@ -78,6 +79,7 @@ class TestLearningResourceFilter(SearchFilterTestMixin):
         assert search_filter.is_valid()
         assert list(search_filter.qs) == [learning_resource]
 
+    @pytest.mark.django_db
     def test_search_does_not_duplicate_resources(
         self, learning_resource, skill, competency
     ):
@@ -101,6 +103,7 @@ class TestLearningProviderFilter(SearchFilterTestMixin):
         """Return the existing provider."""
         return [provider]
 
+    @pytest.mark.django_db
     @pytest.mark.parametrize("field", ["name", "description"])
     def test_search_matches_provider_fields(self, field, provider):
         """Search provider names and descriptions."""
@@ -123,6 +126,7 @@ class TestLearningProviderResourceFilter(SearchFilterTestMixin):
         """Return the existing provider's learning resource."""
         return [learning_resource]
 
+    @pytest.mark.django_db
     @pytest.mark.parametrize(
         "query", ["Learning Resource", "A learning resource", "en", "Skill"]
     )
@@ -138,6 +142,7 @@ class TestLearningProviderResourceFilter(SearchFilterTestMixin):
         assert search_filter.is_valid()
         assert list(search_filter.qs) == [learning_resource]
 
+    @pytest.mark.django_db
     def test_search_does_not_match_provider_name(self, learning_resource, provider):
         """A provider name does not match each resource on its detail page."""
         search_filter = self.filterset_class(
@@ -159,6 +164,7 @@ class TestToolLanguageMethodologyFilter(SearchFilterTestMixin):
         """Return the existing tool."""
         return [tool]
 
+    @pytest.mark.django_db
     @pytest.mark.parametrize("field", ["name", "description", "kind"])
     def test_search_matches_tool_fields(self, field, tool):
         """Search tool names, descriptions, and kinds."""
