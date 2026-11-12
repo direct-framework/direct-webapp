@@ -129,7 +129,12 @@ INSTALLED_APPS = [
     "import_export",
     "django_tables2",
     "django_filters",
+    "guardian",
 ]
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",  # this is default
+    "guardian.backends.ObjectPermissionBackend",
+)
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 STATIC_ROOT = BASE_DIR / "staticfiles"
 AUTH_USER_MODEL = "main.User"
