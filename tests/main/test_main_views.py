@@ -400,7 +400,9 @@ class TestTeamInvitationLinkView(LoginRequiredMixin, TemplateOkMixin):
         self, client, django_user_model, user
     ) -> None:
         """Managers can share a link; membership starts after explicit acceptance."""
-        invitee = django_user_model.objects.create_user(username="invitee")
+        invitee = django_user_model.objects.create_user(
+            username="invitee", agreed_to_tos=True
+        )
         client.force_login(user)
 
         response = client.get(self._get_url())
@@ -436,7 +438,9 @@ class TestTeamInvitationLinkView(LoginRequiredMixin, TemplateOkMixin):
         self, client, django_user_model
     ) -> None:
         """Only managers may open or submit the team-link generator."""
-        member = django_user_model.objects.create_user(username="regular-member")
+        member = django_user_model.objects.create_user(
+            username="regular-member", agreed_to_tos=True
+        )
         TeamMembership.objects.create(user=member, team=self.team)
         client.force_login(member)
 
@@ -449,6 +453,21 @@ class TestTeamInvitationLinkView(LoginRequiredMixin, TemplateOkMixin):
         url = reverse("team-invitation-link", kwargs={"team_slug": "no-such-team"})
 
         assert client.get(url).status_code == HTTPStatus.NOT_FOUND
+
+    @pytest.mark.parametrize("method", ["get", "post"])
+    def test_user_must_accept_terms_before_generating_invitation_link(
+        self, client, user, method
+    ) -> None:
+        """Terms acceptance gates link generation for every HTTP method."""
+        user.agreed_to_tos = False
+        user.save(update_fields=["agreed_to_tos"])
+        client.force_login(user)
+
+        response = getattr(client, method)(self._get_url())
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("terms_acceptance")
+        assert TeamMembership.objects.filter(team=self.team).count() == 1
 
 
 @pytest.mark.django_db
@@ -481,6 +500,22 @@ class TestTeamInvitationAcceptanceView(LoginRequiredMixin, TemplateOkMixin):
             self._get_url()
         ]
 
+    @pytest.mark.parametrize("method", ["get", "post"])
+    def test_user_must_accept_terms_before_accepting_invitation(
+        self, client, django_user_model, method
+    ) -> None:
+        """Terms acceptance gates invitation access and membership creation."""
+        invitee = django_user_model.objects.create_user(
+            username="terms-unaccepted-invitee", agreed_to_tos=False
+        )
+        client.force_login(invitee)
+
+        response = getattr(client, method)(self._get_url())
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("terms_acceptance")
+        assert not TeamMembership.objects.filter(team=self.team, user=invitee).exists()
+
     def test_existing_member_acceptance_does_not_duplicate_membership(
         self, client, user
     ):
@@ -498,7 +533,9 @@ class TestTeamInvitationAcceptanceView(LoginRequiredMixin, TemplateOkMixin):
         self, client, django_user_model, user, method
     ) -> None:
         """An invitation URL is rejected when its team slug is no longer current."""
-        invitee = django_user_model.objects.create_user(username="slug-invitee")
+        invitee = django_user_model.objects.create_user(
+            username="slug-invitee", agreed_to_tos=True
+        )
         client.force_login(invitee)
         old_url = self._get_url()
         self.team.slug = "renamed-team"

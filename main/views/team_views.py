@@ -1,14 +1,15 @@
 """Views for team membership actions."""
 
 from http import HTTPStatus
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.views import View
+from django.views.generic import TemplateView
+from guardian.mixins import PermissionRequiredMixin
 
 from ..models import Team, TeamMembership
 from ..team_services import (
@@ -16,60 +17,60 @@ from ..team_services import (
     generate_invitation_token,
     resolve_invitation_token,
 )
-from .account_views import AuthenticatedHttpRequest
+from .account_views import AuthenticatedHttpRequest, TermsAcceptedMixin
 
 if TYPE_CHECKING:
     from ..models import User as UserType
 
 
-class TeamInvitationLinkView(LoginRequiredMixin, View):
+class TeamInvitationLinkView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
     """Let team managers generate links to share outside the application."""
 
     request: AuthenticatedHttpRequest
     template_name = "main/team_invitation_link.html"
+    login_url: str = str(settings.LOGIN_URL)
+    permission_required = "main.manage_team_members"
+    accept_global_perms = False
+    return_404 = True
+    team: Team
 
-    def _get_managed_team(self, team_slug: str) -> Team:
-        """Return a team only when the current user can manage its members."""
-        team = Team.objects.filter(slug=team_slug).first()
-        if team is None or not self.request.user.has_perm(
-            "main.manage_team_members", team
-        ):
-            raise Http404
-        return team
+    def get_permission_object(self) -> Team:
+        """Return the team whose manager permission is required."""
+        self.team = get_object_or_404(Team, slug=self.kwargs["team_slug"])
+        return self.team
 
-    def get(self, request: HttpRequest, team_slug: str) -> HttpResponse:
-        """Show the manager the action for generating a shareable link."""
-        team = self._get_managed_team(team_slug)
-        return render(request, self.template_name, {"team": team})
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Add the managed team and any generated link to the template context."""
+        context = super().get_context_data(**kwargs)
+        context["team"] = self.team
+        return context
 
     def post(self, request: HttpRequest, team_slug: str) -> HttpResponse:
         """Generate and display a signed team link without storing it."""
-        team = self._get_managed_team(team_slug)
         try:
             token = generate_invitation_token(
-                team=team, invited_by=cast("UserType", request.user)
+                team=self.team, invited_by=cast("UserType", request.user)
             )
         except ValidationError as exc:
             raise Http404 from exc
         invitation_url = request.build_absolute_uri(
             reverse(
                 "team-invitation-accept",
-                kwargs={"team_slug": team.slug, "token": token},
+                kwargs={"team_slug": self.team.slug, "token": token},
             )
         )
-        return render(
-            request,
-            self.template_name,
-            {"team": team, "invitation_url": invitation_url},
+        return self.render_to_response(
+            self.get_context_data(invitation_url=invitation_url)
         )
 
 
-class TeamInvitationAcceptView(LoginRequiredMixin, View):
+class TeamInvitationAcceptView(TermsAcceptedMixin, TemplateView):
     """Show and accept a signed invitation link for the signed-in user."""
 
     request: AuthenticatedHttpRequest
     template_name = "main/team_invitation_accept.html"
     invalid_template_name = "main/team_invitation_invalid.html"
+    team: Team
 
     def _invalid_link_response(self, request: HttpRequest) -> HttpResponse:
         """Render the recovery instruction for expired or invalid links."""
@@ -82,21 +83,19 @@ class TeamInvitationAcceptView(LoginRequiredMixin, View):
     def get(self, request: HttpRequest, team_slug: str, token: str) -> HttpResponse:
         """Show team details and require a separate POST to join."""
         try:
-            team = resolve_invitation_token(token=token)
+            self.team = resolve_invitation_token(token=token)
         except ValidationError:
             return self._invalid_link_response(request)
-        if team.slug != team_slug:
+        if self.team.slug != team_slug:
             return self._invalid_link_response(request)
-        return render(
-            request,
-            self.template_name,
-            {
-                "team": team,
-                "already_member": TeamMembership.objects.filter(
-                    team=team, user=cast("UserType", request.user)
+        return self.render_to_response(
+            self.get_context_data(
+                team=self.team,
+                already_member=TeamMembership.objects.filter(
+                    team=self.team, user=cast("UserType", request.user)
                 ).exists(),
-                "accepted": False,
-            },
+                accepted=False,
+            )
         )
 
     def post(self, request: HttpRequest, team_slug: str, token: str) -> HttpResponse:
@@ -109,12 +108,10 @@ class TeamInvitationAcceptView(LoginRequiredMixin, View):
             )
         except ValidationError:
             return self._invalid_link_response(request)
-        return render(
-            request,
-            self.template_name,
-            {
-                "team": team,
-                "already_member": not created,
-                "accepted": created,
-            },
+        return self.render_to_response(
+            self.get_context_data(
+                team=team,
+                already_member=not created,
+                accepted=created,
+            )
         )

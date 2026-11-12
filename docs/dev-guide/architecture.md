@@ -78,6 +78,10 @@ user admin also blocks deleting a person who is the sole manager of any team.
   merely for architectural symmetry.
 - Prefer the narrowest suitable Django generic class-based view and reuse existing
   access-control mixins. A function-based view is acceptable when clearly simpler.
+- Require `TermsAcceptedMixin` for login-required application views, so terms
+  acceptance gates every HTTP method before application actions or object
+  permission checks. Essential exceptions include terms acceptance itself and
+  authentication/account-recovery flows that must work before acceptance.
 - Preserve existing behavior and public contracts unless the task explicitly
   changes them. Check affected URLs, forms, templates, data responses, and tests
   together rather than treating a Python module as an isolated surface.
