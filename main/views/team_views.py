@@ -11,6 +11,11 @@ from django.urls import reverse
 from django.views import View
 
 from ..models import Team, TeamMembership
+from ..team_services import (
+    accept_invitation,
+    generate_invitation_token,
+    resolve_invitation_token,
+)
 from .account_views import AuthenticatedHttpRequest
 
 if TYPE_CHECKING:
@@ -23,31 +28,34 @@ class TeamInvitationLinkView(LoginRequiredMixin, View):
     request: AuthenticatedHttpRequest
     template_name = "main/team_invitation_link.html"
 
-    def _get_managed_team(self, team_id: int) -> Team:
+    def _get_managed_team(self, team_slug: str) -> Team:
         """Return a team only when the current user can manage its members."""
-        team = Team.objects.filter(pk=team_id).first()
+        team = Team.objects.filter(slug=team_slug).first()
         if team is None or not self.request.user.has_perm(
             "main.manage_team_members", team
         ):
             raise Http404
         return team
 
-    def get(self, request: HttpRequest, team_id: int) -> HttpResponse:
+    def get(self, request: HttpRequest, team_slug: str) -> HttpResponse:
         """Show the manager the action for generating a shareable link."""
-        team = self._get_managed_team(team_id)
+        team = self._get_managed_team(team_slug)
         return render(request, self.template_name, {"team": team})
 
-    def post(self, request: HttpRequest, team_id: int) -> HttpResponse:
+    def post(self, request: HttpRequest, team_slug: str) -> HttpResponse:
         """Generate and display a signed team link without storing it."""
-        team = self._get_managed_team(team_id)
+        team = self._get_managed_team(team_slug)
         try:
-            token = team.generate_invitation_token(
-                invited_by=cast("UserType", request.user)
+            token = generate_invitation_token(
+                team=team, invited_by=cast("UserType", request.user)
             )
         except ValidationError as exc:
             raise Http404 from exc
         invitation_url = request.build_absolute_uri(
-            reverse("team-invitation-accept", kwargs={"token": token})
+            reverse(
+                "team-invitation-accept",
+                kwargs={"team_slug": team.slug, "token": token},
+            )
         )
         return render(
             request,
@@ -71,11 +79,13 @@ class TeamInvitationAcceptView(LoginRequiredMixin, View):
             status=HTTPStatus.BAD_REQUEST,
         )
 
-    def get(self, request: HttpRequest, token: str) -> HttpResponse:
+    def get(self, request: HttpRequest, team_slug: str, token: str) -> HttpResponse:
         """Show team details and require a separate POST to join."""
         try:
-            team = Team.resolve_invitation_token(token=token)
+            team = resolve_invitation_token(token=token)
         except ValidationError:
+            return self._invalid_link_response(request)
+        if team.slug != team_slug:
             return self._invalid_link_response(request)
         return render(
             request,
@@ -89,11 +99,13 @@ class TeamInvitationAcceptView(LoginRequiredMixin, View):
             },
         )
 
-    def post(self, request: HttpRequest, token: str) -> HttpResponse:
+    def post(self, request: HttpRequest, team_slug: str, token: str) -> HttpResponse:
         """Create regular membership only after explicit acceptance."""
         try:
-            team, created = Team.accept_invitation_token(
-                token=token, user=cast("UserType", request.user)
+            team, created = accept_invitation(
+                token=token,
+                team_slug=team_slug,
+                user=cast("UserType", request.user),
             )
         except ValidationError:
             return self._invalid_link_response(request)

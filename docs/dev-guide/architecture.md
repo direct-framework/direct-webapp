@@ -45,15 +45,16 @@ its tests before extending that behavior.
 
 ## Team membership lifecycle
 
-Create a team for a person with `{TeamManager::create_for_user}` so the team and its
-first manager membership are saved atomically. Managers generate a team-wide link
-with `{Team::generate_invitation_token}` and share it outside the app. The signed
-link expires after 24 hours, stores no invitation record, and may be used by multiple
-people. `{Team.accept_invitation_token}` rechecks that its generating manager is
-still a manager before creating regular membership. Team invitation views require
-authentication, and membership is created only after an explicit POST acceptance.
-Managers use `{Team::change_member_role}` and `{Team::remove_member}` to administer
-membership; members use `{Team::leave}` to leave.
+Use the functions in `main/team_services.py` to create teams, generate and accept
+team-wide invitation links, change member roles, remove members, and leave teams.
+Team creation and its first manager membership are saved atomically. Invitation
+links expire after 24 hours, store no invitation record, and may be used by multiple
+people. A link identifies its team by ID and includes the team's slug in its URL;
+acceptance is rejected when that slug differs from the team's current slug. The
+generating manager must still be a manager when another person accepts. Invitation
+views require authentication, and membership is created only after an explicit POST
+acceptance. Keep these functions in this module until the project needs enough
+services to justify a package.
 
 These operations preserve the at-least-one-manager rule and synchronize the
 Guardian permissions derived from membership. Direct membership saves and deletes

@@ -76,12 +76,12 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include(accounts_patterns)),
     path(
-        "teams/<int:team_id>/invitation-link/",
+        "teams/<slug:team_slug>/invitation-link/",
         views.TeamInvitationLinkView.as_view(),
         name="team-invitation-link",
     ),
     path(
-        "team-invitations/<str:token>/",
+        "teams/<slug:team_slug>/invitations/<str:token>/",
         views.TeamInvitationAcceptView.as_view(),
         name="team-invitation-accept",
     ),
