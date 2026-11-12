@@ -441,8 +441,13 @@ def learning_provider_view_data():
 
 
 @pytest.mark.django_db
-class TestLearningProvidersPageView:
+class TestLearningProvidersPageView(BS4Mixin):
     """Test the learning providers list view."""
+
+    def _get_url(self, **kwargs):
+        url = reverse("learning_providers")
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
 
     def test_page_lists_providers(self, client, learning_provider_view_data):
         """Test that the learning providers page lists providers."""
@@ -470,10 +475,9 @@ class TestLearningProvidersPageView:
         assert "Provider One" in response.content.decode()
         assert "Provider Two" not in response.content.decode()
 
-    def test_filter_form(self, client):
+    def test_filter_form(self, soup_factory):
         """Render the search field with its original input-group styling."""
-        response = client.get(reverse("learning_providers"), {"q": "Provider"})
-        soup = BeautifulSoup(response.content, "html.parser")
+        soup = soup_factory(q="Provider")
         form = soup.find("input", attrs={"name": "q"}).find_parent("form")
 
         assert form.find("div", class_="input-group")
@@ -743,12 +747,19 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
 
 
 @pytest.mark.django_db
-class TestToolsLanguagesMethodologiesPageView:
+class TestToolsLanguagesMethodologiesPageView(TemplateOkMixin, BS4Mixin):
     """Test the tools, languages, and methodologies page."""
+
+    _template_name = "main/pages/tools-languages-methodologies.html"
+
+    def _get_url(self, **kwargs):
+        url = reverse("tools_languages_methodologies")
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
 
     def test_page_lists_tools(self, client, tool):
         """List framework tools in a table."""
-        response = client.get(reverse("tools_languages_methodologies"))
+        response = client.get(self._get_url())
 
         assert response.status_code == HTTPStatus.OK
         assert "Tool" in response.content.decode()
@@ -762,7 +773,7 @@ class TestToolsLanguagesMethodologiesPageView:
             kind="methodology",
         )
         response = client.get(
-            reverse("tools_languages_methodologies"),
+            self._get_url(),
             {"q": "Tool"},
         )
 
@@ -770,13 +781,9 @@ class TestToolsLanguagesMethodologiesPageView:
         assert "Tool" in response.content.decode()
         assert "Unrelated methodology" not in response.content.decode()
 
-    def test_filter_form(self, client, tool):
+    def test_filter_form(self, soup_factory, tool):
         """Render a labeled search field with the shared filter styling."""
-        response = client.get(
-            reverse("tools_languages_methodologies"),
-            {"q": "Tool"},
-        )
-        soup = BeautifulSoup(response.content, "html.parser")
+        soup = soup_factory(q="Tool")
         form = soup.find("input", attrs={"name": "q"}).find_parent("form")
 
         assert form.find("div", class_="input-group")
@@ -788,7 +795,7 @@ class TestToolsLanguagesMethodologiesPageView:
     def test_page_with_no_matches(self, client, tool):
         """Show the empty-results message when no tool matches."""
         response = client.get(
-            reverse("tools_languages_methodologies"),
+            self._get_url(),
             {"q": "Missing"},
         )
 
