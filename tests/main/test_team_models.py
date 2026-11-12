@@ -3,6 +3,7 @@
 from types import SimpleNamespace
 
 import pytest
+from bs4 import BeautifulSoup
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -279,6 +280,35 @@ def test_team_membership_unique(user) -> None:
         new_team_membership.full_clean()
 
 
+@pytest.mark.parametrize("identity_field", ["user", "team"])
+@pytest.mark.django_db
+def test_team_membership_identity_cannot_change(
+    user, django_user_model, identity_field
+) -> None:
+    """Existing memberships cannot change their user or team."""
+    team = Team.objects.create_for_user(
+        user=user, name="Immutable membership", description="Membership test"
+    )
+    membership = TeamMembership.objects.get(user=user, team=team)
+    other_user = django_user_model.objects.create_user(username="other-member")
+    other_team = Team.objects.create(name="Other team", description="Membership test")
+
+    setattr(
+        membership,
+        identity_field,
+        other_user if identity_field == "user" else other_team,
+    )
+    with pytest.raises(
+        ValidationError,
+        match="Change a member's user or team by removing the existing membership",
+    ):
+        membership.save()
+
+    membership.refresh_from_db()
+    assert membership.user == user
+    assert membership.team == team
+
+
 @pytest.mark.django_db
 def test_membership_permissions_follow_manager_role(user, django_user_model) -> None:
     """Membership saves and deletes synchronize permissions visible via Django."""
@@ -457,10 +487,10 @@ def test_admin_can_replace_a_team_manager(
 
 
 @pytest.mark.django_db
-def test_admin_membership_user_change_resynchronizes_permissions(
+def test_admin_replaces_membership_by_removing_and_adding(
     admin_client, user, django_user_model
 ) -> None:
-    """Reassigning an inline membership revokes the former member's access."""
+    """The admin replaces a member without changing an existing identity."""
     former_member = django_user_model.objects.create_user(username="former-member")
     new_member = django_user_model.objects.create_user(username="new-member")
     team = Team.objects.create_for_user(
@@ -475,7 +505,7 @@ def test_admin_membership_user_change_resynchronizes_permissions(
             "name": team.name,
             "description": team.description,
             "slug": team.slug,
-            "members-TOTAL_FORMS": "2",
+            "members-TOTAL_FORMS": "3",
             "members-INITIAL_FORMS": "2",
             "members-MIN_NUM_FORMS": "0",
             "members-MAX_NUM_FORMS": "1000",
@@ -483,15 +513,44 @@ def test_admin_membership_user_change_resynchronizes_permissions(
             "members-0-user": str(user.pk),
             "members-0-manager": "on",
             "members-1-id": str(membership.pk),
-            "members-1-user": str(new_member.pk),
+            "members-1-user": str(former_member.pk),
+            "members-1-DELETE": "on",
+            "members-2-user": str(new_member.pk),
         },
     )
 
     assert response.status_code == 302
     former_member.refresh_from_db()
     new_member.refresh_from_db()
+    assert not TeamMembership.objects.filter(pk=membership.pk).exists()
+    assert TeamMembership.objects.filter(user=new_member, team=team).exists()
     assert not former_member.has_perm("main.view_team", team)
     assert new_member.has_perm("main.view_team", team)
+
+
+@pytest.mark.django_db
+def test_admin_renders_existing_membership_user_as_read_only(
+    admin_client, user, django_user_model
+) -> None:
+    """Existing users appear as text; the empty form remains selectable."""
+    team = Team.objects.create_for_user(
+        user=user, name="Read-only member", description="Admin rendering test"
+    )
+    member = django_user_model.objects.create_user(username="read-only-member")
+    TeamMembership.objects.create(user=member, team=team)
+
+    response = admin_client.get(f"/admin/main/team/{team.pk}/change/")
+
+    assert response.status_code == 200
+    soup = BeautifulSoup(response.content, "html.parser")
+    existing_user_cell = soup.select_one("#members-1 .field-user")
+    assert existing_user_cell is not None
+    assert existing_user_cell.get_text(strip=True) == member.username
+    assert existing_user_cell.select_one("input, select") is None
+
+    empty_user_cell = soup.select_one("#members-empty .field-user")
+    assert empty_user_cell is not None
+    assert empty_user_cell.select_one("select") is not None
 
 
 @pytest.mark.parametrize("change", ["demote", "delete"])

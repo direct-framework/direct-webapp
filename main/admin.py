@@ -3,6 +3,7 @@
 from collections.abc import Sequence
 from typing import Any
 
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.core.exceptions import ValidationError
@@ -11,6 +12,8 @@ from django.db.models import QuerySet
 from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 from django.http import HttpRequest
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
 
@@ -280,6 +283,33 @@ class TeamMembershipInlineFormSet(
     BaseInlineFormSet[TeamMembership, Team, ModelForm[TeamMembership]]
 ):
     """Keep each team manager-editable through admin membership changes."""
+
+    class ReadOnlyUserWidget(forms.Widget):
+        """Render an existing member's name as plain, non-editable text."""
+
+        def __init__(self, display_name: str) -> None:
+            """Set the text displayed for the existing member."""
+            super().__init__()
+            self.display_name = display_name
+
+        def render(
+            self,
+            name: str,
+            value: Any,
+            attrs: dict[str, Any] | None = None,
+            renderer: Any = None,
+        ) -> SafeString:
+            """Render the member name without an interactive control."""
+            return format_html('<div class="readonly">{}</div>', self.display_name)
+
+    def add_fields(self, form: ModelForm[TeamMembership], index: int | None) -> None:
+        """Keep existing membership identities fixed while allowing new members."""
+        super().add_fields(form, index)
+        if form.instance.pk is not None:
+            form.fields["user"].disabled = True
+            form.fields["user"].widget = self.ReadOnlyUserWidget(
+                display_name=str(form.instance.user)
+            )
 
     def clean(self) -> None:
         """Reject inline edits that would leave a team without a manager."""

@@ -57,11 +57,13 @@ membership; members use `{Team::leave}` to leave.
 
 These operations preserve the at-least-one-manager rule and synchronize the
 Guardian permissions derived from membership. Direct membership saves and deletes
-also enforce the manager rule. Do not use queryset updates or bulk membership
-operations, which bypass the model protections and permission synchronization.
-Admin inline saves promote or add managers before demotions and removals so a
-manager handover can be completed in one edit. The user admin also blocks deleting
-a person who is the sole manager of any team.
+also enforce the manager rule. Once created, a membership's user and team cannot
+change; replace a member by removing the old membership and adding a new one.
+Model saves reject changes to an existing membership's user or team. Do not use
+queryset updates or bulk membership operations, which bypass the model protections
+and permission synchronization. Admin inline saves promote or add managers before
+demotions and removals so a manager handover can be completed in one edit. The
+user admin also blocks deleting a person who is the sole manager of any team.
 
 ## Defaults for new and changed code
 

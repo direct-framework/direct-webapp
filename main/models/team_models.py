@@ -172,8 +172,6 @@ class TeamMembership(models.Model):
     and bulk operations bypass permission synchronization.
     """
 
-    _previous_membership: tuple[int, int] | None = None
-
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="teams", on_delete=models.CASCADE
     )
@@ -206,9 +204,12 @@ class TeamMembership(models.Model):
                     .first()
                 )
 
-            if existing is not None and existing.team_id != self.team_id:
+            if existing is not None and (
+                existing.user_id != self.user_id or existing.team_id != self.team_id
+            ):
                 raise ValidationError(
-                    "Move a member by removing the old membership and adding a new one."
+                    "Change a member's user or team by removing the existing "
+                    "membership and adding a new one."
                 )
 
             if existing is not None and existing.manager and not self.manager:
