@@ -509,15 +509,18 @@ class TestLearningProvidersPageView(BS4Mixin):
 
 
 @pytest.mark.django_db
-class TestLearningProviderDetailPageView:
+class TestLearningProviderDetailPageView(BS4Mixin):
     """Test the individual learning-provider detail view."""
+
+    def _get_url(self, slug, **kwargs):
+        url = reverse("learning_provider_detail", kwargs={"slug": slug})
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
 
     def test_page_displays_provider(self, client, learning_provider_view_data):
         """Test that the provider detail page displays provider data."""
         provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug})
-        )
+        response = client.get(self._get_url(slug=provider.slug))
 
         assert response.status_code == HTTPStatus.OK
         assert "Provider One" in response.content.decode()
@@ -540,7 +543,7 @@ class TestLearningProviderDetailPageView:
         """Test filtering resources on the provider detail page."""
         provider, _ = learning_provider_view_data
         response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug}),
+            self._get_url(slug=provider.slug),
             {"q": "Python"},
         )
 
@@ -549,14 +552,10 @@ class TestLearningProviderDetailPageView:
         assert "R course" not in response.content.decode()
         assert "Unrelated course" not in response.content.decode()
 
-    def test_filter_form(self, client, learning_provider_view_data):
+    def test_filter_form(self, soup_factory, learning_provider_view_data):
         """Render the resource search with its original input-group styling."""
         provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug}),
-            {"q": "Python"},
-        )
-        soup = BeautifulSoup(response.content, "html.parser")
+        soup = soup_factory(slug=provider.slug, q="Python")
         form = soup.find("input", attrs={"name": "q"}).find_parent("form")
 
         assert form.find("div", class_="input-group")
@@ -568,9 +567,7 @@ class TestLearningProviderDetailPageView:
     def test_page_hides_provider_column(self, client, learning_provider_view_data):
         """Test that the detail resource table hides the provider column."""
         provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug})
-        )
+        response = client.get(self._get_url(slug=provider.slug))
 
         table = response.context["learning_resources"]
         column_names = table.columns.names()
@@ -579,9 +576,7 @@ class TestLearningProviderDetailPageView:
 
     def test_page_returns_404_for_unknown_provider(self, client):
         """Test that an unknown provider returns HTTP 404 Not Found."""
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": "does-not-exist"})
-        )
+        response = client.get(self._get_url(slug="does-not-exist"))
 
         assert response.status_code == HTTPStatus.NOT_FOUND
 
