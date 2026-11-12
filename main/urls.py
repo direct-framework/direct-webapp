@@ -48,12 +48,12 @@ accounts_patterns = [
     path("overview/", views.AccountOverviewView.as_view(), name="account-overview"),
     path(
         "download-skills-data/csv/",
-        views.DownloadUserSkillDataCsvView.as_view(),
+        views.DownloadSkillProfileDataCsvView.as_view(),
         name="download-csv-data-link",
     ),
     path(
         "download-skills-data/json/",
-        views.DownloadUserSkillDataJSONView.as_view(),
+        views.DownloadSkillProfileDataJSONView.as_view(),
         name="download-json-data-link",
     ),
 ]

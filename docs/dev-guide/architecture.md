@@ -14,7 +14,8 @@ DIRECT is a Django project with a single application, `main`.
 | `direct_webapp/urls.py` | Project routing, delegating application routes to `main.urls`. |
 | `direct_webapp/context_processors.py` | Shared template context, including the site title. |
 | `main/models/framework_models.py` | The competency framework's models. |
-| `main/models/user_models.py` | The custom user model and user-specific skill assessments. |
+| `main/models/user_models.py` | The custom user model, profiles, and profile skill assessments. |
+| `main/signals.py` | Signal receivers, including automatic profile creation for new users. |
 | `main/models/community_models.py` | Community content, including events. |
 | `main/views/` | Views grouped by page, account, and data concerns. |
 | `main/forms.py` | Input validation, form-driven updates, and crispy-form layouts. |
@@ -30,8 +31,12 @@ application does not have a mandatory service or repository layer.
 ## Domain orientation
 
 The framework describes skills and their levels. A user's self-assessment is
-separate from that shared framework data: `UserSkill` associates a user, a skill,
-and a skill level.
+separate from that shared framework data: `SkillProfile` associates a profile, a
+skill, and a skill level. A profile can exist without a user, but every user has
+exactly one profile, created automatically by a `post_save` receiver in
+`main/signals.py`. Code can therefore rely on `user.profile`. Users loaded from
+fixtures do not trigger this receiver, so such fixtures must include their
+profiles.
 
 The configured authentication model is `main.User`. Account views use the current
 request's user for personal data. Existing access behavior includes authentication

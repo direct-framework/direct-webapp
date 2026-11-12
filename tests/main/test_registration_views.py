@@ -7,6 +7,8 @@ from django.core import mail
 from django.urls import reverse
 from pytest_django.asserts import assertContains, assertNotContains
 
+from main.models import Profile
+
 from .view_utils import LoginRequiredMixin, TemplateOkMixin
 
 
@@ -201,6 +203,7 @@ class TestRegisterUser(TemplateOkMixin):
         logged_in_user = auth.get_user(client)
         assert logged_in_user.is_authenticated
         assert logged_in_user == django_user_model.objects.get(email=user.email)
+        assert Profile.objects.filter(user=logged_in_user).count() == 1
 
     def test_closed(self, client, settings):
         """Test the view when registration is closed."""
