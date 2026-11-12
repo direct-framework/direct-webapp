@@ -169,7 +169,6 @@ class LearningResourcesPageView(SingleTableMixin, FilterView):
     filterset_class = LearningResourceFilter
     template_name = "main/pages/learning-resources.html"
     paginate_by = 20
-
     queryset = LearningResource.objects.select_related("provider").order_by("name")
 
 
