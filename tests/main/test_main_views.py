@@ -21,9 +21,7 @@ from main.models import (
     Skill,
     SkillLevel,
     ToolLanguageMethodology,
-    UserSkill,
 )
-
 from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import (
