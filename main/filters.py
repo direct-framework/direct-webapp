@@ -23,12 +23,12 @@ def _search_filter(*, label: str, input_id: str, placeholder: str) -> CharFilter
     )
 
 
-class LearningResourceFilter(FilterSet):
-    """Search learning resources through a single cross-field search box."""
+class LearningProviderResourceFilter(FilterSet):
+    """Search the learning resources listed on a provider detail page."""
 
     q = _search_filter(
         label="Search learning resources",
-        input_id="resource-filter",
+        input_id="provider-resource-filter",
         placeholder="Filter learning resources",
     )
 
@@ -45,13 +45,16 @@ class LearningResourceFilter(FilterSet):
         value: str,
     ) -> QuerySet[LearningResource]:
         """Search resource details and related names without duplicate rows."""
-        return queryset.filter(
+        return queryset.filter(self._search_query(value)).distinct()
+
+    def _search_query(self, value: str) -> Q:
+        """Match resource details and skills without matching the provider name."""
+        return (
             Q(name__icontains=value)
             | Q(description__icontains=value)
             | Q(language__icontains=value)
-            | Q(provider__name__icontains=value)
             | Q(skill__name__icontains=value)
-        ).distinct()
+        )
 
 
 class LearningProviderFilter(FilterSet):
@@ -81,34 +84,18 @@ class LearningProviderFilter(FilterSet):
         )
 
 
-class LearningProviderResourceFilter(FilterSet):
-    """Search the learning resources listed on a provider detail page."""
+class LearningResourceFilter(LearningProviderResourceFilter):
+    """Search learning resources through a single cross-field search box."""
 
     q = _search_filter(
         label="Search learning resources",
-        input_id="provider-resource-filter",
+        input_id="resource-filter",
         placeholder="Filter learning resources",
     )
 
-    class Meta:
-        """Limit filtering to the explicitly supported query parameters."""
-
-        model = LearningResource
-        fields = ("q",)
-
-    def filter_search(
-        self,
-        queryset: QuerySet[LearningResource],
-        name: str,
-        value: str,
-    ) -> QuerySet[LearningResource]:
-        """Search resource details and skills without matching the provider name."""
-        return queryset.filter(
-            Q(name__icontains=value)
-            | Q(description__icontains=value)
-            | Q(language__icontains=value)
-            | Q(skill__name__icontains=value)
-        ).distinct()
+    def _search_query(self, value: str) -> Q:
+        """Also match resources by their provider's name."""
+        return super()._search_query(value) | Q(provider__name__icontains=value)
 
 
 class ToolLanguageMethodologyFilter(FilterSet):

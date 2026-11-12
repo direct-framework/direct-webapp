@@ -123,6 +123,21 @@ class TestLearningProviderResourceFilter(SearchFilterTestMixin):
         """Return the existing provider's learning resource."""
         return [learning_resource]
 
+    @pytest.mark.parametrize(
+        "query", ["Learning Resource", "A learning resource", "en", "Skill"]
+    )
+    def test_search_matches_resource_details(
+        self, query, learning_resource, provider, skill
+    ):
+        """Search matches resource details and related skills."""
+        search_filter = self.filterset_class(
+            {"q": query},
+            queryset=LearningResource.objects.filter(provider=provider),
+        )
+
+        assert search_filter.is_valid()
+        assert list(search_filter.qs) == [learning_resource]
+
     def test_search_does_not_match_provider_name(self, learning_resource, provider):
         """A provider name does not match each resource on its detail page."""
         search_filter = self.filterset_class(
