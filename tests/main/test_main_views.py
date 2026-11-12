@@ -20,6 +20,7 @@ from main.models import (
     Provider,
     Skill,
     SkillLevel,
+    SkillProfile,
     ToolLanguageMethodology,
 )
 from main.views.page_views import _extract_and_combine_roles
