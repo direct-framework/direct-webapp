@@ -25,6 +25,7 @@
         "lint:fix": "eslint build src stories --ext .js --fix"
     },
     "devDependencies": {
+        "@babel/preset-env": "^7.23.3",
         "@rollup/plugin-babel": "^7.1.0",
         "@rollup/plugin-commonjs": "^29.0.3",
         "@rollup/plugin-node-resolve": "^16.0.3",
