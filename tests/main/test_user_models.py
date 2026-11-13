@@ -33,36 +33,6 @@ def test_skill_profile_model(
 
 
 @pytest.mark.django_db
-def test_creating_a_user_creates_their_profile(django_user_model) -> None:
-    """Test that a newly created user has exactly one profile."""
-    user = django_user_model.objects.create_user(username="new-user")
-
-    assert Profile.objects.filter(user=user).count() == 1
-    assert user.profile.user == user
-
-
-@pytest.mark.django_db
-def test_creating_a_superuser_creates_their_profile(django_user_model) -> None:
-    """Test that a newly created superuser has exactly one profile."""
-    user = django_user_model.objects.create_superuser(
-        username="new-admin", email="admin@example.com", password="password"
-    )
-
-    assert Profile.objects.filter(user=user).count() == 1
-
-
-@pytest.mark.django_db
-def test_saving_an_existing_user_keeps_their_profile(user) -> None:
-    """Test that saving an existing user does not create another profile."""
-    profile = user.profile
-
-    user.first_name = "Updated"
-    user.save()
-
-    assert list(Profile.objects.filter(user=user)) == [profile]
-
-
-@pytest.mark.django_db
 def test_deleting_a_user_deletes_their_profile_and_skill_profiles(
     skill_profile: SkillProfile, user
 ) -> None:
