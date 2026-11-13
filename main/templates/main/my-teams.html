@@ -1,0 +1,16 @@
+{% extends "main/base.account.html" %}
+{% block title %}
+    My Teams
+{% endblock title %}
+{% block content %}
+    <h1>My Teams</h1>
+    {% for membership in memberships %}
+        <article class="border rounded-3 p-3 mb-3">
+            <h2 class="h5">{{ membership.team.name }}</h2>
+            <p class="mb-1">{{ membership.team.description }}</p>
+            {% if membership.manager %}<span class="badge bg-primary">Manager</span>{% endif %}
+        </article>
+    {% empty %}
+        <p>You are not a member of any teams yet.</p>
+    {% endfor %}
+{% endblock content %}

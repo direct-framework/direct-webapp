@@ -43,6 +43,14 @@ languages or methodologies. Resources can relate directly to either.
 **Provider**:
 The organisation or person supplying a learning resource.
 
+## Teams
+
+**Team**:
+A group of users who work together. A user can belong to multiple teams.
+
+**Team membership**:
+A user's association with a team; a member may be designated as a manager for that team.
+
 ## Personal assessment
 
 **Self-assessment**:

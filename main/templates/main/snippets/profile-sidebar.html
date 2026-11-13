@@ -12,7 +12,7 @@
                     <p class="fs-sm text-body-secondary mb-0">{{ request.user.email }}</p>
                 </div>
                 {% with request.resolver_match.url_name as url_name %}
-                    <div class="d-flex gap-2 mb-4">
+                    <div class="d-flex flex-wrap gap-2 mb-4">
                         <a href="{% url 'self_assess' %}"
                            class="btn {% if url_name == 'self_assess' %}btn-primary{% else %}btn-secondary{% endif %}">
                             Assessment
@@ -21,6 +21,8 @@
                            class="btn {% if url_name == 'skills_profile' %}btn-primary{% else %}btn-secondary{% endif %}">
                             Skills profile
                         </a>
+                        <a href="{% url 'my_teams' %}"
+                           class="btn btn-secondary">My Teams</a>
                     </div>
                 {% endwith %}
             </div>

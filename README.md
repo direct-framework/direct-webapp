@@ -9,6 +9,7 @@ A Django webapp implementing the [DIRECT competencies framework](https://github.
 
 - Allow browsing of all the skills.
 - Allow people to score their own skills and view their skill wheels.
+- Show people the teams they belong to and identify teams they manage.
 - Display and link the professional development resources curated for each skill.
 
 This Django project uses:
@@ -18,6 +19,10 @@ This Django project uses:
 - [`pytest`](https://pytest.org/) and [GitHub Actions](https://github.com/features/actions).
 
 [`pip-tools`] is chosen as a lightweight dependency manager that adheres to the [latest standards](https://peps.python.org/pep-0621/) using `pyproject.toml`.
+
+## My Teams
+
+Signed-in users who have accepted the terms can select **My Teams** in the account menu. The page lists their teams and descriptions and marks the teams they manage. It does not show other members or their skill assessments. Administrators create teams and manage memberships.
 
 ## Related links
 

@@ -309,7 +309,7 @@ class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
 
 @pytest.mark.parametrize(
     "url_name",
-    ["skills_profile", "self_assess", "profile", "account-overview"],
+    ["skills_profile", "self_assess", "profile", "account-overview", "my_teams"],
 )
 def test_unaccepted_users_are_redirected_to_terms_acceptance(client, user, url_name):
     """Unaccepted users should be redirected from gated account pages."""
