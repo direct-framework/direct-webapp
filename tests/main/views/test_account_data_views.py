@@ -7,7 +7,7 @@ from http import HTTPStatus
 
 from django.urls import reverse
 
-from .test_main_views import LoginRequiredMixin
+from .view_utils import LoginRequiredMixin
 
 
 class DownloadSkillProfileDataMixin(LoginRequiredMixin):
