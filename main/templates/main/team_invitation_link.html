@@ -1,0 +1,27 @@
+{% extends "main/base.account.html" %}
+{% block content %}
+    <h1 class="h2">Invite people to {{ team.name }}</h1>
+    <p>
+        Generate a link and share it with anyone you want to invite. Anyone with the link
+        can join this team as a member. The link expires after 24 hours, works only while
+        you remain a team manager, and cannot be withdrawn individually.
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Generate invitation link</button>
+    </form>
+    {% if invitation_url %}
+        <div class="mt-4">
+            <label class="form-label" for="invitation-url">Share this link</label>
+            <input class="form-control"
+                   id="invitation-url"
+                   type="url"
+                   value="{{ invitation_url }}"
+                   readonly>
+            <p class="form-text">
+                The link expires after 24 hours, may be used by multiple people, and cannot
+                be withdrawn individually.
+            </p>
+        </div>
+    {% endif %}
+{% endblock content %}
