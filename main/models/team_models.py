@@ -9,9 +9,21 @@ from .framework_models import SluggedModel
 class Team(SluggedModel):
     """Model representing a team of users working together."""
 
+    class Meta:
+        """Meta options for the Team model."""
+
+        permissions = (
+            ("view_team_member_profiles", "Can view team member profiles"),
+            ("manage_team_members", "Can manage team members"),
+        )
+
 
 class TeamMembership(models.Model):
-    """Model for mapping Users to Teams and including a manager flag."""
+    """Map users to teams and keep their team permissions synchronized.
+
+    Membership changes must use model save/delete operations; queryset updates
+    and bulk operations bypass permission synchronization.
+    """
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="teams", on_delete=models.CASCADE
