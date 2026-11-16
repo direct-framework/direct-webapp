@@ -1,7 +1,6 @@
 name: Feature request
 description: Suggest an idea for this project
-title: '[FEATURE] <title>'
-labels: [enhancement]
+labels: [feature, triage]
 body:
   - type: checkboxes
     attributes:
@@ -12,16 +11,16 @@ body:
           required: true
   - type: textarea
     attributes:
-      label: Is your feature request related to a problem?
-      description: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+      label: What problem are you facing?
+      description: A clear and concise description of the problem. Ex. I'm always frustrated when [...]
     validations:
-      required: false
+      required: true
   - type: textarea
     attributes:
       label: Describe the solution you'd like
       description: A clear and concise description of what you want to happen.
     validations:
-      required: false
+      required: true
   - type: textarea
     attributes:
       label: Describe alternatives you've considered
