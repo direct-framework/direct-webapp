@@ -10,14 +10,14 @@ Follow the existing `tests/` layout and nearby tests for the component being
 changed. Place each test by the layer it exercises, not by the feature it
 belongs to:
 
-| Layer under test | Test module in `tests/main/` |
+| Layer under test | Test module |
 | --- | --- |
-| Views (HTTP behavior) | The area's existing `test_*_views.py` module, otherwise `test_main_views.py`; use the [view-test helpers](#shared-view-test-helpers). |
-| Admin pages | `test_admin_views.py`; give each admin model a `Test<Model>Admin(AdminMixin)` class and add behavior tests beside it. |
-| Services (`main/<area>_services.py`) | `test_<area>_services.py` |
-| Models, managers and querysets | `test_<area>_models.py` |
-| Forms, tables, import/export resources | `test_forms.py`, `test_tables.py`, `test_io_resources.py` |
-| Data migrations | `test_<area>_migrations.py` |
+| Views (HTTP behavior) | `tests/main/views/test_<area>_views.py`; page, account, and team views use `test_page_views.py`, `test_account_views.py`, and `test_team_views.py`. |
+| Admin pages | `tests/main/views/test_admin_views.py`; give each admin model a `Test<Model>Admin(AdminMixin)` class and add behavior tests beside it. |
+| Services (`main/<area>_services.py`) | `tests/main/test_<area>_services.py` |
+| Models, managers and querysets | `tests/main/models/test_<area>_models.py` |
+| Forms, tables, import/export resources | `tests/main/test_forms.py`, `tests/main/test_tables.py`, `tests/main/test_io_resources.py` |
+| Data migrations | `tests/main/migrations/test_<area>_migrations.py` |
 
 Add a new module only when no existing module covers that layer and area.
 
@@ -32,7 +32,7 @@ contents.
 
 ## Shared view-test helpers
 
-Use the base classes in `tests/main/view_utils.py` for view tests wherever
+Use the base classes in `tests/main/views/view_utils.py` for view tests wherever
 appropriate. Import them from that module, not indirectly through another test
 module.
 
@@ -44,8 +44,8 @@ module.
 | `tag_with_text_filter` | Supply a tag name and text. | A predicate for locating matching HTML elements. |
 
 Compose the relevant mixins rather than requiring every view test to use all of
-them. For examples, see `tests/main/test_main_views.py` and
-`tests/main/test_registration_views.py`.
+them. For examples, see `tests/main/views/test_page_views.py` and
+`tests/main/views/test_registration_views.py`.
 
 The BeautifulSoup fixtures include `soup`, `auth_soup`, and `admin_soup`, with
 `soup_factory` for parameterized requests. They help retrieve and parse HTML;
@@ -62,7 +62,7 @@ During development, use the smallest relevant selection, for example:
 
 ```bash
 pytest tests/main/test_forms.py
-pytest tests/main/test_registration_views.py tests/main/test_account_data_views.py
+pytest tests/main/views/test_registration_views.py tests/main/views/test_account_data_views.py
 ```
 
 Before every handover of Python/Django changes, run the full Python suite:
