@@ -1,0 +1,31 @@
+name: Documentation
+description: Report missing, wrong or unclear documentation
+labels: [documentation, triage]
+body:
+  - type: input
+    attributes:
+      label: Page or link
+      description: Link to the documentation page or file concerned.
+    validations:
+      required: false
+  - type: dropdown
+    attributes:
+      label: Audience
+      description: Who is this documentation for?
+      options:
+        - Users
+        - Developers
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: What is missing, wrong or unclear?
+      description: A clear and concise description of the documentation problem.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Suggested change
+      description: Optional. How should the documentation be improved?
+    validations:
+      required: false

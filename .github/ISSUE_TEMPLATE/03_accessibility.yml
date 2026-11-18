@@ -1,0 +1,41 @@
+name: Accessibility or UX issue
+description: Report a barrier to using the site, or a usability problem
+labels: [accessibility, UI/UX, triage]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the problem you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: input
+    attributes:
+      label: Page or URL
+      description: Where did you encounter the problem?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Barrier encountered
+      description: Describe what made the page difficult or impossible to use, and what you were trying to do.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Assistive technology and browser
+      description: Ex. NVDA 2024.1 with Firefox 123, VoiceOver on Safari 17, keyboard only in Chrome 124
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: WCAG criterion
+      description: Optional. If you know it, the relevant WCAG success criterion (e.g., 1.4.3 Contrast (Minimum)).
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Suggested fix
+      description: Optional. Any ideas on how this could be improved.
+    validations:
+      required: false
