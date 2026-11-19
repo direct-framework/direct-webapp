@@ -43,6 +43,29 @@ request's user for personal data. Existing access behavior includes authenticati
 and terms acceptance through `TermsAcceptedMixin`; inspect the relevant view and
 its tests before extending that behavior.
 
+## Team membership lifecycle
+
+Use the functions in `main/team_services.py` to create teams, generate and accept
+team-wide invitation links, change member roles, remove members, and leave teams.
+Team creation and its first manager membership are saved atomically. Invitation
+links expire after 24 hours, store no invitation record, and may be used by multiple
+people. A link identifies its team by ID and includes the team's slug in its URL;
+acceptance is rejected when that slug differs from the team's current slug. The
+generating manager must still be a manager when another person accepts. Invitation
+views require authentication, and membership is created only after an explicit POST
+acceptance. Keep these functions in this module until the project needs enough
+services to justify a package.
+
+These operations preserve the at-least-one-manager rule and synchronize the
+Guardian permissions derived from membership. Direct membership saves and deletes
+also enforce the manager rule. Once created, a membership's user and team cannot
+change; replace a member by removing the old membership and adding a new one.
+Model saves reject changes to an existing membership's user or team. Do not use
+queryset updates or bulk membership operations, which bypass the model protections
+and permission synchronization. Admin inline saves promote or add managers before
+demotions and removals so a manager handover can be completed in one edit. The
+user admin also blocks deleting a person who is the sole manager of any team.
+
 ## Defaults for new and changed code
 
 - Extend `main` and its existing module groups by default. Discuss a genuinely
@@ -55,6 +78,10 @@ its tests before extending that behavior.
   merely for architectural symmetry.
 - Prefer the narrowest suitable Django generic class-based view and reuse existing
   access-control mixins. A function-based view is acceptable when clearly simpler.
+- Require `TermsAcceptedMixin` for login-required application views, so terms
+  acceptance gates every HTTP method before application actions or object
+  permission checks. Essential exceptions include terms acceptance itself and
+  authentication/account-recovery flows that must work before acceptance.
 - Preserve existing behavior and public contracts unless the task explicitly
   changes them. Check affected URLs, forms, templates, data responses, and tests
   together rather than treating a Python module as an isolated surface.

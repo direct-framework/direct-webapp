@@ -45,6 +45,8 @@ Use [Django architecture](architecture.md) for code placement, and
 ## Checks and handover
 
 Run commands from the repository root in the configured development environment.
+Agent shells do not activate `.venv`, so call tools through it, for example
+`.venv/bin/pytest`, `.venv/bin/mypy .` or `.venv/bin/pre-commit run --files ...`.
 For changed files, use the configured checks with their actual paths. Pre-commit
 hooks can modify files, so inspect their changes and rerun affected checks until
 they pass. Use the relevant checks for the files being changed rather than adding
