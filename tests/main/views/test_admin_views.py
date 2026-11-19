@@ -1,12 +1,17 @@
 """Test suite for the main app admin views."""
 
+import json
 from http import HTTPStatus
 from typing import Any, ClassVar
 
 import pytest
 from bs4 import BeautifulSoup
+from django.contrib.admin import site
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Model
+from django.urls import reverse
+from import_export.formats import base_formats
 
 from main.models import (
     Competency,
@@ -367,3 +372,128 @@ def test_admin_cannot_remove_last_manager(admin_client, user, change) -> None:
     assert membership.manager
     user.refresh_from_db()
     assert user.has_perm("main.manage_team_members", team)
+
+
+class TestAdminExport:
+    """Test admin import and export downloads."""
+
+    def _export(self, admin_client, obj, format_name, fields=None, query=""):
+        url = reverse(f"admin:main_{obj._meta.model_name}_export")
+        model_admin = site.get_model_admin(type(obj))
+        form = model_admin.get_export_form_class()(
+            model_admin.get_export_formats(), model_admin.resource_classes
+        )
+        format_value = next(
+            value
+            for value, label in form.fields["format"].choices
+            if label == format_name
+        )
+        selected_fields = {
+            name: "on"
+            for name, field in form.fields.items()
+            if getattr(field, "is_selectable_field", False)
+            and (fields is None or name in fields)
+        }
+        response = admin_client.post(
+            url + query, {"resource": "0", "format": format_value, **selected_fields}
+        )
+        return response, form.resources[0]()
+
+    @pytest.mark.parametrize(
+        ("fixture_name", "name_field"),
+        [
+            ("competency", "name"),
+            ("competency_domain", "name"),
+            ("provider", "name"),
+            ("learning_resource", "name"),
+            ("tool", "name"),
+            ("skill", "name"),
+            ("skill_level", "name"),
+            ("event", "title"),
+        ],
+    )
+    def test_json_export_is_indented(
+        self, admin_client, request, fixture_name, name_field
+    ):
+        """Download readable JSON with the same data as the standard export."""
+        obj = request.getfixturevalue(fixture_name)
+        name = "Unicode \u00e9"
+        setattr(obj, name_field, name)
+        obj.description = 'Line one\n"Line two"'
+        obj.save()
+
+        response, resource = self._export(admin_client, obj, "json")
+
+        assert response.status_code == HTTPStatus.OK
+        assert response["Content-Type"].startswith("application/json")
+        assert response["Content-Disposition"].endswith('.json"')
+        expected = json.loads(base_formats.JSON().export_data(resource.export()))
+        assert len(expected) == 1
+        assert expected[0][name_field] == name
+        assert expected[0]["description"] == 'Line one\n"Line two"'
+        assert response.content.decode() == json.dumps(
+            expected, indent=2, ensure_ascii=False
+        )
+
+    def test_json_export_respects_field_and_queryset_selection(
+        self, admin_client, competency
+    ):
+        """Preserve selected fields and the admin's search filter."""
+        Competency.objects.create(
+            name="Different",
+            description="Other",
+            competency_domain=competency.competency_domain,
+        )
+
+        response, _ = self._export(
+            admin_client,
+            competency,
+            "json",
+            fields={"competencyresource_name"},
+            query="?q=Competency",
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == [{"name": competency.name}]
+
+    def test_csv_export_is_unchanged(self, admin_client, competency):
+        """Keep the other export formats unchanged."""
+        response, resource = self._export(admin_client, competency, "csv")
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.content.decode() == base_formats.CSV().export_data(
+            resource.export()
+        )
+
+    def test_formatted_json_can_be_imported(
+        self, admin_client, competency_domain, settings
+    ):
+        """Allow the downloaded JSON to be imported back through the admin."""
+        response, _ = self._export(admin_client, competency_domain, "json")
+        assert response.status_code == HTTPStatus.OK
+        original_name = competency_domain.name
+        competency_domain.name = "Changed name"
+        competency_domain.save()
+
+        settings.IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True
+        url = reverse("admin:main_competencydomain_import")
+        model_admin = site.get_model_admin(CompetencyDomain)
+        format_value = next(
+            str(index)
+            for index, file_format in enumerate(model_admin.get_import_formats())
+            if file_format().get_title() == "json"
+        )
+        response = admin_client.post(
+            url,
+            {
+                "resource": "0",
+                "format": format_value,
+                "import_file": SimpleUploadedFile(
+                    "domain.json", response.content, content_type="application/json"
+                ),
+            },
+        )
+
+        assert response.status_code == HTTPStatus.FOUND
+        competency_domain.refresh_from_db()
+        assert competency_domain.name == original_name
