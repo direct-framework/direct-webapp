@@ -63,6 +63,7 @@ class TeamMembership(models.Model):
                     .first()
                 )
 
+            # Prevent changing user-team combination on existing TeamMembership
             if existing is not None and (
                 existing.user_id != self.user_id or existing.team_id != self.team_id
             ):
@@ -71,6 +72,7 @@ class TeamMembership(models.Model):
                     "membership and adding a new one."
                 )
 
+            # Ensure Teams have at least one manager
             if existing is not None and existing.manager and not self.manager:
                 other_managers = TeamMembership.objects.filter(
                     team_id=existing.team_id, manager=True
