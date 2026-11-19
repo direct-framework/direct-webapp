@@ -12,6 +12,13 @@ A broad thematic grouping of competencies.
 A combination of skills, knowledge, behaviours and professional practices needed
 for effective work in a particular context. Each belongs to one competency domain.
 
+**Role**:
+A professional function someone performs, independent of their formal job title.
+
+**Speciality**:
+A non-hierarchical area of focus associated with one or more roles,
+characterised by a distinct combination of skills, knowledge and practices.
+
 **Skill**:
 A learnable, observable and assessable ability or behaviour. Each belongs to one
 competency; related skills can be linked across the hierarchy.
@@ -43,17 +50,27 @@ languages or methodologies. Resources can relate directly to either.
 **Provider**:
 The organisation or person supplying a learning resource.
 
+## Profiles
+
+**Career Profile**:
+A description of someone's professional practice that may be associated with a
+user or represented by a userless example. It may include an explanatory
+narrative but does not imply career stages or progression.
+_Avoid_: Persona
+
+**Skill Profile**:
+A collection of skill-level values associated with a Career Profile, whether
+user-linked or userless. For a user, its values are self-assessments; the
+provenance of a userless example's values does not define the concept.
+
 ## Personal assessment
 
 **Self-assessment**:
 A person's assessment of their own level for a skill, separate from the shared
 skill definition.
 
-**Skill profile**:
-A person's collection of skill assessments.
-
 **Competency wheel**:
-A visualisation of a skill profile.
+A visualisation of a Skill Profile.
 _Alias_: Skill wheel.
 
 ## Teams
