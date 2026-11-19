@@ -6,7 +6,8 @@ from http import HTTPStatus
 import pytest
 from django.urls import reverse
 
-from main.models import Skill, SkillLevel, SkillProfile
+from main.models import Skill, SkillLevel, SkillProfile, TeamMembership
+from main.team_services import create_team
 
 from .view_utils import (
     BS4Mixin,
@@ -218,3 +219,171 @@ class TestAccountOverviewView(LoginRequiredMixin):
         response = client.get(self._get_url())
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse("skills_profile")
+
+
+class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
+    """Test the My Teams account page."""
+
+    def _get_url(self, page="my_teams"):
+        return reverse(page)
+
+    @pytest.fixture
+    def team(self, user):
+        """Create a manager-owned team for the signed-in user."""
+        return create_team(
+            user=user,
+            name="Research team",
+            description="A team working on research software.",
+        )
+
+    @pytest.fixture
+    def other_user(self, django_user_model):
+        """Create another user for team-membership tests."""
+        return django_user_model.objects.create_user(
+            username="anotheruser",
+            first_name="Private",
+            last_name="Colleague",
+            email="private.colleague@example.com",
+        )
+
+    @pytest.fixture
+    def other_team(self, other_user):
+        """Create a team managed by a different user."""
+        return create_team(
+            user=other_user,
+            name="Astronomy team",
+            description="A team studying distant galaxies.",
+        )
+
+    @pytest.fixture
+    def member_membership(self, user, other_team):
+        """Add the signed-in user as a regular member of another user's team."""
+        return TeamMembership.objects.create(user=user, team=other_team)
+
+    @pytest.mark.django_db
+    def test_lists_only_the_current_users_memberships_in_name_order(
+        self,
+        client_logged_in,
+        user,
+        team,
+        other_user,
+        other_team,
+        member_membership,
+        soup_factory,
+    ):
+        """Return all and only the signed-in user's teams, ordered by name."""
+        imaging_team = create_team(
+            user=user,
+            name="Imaging team",
+            description="A team analysing images.",
+        )
+        unrelated_team = create_team(
+            user=other_user,
+            name="Unrelated team",
+            description="A team the current user does not belong to.",
+        )
+
+        response = client_logged_in.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.OK
+        memberships = response.context["memberships"]
+        assert [membership.team.name for membership in memberships] == [
+            "Astronomy team",
+            "Imaging team",
+            "Research team",
+        ]
+        assert all(membership.user == user for membership in memberships)
+
+        soup = soup_factory(authenticated=True)
+        for visible_team in (other_team, imaging_team, team):
+            heading = soup.find("h2", string=visible_team.name)
+            assert heading is not None
+            team_card = heading.find_parent("article")
+            assert team_card is not None
+            assert visible_team.description in team_card.get_text(" ", strip=True)
+
+        page_text = soup.get_text(" ", strip=True)
+        assert unrelated_team.name not in page_text
+        assert unrelated_team.description not in page_text
+
+    @pytest.mark.django_db
+    def test_shows_manager_status_for_each_membership(
+        self, team, other_team, member_membership, soup_factory
+    ):
+        """Show the manager label only on teams the current user manages."""
+        soup = soup_factory(authenticated=True)
+        managed_card = soup.find("h2", string="Research team").find_parent("article")
+        member_card = soup.find("h2", string="Astronomy team").find_parent("article")
+
+        assert managed_card is not None
+        assert member_card is not None
+        assert "Manager" in managed_card.get_text(" ", strip=True)
+        assert "Manager" not in member_card.get_text(" ", strip=True)
+
+    @pytest.mark.django_db
+    def test_shows_an_empty_state_when_the_user_has_no_teams(
+        self, other_team, auth_soup
+    ):
+        """Explain that the user has no teams without showing another user's team."""
+        page_text = auth_soup.get_text(" ", strip=True)
+
+        assert "You are not a member of any teams yet." in page_text
+        assert "Astronomy team" not in page_text
+
+    @pytest.mark.parametrize("is_manager", [False, True], ids=["member", "manager"])
+    @pytest.mark.django_db
+    def test_does_not_show_other_members_or_their_assessments(
+        self, user, other_user, skill, skill_level, soup_factory, is_manager
+    ):
+        """Keep other members' details private from members and managers."""
+        team = create_team(
+            user=user if is_manager else other_user,
+            name="Shared team",
+            description="A shared team.",
+        )
+        TeamMembership.objects.create(
+            user=other_user if is_manager else user, team=team
+        )
+        skill.name = "Confidential calibration skill"
+        skill.save(update_fields=["name"])
+        SkillProfile.objects.create(
+            profile=other_user.profile, skill=skill, skill_level=skill_level
+        )
+
+        soup = soup_factory(authenticated=True)
+        assert len(soup.find_all("h2", string="Shared team")) == 1
+        page_html = str(soup)
+
+        assert other_user.username not in page_html
+        assert other_user.get_full_name() not in page_html
+        assert other_user.email not in page_html
+        assert skill.name not in page_html
+        assert skill_level.name not in page_html
+
+    @pytest.mark.parametrize("page", ["my_teams", "self_assess"])
+    @pytest.mark.django_db
+    def test_account_sidebars_link_to_my_teams(self, page, soup_factory):
+        """Keep the link in both account sidebar layouts."""
+        soup = soup_factory(authenticated=True, page=page)
+        account_menu = soup.find("div", id="sidebarAccount")
+        teams_link = account_menu.find(tag_with_text_filter("a", "My Teams"))
+
+        assert teams_link is not None
+        assert teams_link["href"] == reverse("my_teams")
+        if page == "my_teams":
+            assert teams_link.get("aria-current") == "page"
+
+    @pytest.mark.django_db
+    def test_account_dropdown_links_to_my_teams(self, soup_factory):
+        """Provide a direct My Teams link without changing the Overview link."""
+        soup = soup_factory(authenticated=True, page="index")
+        account_dropdown = soup.find(
+            tag_with_text_filter("div", "Hello,"), class_="dropdown"
+        )
+
+        teams_link = account_dropdown.find(tag_with_text_filter("a", "My Teams"))
+        assert teams_link is not None
+        assert teams_link["href"] == reverse("my_teams")
+        assert account_dropdown.find(
+            tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
+        )
