@@ -135,6 +135,7 @@ class LearningResourceAdmin(ImportExportModelAdmin[LearningResource]):
 class ToolAdmin(ImportExportModelAdmin[ToolLanguageMethodology]):
     """Admin class for The Tool model."""
 
+    filter_horizontal = ("learning_resources",)
     list_display = ("name", "kind", "url")
     search_fields = ("name",)
     list_filter = ("kind",)
@@ -145,6 +146,7 @@ class ToolAdmin(ImportExportModelAdmin[ToolLanguageMethodology]):
 class SkillAdmin(ImportExportModelAdmin[Skill]):
     """Admin class for the Skill model."""
 
+    filter_horizontal = ("learning_resources", "related_skills", "tools")
     list_display = ("name", "competency", "competency__competency_domain")
     search_fields = ("name", "description")
     list_filter = ("competency__competency_domain", "competency")
