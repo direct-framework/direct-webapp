@@ -16,8 +16,8 @@ for effective work in a particular context. Each belongs to one competency domai
 A professional function someone performs, independent of their formal job title.
 
 **Speciality**:
-A non-hierarchical area of focus associated with one or more roles,
-characterised by a distinct combination of skills, knowledge and practices.
+A non-hierarchical professional focus independent of Role. A profile may have
+any combination of Specialities.
 
 **Skill**:
 A learnable, observable and assessable ability or behaviour. Each belongs to one
