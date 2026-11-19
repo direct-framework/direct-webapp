@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from main.models import Skill, SkillProfile, Team, TeamMembership
 
-from .view_utils import LoginRequiredMixin, tag_with_text_filter
+from .views.view_utils import LoginRequiredMixin, tag_with_text_filter
 
 pytestmark = pytest.mark.django_db
 

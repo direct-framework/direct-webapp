@@ -4,6 +4,7 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
 from guardian.models import UserObjectPermission
@@ -80,3 +81,19 @@ def team_deleted(sender: type[Team], instance: Team, **kwargs: Any) -> None:
     UserObjectPermission.objects.filter(
         content_type=content_type, object_pk=str(instance.pk)
     ).delete()
+
+
+@receiver(pre_delete, sender=settings.AUTH_USER_MODEL)
+def prevent_deleting_last_team_manager(
+    sender: type[User], instance: User, **kwargs: Any
+) -> None:
+    """Keep user deletion from leaving any team without a manager."""
+    for membership in TeamMembership.objects.filter(user=instance, manager=True).only(
+        "team_id"
+    ):
+        if (
+            not TeamMembership.objects.filter(team_id=membership.team_id, manager=True)
+            .exclude(user=instance)
+            .exists()
+        ):
+            raise ValidationError("A team must retain at least one manager.")
