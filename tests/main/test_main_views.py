@@ -15,7 +15,14 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
-from main.models import LearningResource, Provider, Skill, SkillLevel, SkillProfile
+from main.models import (
+    LearningResource,
+    Provider,
+    Skill,
+    SkillLevel,
+    SkillProfile,
+    ToolLanguageMethodology,
+)
 from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import (
@@ -434,8 +441,13 @@ def learning_provider_view_data():
 
 
 @pytest.mark.django_db
-class TestLearningProvidersPageView:
+class TestLearningProvidersPageView(BS4Mixin):
     """Test the learning providers list view."""
+
+    def _get_url(self, **kwargs):
+        url = reverse("learning_providers")
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
 
     def test_page_lists_providers(self, client, learning_provider_view_data):
         """Test that the learning providers page lists providers."""
@@ -463,6 +475,24 @@ class TestLearningProvidersPageView:
         assert "Provider One" in response.content.decode()
         assert "Provider Two" not in response.content.decode()
 
+    def test_filter_form(self, soup_factory):
+        """Render the search field with its original input-group styling."""
+        soup = soup_factory(q="Provider")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Provider"
+        assert form.find("label", attrs={"for": "provider-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
+
+    def test_page_with_no_matches(self, client, learning_provider_view_data):
+        """Show the empty-results message when no provider matches."""
+        response = client.get(reverse("learning_providers"), {"q": "Missing"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert "No learning providers found." in response.content.decode()
+
     def test_page_is_paginated(self, client, learning_provider_view_data):
         """Test the learning providers page is paginated."""
         for index in range(25):
@@ -479,15 +509,18 @@ class TestLearningProvidersPageView:
 
 
 @pytest.mark.django_db
-class TestLearningProviderDetailPageView:
+class TestLearningProviderDetailPageView(BS4Mixin):
     """Test the individual learning-provider detail view."""
+
+    def _get_url(self, slug, **kwargs):
+        url = reverse("learning_provider_detail", kwargs={"slug": slug})
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
 
     def test_page_displays_provider(self, client, learning_provider_view_data):
         """Test that the provider detail page displays provider data."""
         provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug})
-        )
+        response = client.get(self._get_url(slug=provider.slug))
 
         assert response.status_code == HTTPStatus.OK
         assert "Provider One" in response.content.decode()
@@ -510,7 +543,7 @@ class TestLearningProviderDetailPageView:
         """Test filtering resources on the provider detail page."""
         provider, _ = learning_provider_view_data
         response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug}),
+            self._get_url(slug=provider.slug),
             {"q": "Python"},
         )
 
@@ -519,12 +552,22 @@ class TestLearningProviderDetailPageView:
         assert "R course" not in response.content.decode()
         assert "Unrelated course" not in response.content.decode()
 
+    def test_filter_form(self, soup_factory, learning_provider_view_data):
+        """Render the resource search with its original input-group styling."""
+        provider, _ = learning_provider_view_data
+        soup = soup_factory(slug=provider.slug, q="Python")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Python"
+        assert form.find("label", attrs={"for": "provider-resource-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
+
     def test_page_hides_provider_column(self, client, learning_provider_view_data):
         """Test that the detail resource table hides the provider column."""
         provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug})
-        )
+        response = client.get(self._get_url(slug=provider.slug))
 
         table = response.context["learning_resources"]
         column_names = table.columns.names()
@@ -533,9 +576,7 @@ class TestLearningProviderDetailPageView:
 
     def test_page_returns_404_for_unknown_provider(self, client):
         """Test that an unknown provider returns HTTP 404 Not Found."""
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": "does-not-exist"})
-        )
+        response = client.get(self._get_url(slug="does-not-exist"))
 
         assert response.status_code == HTTPStatus.NOT_FOUND
 
@@ -588,6 +629,87 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
         assert 'value="Python"' in response.content.decode()
 
     @pytest.mark.django_db
+    def test_filter_form(self, client):
+        """Render the original search input group and preserve sorting."""
+        response = client.get(self._get_url(), {"q": "Provider", "sort": "-name"})
+        soup = BeautifulSoup(response.content, "html.parser")
+        search_input = soup.find("input", attrs={"name": "q"})
+        form = search_input.find_parent("form")
+        input_group = form.find("div", class_="input-group")
+
+        assert form["method"] == "get"
+        assert input_group["class"] == ["input-group", "w-auto"]
+        assert search_input.parent == input_group
+        assert search_input["id"] == "resource-filter"
+        assert search_input["type"] == "search"
+        assert search_input["value"] == "Provider"
+        assert search_input["class"] == ["form-control"]
+        assert search_input["size"] == "25"
+        assert search_input["placeholder"] == "Filter learning resources"
+        assert len(form.select('input:not([type="hidden"])')) == 1
+        assert not form.find("input", attrs={"name": "name"})
+        label = input_group.find("label", attrs={"for": "resource-filter"})
+        assert label["class"] == ["visually-hidden"]
+        assert label.get_text(strip=True) == "Search learning resources"
+        assert (
+            input_group.find("button", class_="btn-primary").get_text(strip=True)
+            == "Search"
+        )
+        sort_input = form.find("input", attrs={"name": "sort"})
+        assert sort_input["value"] == "-name"
+        assert sort_input.parent == form
+        assert not form.find("a")
+        assert not form.find("input", attrs={"name": "page"})
+
+    @pytest.mark.django_db
+    def test_empty_search_restores_resources(self, client, learning_provider_view_data):
+        """Clearing the search restores the unfiltered table."""
+        response = client.get(self._get_url(), {"q": "", "sort": "-name"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert [row.record.name for row in response.context["table"].rows] == [
+            "Unrelated course",
+            "R course",
+            "Python course",
+        ]
+
+    @pytest.mark.django_db
+    def test_page_with_no_matches(self, client, learning_provider_view_data):
+        """Nonmatching filters display the existing empty-results message."""
+        response = client.get(self._get_url(), {"q": "Missing"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert "No learning resources found." in response.content.decode()
+
+    @pytest.mark.django_db
+    def test_filter_sorting_and_pagination(self, client, learning_provider_view_data):
+        """Sort and paginate filtered results while preserving the search."""
+        provider, _ = learning_provider_view_data
+        for index in range(25):
+            LearningResource.objects.create(
+                name=f"Course {index:02}", provider=provider
+            )
+        response = client.get(
+            self._get_url(),
+            {"q": "Provider One", "sort": "-name", "page": 2},
+        )
+        table = response.context["table"]
+
+        assert response.status_code == HTTPStatus.OK
+        assert table.paginator.per_page == 20
+        assert table.paginator.count == 27
+        assert [row.record.name for row in table.page.object_list] == [
+            f"Course {index:02}" for index in range(6, -1, -1)
+        ]
+        soup = BeautifulSoup(response.content, "html.parser")
+        for link in [
+            *soup.select("th.orderable a"),
+            *soup.select(".pagination a"),
+        ]:
+            params = parseUrl.parse_qs(parseUrl.urlparse(link["href"]).query)
+            assert params["q"] == ["Provider One"]
+
+    @pytest.mark.django_db
     def test_page_content(self, learning_resource, skill, soup):
         """Test that the learning page contains a table with learning resources."""
         assert "Learning resources" == soup.find("h1").text
@@ -616,6 +738,65 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Skill"),
             class_="btn",
             href=reverse("skill_detail", args=(skill.slug,)),
+        )
+
+
+@pytest.mark.django_db
+class TestToolsLanguagesMethodologiesPageView(TemplateOkMixin, BS4Mixin):
+    """Test the tools, languages, and methodologies page."""
+
+    _template_name = "main/pages/tools-languages-methodologies.html"
+
+    def _get_url(self, **kwargs):
+        url = reverse("tools_languages_methodologies")
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
+
+    def test_page_lists_tools(self, client, tool):
+        """List framework tools in a table."""
+        response = client.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.OK
+        assert "Tool" in response.content.decode()
+        assert response.context["table"].rows
+
+    def test_page_filters_tools(self, client, tool):
+        """Filter the table by tool details."""
+        ToolLanguageMethodology.objects.create(
+            name="Unrelated methodology",
+            description="Not a match",
+            kind="methodology",
+        )
+        response = client.get(
+            self._get_url(),
+            {"q": "Tool"},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert "Tool" in response.content.decode()
+        assert "Unrelated methodology" not in response.content.decode()
+
+    def test_filter_form(self, soup_factory, tool):
+        """Render a labeled search field with the shared filter styling."""
+        soup = soup_factory(q="Tool")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Tool"
+        assert form.find("label", attrs={"for": "tool-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
+
+    def test_page_with_no_matches(self, client, tool):
+        """Show the empty-results message when no tool matches."""
+        response = client.get(
+            self._get_url(),
+            {"q": "Missing"},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert (
+            "No tools, languages or methodologies found." in response.content.decode()
         )
 
 
