@@ -300,7 +300,12 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
             assert heading is not None
             team_card = heading.find_parent("article")
             assert team_card is not None
+            assert {"card-hover-primary", "bg-secondary"}.issubset(team_card["class"])
             assert visible_team.description in team_card.get_text(" ", strip=True)
+
+        team_grid = soup.find("div", class_="row-cols-xl-3")
+        assert team_grid is not None
+        assert {"row-cols-1", "row-cols-sm-2"}.issubset(team_grid["class"])
 
         page_text = soup.get_text(" ", strip=True)
         assert unrelated_team.name not in page_text
@@ -317,8 +322,14 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
 
         assert managed_card is not None
         assert member_card is not None
-        assert "Manager" in managed_card.get_text(" ", strip=True)
-        assert "Manager" not in member_card.get_text(" ", strip=True)
+        manager_badge = managed_card.find("span", class_="badge")
+        member_badge = member_card.find("span", class_="badge")
+        assert manager_badge is not None
+        assert manager_badge.get_text(strip=True) == "Manager"
+        assert member_badge is not None
+        assert member_badge.get_text(strip=True) == "Member"
+        assert "bg-secondary" in manager_badge["class"]
+        assert "bg-secondary" in member_badge["class"]
 
     @pytest.mark.django_db
     def test_shows_an_empty_state_when_the_user_has_no_teams(

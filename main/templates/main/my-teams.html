@@ -4,13 +4,25 @@
 {% endblock title %}
 {% block content %}
     <h1>My Teams</h1>
-    {% for membership in memberships %}
-        <article class="border rounded-3 p-3 mb-3">
-            <h2 class="h5">{{ membership.team.name }}</h2>
-            <p class="mb-1">{{ membership.team.description }}</p>
-            {% if membership.manager %}<span class="badge bg-primary">Manager</span>{% endif %}
-        </article>
-    {% empty %}
-        <p>You are not a member of any teams yet.</p>
-    {% endfor %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
+        {% for membership in memberships %}
+            <div class="col">
+                <article class="card bg-secondary card-hover-primary h-100">
+                    <div class="card-body">
+                        <h2 class="h5 card-title">{{ membership.team.name }}</h2>
+                        <p class="card-text">{{ membership.team.description }}</p>
+                        {% if membership.manager %}
+                            <span class="badge bg-secondary">Manager</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Member</span>
+                        {% endif %}
+                    </div>
+                </article>
+            </div>
+        {% empty %}
+            <div class="col">
+                <p>You are not a member of any teams yet.</p>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock content %}
