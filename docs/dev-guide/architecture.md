@@ -66,6 +66,21 @@ and permission synchronization. Admin inline saves promote or add managers befor
 demotions and removals so a manager handover can be completed in one edit. The
 user admin also blocks deleting a person who is the sole manager of any team.
 
+## Team page
+
+`TeamDetailView` shows a team at `/teams/<slug>/`. Access is checked with the
+team's Guardian `view_team` object permission, so only members (and superusers)
+can see it; anyone else gets a 404, so the page does not reveal whether a team
+exists. The address uses the slug, which stays the same when a team is renamed.
+
+The team competency wheel is drawn from `Team.aggregate_skill_profile()`. It
+averages each skill over the current members who have assessed it, counting a
+selected level 0 and ignoring unassessed skills. Averages are rounded to whole
+levels, with halves rounding up. A skill is included only when at least
+`MINIMUM_AGGREGATE_CONTRIBUTORS` (three) members have assessed it. Skills below
+that minimum are left out of the page and its chart data entirely, and the page
+never shows how many members assessed each skill.
+
 ## Defaults for new and changed code
 
 - Extend `main` and its existing module groups by default. Discuss a genuinely
