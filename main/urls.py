@@ -76,6 +76,7 @@ urlpatterns = [
     path("accounts/", include("django_registration.backends.one_step.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include(accounts_patterns)),
+    path("teams/<slug:team_slug>/", views.TeamDetailView.as_view(), name="team-detail"),
     path(
         "teams/<slug:team_slug>/invitation-link/",
         views.TeamInvitationLinkView.as_view(),

@@ -9,7 +9,10 @@
             <div class="col">
                 <article class="card bg-secondary card-hover-primary h-100">
                     <div class="card-body">
-                        <h2 class="h5 card-title">{{ membership.team.name }}</h2>
+                        <h2 class="h5 card-title">
+                            <a class="stretched-link"
+                               href="{% url 'team-detail' membership.team.slug %}">{{ membership.team.name }}</a>
+                        </h2>
                         <p class="card-text">{{ membership.team.description }}</p>
                         {% if membership.manager %}
                             <span class="badge bg-primary">Manager</span>

@@ -101,6 +101,20 @@ def skill_level() -> SkillLevel:
 
 
 @pytest.fixture
+def skill_levels() -> dict[int, SkillLevel]:
+    """Fixture for creating the framework's 0-4 skill level scale, keyed by level."""
+    return {
+        level: SkillLevel.objects.create(
+            level=level,
+            name=f"Level {level}",
+            description=f"Level {level}",
+            short_description=f"Level {level}",
+        )
+        for level in range(5)
+    }
+
+
+@pytest.fixture
 def skill_profile(user, skill: Skill, skill_level: SkillLevel) -> SkillProfile:
     """Fixture for creating a SkillProfile instance."""
     return SkillProfile.objects.create(

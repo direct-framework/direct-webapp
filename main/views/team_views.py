@@ -1,6 +1,8 @@
 """Views for team membership actions."""
 
+from collections.abc import Iterable
 from http import HTTPStatus
+from json import dumps
 from typing import TYPE_CHECKING, Any, cast
 
 from django.conf import settings
@@ -11,7 +13,8 @@ from django.urls import reverse
 from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
-from ..models import Team, TeamMembership
+from ..models import SkillLevel, Team, TeamMembership
+from ..models.team_models import MINIMUM_AGGREGATE_CONTRIBUTORS
 from ..team_services import (
     accept_invitation,
     generate_invitation_token,
@@ -21,6 +24,53 @@ from .account_views import AuthenticatedHttpRequest, TermsAcceptedMixin
 
 if TYPE_CHECKING:
     from ..models import User as UserType
+
+
+class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
+    """Show a team to its members."""
+
+    request: AuthenticatedHttpRequest
+    template_name = "main/team-detail.html"
+    login_url: str = str(settings.LOGIN_URL)
+    permission_required = "main.view_team"
+    accept_global_perms = False
+    return_404 = True
+    team: Team
+
+    def get_permission_object(self) -> Team:
+        """Return the team whose member permission is required."""
+        self.team = get_object_or_404(Team, slug=self.kwargs["team_slug"])
+        return self.team
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Add the team, its sorted roster and its aggregate skill profile."""
+        context = super().get_context_data(**kwargs)
+        context["team"] = self.team
+        memberships = self.team.members.select_related("user")
+        context["managers"] = _sorted_by_name(m.user for m in memberships if m.manager)
+        context["members"] = _sorted_by_name(
+            m.user for m in memberships if not m.manager
+        )
+        aggregate = self.team.aggregate_skill_profile()
+        context["has_aggregate"] = bool(aggregate)
+        context["minimum_contributors"] = MINIMUM_AGGREGATE_CONTRIBUTORS
+        context["chart_data"] = dumps(
+            [{"user_id": "team", "skill_profile_data": aggregate}]
+        )
+        context["skill_levels"] = dumps(
+            list(SkillLevel.objects.values("level", "name"))
+        )
+        return context
+
+
+def _display_name(user: "UserType") -> str:
+    """Return a person's full name, or their username if they have none."""
+    return user.get_full_name() or user.username
+
+
+def _sorted_by_name(users: Iterable["UserType"]) -> list["UserType"]:
+    """Sort people alphabetically by the name the team page shows."""
+    return sorted(users, key=lambda user: _display_name(user).casefold())
 
 
 class TeamInvitationLinkView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
