@@ -23,6 +23,29 @@ if TYPE_CHECKING:
     from ..models import User as UserType
 
 
+class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
+    """Show a team to its members."""
+
+    request: AuthenticatedHttpRequest
+    template_name = "main/team-detail.html"
+    login_url: str = str(settings.LOGIN_URL)
+    permission_required = "main.view_team"
+    accept_global_perms = False
+    return_404 = True
+    team: Team
+
+    def get_permission_object(self) -> Team:
+        """Return the team whose member permission is required."""
+        self.team = get_object_or_404(Team, slug=self.kwargs["team_slug"])
+        return self.team
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Add the team to the template context."""
+        context = super().get_context_data(**kwargs)
+        context["team"] = self.team
+        return context
+
+
 class TeamInvitationLinkView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
     """Let team managers generate links to share outside the application."""
 

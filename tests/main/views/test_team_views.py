@@ -178,3 +178,70 @@ class TestTeamInvitationAcceptanceView(LoginRequiredMixin, TemplateOkMixin):
         assert response.status_code == HTTPStatus.BAD_REQUEST
         assert response.templates[0].name == "main/team_invitation_invalid.html"
         assert not TeamMembership.objects.filter(team=self.team, user=invitee).exists()
+
+
+@pytest.mark.django_db
+class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
+    """Test the team page shown to team members."""
+
+    _template_name = "main/team-detail.html"
+
+    @pytest.fixture(autouse=True)
+    def create_team_for_view(self, user) -> None:
+        """Create a team managed by the default user."""
+        self.team = create_team(
+            user=user, name="Research team", description="Team page tests"
+        )
+
+    def _get_url(self, **kwargs) -> str:
+        return reverse("team-detail", kwargs={"team_slug": self.team.slug})
+
+    def test_member_sees_the_team_page(self, client, django_user_model) -> None:
+        """A regular member can open their team's page."""
+        member = django_user_model.objects.create_user(
+            username="regular-member", agreed_to_tos=True
+        )
+        TeamMembership.objects.create(user=member, team=self.team)
+        client.force_login(member)
+
+        response = client.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["team"] == self.team
+        assert "<h1>Research team</h1>" in response.content.decode()
+
+    def test_non_member_and_unknown_team_are_not_found(
+        self, client, django_user_model
+    ) -> None:
+        """People outside a team cannot tell whether it exists."""
+        outsider = django_user_model.objects.create_user(
+            username="outsider", agreed_to_tos=True
+        )
+        client.force_login(outsider)
+        unknown_url = reverse("team-detail", kwargs={"team_slug": "no-such-team"})
+
+        assert client.get(self._get_url()).status_code == HTTPStatus.NOT_FOUND
+        assert client.get(unknown_url).status_code == HTTPStatus.NOT_FOUND
+
+    def test_page_address_is_unchanged_when_team_is_renamed(self, client, user) -> None:
+        """Renaming a team keeps its slug, so existing links keep working."""
+        url = self._get_url()
+        self.team.name = "Renamed team"
+        self.team.save()
+        client.force_login(user)
+
+        response = client.get(url)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["team"].name == "Renamed team"
+
+    def test_user_must_accept_terms_before_viewing_team(self, client, user) -> None:
+        """Terms acceptance gates the team page."""
+        user.agreed_to_tos = False
+        user.save(update_fields=["agreed_to_tos"])
+        client.force_login(user)
+
+        response = client.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("terms_acceptance")
