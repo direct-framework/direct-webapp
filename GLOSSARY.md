@@ -60,20 +60,20 @@ _Alias_: Skill wheel.
 
 **Team**:
 A group of people who share their skill profiles for collaboration. A team is
-visible only to its members.
+visible to its members and to site superusers.
 
 **Team member**:
 A person who has accepted an invitation to a team. Members can see the team, its
 aggregate skill profile, the names of the other members and who the managers
-are, but not other members' skill profiles. A member may leave
-a team at any time, which ends any access others had to their skill profile
-through that team.
+are, but only managers and site superusers can see other members' skill profiles.
+A member may leave a team at any time, which ends any access others had to their
+skill profile through that team.
 
 **Team manager**:
 A team member who administers the team. Managers can see every member's whole
-skill profile, edit or delete the team, invite and remove members, and promote or
-demote managers. A team always has at least one manager; whoever creates a team is its
-first manager.
+skill profile, including those of other managers, edit or delete the team, invite and
+remove members, and promote or demote managers. A team always has at least one
+manager; whoever creates a team is its first manager.
 _Avoid_: Owner, admin.
 
 **Team invitation**:
