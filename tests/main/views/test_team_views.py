@@ -4,6 +4,7 @@ from http import HTTPStatus
 from urllib import parse as parseUrl
 
 import pytest
+from bs4 import BeautifulSoup
 from django.urls import reverse
 
 from main.models import TeamMembership
@@ -245,3 +246,30 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
 
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse("terms_acceptance")
+
+    def test_lists_managers_and_members_separately_by_name(
+        self, client, django_user_model, user
+    ) -> None:
+        """Show full names, or usernames when absent, in alphabetical order."""
+        for username, first, last, manager in (
+            ("zed", "", "", False),
+            ("bob", "Bob", "Carter", False),
+            ("alice", "Alice", "Brown", True),
+        ):
+            person = django_user_model.objects.create_user(
+                username=username, first_name=first, last_name=last
+            )
+            TeamMembership.objects.create(user=person, team=self.team, manager=manager)
+        client.force_login(user)
+
+        soup = BeautifulSoup(client.get(self._get_url()).content, "html.parser")
+
+        def names_under(heading: str) -> list[str]:
+            title = soup.find("h2", string=heading)
+            assert title is not None
+            section = title.find_parent("section")
+            assert section is not None
+            return [item.get_text(strip=True) for item in section.find_all("li")]
+
+        assert names_under("Managers") == ["Alice Brown", "test user"]
+        assert names_under("Members") == ["Bob Carter", "zed"]

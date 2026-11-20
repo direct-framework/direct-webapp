@@ -1,5 +1,6 @@
 """Views for team membership actions."""
 
+from collections.abc import Iterable
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, cast
 
@@ -40,10 +41,25 @@ class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
         return self.team
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Add the team to the template context."""
+        """Add the team and its managers and other members, sorted by name."""
         context = super().get_context_data(**kwargs)
         context["team"] = self.team
+        memberships = self.team.members.select_related("user")
+        context["managers"] = _sorted_by_name(m.user for m in memberships if m.manager)
+        context["members"] = _sorted_by_name(
+            m.user for m in memberships if not m.manager
+        )
         return context
+
+
+def _display_name(user: "UserType") -> str:
+    """Return a person's full name, or their username if they have none."""
+    return user.get_full_name() or user.username
+
+
+def _sorted_by_name(users: Iterable["UserType"]) -> list["UserType"]:
+    """Sort people alphabetically by the name the team page shows."""
+    return sorted(users, key=lambda user: _display_name(user).casefold())
 
 
 class TeamInvitationLinkView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
