@@ -329,6 +329,7 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
         assert f"const charts = {json.dumps(chart_data)};" in html
         assert 'id="dataviz_team"' in html
         assert "rounded to the nearest whole level" in html
+        assert "at least 3 members have assessed it" in html
         assert rare.name not in html
 
     def test_shows_a_message_when_no_skill_has_enough_assessments(
