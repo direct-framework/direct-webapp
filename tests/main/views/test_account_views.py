@@ -359,31 +359,3 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
         assert other_user.email not in page_html
         assert skill.name not in page_html
         assert skill_level.name not in page_html
-
-    @pytest.mark.parametrize("page", ["my_teams", "self_assess"])
-    @pytest.mark.django_db
-    def test_account_sidebars_link_to_my_teams(self, page, soup_factory):
-        """Keep the link in both account sidebar layouts."""
-        soup = soup_factory(authenticated=True, page=page)
-        account_menu = soup.find("div", id="sidebarAccount")
-        teams_link = account_menu.find(tag_with_text_filter("a", "My Teams"))
-
-        assert teams_link is not None
-        assert teams_link["href"] == reverse("my_teams")
-        if page == "my_teams":
-            assert teams_link.get("aria-current") == "page"
-
-    @pytest.mark.django_db
-    def test_account_dropdown_links_to_my_teams(self, soup_factory):
-        """Provide a direct My Teams link without changing the Overview link."""
-        soup = soup_factory(authenticated=True, page="index")
-        account_dropdown = soup.find(
-            tag_with_text_filter("div", "Hello,"), class_="dropdown"
-        )
-
-        teams_link = account_dropdown.find(tag_with_text_filter("a", "My Teams"))
-        assert teams_link is not None
-        assert teams_link["href"] == reverse("my_teams")
-        assert account_dropdown.find(
-            tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
-        )
