@@ -2,6 +2,7 @@
 
 from collections.abc import Iterable
 from http import HTTPStatus
+from json import dumps
 from typing import TYPE_CHECKING, Any, cast
 
 from django.conf import settings
@@ -12,7 +13,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
-from ..models import Team, TeamMembership
+from ..models import SkillLevel, Team, TeamMembership
 from ..team_services import (
     accept_invitation,
     generate_invitation_token,
@@ -41,13 +42,21 @@ class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
         return self.team
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Add the team and its managers and other members, sorted by name."""
+        """Add the team, its sorted roster and its aggregate skill profile."""
         context = super().get_context_data(**kwargs)
         context["team"] = self.team
         memberships = self.team.members.select_related("user")
         context["managers"] = _sorted_by_name(m.user for m in memberships if m.manager)
         context["members"] = _sorted_by_name(
             m.user for m in memberships if not m.manager
+        )
+        aggregate = self.team.aggregate_skill_profile()
+        context["has_aggregate"] = bool(aggregate)
+        context["chart_data"] = dumps(
+            [{"user_id": "team", "skill_profile_data": aggregate}]
+        )
+        context["skill_levels"] = dumps(
+            list(SkillLevel.objects.values("level", "name"))
         )
         return context
 

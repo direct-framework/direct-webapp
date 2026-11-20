@@ -1,5 +1,6 @@
 """Test suite for team views."""
 
+import json
 from http import HTTPStatus
 from urllib import parse as parseUrl
 
@@ -7,7 +8,7 @@ import pytest
 from bs4 import BeautifulSoup
 from django.urls import reverse
 
-from main.models import TeamMembership
+from main.models import Skill, SkillLevel, SkillProfile, TeamMembership, User
 from main.team_services import create_team, generate_invitation_token
 
 from .view_utils import LoginRequiredMixin, TemplateOkMixin
@@ -273,3 +274,75 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
 
         assert names_under("Managers") == ["Alice Brown", "test user"]
         assert names_under("Members") == ["Bob Carter", "zed"]
+
+    def _add_members(self, django_user_model, count: int) -> list[User]:
+        """Add regular members to the team and return them."""
+        members = []
+        for index in range(count):
+            member = django_user_model.objects.create_user(username=f"m{index}")
+            TeamMembership.objects.create(user=member, team=self.team)
+            members.append(member)
+        return members
+
+    def test_team_wheel_shows_only_skills_assessed_by_three_members(
+        self, client, django_user_model, user, competency, skill
+    ) -> None:
+        """The wheel gets rounded averages; rarely assessed skills are left out."""
+        levels = {
+            level: SkillLevel.objects.create(
+                level=level,
+                name=f"Level {level}",
+                description="-",
+                short_description="-",
+            )
+            for level in (1, 2)
+        }
+        rare = Skill.objects.create(
+            name="Rarely assessed skill", description="-", competency=competency
+        )
+        people = [user, *self._add_members(django_user_model, 2)]
+        for person, level in zip(people, (1, 2, 2), strict=True):
+            SkillProfile.objects.create(
+                profile=person.profile, skill=skill, skill_level=levels[level]
+            )
+        for person in people[:2]:
+            SkillProfile.objects.create(
+                profile=person.profile, skill=rare, skill_level=levels[2]
+            )
+        client.force_login(user)
+
+        html = client.get(self._get_url()).content.decode()
+
+        chart_data = [
+            {
+                "user_id": "team",
+                "skill_profile_data": [
+                    {
+                        "skill": skill.name,
+                        "category": competency.competency_domain.name,
+                        "subcategory": competency.name,
+                        "skill_level": 2,
+                    }
+                ],
+            }
+        ]
+        assert f"const charts = {json.dumps(chart_data)};" in html
+        assert 'id="dataviz_team"' in html
+        assert "rounded to the nearest whole level" in html
+        assert rare.name not in html
+
+    def test_shows_a_message_when_no_skill_has_enough_assessments(
+        self, client, django_user_model, user, skill, skill_level
+    ) -> None:
+        """Explain why there is no wheel instead of showing an empty one."""
+        for person in (user, *self._add_members(django_user_model, 1)):
+            SkillProfile.objects.create(
+                profile=person.profile, skill=skill, skill_level=skill_level
+            )
+        client.force_login(user)
+
+        html = client.get(self._get_url()).content.decode()
+
+        assert "Not enough team members have assessed their skills yet." in html
+        assert "dataviz_team" not in html
+        assert "const charts" not in html
