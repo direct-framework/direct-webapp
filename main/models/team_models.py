@@ -7,9 +7,16 @@ from collections.abc import Iterable
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from django.db.models import Count, Sum
 from django.db.models.base import ModelBase
 
 from .framework_models import SluggedModel
+from .user_models import SkillProfile
+
+# A skill only appears in a team's aggregate skill profile once this many
+# current members have assessed it, so the average does not reveal one or two
+# people's assessments.
+MINIMUM_AGGREGATE_CONTRIBUTORS = 3
 
 
 class Team(SluggedModel):
@@ -22,6 +29,48 @@ class Team(SluggedModel):
             ("view_team_member_profiles", "Can view team member profiles"),
             ("manage_team_members", "Can manage team members"),
         )
+
+    def aggregate_skill_profile(self) -> list[dict[str, str | int]]:
+        """Return the team's average level for each sufficiently assessed skill.
+
+        Each average uses the current assessments of current members, counts a
+        selected level 0 and leaves out members who have not assessed the skill.
+        Averages are rounded to the nearest whole level, with halves rounded up,
+        because the competency wheel can only show whole levels. Skills assessed
+        by fewer than `MINIMUM_AGGREGATE_CONTRIBUTORS` members are left out.
+        Rows use the same keys as a personal competency wheel, in framework order.
+        """
+        domain = "skill__competency__competency_domain"
+        rows = (
+            SkillProfile.objects.filter(profile__user__teams__team=self)
+            .values(
+                "skill",
+                "skill__name",
+                "skill__competency__name",
+                f"{domain}__name",
+            )
+            .annotate(contributors=Count("id"), level_total=Sum("skill_level__level"))
+            .filter(contributors__gte=MINIMUM_AGGREGATE_CONTRIBUTORS)
+            .order_by(
+                f"{domain}__rank",
+                f"{domain}__name",
+                "skill__competency__rank",
+                "skill__competency__name",
+                "skill__rank",
+                "skill__name",
+            )
+        )
+        return [
+            {
+                "skill": row["skill__name"],
+                "category": row[f"{domain}__name"],
+                "subcategory": row["skill__competency__name"],
+                # Integer form of rounding total / contributors, halves up.
+                "skill_level": (2 * row["level_total"] + row["contributors"])
+                // (2 * row["contributors"]),
+            }
+            for row in rows
+        ]
 
 
 class TeamMembership(models.Model):
