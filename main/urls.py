@@ -46,6 +46,7 @@ accounts_patterns = [
     path("skills-profile/", views.SkillProfileView.as_view(), name="skills_profile"),
     path("profile/", views.UserUpdateView.as_view(), name="profile"),
     path("overview/", views.AccountOverviewView.as_view(), name="account-overview"),
+    path("teams/", views.MyTeamsPageView.as_view(), name="my_teams"),
     path(
         "download-skills-data/csv/",
         views.DownloadSkillProfileDataCsvView.as_view(),

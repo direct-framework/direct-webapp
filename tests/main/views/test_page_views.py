@@ -116,6 +116,9 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
         )
         assert account_dropdown.find(
+            tag_with_text_filter("a", "My teams"), href=reverse("my_teams")
+        )
+        assert account_dropdown.find(
             tag_with_text_filter("a", "Update profile"), href=reverse("profile")
         )
         assert account_dropdown.find(
