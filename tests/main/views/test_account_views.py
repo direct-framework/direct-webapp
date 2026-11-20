@@ -328,7 +328,7 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
         assert manager_badge.get_text(strip=True) == "Manager"
         assert member_badge is not None
         assert member_badge.get_text(strip=True) == "Member"
-        assert "bg-secondary" in manager_badge["class"]
+        assert "bg-primary" in manager_badge["class"]
         assert "bg-secondary" in member_badge["class"]
 
     @pytest.mark.django_db
