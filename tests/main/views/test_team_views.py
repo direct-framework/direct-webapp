@@ -5,13 +5,17 @@ from http import HTTPStatus
 from urllib import parse as parseUrl
 
 import pytest
-from bs4 import BeautifulSoup
 from django.urls import reverse
 
-from main.models import Skill, SkillLevel, SkillProfile, TeamMembership, User
+from main.models import Skill, SkillProfile, TeamMembership, User
 from main.team_services import create_team, generate_invitation_token
 
-from .view_utils import LoginRequiredMixin, TemplateOkMixin
+from .view_utils import (
+    BS4Mixin,
+    LoginRequiredMixin,
+    TemplateOkMixin,
+    tag_with_text_filter,
+)
 
 
 @pytest.mark.django_db
@@ -183,7 +187,7 @@ class TestTeamInvitationAcceptanceView(LoginRequiredMixin, TemplateOkMixin):
 
 
 @pytest.mark.django_db
-class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
+class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
     """Test the team page shown to team members."""
 
     _template_name = "main/team-detail.html"
@@ -195,16 +199,24 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
             user=user, name="Research team", description="Team page tests"
         )
 
+    @pytest.fixture
+    def members(self, django_user_model) -> list[User]:
+        """Add two regular members, who have accepted the terms, to the team."""
+        members = []
+        for index in range(2):
+            member = django_user_model.objects.create_user(
+                username=f"member-{index}", agreed_to_tos=True
+            )
+            TeamMembership.objects.create(user=member, team=self.team)
+            members.append(member)
+        return members
+
     def _get_url(self, **kwargs) -> str:
         return reverse("team-detail", kwargs={"team_slug": self.team.slug})
 
-    def test_member_sees_the_team_page(self, client, django_user_model) -> None:
+    def test_member_sees_the_team_page(self, client, members) -> None:
         """A regular member can open their team's page."""
-        member = django_user_model.objects.create_user(
-            username="regular-member", agreed_to_tos=True
-        )
-        TeamMembership.objects.create(user=member, team=self.team)
-        client.force_login(member)
+        client.force_login(members[0])
 
         response = client.get(self._get_url())
 
@@ -249,7 +261,7 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
         assert response.url == reverse("terms_acceptance")
 
     def test_lists_managers_and_members_separately_by_name(
-        self, client, django_user_model, user
+        self, django_user_model, soup_factory
     ) -> None:
         """Show full names, or usernames when absent, in alphabetical order."""
         for username, first, last, manager in (
@@ -261,9 +273,8 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
                 username=username, first_name=first, last_name=last
             )
             TeamMembership.objects.create(user=person, team=self.team, manager=manager)
-        client.force_login(user)
 
-        soup = BeautifulSoup(client.get(self._get_url()).content, "html.parser")
+        soup = soup_factory(authenticated=True)
 
         def names_under(heading: str) -> list[str]:
             title = soup.find("h2", string=heading)
@@ -275,43 +286,24 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
         assert names_under("Managers") == ["Alice Brown", "test user"]
         assert names_under("Members") == ["Bob Carter", "zed"]
 
-    def _add_members(self, django_user_model, count: int) -> list[User]:
-        """Add regular members to the team and return them."""
-        members = []
-        for index in range(count):
-            member = django_user_model.objects.create_user(username=f"m{index}")
-            TeamMembership.objects.create(user=member, team=self.team)
-            members.append(member)
-        return members
-
     def test_team_wheel_shows_only_skills_assessed_by_three_members(
-        self, client, django_user_model, user, competency, skill
+        self, user, members, competency, skill, skill_levels, soup_factory
     ) -> None:
         """The wheel gets rounded averages; rarely assessed skills are left out."""
-        levels = {
-            level: SkillLevel.objects.create(
-                level=level,
-                name=f"Level {level}",
-                description="-",
-                short_description="-",
-            )
-            for level in (1, 2)
-        }
         rare = Skill.objects.create(
             name="Rarely assessed skill", description="-", competency=competency
         )
-        people = [user, *self._add_members(django_user_model, 2)]
+        people = [user, *members]
         for person, level in zip(people, (1, 2, 2), strict=True):
             SkillProfile.objects.create(
-                profile=person.profile, skill=skill, skill_level=levels[level]
+                profile=person.profile, skill=skill, skill_level=skill_levels[level]
             )
         for person in people[:2]:
             SkillProfile.objects.create(
-                profile=person.profile, skill=rare, skill_level=levels[2]
+                profile=person.profile, skill=rare, skill_level=skill_levels[2]
             )
-        client.force_login(user)
 
-        html = client.get(self._get_url()).content.decode()
+        soup = soup_factory(authenticated=True)
 
         chart_data = [
             {
@@ -326,24 +318,27 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin):
                 ],
             }
         ]
-        assert f"const charts = {json.dumps(chart_data)};" in html
-        assert 'id="dataviz_team"' in html
-        assert "rounded to the nearest whole level" in html
-        assert "at least 3 members have assessed it" in html
-        assert rare.name not in html
+        wheel_script = soup.find(tag_with_text_filter("script", "const charts"))
+        assert wheel_script is not None
+        assert f"const charts = {json.dumps(chart_data)};" in wheel_script.text
+        assert soup.find(id="dataviz_team") is not None
+        explanation = soup.find(tag_with_text_filter("p", "rounded to the nearest"))
+        assert explanation is not None
+        assert "at least 3 members have assessed it" in explanation.text
+        assert rare.name not in str(soup)
 
     def test_shows_a_message_when_no_skill_has_enough_assessments(
-        self, client, django_user_model, user, skill, skill_level
+        self, user, members, skill, skill_levels, soup_factory
     ) -> None:
         """Explain why there is no wheel instead of showing an empty one."""
-        for person in (user, *self._add_members(django_user_model, 1)):
+        for person in (user, members[0]):
             SkillProfile.objects.create(
-                profile=person.profile, skill=skill, skill_level=skill_level
+                profile=person.profile, skill=skill, skill_level=skill_levels[1]
             )
-        client.force_login(user)
 
-        html = client.get(self._get_url()).content.decode()
+        soup = soup_factory(authenticated=True)
 
-        assert "Not enough team members have assessed their skills yet." in html
-        assert "dataviz_team" not in html
-        assert "const charts" not in html
+        message = "Not enough team members have assessed their skills yet."
+        assert soup.find(tag_with_text_filter("p", message)) is not None
+        assert soup.find(id="dataviz_team") is None
+        assert soup.find(tag_with_text_filter("script", "const charts")) is None

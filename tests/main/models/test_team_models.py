@@ -3,7 +3,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from main.models import Skill, SkillLevel, SkillProfile, Team, TeamMembership, User
+from main.models import Skill, SkillProfile, Team, TeamMembership, User
 from main.team_services import create_team
 
 
@@ -72,20 +72,6 @@ def test_membership_model_preserves_at_least_one_manager(user) -> None:
 
 
 @pytest.fixture
-def skill_levels() -> dict[int, SkillLevel]:
-    """Create the framework's 0-4 skill level scale."""
-    return {
-        level: SkillLevel.objects.create(
-            level=level,
-            name=f"Level {level}",
-            description=f"Level {level}",
-            short_description=f"Level {level}",
-        )
-        for level in range(5)
-    }
-
-
-@pytest.fixture
 def team_of_four(user, django_user_model) -> tuple[Team, list[User]]:
     """Create a team with a manager and three regular members."""
     team = create_team(user=user, name="Average team", description="Aggregate test")
@@ -145,7 +131,7 @@ def test_aggregate_skill_profile_needs_three_assessments_of_a_skill(
 def test_aggregate_skill_profile_uses_only_current_members_assessments(
     team_of_four, competency, skill_levels, django_user_model
 ) -> None:
-    """Unassessed members and non-members do not affect a team's averages."""
+    """Former members and non-members do not affect a team's averages."""
     team, members = team_of_four
     skill = Skill.objects.create(name="Shared", description="-", competency=competency)
     _assess(members[:3], skill, skill_levels, [4, 4, 1])
