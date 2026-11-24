@@ -73,11 +73,11 @@ team's Guardian `view_team` object permission, so only members (and superusers)
 can see it; anyone else gets a 404, so the page does not reveal whether a team
 exists. The address uses the slug, which stays the same when a team is renamed.
 
-The team competency wheel is drawn from `Team.aggregate_skill_profile()`. It
-averages each skill over the current members who have assessed it, counting a
-selected level 0 and ignoring unassessed skills. Averages are rounded to whole
-levels, with halves rounding up. A skill appears as soon as one member has
-assessed it.
+The team competency wheel is drawn by `aggregate_team_skill_profile()` in
+`main/team_services.py`. It averages each skill over the current members who
+have assessed it, counting a selected level 0 and ignoring unassessed members.
+Averages are rounded to whole levels, with halves rounding up. A skill appears
+as soon as one member has assessed it.
 
 ## Defaults for new and changed code
 

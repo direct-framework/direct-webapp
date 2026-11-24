@@ -16,6 +16,7 @@ from guardian.mixins import PermissionRequiredMixin
 from ..models import SkillLevel, Team, TeamMembership
 from ..team_services import (
     accept_invitation,
+    aggregate_team_skill_profile,
     generate_invitation_token,
     resolve_invitation_token,
 )
@@ -50,7 +51,7 @@ class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
         context["members"] = _sorted_by_name(
             m.user for m in memberships if not m.manager
         )
-        aggregate = self.team.aggregate_skill_profile()
+        aggregate = aggregate_team_skill_profile(team=self.team)
         context["has_aggregate"] = bool(aggregate)
         context["chart_data"] = dumps(
             [{"user_id": "team", "skill_profile_data": aggregate}]

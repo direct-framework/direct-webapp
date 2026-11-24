@@ -4,7 +4,7 @@ import pytest
 from django.core.exceptions import ValidationError
 
 from main.models import Skill, SkillProfile, Team, TeamMembership, User
-from main.team_services import create_team
+from main.team_services import aggregate_team_skill_profile, create_team
 
 
 @pytest.mark.django_db
@@ -104,7 +104,7 @@ def test_aggregate_skill_profile_rounds_each_average_to_a_whole_level(
     _assess(members, lower, skill_levels, [1, 1, 2])
     _assess(members, upper, skill_levels, [1, 2, 2])
 
-    assert team.aggregate_skill_profile() == [
+    assert aggregate_team_skill_profile(team=team) == [
         {
             "skill": name,
             "category": competency.competency_domain.name,
@@ -124,7 +124,9 @@ def test_aggregate_skill_profile_includes_a_skill_assessed_by_one_member(
     rare = Skill.objects.create(name="Rare", description="-", competency=competency)
     _assess(members, rare, skill_levels, [4])
 
-    assert [row["skill_level"] for row in team.aggregate_skill_profile()] == [4]
+    assert [row["skill_level"] for row in aggregate_team_skill_profile(team=team)] == [
+        4
+    ]
 
 
 @pytest.mark.django_db
@@ -141,4 +143,6 @@ def test_aggregate_skill_profile_uses_only_current_members_assessments(
     _assess([former_member], skill, skill_levels, [0])
     TeamMembership.objects.get(team=team, user=former_member).delete()
 
-    assert [row["skill_level"] for row in team.aggregate_skill_profile()] == [3]
+    assert [row["skill_level"] for row in aggregate_team_skill_profile(team=team)] == [
+        3
+    ]
