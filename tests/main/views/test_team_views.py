@@ -82,8 +82,13 @@ class TestTeamInvitationLinkView(LoginRequiredMixin, TemplateOkMixin):
         TeamMembership.objects.create(user=member, team=self.team)
         client.force_login(member)
 
-        assert client.get(self._get_url()).status_code == HTTPStatus.NOT_FOUND
-        assert client.post(self._get_url()).status_code == HTTPStatus.NOT_FOUND
+        get_response = client.get(self._get_url())
+        post_response = client.post(self._get_url())
+
+        assert get_response.status_code == HTTPStatus.NOT_FOUND
+        assert post_response.status_code == HTTPStatus.NOT_FOUND
+        assert b"404 - Page Not Found" in get_response.content
+        assert b"404 - Page Not Found" in post_response.content
 
     def test_unknown_team_slug_returns_not_found(self, client, user) -> None:
         """A missing team slug does not expose a manager-only page."""
@@ -234,7 +239,10 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
         client.force_login(outsider)
         unknown_url = reverse("team-detail", kwargs={"team_slug": "no-such-team"})
 
-        assert client.get(self._get_url()).status_code == HTTPStatus.NOT_FOUND
+        response = client.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+        assert b"404 - Page Not Found" in response.content
         assert client.get(unknown_url).status_code == HTTPStatus.NOT_FOUND
 
     def test_page_address_is_unchanged_when_team_is_renamed(self, client, user) -> None:
