@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!--
-PROTOTYPE v2 (throwaway) for "Sketch catalogue pages and replace the current Roles page".
-Reflects the human's feedback on v1: new "Roles and Careers" menu with Overview (example-led),
-Roles, Specialities and Career Profiles pages under /roles-and-careers/. No variants.
+PROTOTYPE v3 (throwaway) for "Sketch catalogue pages and replace the current Roles page".
+Reflects feedback: "Roles and Careers" menu with Roles, Specialities and Career Profiles pages under
+/roles-and-careers/. No overview page.
 Stub data only, no persistence, simple SVG stand-in for the skill wheel. Open directly in a browser.
 -->
 <html lang="en">
@@ -119,11 +119,15 @@ function selectionBar() {
     <span class="d-flex gap-2"><a class="btn btn-sm btn-primary" href="#" onclick="return stub('Opens the Career Profile page with the Roles and Specialities multi-selects')">Choose my Roles &amp; Specialities</a>
     <a class="btn btn-sm btn-outline-primary" href="#" onclick="return stub('Opens the full questionnaire with every skill')">Assess all skills</a></span></div>`;
 }
-function atAGlance() {
-  return `<h2 class="h4 mt-5">At a glance</h2><div class="row g-3">` + PROFILES.map(x=>`<div class="col-md-6 col-xl-3"><div class="card h-100">
+// reusable component: Career Profile card (wheel, title, role/speciality buttons)
+function profileCard(x) {
+  return `<div class="col-md-6 col-xl-3"><div class="card h-100">
     <div class="card-body text-center"><div class="wheel-box mb-2">${wheel(x.levels,220)}</div>
     <h3 class="h6"><a href="${href('career-profiles/'+x.slug)}">${e(x.title)}</a></h3>
-    <div>${roleBtns(x.roles)} ${specBtns(x.specs)}</div></div></div></div>`).join('') + '</div>';
+    <div>${roleBtns(x.roles)} ${specBtns(x.specs)}</div></div></div></div>`;
+}
+function atAGlance() {
+  return `<h2 class="h4 mt-5">At a glance</h2><div class="row g-3">${PROFILES.map(profileCard).join('')}</div>`;
 }
 function skillsByDomain(skillIds) {
   const by = {};
@@ -133,27 +137,20 @@ function skillsByDomain(skillIds) {
 }
 function profileButtonsFor(kind, slug) {
   const list = PROFILES.filter(x => kind==='role' ? x.roles.includes(slug) : x.specs.includes(slug));
-  return list.length ? `<div>${list.map(x=>btn('career-profiles/'+x.slug, x.title)).join(' ')}</div>`
+  return list.length ? `<div class="row g-3">${list.map(profileCard).join('')}</div>`
     : `<p class="note warn">No Career Profile examples use this ${kind} yet.</p>`;
 }
 
 /* ---------- pages ---------- */
 function page(title, urlHint, crumbs, body) {
-  // mirrors Framework > Overview: "Roles and Careers" (links to overview) > <page>
+  // "Roles and Careers" has no page of its own (no overview), so its crumb is plain text
   const bc = crumbs.map(([t,p],i)=> i===crumbs.length-1 ? `<li class="breadcrumb-item active" aria-current="page">${e(t)}</li>`
+    : p==='' ? `<li class="breadcrumb-item">${e(t)}</li>`
     : `<li class="breadcrumb-item"><a href="${href(p)}">${e(t)}</a></li>`).join('');
   return `<div class="container my-4"><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="#/">Home</a></li>${bc}</ol></nav>
     <div class="url-hint mb-2">${urlHint}</div><h1 class="pb-2">${e(title)}</h1>${body}</div>`;
 }
 
-function overviewPage() {
-  return page('Roles and Careers', BASE, [['Roles and Careers',''],['Overview',null]],
-   `<p class="lead">See what digital research practice looks like in the DIRECT framework, then find your own place in it.</p>
-    ${selectionBar()}
-    <p><strong>Roles</strong> describe the professional function someone performs; <strong>Specialities</strong> are areas of focus that combine with any role; <strong>Career Profiles</strong> illustrate how skills can come together in practice.</p>
-    <div class="d-flex gap-2 mb-3">${btn('roles','Browse Roles')} ${btn('specialities','Browse Specialities','btn-outline-secondary')} ${btn('career-profiles','Browse Career Profiles','btn-outline-dark')}</div>
-    ${atAGlance()}`);
-}
 function rolesPage() {
   const rows = ROLES.map(r=>`<tr><td>${btn('roles/'+r.slug, r.name)}</td>
     <td>${r.alt.length?e(r.alt.join(', ')):''}</td><td>${e(r.desc)}</td>
@@ -172,7 +169,7 @@ function specsPage() {
 }
 function profilesPage() {
   const rows = PROFILES.map(x=>`<tr><td>${btn('career-profiles/'+x.slug, x.title, 'btn-outline-dark')}</td><td>${e(x.desc)}</td>
-    <td>${roleBtns(x.roles)}</td><td>${specBtns(x.specs)}</td><td class="text-end">${Object.keys(x.levels).length}</td></tr>`).join('');
+    <td>${roleBtns(x.roles)}</td><td>${specBtns(x.specs)}</td><td class="text-end">${Object.keys(x.levels).length} / ${SKILLS.length}</td></tr>`).join('');
   return page('Career Profiles', BASE+'career-profiles/', [['Roles and Careers',''],['Career Profiles',null]],
    `<p class="lead">Curated, illustrative examples of professional practice. They are for browsing, not targets or requirements.</p>
     <table class="table table-hover align-middle"><thead><tr><th>Career Profile</th><th>Description</th><th>Roles</th><th>Specialities</th><th class="text-end">Skills illustrated</th></tr></thead><tbody>${rows}</tbody></table>
@@ -223,8 +220,7 @@ function chrome(inner) {
       <li><a class="dropdown-item" href="#" onclick="return false">Skill levels</a></li>
       <li><a class="dropdown-item" href="#" onclick="return false">Learning providers</a></li></ul></li>
     <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Roles and Careers</a>
-      <ul class="dropdown-menu"><li><a class="dropdown-item" href="${href('')}">Overview</a></li>
-      <li><a class="dropdown-item" href="${href('roles')}">Roles</a></li>
+      <ul class="dropdown-menu"><li><a class="dropdown-item" href="${href('roles')}">Roles</a></li>
       <li><a class="dropdown-item" href="${href('specialities')}">Specialities</a></li>
       <li><a class="dropdown-item" href="${href('career-profiles')}">Career Profiles</a></li></ul></li>
     <li class="nav-item"><a class="nav-link" href="#" onclick="return stub('Self-assessment')">My self-assessment</a></li></ul></nav>${inner}`;
@@ -233,7 +229,7 @@ function render() {
   const [a, kind, slug] = (location.hash||'#/').replace(/^#\/?/, '').split('/').filter(Boolean);
   let inner = '<div class="container my-4">Prototype: start from the "Roles and Careers" menu.</div>';
   if (a === 'roles-and-careers') {
-    if (!kind) inner = overviewPage();
+    if (!kind) inner = rolesPage();
     else if (kind==='roles') inner = !slug ? rolesPage() : R(slug) ? roleDetail(R(slug)) : '404';
     else if (kind==='specialities') inner = !slug ? specsPage() : S(slug) ? specDetail(S(slug)) : '404';
     else if (kind==='career-profiles') inner = !slug ? profilesPage() : P(slug) ? profileDetail(P(slug)) : '404';
