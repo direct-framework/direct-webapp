@@ -300,7 +300,8 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
             assert heading is not None
             team_card = heading.find_parent("article")
             assert team_card is not None
-            assert {"card-hover-primary", "bg-secondary"}.issubset(team_card["class"])
+            assert "bg-secondary" in team_card["class"]
+            assert "card-hover-primary" not in team_card["class"]
             assert visible_team.description in team_card.get_text(" ", strip=True)
 
         team_grid = soup.find("div", class_="row-cols-xl-3")
