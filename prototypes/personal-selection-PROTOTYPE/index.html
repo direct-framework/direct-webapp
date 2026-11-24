@@ -90,8 +90,23 @@
       .bottom-switcher button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: #fff; color: #132d3d; font-size: 20px; }
       .switch-label { min-width: 150px; text-align: center; font-size: 12px; }
       .footer-note { color: var(--muted); font-size: 12px; padding: 14px 0; }
+      .review-tools { max-width: 1180px; margin: 18px auto; padding: 18px 20px; border: 3px solid #a34a15; border-radius: 8px; background: #fff3e8; }
+      .review-tools h1 { margin: 0 0 8px; font-size: 24px; color: #71320e; }
+      .review-tools h2 { margin: 16px 0 8px; font-size: 17px; }
+      .review-tools p { max-width: 900px; line-height: 1.45; }
+      .review-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
+      .review-options { display: grid; gap: 8px; }
+      .review-options button { padding: 10px; text-align: left; border: 1px solid #b87c57; border-radius: 5px; background: #fff; color: var(--ink); }
+      .review-options button[aria-pressed="true"] { border: 2px solid #71320e; background: #fce1cd; font-weight: 700; }
+      .candidate-frame { margin: 20px auto; max-width: 1240px; border: 4px solid var(--blue); border-radius: 10px; background: #fff; }
+      .candidate-label { padding: 10px 20px; background: #e8f2f8; color: #123f5c; font-weight: 750; }
+      .candidate-frame .shell { max-width: 1180px; }
+      .bottom-switcher { gap: 10px; }
+      .bottom-switcher .switch-label { min-width: 220px; }
+      .bottom-switcher button { width: auto; min-width: 48px; padding: 0 10px; font-size: 13px; font-weight: 700; }
       @media (max-width: 760px) {
         .layout-b, .layout-c { grid-template-columns: 1fr; }
+        .review-grid { grid-template-columns: 1fr; }
         .side-nav { position: static; }
         .side-nav button { display: inline-block; width: auto; }
         .choice-grid { grid-template-columns: 1fr; }
@@ -109,14 +124,18 @@
             <strong>DIRECT</strong><span>Framework&nbsp;&nbsp; Account v</span>
         </header>
         <div class="crumbs">Home / Profile / Assessment</div>
-        <main id="app" class="shell">
+        <main id="review-tools" class="review-tools">
         </main>
-        <div class="bottom-switcher" aria-label="Prototype variant switcher">
+        <section class="candidate-frame">
+            <div class="candidate-label">CANDIDATE APP SCREEN - This bordered area is the design being reviewed. It is not in the live app.</div>
+            <div id="app" class="shell"></div>
+        </section>
+        <div class="bottom-switcher" aria-label="Prototype layout switcher">
             <button id="previous"
                     type="button"
-                    aria-label="Previous variant">Prev</button>
+                    aria-label="Previous layout">Prev</button>
             <span class="switch-label" id="variant-label"></span>
-            <button id="next" type="button" aria-label="Next variant">Next</button>
+            <button id="next" type="button" aria-label="Next layout">Next</button>
         </div>
         <script>
       const skills = [
@@ -138,8 +157,20 @@
         { id: "security", name: "Data Security" },
       ];
       const variantNames = { A: "Guided steps", B: "Section navigator", C: "Assessment workspace" };
+      const variantDescriptions = {
+        A: "One assessment section at a time, with Previous and Continue buttons. Progress appears below the current section.",
+        B: "A persistent list on the left lets the user jump directly to any Role, Speciality, or Remaining Skills section.",
+        C: "Tabs above the questionnaire switch sections; a right-hand panel summarizes selections and assessment progress."
+      };
+      const scenarioDescriptions = {
+        overlap: "Starts with two Roles and one Speciality selected. Two Skills appear in more than one selected section; the repeated rows should show the same level and name the other relevant selection.",
+        none: "Starts with no selections. The user should still see all Skills in Remaining Skills; one existing level is retained.",
+        empty: "Selects a Role with no mapped Skills. Its empty state should explain that, while all Skills remain reachable.",
+        changed: "Starts with a saved level for a Skill that is no longer relevant to the selected Role. That Skill should appear in Remaining Skills with its old level."
+      };
       const levels = ["", "0 - None / N/A", "1 - Awareness", "2 - Working", "3 - Practitioner", "4 - Expert"];
       const app = document.querySelector("#app");
+      const reviewTools = document.querySelector("#review-tools");
       const params = new URLSearchParams(location.search);
       let variant = ["A", "B", "C"].includes(params.get("variant")) ? params.get("variant") : "A";
       let screen = params.get("screen") === "profile" ? "profile" : "assessment";
@@ -214,16 +245,27 @@
         return names;
       }
 
-      function scenarioControl() {
-        return `<div class="toolbar">
-          <div><label for="scenario">Try a scenario</label><select class="scenario" id="scenario">
-            <option value="overlap" ${scenario === "overlap" ? "selected" : ""}>Overlapping Role + Speciality</option>
-            <option value="none" ${scenario === "none" ? "selected" : ""}>No saved selections</option>
-            <option value="empty" ${scenario === "empty" ? "selected" : ""}>Selection has no mapped Skills</option>
-            <option value="changed" ${scenario === "changed" ? "selected" : ""}>Changed selection, keep old assessment</option>
-          </select></div>
-          <span class="small muted">Illustrative names and Skills only; state stays in this browser tab.</span>
-        </div>`;
+      function renderReviewTools() {
+        return `<h1>PROTOTYPE CONTROLS - reviewer only</h1>
+          <p><strong>Everything in this orange panel and the dark switcher at the bottom is for comparing options.</strong> Those controls are not part of the proposed DIRECT app. The blue-bordered area below is the candidate app screen for review; that design is also not implemented.</p>
+          <div class="review-grid">
+            <section><h2>1. Choose how the questionnaire is laid out</h2>
+              <div class="review-options">
+                ${["A", "B", "C"].map(key => `<button type="button" data-variant="${key}" aria-pressed="${variant === key}"><strong>${key} - ${variantNames[key]}</strong><br><span class="small">${variantDescriptions[key]}</span></button>`).join("")}
+              </div>
+            </section>
+            <section><h2>2. Choose a sample situation to inspect</h2>
+              <label class="field-label" for="scenario">This changes fictional saved data, not the layout</label>
+              <select class="scenario" id="scenario">
+                <option value="overlap" ${scenario === "overlap" ? "selected" : ""}>Two Roles + one Speciality overlap</option>
+                <option value="none" ${scenario === "none" ? "selected" : ""}>No saved selections</option>
+                <option value="empty" ${scenario === "empty" ? "selected" : ""}>Selected Role has no mapped Skills</option>
+                <option value="changed" ${scenario === "changed" ? "selected" : ""}>Selection changed; keep an old assessment</option>
+              </select>
+              <p id="scenario-description" class="small">${scenarioDescriptions[scenario]}</p>
+            </section>
+          </div>
+          <p><strong>What to do:</strong> Compare A, B and C in the blue-bordered area. Use "Open my Roles &amp; Specialities" there to see how someone chooses them, then "Open self-assessment" to return. Tell me which option works best (or what to combine) and what you would change.</p>`;
       }
 
       function selectionControls() {
@@ -243,7 +285,7 @@
 
       function renderSelectionScreen() {
         const profile = screen === "profile";
-        const title = profile ? "Career Profile" : "Start your self-assessment";
+        const title = profile ? "My Roles &amp; Specialities" : "Choose before you assess";
         const intro = profile
           ? "Choose Roles and Specialities that describe your practice or areas you are exploring. These saved selections also guide your questionnaire."
           : "Your saved selections are ready to use. Change them here before starting, or continue with all Skills.";
@@ -315,25 +357,29 @@
       }
 
       function render() {
-        const scenarioHtml = scenarioControl();
-        const title = screen === "profile" ? "Career Profile" : "Self Assessment Questionnaire";
+        const title = screen === "profile" ? "My Roles &amp; Specialities" : "Self-assessment questionnaire";
         let content;
         if (screen === "profile" || pageIndex === -1) content = renderSelectionScreen();
         else content = renderQuestionnaire(variant.toLowerCase());
-        app.innerHTML = `<div class="prototype-note"><strong>PROTOTYPE - not production.</strong> Three layouts for personal Role/Speciality selections and guided self-assessment. No data is saved.</div>
-          ${scenarioHtml}<div class="page-title"><div><h1 class="page-heading">${title}</h1><p class="lede">Choose a layout below, then try the scenarios and edit controls. Profile and assessment entry points share these selections.</p></div>
-          <button class="btn secondary" id="switch-screen">${screen === "profile" ? "Go to assessment" : "Open Career Profile"}</button></div>
+        reviewTools.innerHTML = renderReviewTools();
+        app.innerHTML = `<div class="page-title"><div><h1 class="page-heading">${title}</h1><p class="lede">Selections guide the order of this questionnaire. They do not limit which Skills can be assessed.</p></div>
+          <button class="btn secondary" id="switch-screen">${screen === "profile" ? "Open self-assessment" : "Open my Roles &amp; Specialities"}</button></div>
           ${content}<div style="margin-top:16px">${selectionState()}</div>
-          <p class="footer-note">Mock interaction only. Existing code remains unchanged. This prototype illustrates display and navigation, not persistence or production form behavior.</p>`;
-        document.querySelector("#variant-label").textContent = `${variant} - ${variantNames[variant]}`;
+          <p class="footer-note">Illustrative screen only. No selections or assessments are saved.</p>`;
+        document.querySelector("#variant-label").textContent = `Layout ${variant}: ${variantNames[variant]}`;
         bind();
       }
 
       function bind() {
         document.querySelector("#scenario").addEventListener("change", event => setScenario(event.target.value));
+        document.querySelectorAll("[data-variant]").forEach(button => button.addEventListener("click", () => {
+          variant = button.dataset.variant;
+          params.set("variant", variant);
+          history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
+          render();
+        }));
         document.querySelectorAll("[data-choice]").forEach(input => input.addEventListener("change", () => {
           const selected = input.dataset.choice === "role" ? selectedRoles : selectedSpecialities;
-          selectedRoles = input.dataset.choice === "role" ? selectedRoles : selectedRoles;
           const updated = input.checked ? [...selected, input.value] : selected.filter(id => id !== input.value);
           if (input.dataset.choice === "role") selectedRoles = updated;
           else selectedSpecialities = updated;
