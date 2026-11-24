@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<!-- Three assessment-navigation layouts, switchable with ?variant=A|B|C. Fictional data. -->
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description"
+              content="Prototype of Role and Speciality selections and guided self-assessment.">
+        <title>PROTOTYPE - Personal selections and assessment</title>
+        <style>
+      :root {
+        color-scheme: light;
+        --ink: #243746;
+        --muted: #647583;
+        --line: #d7e0e5;
+        --paper: #fff;
+        --canvas: #f2f5f7;
+        --blue: #185b83;
+        --blue-light: #e8f2f8;
+        --green: #27734c;
+        --amber: #805c0a;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; color: var(--ink); background: var(--canvas); font-size: 15px; }
+      button, input, select { font: inherit; }
+      button, a { cursor: pointer; }
+      a { color: var(--blue); }
+      .site-header { background: #193b50; color: #fff; padding: 14px max(20px, calc((100% - 1180px) / 2)); }
+      .site-header strong { font-size: 18px; letter-spacing: .02em; }
+      .site-header span { float: right; opacity: .8; }
+      .crumbs { max-width: 1180px; margin: 18px auto 10px; padding: 0 20px; color: var(--muted); font-size: 13px; }
+      .shell { max-width: 1180px; margin: 0 auto 100px; padding: 0 20px; }
+      .prototype-note { padding: 10px 14px; margin: 0 0 16px; border-left: 4px solid #d59d2d; background: #fff7e2; color: #58430f; }
+      .page-heading { margin: 0 0 5px; font-size: 30px; }
+      .lede { color: var(--muted); margin: 0 0 22px; max-width: 780px; line-height: 1.5; }
+      .card { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+      .card + .card { margin-top: 16px; }
+      .card h2, .card h3 { margin: 0 0 12px; }
+      .card h2 { font-size: 21px; }
+      .card h3 { font-size: 17px; }
+      .muted { color: var(--muted); }
+      .small { font-size: 13px; }
+      .toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin-bottom: 16px; }
+      .toolbar label, .field-label { display: block; font-size: 13px; font-weight: 650; margin-bottom: 5px; }
+      select, input[type="search"] { padding: 9px 10px; border: 1px solid #aebdc6; border-radius: 5px; background: #fff; color: var(--ink); }
+      .scenario { min-width: 260px; }
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 14px; border: 1px solid var(--blue); border-radius: 5px; background: var(--blue); color: #fff; font-weight: 650; text-decoration: none; }
+      .btn.secondary { background: #fff; color: var(--blue); }
+      .btn.tertiary { border-color: transparent; background: transparent; color: var(--blue); padding-inline: 5px; }
+      .btn:focus-visible, button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #e6b842; outline-offset: 2px; }
+      .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0 0; }
+      .chip { display: inline-flex; padding: 4px 9px; border: 1px solid #8eacbd; border-radius: 99px; background: #f3f8fb; color: #234e67; font-size: 12px; }
+      .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .choice-group { border: 1px solid var(--line); border-radius: 6px; padding: 14px; }
+      .choice-group h3 { margin: 0 0 10px; }
+      .choice { display: flex; gap: 9px; align-items: flex-start; padding: 8px 0; border-top: 1px solid #edf1f3; }
+      .choice input { margin-top: 3px; accent-color: var(--blue); }
+      .choice small { display: block; margin-top: 2px; color: var(--muted); }
+      .inline-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
+      .notice { padding: 11px 13px; border-radius: 5px; background: var(--blue-light); margin: 12px 0; line-height: 1.45; }
+      .notice.empty { background: #fff5dc; color: #5e490f; }
+      .notice.success { background: #e8f5ed; color: #20583b; }
+      .layout { display: grid; gap: 16px; }
+      .layout-a { grid-template-columns: minmax(0, 1fr); }
+      .layout-b { grid-template-columns: 260px minmax(0, 1fr); align-items: start; }
+      .layout-c { grid-template-columns: minmax(0, 1fr) 290px; align-items: start; }
+      .side-nav { position: sticky; top: 16px; }
+      .side-nav button, .page-tabs button { width: 100%; padding: 10px 12px; text-align: left; border: 0; border-radius: 4px; background: transparent; color: var(--ink); }
+      .side-nav button[aria-current="page"], .page-tabs button[aria-current="page"] { background: var(--blue-light); color: #123f5c; font-weight: 700; }
+      .page-tabs { display: flex; flex-wrap: wrap; gap: 5px; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 14px; }
+      .page-tabs button { width: auto; }
+      .step { display: flex; gap: 8px; align-items: center; color: var(--muted); margin-bottom: 18px; }
+      .step strong { color: var(--blue); }
+      .step-dot { display: inline-grid; place-items: center; width: 25px; height: 25px; border: 1px solid var(--line); border-radius: 50%; background: #fff; }
+      .step-dot.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+      .skill-table { width: 100%; border-collapse: collapse; }
+      .skill-table th, .skill-table td { border-bottom: 1px solid #e8edef; padding: 11px 8px; text-align: left; vertical-align: top; }
+      .skill-table th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+      .skill-table select { min-width: 145px; }
+      .association { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); }
+      .page-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+      .progress { height: 7px; overflow: hidden; border-radius: 10px; background: #e5ebee; margin: 15px 0; }
+      .progress span { display: block; height: 100%; background: #4a9a70; }
+      .summary-list { margin: 0; padding-left: 18px; line-height: 1.8; }
+      .state-panel { border: 1px dashed #91a7b3; border-radius: 6px; padding: 12px; background: #f8fafb; }
+      .state-panel h3 { font-size: 14px; margin: 0 0 7px; }
+      .bottom-switcher { position: fixed; z-index: 20; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; padding: 7px 10px; border: 1px solid #243746; border-radius: 99px; background: #132d3d; color: #fff; box-shadow: 0 4px 18px #172c3a55; }
+      .bottom-switcher button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: #fff; color: #132d3d; font-size: 20px; }
+      .switch-label { min-width: 150px; text-align: center; font-size: 12px; }
+      .footer-note { color: var(--muted); font-size: 12px; padding: 14px 0; }
+      @media (max-width: 760px) {
+        .layout-b, .layout-c { grid-template-columns: 1fr; }
+        .side-nav { position: static; }
+        .side-nav button { display: inline-block; width: auto; }
+        .choice-grid { grid-template-columns: 1fr; }
+        .skill-table, .skill-table tbody, .skill-table tr, .skill-table td { display: block; width: 100%; }
+        .skill-table thead { display: none; }
+        .skill-table tr { padding: 10px 0; border-bottom: 1px solid var(--line); }
+        .skill-table td { border: 0; padding: 4px 0; }
+        .skill-table td:last-child { padding-top: 8px; }
+        .page-heading { font-size: 25px; }
+      }
+        </style>
+    </head>
+    <body>
+        <header class="site-header">
+            <strong>DIRECT</strong><span>Framework&nbsp;&nbsp; Account v</span>
+        </header>
+        <div class="crumbs">Home / Profile / Assessment</div>
+        <main id="app" class="shell">
+        </main>
+        <div class="bottom-switcher" aria-label="Prototype variant switcher">
+            <button id="previous"
+                    type="button"
+                    aria-label="Previous variant">Prev</button>
+            <span class="switch-label" id="variant-label"></span>
+            <button id="next" type="button" aria-label="Next variant">Next</button>
+        </div>
+        <script>
+      const skills = [
+        { id: "s1", name: "Document data processes", domain: "Research data practice", description: "Create clear records of how research data is handled.", roles: ["steward"], specialities: ["metadata"] },
+        { id: "s2", name: "Apply metadata standards", domain: "Research data practice", description: "Select and apply appropriate metadata standards.", roles: ["steward"], specialities: ["metadata"] },
+        { id: "s3", name: "Evaluate data quality", domain: "Data analysis", description: "Assess data for accuracy, completeness and consistency.", roles: ["analyst"], specialities: [] },
+        { id: "s4", name: "Communicate findings", domain: "Data analysis", description: "Present findings for different audiences.", roles: ["analyst"], specialities: ["visualisation"] },
+        { id: "s5", name: "Plan secure storage", domain: "Research data practice", description: "Choose storage suited to sensitivity and access needs.", roles: [], specialities: ["security"] },
+        { id: "s6", name: "Use a version-control workflow", domain: "Digital practice", description: "Track and review changes to shared work.", roles: [], specialities: [] },
+      ];
+      const roles = [
+        { id: "steward", name: "Research Data Steward", detail: "Curated example Role" },
+        { id: "analyst", name: "Research Data Analyst", detail: "Curated example Role" },
+        { id: "emerging", name: "Emerging Research Role", detail: "No mapped competencies yet" },
+      ];
+      const specialities = [
+        { id: "metadata", name: "Metadata Management" },
+        { id: "visualisation", name: "Data Visualisation" },
+        { id: "security", name: "Data Security" },
+      ];
+      const variantNames = { A: "Guided steps", B: "Section navigator", C: "Assessment workspace" };
+      const levels = ["", "0 - None / N/A", "1 - Awareness", "2 - Working", "3 - Practitioner", "4 - Expert"];
+      const app = document.querySelector("#app");
+      const params = new URLSearchParams(location.search);
+      let variant = ["A", "B", "C"].includes(params.get("variant")) ? params.get("variant") : "A";
+      let screen = params.get("screen") === "profile" ? "profile" : "assessment";
+      let scenario = "overlap";
+      let selectedRoles = ["steward", "analyst"];
+      let selectedSpecialities = ["metadata"];
+      let pageIndex = 0;
+      let searchTerm = "";
+      let assessments = { s1: "3", s2: "0", s3: "2", s4: "", s5: "", s6: "1" };
+      let savedMessage = "";
+
+      function setScenario(next) {
+        scenario = next;
+        pageIndex = 0;
+        searchTerm = "";
+        savedMessage = "";
+        if (next === "overlap") {
+          selectedRoles = ["steward", "analyst"];
+          selectedSpecialities = ["metadata"];
+          assessments = { s1: "3", s2: "0", s3: "2", s4: "", s5: "", s6: "1" };
+        } else if (next === "none") {
+          selectedRoles = [];
+          selectedSpecialities = [];
+          assessments = { s1: "3", s2: "", s3: "", s4: "", s5: "", s6: "" };
+        } else if (next === "empty") {
+          selectedRoles = ["emerging"];
+          selectedSpecialities = [];
+          assessments = { s1: "", s2: "", s3: "", s4: "", s5: "", s6: "" };
+        } else {
+          selectedRoles = ["analyst"];
+          selectedSpecialities = [];
+          assessments = { s1: "4", s2: "", s3: "2", s4: "", s5: "", s6: "" };
+        }
+        render();
+      }
+
+      function selectedNames(ids, source) {
+        return ids.map(id => source.find(item => item.id === id)?.name).filter(Boolean);
+      }
+
+      function allRelevantIds() {
+        const ids = new Set();
+        skills.forEach(skill => {
+          if (skill.roles.some(id => selectedRoles.includes(id)) ||
+              skill.specialities.some(id => selectedSpecialities.includes(id))) ids.add(skill.id);
+        });
+        return ids;
+      }
+
+      function pages() {
+        const result = [];
+        const addGroup = (kind, id, label, matching) => {
+          const byDomain = new Map();
+          matching.forEach(skill => {
+            if (!byDomain.has(skill.domain)) byDomain.set(skill.domain, []);
+            byDomain.get(skill.domain).push(skill);
+          });
+          if (!matching.length) result.push({ key: `${kind}-${id}`, kind, id, label, domain: "", items: [] });
+          byDomain.forEach((items, domain) => result.push({ key: `${kind}-${id}-${domain}`, kind, id, label, domain, items }));
+        };
+        selectedRoles.forEach(id => addGroup("role", id, roles.find(x => x.id === id).name, skills.filter(skill => skill.roles.includes(id))));
+        selectedSpecialities.forEach(id => addGroup("speciality", id, specialities.find(x => x.id === id).name, skills.filter(skill => skill.specialities.includes(id))));
+        const relevant = allRelevantIds();
+        addGroup("remaining", "all", "Remaining Skills", skills.filter(skill => !relevant.has(skill.id)));
+        return result;
+      }
+
+      function otherAssociations(skill, current) {
+        const names = [];
+        skill.roles.filter(id => selectedRoles.includes(id) && current !== `role-${id}`).forEach(id => names.push(roles.find(x => x.id === id).name));
+        skill.specialities.filter(id => selectedSpecialities.includes(id) && current !== `speciality-${id}`).forEach(id => names.push(specialities.find(x => x.id === id).name));
+        return names;
+      }
+
+      function scenarioControl() {
+        return `<div class="toolbar">
+          <div><label for="scenario">Try a scenario</label><select class="scenario" id="scenario">
+            <option value="overlap" ${scenario === "overlap" ? "selected" : ""}>Overlapping Role + Speciality</option>
+            <option value="none" ${scenario === "none" ? "selected" : ""}>No saved selections</option>
+            <option value="empty" ${scenario === "empty" ? "selected" : ""}>Selection has no mapped Skills</option>
+            <option value="changed" ${scenario === "changed" ? "selected" : ""}>Changed selection, keep old assessment</option>
+          </select></div>
+          <span class="small muted">Illustrative names and Skills only; state stays in this browser tab.</span>
+        </div>`;
+      }
+
+      function selectionControls() {
+        const checkGroup = (heading, items, selected, type) => `<section class="choice-group">
+          <h3>${heading}</h3>
+          ${items.map(item => `<label class="choice">
+            <input type="checkbox" data-choice="${type}" value="${item.id}" ${selected.includes(item.id) ? "checked" : ""}>
+            <span>${item.name}<small>${item.detail || (item.id === "metadata" ? "Focus independent of Role" : "Independent focus")}</small></span>
+          </label>`).join("")}
+        </section>`;
+        return `<div class="choice-grid">
+          ${checkGroup("Roles", roles, selectedRoles, "role")}
+          ${checkGroup("Specialities", specialities, selectedSpecialities, "speciality")}
+        </div>
+        <p class="small muted">Selections are optional, independent, and can be changed at either entry point. They group the questionnaire; they do not limit access to Skills.</p>`;
+      }
+
+      function renderSelectionScreen() {
+        const profile = screen === "profile";
+        const title = profile ? "Career Profile" : "Start your self-assessment";
+        const intro = profile
+          ? "Choose Roles and Specialities that describe your practice or areas you are exploring. These saved selections also guide your questionnaire."
+          : "Your saved selections are ready to use. Change them here before starting, or continue with all Skills.";
+        return `<section class="card">
+          <div class="step"><span class="step-dot active">1</span><strong>Choose your Roles &amp; Specialities</strong><span>to</span><span class="step-dot">2</span> Assess Skills</div>
+          <h1 class="page-heading">${title}</h1><p class="lede">${intro}</p>
+          ${selectionControls()}
+          <div class="inline-actions"><span class="small muted">Saved for this prototype: ${selectedRoles.length} Roles, ${selectedSpecialities.length} Specialities</span>
+            <button class="btn" id="continue">${profile ? "Save selections" : "Continue to assessment"}</button></div>
+        </section>`;
+      }
+
+      function row(skill, page) {
+        const assoc = otherAssociations(skill, `${page.kind}-${page.id}`);
+        const chosen = assessments[skill.id] || "";
+        return `<tr class="skill-row">
+          <td><strong>${skill.name}</strong>${assoc.length ? `<span class="association">Also relevant to: ${assoc.join(", ")}</span>` : ""}</td>
+          <td>${skill.description}<span class="association">${skill.domain}</span></td>
+          <td><label class="small" for="level-${skill.id}-${page.key}">Your level</label>
+            <select id="level-${skill.id}-${page.key}" data-level="${skill.id}" aria-label="Your level for ${skill.name}">
+              ${levels.map((level, index) => `<option value="${index === 0 ? "" : index - 1}" ${String(index === 0 ? "" : index - 1) === chosen ? "selected" : ""}>${level || "Not assessed"}</option>`).join("")}
+            </select></td>
+        </tr>`;
+      }
+
+      function renderQuestionnaire(contentStyle) {
+        const list = pages();
+        pageIndex = Math.min(pageIndex, Math.max(0, list.length - 1));
+        const current = list[pageIndex];
+        const assessed = Object.values(assessments).filter(value => value !== "").length;
+        const search = `<label class="small" for="skill-search">Filter Skills on this page</label>
+          <input id="skill-search" type="search" value="${searchTerm}" placeholder="Search this page...">`;
+        const matches = current.items.filter(skill => `${skill.name} ${skill.description}`.toLowerCase().includes(searchTerm.toLowerCase()));
+        const body = `<div class="page-title"><div><p class="small muted">${current.kind === "remaining" ? "Open to everyone" : current.kind === "role" ? "Role section" : "Speciality section"}</p>
+            <h2>${current.label}${current.domain ? ` <span class="muted">/ ${current.domain}</span>` : ""}</h2></div><div class="small muted">Page ${pageIndex + 1} of ${list.length}</div></div>
+          ${current.items.length === 0 ? `<div class="notice empty">No Skills are mapped to this selection yet. You can still assess every Skill from Remaining Skills.</div>` : ""}
+          ${search}
+          ${current.items.length ? `<div style="overflow-x:auto"><table class="skill-table"><thead><tr><th>Skill</th><th>Description</th><th>Level</th></tr></thead><tbody>${matches.map(skill => row(skill, current)).join("") || `<tr><td colspan="3" class="muted">No Skills match this filter. Clear it to see this page again.</td></tr>`}</tbody></table></div>` : ""}
+          <div class="inline-actions"><button class="btn secondary" id="back" ${pageIndex === 0 ? "disabled" : ""}>Previous</button>
+            <span class="small muted">Changes save when you navigate; blank values leave saved levels unchanged.</span>
+            <button class="btn" id="forward">${pageIndex === list.length - 1 ? "Finish" : "Save & continue"}</button></div>
+          ${savedMessage ? `<div class="notice success" role="status">${savedMessage}</div>` : ""}`;
+        if (contentStyle === "a") {
+          return `<div class="layout layout-a"><section class="card">${body}</section><section class="card">
+            <h3>Questionnaire progress</h3><div class="progress"><span style="width:${Math.round(assessed / skills.length * 100)}%"></span></div>
+            <p class="small">${assessed} of ${skills.length} Skills have a saved level, including valid level 0.</p>
+            <button class="btn tertiary" id="edit-selections">Edit selections</button></section></div>`;
+        }
+        const nav = `<nav class="card side-nav" aria-label="Assessment sections"><h3>Sections</h3>${list.map((page, index) => `<button data-page="${index}" ${index === pageIndex ? 'aria-current="page"' : ""}>${page.label}${page.domain ? `<small class="association">${page.domain}</small>` : ""}${page.items.length === 0 ? `<small class="association">No mapped Skills</small>` : ""}</button>`).join("")}
+            <button class="btn tertiary" id="edit-selections">Edit selections</button></nav>`;
+        if (contentStyle === "b") return `<div class="layout layout-b">${nav}<section class="card">${body}</section></div>`;
+        const tabs = `<nav class="page-tabs" aria-label="Assessment pages">${list.map((page, index) => `<button data-page="${index}" ${index === pageIndex ? 'aria-current="page"' : ""}>${page.label}${page.domain ? ` - ${page.domain}` : ""}</button>`).join("")}</nav>`;
+        return `<div class="layout layout-c"><section class="card">${tabs}${body}</section>
+          <aside class="card"><h3>At a glance</h3><p class="small muted">Saved selections shape this order, not what you can assess.</p>
+            <div class="chips">${selectedNames(selectedRoles, roles).concat(selectedNames(selectedSpecialities, specialities)).map(name => `<span class="chip">${name}</span>`).join("") || `<span class="muted small">No selections</span>`}</div>
+            <div class="progress"><span style="width:${Math.round(assessed / skills.length * 100)}%"></span></div><p class="small">${assessed} of ${skills.length} Skills assessed</p>
+            <div class="state-panel"><h3>Assessment remains yours</h3><p class="small">Changing selections moves Skills between sections; existing levels stay saved. All Skills remain available under Remaining Skills.</p></div>
+            <button class="btn tertiary" id="edit-selections">Edit selections</button></aside></div>`;
+      }
+
+      function selectionState() {
+        const roleNames = selectedNames(selectedRoles, roles);
+        const specNames = selectedNames(selectedSpecialities, specialities);
+        return `<section class="state-panel" aria-live="polite"><h3>Current prototype state</h3>
+          <div class="small"><strong>Roles:</strong> ${roleNames.join(", ") || "none"}<br>
+          <strong>Specialities:</strong> ${specNames.join(", ") || "none"}<br>
+          <strong>Saved levels:</strong> ${skills.filter(skill => assessments[skill.id] !== "").map(skill => `${skill.name}: ${assessments[skill.id]}`).join(" / ") || "none"}<br>
+          <strong>Unassessed:</strong> ${skills.filter(skill => assessments[skill.id] === "").map(skill => skill.name).join(", ") || "none"}</div></section>`;
+      }
+
+      function render() {
+        const scenarioHtml = scenarioControl();
+        const title = screen === "profile" ? "Career Profile" : "Self Assessment Questionnaire";
+        let content;
+        if (screen === "profile" || pageIndex === -1) content = renderSelectionScreen();
+        else content = renderQuestionnaire(variant.toLowerCase());
+        app.innerHTML = `<div class="prototype-note"><strong>PROTOTYPE - not production.</strong> Three layouts for personal Role/Speciality selections and guided self-assessment. No data is saved.</div>
+          ${scenarioHtml}<div class="page-title"><div><h1 class="page-heading">${title}</h1><p class="lede">Choose a layout below, then try the scenarios and edit controls. Profile and assessment entry points share these selections.</p></div>
+          <button class="btn secondary" id="switch-screen">${screen === "profile" ? "Go to assessment" : "Open Career Profile"}</button></div>
+          ${content}<div style="margin-top:16px">${selectionState()}</div>
+          <p class="footer-note">Mock interaction only. Existing code remains unchanged. This prototype illustrates display and navigation, not persistence or production form behavior.</p>`;
+        document.querySelector("#variant-label").textContent = `${variant} - ${variantNames[variant]}`;
+        bind();
+      }
+
+      function bind() {
+        document.querySelector("#scenario").addEventListener("change", event => setScenario(event.target.value));
+        document.querySelectorAll("[data-choice]").forEach(input => input.addEventListener("change", () => {
+          const selected = input.dataset.choice === "role" ? selectedRoles : selectedSpecialities;
+          selectedRoles = input.dataset.choice === "role" ? selectedRoles : selectedRoles;
+          const updated = input.checked ? [...selected, input.value] : selected.filter(id => id !== input.value);
+          if (input.dataset.choice === "role") selectedRoles = updated;
+          else selectedSpecialities = updated;
+          render();
+        }));
+        document.querySelector("#switch-screen").addEventListener("click", () => {
+          screen = screen === "profile" ? "assessment" : "profile";
+          pageIndex = 0;
+          render();
+        });
+        document.querySelector("#continue")?.addEventListener("click", () => {
+          savedMessage = screen === "profile" ? "Selections saved for this prototype." : "Selections saved. Your questionnaire is grouped below.";
+          screen = "assessment";
+          pageIndex = 0;
+          render();
+        });
+        document.querySelector("#edit-selections")?.addEventListener("click", () => {
+          pageIndex = -1;
+          screen = "assessment";
+          render();
+        });
+        document.querySelectorAll("[data-page]").forEach(button => button.addEventListener("click", () => {
+          pageIndex = Number(button.dataset.page);
+          savedMessage = "Page changed. Shared Skill levels remain visible wherever a Skill appears.";
+          render();
+        }));
+        document.querySelector("#back")?.addEventListener("click", () => {
+          pageIndex = Math.max(0, pageIndex - 1);
+          savedMessage = "Previous page opened; saved levels are preserved.";
+          render();
+        });
+        document.querySelector("#forward")?.addEventListener("click", () => {
+          const last = pages().length - 1;
+          pageIndex = pageIndex === last ? 0 : pageIndex + 1;
+          savedMessage = pageIndex === 0 ? "Assessment complete in this prototype; all saved levels remain." : "Current page saved in prototype memory.";
+          render();
+        });
+        document.querySelector("#skill-search")?.addEventListener("input", event => {
+          searchTerm = event.target.value;
+          const active = event.target.selectionStart;
+          render();
+          const replacement = document.querySelector("#skill-search");
+          replacement.focus();
+          replacement.setSelectionRange(active, active);
+        });
+        document.querySelectorAll("[data-level]").forEach(input => input.addEventListener("change", () => {
+          if (input.value !== "") assessments[input.dataset.level] = input.value;
+          savedMessage = "Edit held until you navigate; selecting Not assessed does not erase an existing level.";
+          render();
+        }));
+      }
+
+      function changeVariant(direction) {
+        const variants = ["A", "B", "C"];
+        variant = variants[(variants.indexOf(variant) + direction + variants.length) % variants.length];
+        params.set("variant", variant);
+        history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
+        render();
+      }
+      document.querySelector("#previous").addEventListener("click", () => changeVariant(-1));
+      document.querySelector("#next").addEventListener("click", () => changeVariant(1));
+      document.addEventListener("keydown", event => {
+        if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) return;
+        if (event.key === "ArrowLeft") changeVariant(-1);
+        if (event.key === "ArrowRight") changeVariant(1);
+      });
+      render();
+        </script>
+    </body>
+</html>
