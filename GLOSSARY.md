@@ -84,9 +84,7 @@ Generating or sharing a link stores no invitation record, and a link cannot be
 individually withdrawn.
 
 **Aggregate skill profile**:
-A combined view of the skill profiles of a team's members. It is only shown when
-enough members contribute that no individual's skill profile can be deduced
-from it.
+A combined view of the skill profiles of a team's members.
 
 ## Sources
 

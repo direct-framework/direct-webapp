@@ -116,15 +116,15 @@ def test_aggregate_skill_profile_rounds_each_average_to_a_whole_level(
 
 
 @pytest.mark.django_db
-def test_aggregate_skill_profile_needs_three_assessments_of_a_skill(
+def test_aggregate_skill_profile_includes_a_skill_assessed_by_one_member(
     team_of_four, competency, skill_levels
 ) -> None:
-    """A skill assessed by fewer than three members is left out completely."""
+    """A single member's assessment is enough for a skill to appear."""
     team, members = team_of_four
     rare = Skill.objects.create(name="Rare", description="-", competency=competency)
-    _assess(members, rare, skill_levels, [4, 4])
+    _assess(members, rare, skill_levels, [4])
 
-    assert team.aggregate_skill_profile() == []
+    assert [row["skill_level"] for row in team.aggregate_skill_profile()] == [4]
 
 
 @pytest.mark.django_db

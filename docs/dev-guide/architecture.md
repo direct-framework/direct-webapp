@@ -76,10 +76,8 @@ exists. The address uses the slug, which stays the same when a team is renamed.
 The team competency wheel is drawn from `Team.aggregate_skill_profile()`. It
 averages each skill over the current members who have assessed it, counting a
 selected level 0 and ignoring unassessed skills. Averages are rounded to whole
-levels, with halves rounding up. A skill is included only when at least
-`MINIMUM_AGGREGATE_CONTRIBUTORS` (three) members have assessed it. Skills below
-that minimum are left out of the page and its chart data entirely, and the page
-never shows how many members assessed each skill.
+levels, with halves rounding up. A skill appears as soon as one member has
+assessed it.
 
 ## Defaults for new and changed code
 

@@ -7,7 +7,7 @@ from urllib import parse as parseUrl
 import pytest
 from django.urls import reverse
 
-from main.models import Skill, SkillProfile, TeamMembership, User
+from main.models import SkillProfile, TeamMembership, User
 from main.team_services import create_team, generate_invitation_token
 
 from .view_utils import (
@@ -286,21 +286,13 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
         assert names_under("Managers") == ["Alice Brown", "test user"]
         assert names_under("Members") == ["Bob Carter", "zed"]
 
-    def test_team_wheel_shows_only_skills_assessed_by_three_members(
+    def test_team_wheel_shows_the_rounded_average_of_each_skill(
         self, user, members, competency, skill, skill_levels, soup_factory
     ) -> None:
-        """The wheel gets rounded averages; rarely assessed skills are left out."""
-        rare = Skill.objects.create(
-            name="Rarely assessed skill", description="-", competency=competency
-        )
-        people = [user, *members]
-        for person, level in zip(people, (1, 2, 2), strict=True):
+        """The wheel gets each skill's average, rounded to a whole level."""
+        for person, level in zip([user, *members], (1, 2, 2), strict=True):
             SkillProfile.objects.create(
                 profile=person.profile, skill=skill, skill_level=skill_levels[level]
-            )
-        for person in people[:2]:
-            SkillProfile.objects.create(
-                profile=person.profile, skill=rare, skill_level=skill_levels[2]
             )
 
         soup = soup_factory(authenticated=True)
@@ -322,23 +314,17 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
         assert wheel_script is not None
         assert f"const charts = {json.dumps(chart_data)};" in wheel_script.text
         assert soup.find(id="dataviz_team") is not None
-        explanation = soup.find(tag_with_text_filter("p", "rounded to the nearest"))
-        assert explanation is not None
-        assert "at least 3 members have assessed it" in explanation.text
-        assert rare.name not in str(soup)
+        assert (
+            soup.find(tag_with_text_filter("p", "rounded to the nearest")) is not None
+        )
 
-    def test_shows_a_message_when_no_skill_has_enough_assessments(
-        self, user, members, skill, skill_levels, soup_factory
+    def test_shows_a_message_when_no_member_has_assessed_their_skills(
+        self, members, soup_factory
     ) -> None:
         """Explain why there is no wheel instead of showing an empty one."""
-        for person in (user, members[0]):
-            SkillProfile.objects.create(
-                profile=person.profile, skill=skill, skill_level=skill_levels[1]
-            )
-
         soup = soup_factory(authenticated=True)
 
-        message = "Not enough team members have assessed their skills yet."
+        message = "No team members have assessed their skills yet."
         assert soup.find(tag_with_text_filter("p", message)) is not None
         assert soup.find(id="dataviz_team") is None
         assert soup.find(tag_with_text_filter("script", "const charts")) is None

@@ -13,11 +13,6 @@ from django.db.models.base import ModelBase
 from .framework_models import SluggedModel
 from .user_models import SkillProfile
 
-# A skill only appears in a team's aggregate skill profile once this many
-# current members have assessed it, so the average does not reveal one or two
-# people's assessments.
-MINIMUM_AGGREGATE_CONTRIBUTORS = 3
-
 
 class Team(SluggedModel):
     """Model representing a team of users working together."""
@@ -31,13 +26,12 @@ class Team(SluggedModel):
         )
 
     def aggregate_skill_profile(self) -> list[dict[str, str | int]]:
-        """Return the team's average level for each sufficiently assessed skill.
+        """Return the team's average level for each skill its members have assessed.
 
         Each average uses the current assessments of current members, counts a
         selected level 0 and leaves out members who have not assessed the skill.
         Averages are rounded to the nearest whole level, with halves rounded up,
-        because the competency wheel can only show whole levels. Skills assessed
-        by fewer than `MINIMUM_AGGREGATE_CONTRIBUTORS` members are left out.
+        because the competency wheel can only show whole levels.
         Rows use the same keys as a personal competency wheel, in framework order.
         """
         domain = "skill__competency__competency_domain"
@@ -50,7 +44,6 @@ class Team(SluggedModel):
                 f"{domain}__name",
             )
             .annotate(contributors=Count("id"), level_total=Sum("skill_level__level"))
-            .filter(contributors__gte=MINIMUM_AGGREGATE_CONTRIBUTORS)
             .order_by(
                 f"{domain}__rank",
                 f"{domain}__name",

@@ -31,12 +31,12 @@
         <h2 class="h4">Team competency wheel</h2>
         {% if has_aggregate %}
             <p>
-                Each skill shows the average level of the team members who have assessed it, rounded to the nearest whole level (halves round up). A skill only appears once at least {{ minimum_contributors }} members have assessed it, to make it harder to work out any one person's level from the wheel.
+                Each skill shows the average level of the team members who have assessed it, rounded to the nearest whole level (halves round up).
             </p>
             <div id="dataviz_team" style="width:100%"></div>
             {% include "main/snippets/skill-wheel.html" %}
         {% else %}
-            <p>Not enough team members have assessed their skills yet.</p>
+            <p>No team members have assessed their skills yet.</p>
         {% endif %}
     </section>
 {% endblock content %}

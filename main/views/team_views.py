@@ -14,7 +14,6 @@ from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
 from ..models import SkillLevel, Team, TeamMembership
-from ..models.team_models import MINIMUM_AGGREGATE_CONTRIBUTORS
 from ..team_services import (
     accept_invitation,
     generate_invitation_token,
@@ -53,7 +52,6 @@ class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
         )
         aggregate = self.team.aggregate_skill_profile()
         context["has_aggregate"] = bool(aggregate)
-        context["minimum_contributors"] = MINIMUM_AGGREGATE_CONTRIBUTORS
         context["chart_data"] = dumps(
             [{"user_id": "team", "skill_profile_data": aggregate}]
         )
