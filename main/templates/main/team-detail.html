@@ -1,32 +1,15 @@
 {% extends "main/base.account.html" %}
+{% load render_table from django_tables2 %}
 {% block title %}
     {{ team.name }}
 {% endblock title %}
 {% block content %}
     <h1>{{ team.name }}</h1>
     <p class="lead">{{ team.description }}</p>
-    <div class="row g-4">
-        <section class="col-md-6">
-            <h2 class="h4">Managers</h2>
-            <ul>
-                {% for person in managers %}
-                    <li>{{ person.get_full_name|default:person.username }}</li>
-                {% endfor %}
-            </ul>
-        </section>
-        <section class="col-md-6">
-            <h2 class="h4">Members</h2>
-            {% if members %}
-                <ul>
-                    {% for person in members %}
-                        <li>{{ person.get_full_name|default:person.username }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>This team has no other members yet.</p>
-            {% endif %}
-        </section>
-    </div>
+    <section>
+        <h2 class="h4">Team members</h2>
+        {% render_table membership_table %}
+    </section>
     <section class="mt-5">
         <h2 class="h4">Team competency wheel</h2>
         {% if has_aggregate %}

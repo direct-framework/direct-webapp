@@ -1,6 +1,5 @@
 """Views for team membership actions."""
 
-from collections.abc import Iterable
 from http import HTTPStatus
 from json import dumps
 from typing import TYPE_CHECKING, Any, cast
@@ -14,6 +13,7 @@ from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
 from ..models import SkillLevel, Team, TeamMembership
+from ..tables import TeamMembershipTable
 from ..team_services import (
     accept_invitation,
     aggregate_team_skill_profile,
@@ -43,14 +43,15 @@ class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
         return self.team
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        """Add the team, its sorted roster and its aggregate skill profile."""
+        """Add the team, its roster and its aggregate skill profile."""
         context = super().get_context_data(**kwargs)
         context["team"] = self.team
         memberships = self.team.members.select_related("user")
-        context["managers"] = _sorted_by_name(m.user for m in memberships if m.manager)
-        context["members"] = _sorted_by_name(
-            m.user for m in memberships if not m.manager
+        sorted_memberships = sorted(
+            memberships,
+            key=lambda membership: _display_name(membership.user).casefold(),
         )
+        context["membership_table"] = TeamMembershipTable(sorted_memberships)
         aggregate = aggregate_team_skill_profile(team=self.team)
         context["has_aggregate"] = bool(aggregate)
         context["chart_data"] = dumps(
@@ -65,11 +66,6 @@ class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
 def _display_name(user: "UserType") -> str:
     """Return a person's full name, or their username if they have none."""
     return user.get_full_name() or user.username
-
-
-def _sorted_by_name(users: Iterable["UserType"]) -> list["UserType"]:
-    """Sort people alphabetically by the name the team page shows."""
-    return sorted(users, key=lambda user: _display_name(user).casefold())
 
 
 class TeamInvitationLinkView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):

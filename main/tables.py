@@ -8,7 +8,14 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString, mark_safe
 
-from .models import LearningResource, Provider, Skill, ToolLanguageMethodology
+from .models import (
+    LearningResource,
+    Provider,
+    Skill,
+    TeamMembership,
+    ToolLanguageMethodology,
+    User,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.db.models.fields.related_descriptors import ManyRelatedManager
@@ -145,3 +152,26 @@ class ToolLanguageMethodologyTable(tables.Table):
     def render_skill_set(self, value: "ManyRelatedManager[Skill]") -> SafeString:
         """Include the relevant skills as button links."""
         return _render_skills(value.all())
+
+
+class TeamMembershipTable(tables.Table):
+    """Table class for a team's roster."""
+
+    name = tables.Column(accessor="user", verbose_name="Name", orderable=False)
+    role = tables.Column(accessor="manager", verbose_name="Role", orderable=False)
+
+    class Meta:
+        """Meta options for the TeamMembershipTable."""
+
+        model = TeamMembership
+        fields = ("name", "role")
+
+    def render_name(self, value: User) -> str:
+        """Show the member's full name, or username when they have no full name."""
+        return value.get_full_name() or value.username
+
+    def render_role(self, value: bool) -> SafeString:
+        """Show whether the member is a manager or regular member."""
+        label = "Manager" if value else "Member"
+        colour = "primary" if value else "secondary"
+        return format_html('<span class="badge bg-{}">{}</span>', colour, label)

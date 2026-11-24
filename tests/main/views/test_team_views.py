@@ -260,10 +260,10 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse("terms_acceptance")
 
-    def test_lists_managers_and_members_separately_by_name(
+    def test_lists_team_members_with_their_role_by_name(
         self, django_user_model, soup_factory
     ) -> None:
-        """Show full names, or usernames when absent, in alphabetical order."""
+        """List every team member by name with a manager or member badge."""
         for username, first, last, manager in (
             ("zed", "", "", False),
             ("bob", "Bob", "Carter", False),
@@ -276,15 +276,24 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
 
         soup = soup_factory(authenticated=True)
 
-        def names_under(heading: str) -> list[str]:
-            title = soup.find("h2", string=heading)
-            assert title is not None
-            section = title.find_parent("section")
-            assert section is not None
-            return [item.get_text(strip=True) for item in section.find_all("li")]
-
-        assert names_under("Managers") == ["Alice Brown", "test user"]
-        assert names_under("Members") == ["Bob Carter", "zed"]
+        roster = soup.find("table")
+        assert roster is not None
+        headings = [
+            heading.get_text(strip=True) for heading in roster.select("thead th")
+        ]
+        assert headings == ["Name", "Role"]
+        rows = [
+            [cell.get_text(" ", strip=True) for cell in row.select("td")]
+            for row in roster.select("tbody tr")
+        ]
+        assert rows == [
+            ["Alice Brown", "Manager"],
+            ["Bob Carter", "Member"],
+            ["test user", "Manager"],
+            ["zed", "Member"],
+        ]
+        assert roster.select_one("tbody tr .badge.bg-primary") is not None
+        assert roster.select_one("tbody tr .badge.bg-secondary") is not None
 
     def test_team_wheel_shows_the_rounded_average_of_each_skill(
         self, user, members, competency, skill, skill_levels, soup_factory
