@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     "django_tables2",
     "django_filters",
     "guardian",
+    "django_unicorn",
 ]
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # this is default

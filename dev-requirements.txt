@@ -8,6 +8,8 @@ beautifulsoup4==4.15.0
     # via direct-webapp (pyproject.toml)
 build==1.6.1
     # via pip-tools
+cachetools==8.0.3
+    # via django-unicorn
 certifi==2026.10.23
     # via requests
 cfgv==3.5.0
@@ -26,6 +28,8 @@ crispy-bootstrap5==2026.9
     # via direct-webapp (pyproject.toml)
 cssbeautifier==2.0.3
     # via djlint
+decorator==5.3.2
+    # via django-unicorn
 diff-match-patch==20241021
     # via django-import-export
 distlib==0.4.4
@@ -44,6 +48,7 @@ django==6.1.2
     #   django-stubs
     #   django-stubs-ext
     #   django-tables2
+    #   django-unicorn
 django-bootstrap5==26.4
     # via direct-webapp (pyproject.toml)
 django-crispy-forms==2.7
@@ -69,6 +74,8 @@ django-stubs-ext==6.1.2
     #   direct-webapp (pyproject.toml)
     #   django-stubs
 django-tables2==3.0.1
+    # via direct-webapp (pyproject.toml)
+django-unicorn==0.67.0
     # via direct-webapp (pyproject.toml)
 djlint==1.47.1
     # via direct-webapp (pyproject.toml)
@@ -96,6 +103,8 @@ json5==0.17.3
     # via djlint
 librt==0.16.0
     # via mypy
+lxml==6.1.3
+    # via django-unicorn
 markdown==3.11.2
     # via direct-webapp (pyproject.toml)
 mypy==2.4.1
@@ -108,6 +117,8 @@ nh3==0.3.7
     # via direct-webapp (pyproject.toml)
 nodeenv==1.11.0
     # via pre-commit
+orjson==3.13.0
+    # via django-unicorn
 packaging==26.3
     # via
     #   build
@@ -162,6 +173,8 @@ ruff==0.17.3
     # via direct-webapp (pyproject.toml)
 setuptools==84.2.1
     # via pip-tools
+shortuuid==1.0.13
+    # via django-unicorn
 soupsieve==3.0.4
     # via beautifulsoup4
 sqlparse==0.6.0

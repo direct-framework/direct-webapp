@@ -24,6 +24,15 @@ the shared view-test helpers described in [Testing](testing.md).
 Use Django URL reversing for application links and the `static` template tag for
 static assets, following nearby templates.
 
+## Django Unicorn
+
+The shared page and authentication shells provide the Unicorn scripts and CSRF
+token. Load `{% load unicorn %}` in templates that render components, then use
+the `{% unicorn %}` tag. Create components in `main` as described in the
+[Unicorn installation guide](https://www.django-unicorn.com/docs/installation/).
+Component actions must enforce the same authentication, terms acceptance and
+object permissions as the corresponding application views.
+
 ## Forms
 
 Use the existing Django forms and crispy-forms integration with Bootstrap 5.

@@ -23,6 +23,7 @@ dependencies = [
     "requests",
     "django-filter",
     "django-guardian",
+    "django-unicorn",
 ]
 
 [project.optional-dependencies]

@@ -6,6 +6,7 @@ from urllib import parse as parseUrl
 
 import pytest
 from bs4 import BeautifulSoup
+from django.contrib.staticfiles import finders
 from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
@@ -19,6 +20,33 @@ from main.models import (
 from main.views.page_views import _extract_and_combine_roles
 
 from .view_utils import BS4Mixin, TemplateOkMixin, tag_with_text_filter
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page", ["index", "login"])
+@pytest.mark.parametrize("debug", [True, False])
+def test_unicorn_is_available_in_shared_page_shells(client, settings, page, debug):
+    """Both shared page shells expose the Unicorn client and CSRF token."""
+    settings.DEBUG = debug
+    response = client.get(reverse(page))
+    soup = BeautifulSoup(response.content, "html.parser")
+    assert soup.find("input", attrs={"name": "csrfmiddlewaretoken"})
+    assert "csrftoken" in response.cookies
+    script = f"unicorn/js/unicorn{'' if debug else '.min'}.js"
+    assert script in str(soup)
+    assert reverse("django_unicorn:message") in str(soup)
+    assert finders.find(script)
+
+
+def test_unicorn_message_requires_csrf():
+    """The Unicorn endpoint remains protected by Django's CSRF middleware."""
+    from django.test import Client
+
+    client = Client(enforce_csrf_checks=True)
+    response = client.post(
+        reverse("django_unicorn:message"), data="{}", content_type="application/json"
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 class TestIndex(TemplateOkMixin, BS4Mixin):
