@@ -10,7 +10,22 @@ from django.dispatch import receiver
 from guardian.models import UserObjectPermission
 from guardian.shortcuts import assign_perm, remove_perm
 
-from .models import Profile, Team, TeamMembership, User
+from .models import Profile, SluggedModel, Team, TeamMembership, User
+
+
+@receiver(post_save)
+def generate_slug(
+    sender: type[Any], instance: Any, raw: bool = False, **kwargs: Any
+) -> None:
+    """Fill in a blank slug from the name after a slugged model is saved.
+
+    Runs inside the atomic ``SluggedModel.save``, so the insert and the slug
+    update commit together. Raw saves from fixture loading are skipped.
+    """
+    if raw or not isinstance(instance, SluggedModel) or instance.slug:
+        return
+    instance.slug = instance.generate_unique_slug()
+    sender._default_manager.filter(pk=instance.pk).update(slug=instance.slug)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
