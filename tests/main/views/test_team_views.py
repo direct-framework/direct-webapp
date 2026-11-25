@@ -217,7 +217,7 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
         return members
 
     def _get_url(self, **kwargs) -> str:
-        return reverse("team-detail", kwargs={"team_slug": self.team.slug})
+        return reverse("team-detail", kwargs={"slug": self.team.slug})
 
     def test_member_sees_the_team_page(self, client, members) -> None:
         """A regular member can open their team's page."""
@@ -237,7 +237,7 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
             username="outsider", agreed_to_tos=True
         )
         client.force_login(outsider)
-        unknown_url = reverse("team-detail", kwargs={"team_slug": "no-such-team"})
+        unknown_url = reverse("team-detail", kwargs={"slug": "no-such-team"})
 
         response = client.get(self._get_url())
 

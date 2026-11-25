@@ -343,7 +343,7 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
             link = soup.find("a", string=visible_team.name)
             assert link is not None
             assert link["href"] == reverse(
-                "team-detail", kwargs={"team_slug": visible_team.slug}
+                "team-detail", kwargs={"slug": visible_team.slug}
             )
 
     @pytest.mark.django_db
