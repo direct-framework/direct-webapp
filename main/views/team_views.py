@@ -47,11 +47,7 @@ class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["team"] = self.team
         memberships = self.team.members.select_related("user")
-        sorted_memberships = sorted(
-            memberships,
-            key=lambda membership: _display_name(membership.user).casefold(),
-        )
-        context["membership_table"] = TeamMembershipTable(sorted_memberships)
+        context["membership_table"] = TeamMembershipTable(memberships)
         aggregate = aggregate_team_skill_profile(team=self.team)
         context["has_aggregate"] = bool(aggregate)
         context["chart_data"] = dumps(
@@ -61,11 +57,6 @@ class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
             list(SkillLevel.objects.values("level", "name"))
         )
         return context
-
-
-def _display_name(user: "UserType") -> str:
-    """Return a person's full name, or their username if they have none."""
-    return user.get_full_name() or user.username
 
 
 class TeamInvitationLinkView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):

@@ -1,5 +1,6 @@
 """Tables module for the main app."""
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 import django_tables2 as tables
@@ -166,9 +167,22 @@ class TeamMembershipTable(tables.Table):
         model = TeamMembership
         fields = ("name", "role")
 
+    def __init__(self, data: Iterable[TeamMembership]) -> None:
+        """Sort members by the same name shown in the table."""
+        super().__init__(
+            sorted(
+                data,
+                key=lambda membership: self._display_name(membership.user).casefold(),
+            )
+        )
+
+    @staticmethod
+    def _display_name(user: User) -> str:
+        return user.get_full_name() or user.username
+
     def render_name(self, value: User) -> str:
         """Show the member's full name, or username when they have no full name."""
-        return value.get_full_name() or value.username
+        return self._display_name(value)
 
     def render_role(self, value: bool) -> SafeString:
         """Show whether the member is a manager or regular member."""

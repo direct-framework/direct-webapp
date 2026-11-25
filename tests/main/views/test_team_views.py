@@ -273,9 +273,9 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
     ) -> None:
         """List every team member by name with a manager or member badge."""
         for username, first, last, manager in (
-            ("zed", "", "", False),
+            ("Zed", "", "", False),
             ("bob", "Bob", "Carter", False),
-            ("alice", "Alice", "Brown", True),
+            ("brown", "Alice", "Brown", True),
         ):
             person = django_user_model.objects.create_user(
                 username=username, first_name=first, last_name=last
@@ -298,7 +298,7 @@ class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
             ["Alice Brown", "Manager"],
             ["Bob Carter", "Member"],
             ["test user", "Manager"],
-            ["zed", "Member"],
+            ["Zed", "Member"],
         ]
         assert roster.select_one("tbody tr .badge.bg-primary") is not None
         assert roster.select_one("tbody tr .badge.bg-secondary") is not None
