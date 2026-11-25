@@ -1,11 +1,24 @@
 """Admin module for the main app."""
 
-from typing import Any
+import json
+from collections.abc import Sequence
+from typing import Any, TypeVar
 
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.db.models import Model, QuerySet
+from django.forms import ModelForm
+from django.forms.models import BaseInlineFormSet
 from django.http import HttpRequest
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
+from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
+from import_export.formats import base_formats
+from tablib import Dataset
 
 from .io_resources import (
     CompetencyDomainResource,
@@ -34,6 +47,30 @@ from .models import (
 )
 
 
+class IndentedJSON(base_formats.JSON):
+    """Export JSON with indentation while retaining the standard serialization."""
+
+    def export_data(self, dataset: Dataset, **kwargs: Any) -> str:
+        """Return the JSON export formatted with two-space indentation."""
+        data = super().export_data(dataset, **kwargs)
+        return json.dumps(json.loads(data), indent=2, ensure_ascii=False)
+
+
+_ModelT = TypeVar("_ModelT", bound=Model)
+
+
+class IndentedJSONImportExportModelAdmin(ImportExportModelAdmin[_ModelT]):
+    """Use indented JSON for admin downloads."""
+
+    @property
+    def export_formats(self) -> list[type[base_formats.Format]]:
+        """Replace the standard JSON export format with the indented version."""
+        return [
+            IndentedJSON if file_format is base_formats.JSON else file_format
+            for file_format in super().export_formats
+        ]
+
+
 @admin.register(User)
 class CustomUserAdmin(UserAdmin[User]):
     """Override the UserAdmin to display extra fields."""
@@ -45,6 +82,28 @@ class CustomUserAdmin(UserAdmin[User]):
         (("Terms and Conditions"), {"fields": ("agreed_to_tos", "date_agreed")}),
     )
     readonly_fields = ("agreed_to_tos", "date_agreed")
+
+    def get_deleted_objects(
+        self, objs: Sequence[User] | QuerySet[User], request: HttpRequest
+    ) -> tuple[list[str], dict[str, int], set[str], list[str]]:
+        """Show protected team memberships when deleting a last manager."""
+        deleted_objects, model_count, perms_needed, protected = (
+            super().get_deleted_objects(objs, request)
+        )
+        deleting_user_ids = [user.pk for user in objs]
+        for membership in (
+            TeamMembership.objects.filter(user_id__in=deleting_user_ids, manager=True)
+            .select_related("team")
+            .only("pk", "team__name", "team_id")
+        ):
+            has_other_manager = (
+                TeamMembership.objects.filter(team_id=membership.team_id, manager=True)
+                .exclude(user_id__in=deleting_user_ids)
+                .exists()
+            )
+            if not has_other_manager:
+                protected.append(f"{membership.team} must retain at least one manager.")
+        return deleted_objects, model_count, perms_needed, protected
 
 
 class CompetencyInline(admin.TabularInline[Competency, CompetencyDomain]):
@@ -66,7 +125,7 @@ class SkillInline(admin.TabularInline[Skill, Competency]):
 
 
 @admin.register(Competency)
-class CompetencyAdmin(ImportExportModelAdmin[Competency]):
+class CompetencyAdmin(IndentedJSONImportExportModelAdmin[Competency]):
     """Admin class for the Competency model."""
 
     list_display = ("name", "competency_domain")
@@ -78,7 +137,7 @@ class CompetencyAdmin(ImportExportModelAdmin[Competency]):
 
 
 @admin.register(CompetencyDomain)
-class CompetencyDomainAdmin(ImportExportModelAdmin[CompetencyDomain]):
+class CompetencyDomainAdmin(IndentedJSONImportExportModelAdmin[CompetencyDomain]):
     """Admin class for the CompetencyDomain model."""
 
     list_display = ("name",)
@@ -97,7 +156,7 @@ class LearningResourceInline(admin.TabularInline[LearningResource, Provider]):
 
 
 @admin.register(Provider)
-class ProviderAdmin(ImportExportModelAdmin[Provider]):
+class ProviderAdmin(IndentedJSONImportExportModelAdmin[Provider]):
     """Admin class for The Provider model."""
 
     list_display = ("name", "url", "ror")
@@ -116,7 +175,7 @@ class ToolInline(admin.TabularInline[ToolLanguageMethodology, LearningResource])
 
 
 @admin.register(LearningResource)
-class LearningResourceAdmin(ImportExportModelAdmin[LearningResource]):
+class LearningResourceAdmin(IndentedJSONImportExportModelAdmin[LearningResource]):
     """Admin class for The LearningResource model."""
 
     list_display = ("name", "get_language_display", "url", "provider")
@@ -131,9 +190,10 @@ class LearningResourceAdmin(ImportExportModelAdmin[LearningResource]):
 
 
 @admin.register(ToolLanguageMethodology)
-class ToolAdmin(ImportExportModelAdmin[ToolLanguageMethodology]):
+class ToolAdmin(IndentedJSONImportExportModelAdmin[ToolLanguageMethodology]):
     """Admin class for The Tool model."""
 
+    filter_horizontal = ("learning_resources",)
     list_display = ("name", "kind", "url")
     search_fields = ("name",)
     list_filter = ("kind",)
@@ -141,9 +201,10 @@ class ToolAdmin(ImportExportModelAdmin[ToolLanguageMethodology]):
 
 
 @admin.register(Skill)
-class SkillAdmin(ImportExportModelAdmin[Skill]):
+class SkillAdmin(IndentedJSONImportExportModelAdmin[Skill]):
     """Admin class for the Skill model."""
 
+    filter_horizontal = ("learning_resources", "related_skills", "tools")
     list_display = ("name", "competency", "competency__competency_domain")
     search_fields = ("name", "description")
     list_filter = ("competency__competency_domain", "competency")
@@ -152,7 +213,7 @@ class SkillAdmin(ImportExportModelAdmin[Skill]):
 
 
 @admin.register(SkillLevel)
-class SkillLevelAdmin(ImportExportModelAdmin[SkillLevel]):
+class SkillLevelAdmin(IndentedJSONImportExportModelAdmin[SkillLevel]):
     """Admin class for The SkillLevel model."""
 
     list_display = ("name", "level")
@@ -161,7 +222,7 @@ class SkillLevelAdmin(ImportExportModelAdmin[SkillLevel]):
 
 
 @admin.register(Event)
-class EventAdmin(ImportExportModelAdmin[Event]):
+class EventAdmin(IndentedJSONImportExportModelAdmin[Event]):
     """Admin class for the Event model."""
 
     list_display = ("title", "start_date", "end_date", "location")
@@ -247,19 +308,85 @@ class ProfileAdmin(admin.ModelAdmin[Profile]):
         return False
 
 
+class TeamMembershipInlineFormSet(
+    BaseInlineFormSet[TeamMembership, Team, ModelForm[TeamMembership]]
+):
+    """Keep each team manager-editable through admin membership changes."""
+
+    class ReadOnlyUserWidget(forms.Widget):
+        """Render an existing member's name as plain, non-editable text."""
+
+        def __init__(self, display_name: str) -> None:
+            """Set the text displayed for the existing member."""
+            super().__init__()
+            self.display_name = display_name
+
+        def render(
+            self,
+            name: str,
+            value: Any,
+            attrs: dict[str, Any] | None = None,
+            renderer: Any = None,
+        ) -> SafeString:
+            """Render the member name without an interactive control."""
+            return format_html('<div class="readonly">{}</div>', self.display_name)
+
+    def add_fields(self, form: ModelForm[TeamMembership], index: int | None) -> None:
+        """Keep existing membership identities fixed while allowing new members."""
+        super().add_fields(form, index)
+        if form.instance.pk is not None:
+            form.fields["user"].disabled = True
+            form.fields["user"].widget = self.ReadOnlyUserWidget(
+                display_name=str(form.instance.user)
+            )
+
+    def clean(self) -> None:
+        """Reject inline edits that would leave a team without a manager."""
+        super().clean()
+        if any(self.errors):
+            return
+        if not any(
+            form.cleaned_data.get("manager")
+            for form in self.forms
+            if form.cleaned_data and not form.cleaned_data.get("DELETE", False)
+        ):
+            raise ValidationError("A team must retain at least one manager.")
+
+
 class TeamMembershipInline(admin.TabularInline[TeamMembership, Team]):
     """Inline admin class for the Competency model."""
 
     model = TeamMembership
+    formset = TeamMembershipInlineFormSet
     extra = 0
     show_change_link = False
     verbose_name = "Team Member"
 
 
 @admin.register(Team)
-class TeamAdmin(admin.ModelAdmin[Team]):
+class TeamAdmin(GuardedModelAdmin):
     """Admin class for the Team model."""
 
     list_display = ("name", "description")
     search_fields = ("name", "description")
     inlines = (TeamMembershipInline,)
+
+    @transaction.atomic
+    def save_formset(
+        self,
+        request: HttpRequest,
+        form: ModelForm[Team],
+        formset: BaseInlineFormSet[TeamMembership, Team, ModelForm[TeamMembership]],
+        change: bool,
+    ) -> None:
+        """Apply new or promoted managers before demotions and removals."""
+        memberships = formset.save(commit=False)
+        for membership in memberships:
+            if membership.manager:
+                membership.save()
+        for membership in memberships:
+            if not membership.manager:
+                membership.save()
+        for membership in formset.deleted_objects:
+            membership.delete()
+        formset.save_m2m()

@@ -1,9 +1,4 @@
-"""Test suite for the main views.
-
-This test module includes tests for main views of the app ensuring that:
-  - The correct templates are used.
-  - The correct status codes are returned.
-"""
+"""Test suite for page views."""
 
 import json
 from http import HTTPStatus
@@ -15,15 +10,15 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
-from main.models import LearningResource, Provider, Skill, SkillLevel, SkillProfile
+from main.models import (
+    LearningResource,
+    Provider,
+    SkillLevel,
+    ToolLanguageMethodology,
+)
 from main.views.page_views import _extract_and_combine_roles
 
-from .view_utils import (
-    BS4Mixin,
-    LoginRequiredMixin,
-    TemplateOkMixin,
-    tag_with_text_filter,
-)
+from .view_utils import BS4Mixin, TemplateOkMixin, tag_with_text_filter
 
 
 class TestIndex(TemplateOkMixin, BS4Mixin):
@@ -121,6 +116,9 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Overview"), href=reverse("account-overview")
         )
         assert account_dropdown.find(
+            tag_with_text_filter("a", "My teams"), href=reverse("my_teams")
+        )
+        assert account_dropdown.find(
             tag_with_text_filter("a", "Update profile"), href=reverse("profile")
         )
         assert account_dropdown.find(
@@ -158,37 +156,6 @@ class TestPrivacy(TemplateOkMixin):
         return reverse("privacy")
 
 
-class TestUserUpdateView(TemplateOkMixin, LoginRequiredMixin):
-    """Test suite for the UserUpdateView."""
-
-    _template_name = "main/user-update-form.html"
-
-    def _get_url(self):
-        return reverse("profile")
-
-    def test_post(self, client, user, django_user_model):
-        """Test the view POST request updates the user and redirects correctly."""
-        client.force_login(user)
-
-        user_id = user.id
-        new_email = "new@mail.com"
-        new_username = "newusername"
-
-        response = client.post(
-            self._get_url(), data={"username": new_username, "email": new_email}
-        )
-
-        # Assert the user email is updated
-        updated_user = django_user_model.objects.get(id=user_id)
-
-        assert updated_user.email == new_email
-        assert updated_user.username == new_username
-
-        # Assert redirects to profile
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == self._get_url()
-
-
 class TestAboutPageView(TemplateOkMixin, BS4Mixin):
     """Test suite for the AboutPageView."""
 
@@ -219,156 +186,6 @@ class TestTermsPageView(TemplateOkMixin):
 
     def _get_url(self):
         return reverse("terms")
-
-
-class TestTermsAcceptanceView(TemplateOkMixin, LoginRequiredMixin):
-    """Test suite for the terms acceptance view."""
-
-    _template_name = "main/terms_acceptance.html"
-
-    def _get_url(self):
-        return reverse("terms_acceptance")
-
-    def test_post_updates_user_and_redirects_to_overview(self, client, user):
-        """Test that posting acceptance updates user fields and redirects."""
-        user.agreed_to_tos = False
-        user.save(update_fields=["agreed_to_tos"])
-        client.force_login(user)
-
-        response = client.post(self._get_url(), data={"tos": True})
-
-        user.refresh_from_db()
-        assert user.agreed_to_tos is True
-        assert user.date_agreed is not None
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("account-overview")
-
-    def test_post_redirects_to_overview_without_next(self, client, user):
-        """Test that posting acceptance without next redirects to account overview."""
-        user.agreed_to_tos = False
-        user.save(update_fields=["agreed_to_tos"])
-        client.force_login(user)
-
-        response = client.post(self._get_url(), data={"tos": True})
-
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("account-overview")
-
-
-class TestSelfAssessPageView(TemplateOkMixin, LoginRequiredMixin):
-    """Test suite for the SelfAssessPageView."""
-
-    _template_name = "main/user-self-assess.html"
-
-    def _get_url(self):
-        return reverse("self_assess")
-
-    @pytest.mark.django_db
-    def test_post(self, client, user, competency, skill, skill_level):
-        """Test the view POST request creates new skill profiles and redirects."""
-        client.force_login(user)
-
-        skill2 = Skill.objects.create(
-            name="Test Skill 2",
-            description="Test skill 2 description",
-            competency=competency,
-        )
-
-        # Create form data for the POST request
-        form_data = {
-            f"skill_{skill.id}": skill_level.id,
-            f"skill_{skill2.id}": skill_level.id,
-        }
-
-        # Make POST request
-        response = client.post(self._get_url(), data=form_data)
-
-        # Assert skill profiles are created
-        skill_profiles = SkillProfile.objects.filter(profile=user.profile)
-        assert skill_profiles.count() == 2
-
-        # Assert the skills are correctly associated
-        skill_ids = set(us.skill.id for us in skill_profiles)
-        assert skill_ids == {skill.id, skill2.id}
-
-        # Assert all skill profiles have the correct level
-        for skill_profile in skill_profiles:
-            assert skill_profile.skill_level == skill_level
-
-        # Assert redirects to self_assess (success_url)
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("self_assess")
-
-
-@pytest.mark.parametrize(
-    "url_name",
-    ["skills_profile", "self_assess", "profile", "account-overview"],
-)
-def test_unaccepted_users_are_redirected_to_terms_acceptance(client, user, url_name):
-    """Unaccepted users should be redirected from gated account pages."""
-    user.agreed_to_tos = False
-    user.save(update_fields=["agreed_to_tos"])
-    client.force_login(user)
-    target_url = reverse(url_name)
-
-    response = client.get(target_url)
-
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url == reverse("terms_acceptance")
-
-
-class TestSkillProfile(TemplateOkMixin, BS4Mixin):
-    """Test suite for the skill profile view."""
-
-    _template_name = "main/user-skills-profile.html"
-
-    def _get_url(self):
-        return reverse("skills_profile")
-
-    def test_provides_required_context(self, admin_client, skill_level):
-        """Test that the skill profile view send the correct context data."""
-        response = admin_client.get(self._get_url())
-        assert response.status_code == 200
-        assert "chart_data" in response.context
-        assert isinstance(response.context["chart_data"], str)
-        assert response.context["skill_levels"] == json.dumps(
-            [{"level": skill_level.level, "name": skill_level.name}]
-        )
-
-    def test_skill_wheel_script(self, skill_profile, auth_soup):
-        """Test that the skill profile view contains the correct script."""
-        card = auth_soup.find("div", class_="card-body")
-
-        assert card.find(tag_with_text_filter("h1", "Skills profile"))
-        assert card.find("div", id="dataviz_root")
-
-        skill_level_list = list(SkillLevel.objects.values("level", "name"))
-        skill_profile_dict = {
-            "skill": skill_profile.skill.name,
-            "category": skill_profile.skill.competency.competency_domain.name,
-            "subcategory": skill_profile.skill.competency.name,
-            "skill_level": skill_profile.skill_level.level,
-        }
-        chart_data = [{"user_id": "root", "skill_profile_data": [skill_profile_dict]}]
-
-        assert card.find(
-            tag_with_text_filter(
-                "script",
-                f"const skillLevels = {json.dumps(skill_level_list)};",
-            )
-        )
-        assert card.find(
-            tag_with_text_filter(
-                "script",
-                f"const charts = {json.dumps(chart_data)};",
-            )
-        )
-        assert card.find(
-            tag_with_text_filter(
-                "script",
-                "renderRadialBarChart(target, charts[i].skill_profile_data, skillLevels);",  # noqa: E501
-            )
-        )
 
 
 class TestRolesPageView(TemplateOkMixin):
@@ -434,8 +251,13 @@ def learning_provider_view_data():
 
 
 @pytest.mark.django_db
-class TestLearningProvidersPageView:
+class TestLearningProvidersPageView(BS4Mixin):
     """Test the learning providers list view."""
+
+    def _get_url(self, **kwargs):
+        url = reverse("learning_providers")
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
 
     def test_page_lists_providers(self, client, learning_provider_view_data):
         """Test that the learning providers page lists providers."""
@@ -463,6 +285,24 @@ class TestLearningProvidersPageView:
         assert "Provider One" in response.content.decode()
         assert "Provider Two" not in response.content.decode()
 
+    def test_filter_form(self, soup_factory):
+        """Render the search field with its original input-group styling."""
+        soup = soup_factory(q="Provider")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Provider"
+        assert form.find("label", attrs={"for": "provider-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
+
+    def test_page_with_no_matches(self, client, learning_provider_view_data):
+        """Show the empty-results message when no provider matches."""
+        response = client.get(reverse("learning_providers"), {"q": "Missing"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert "No learning providers found." in response.content.decode()
+
     def test_page_is_paginated(self, client, learning_provider_view_data):
         """Test the learning providers page is paginated."""
         for index in range(25):
@@ -479,15 +319,18 @@ class TestLearningProvidersPageView:
 
 
 @pytest.mark.django_db
-class TestLearningProviderDetailPageView:
+class TestLearningProviderDetailPageView(BS4Mixin):
     """Test the individual learning-provider detail view."""
+
+    def _get_url(self, slug, **kwargs):
+        url = reverse("learning_provider_detail", kwargs={"slug": slug})
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
 
     def test_page_displays_provider(self, client, learning_provider_view_data):
         """Test that the provider detail page displays provider data."""
         provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug})
-        )
+        response = client.get(self._get_url(slug=provider.slug))
 
         assert response.status_code == HTTPStatus.OK
         assert "Provider One" in response.content.decode()
@@ -510,7 +353,7 @@ class TestLearningProviderDetailPageView:
         """Test filtering resources on the provider detail page."""
         provider, _ = learning_provider_view_data
         response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug}),
+            self._get_url(slug=provider.slug),
             {"q": "Python"},
         )
 
@@ -519,12 +362,22 @@ class TestLearningProviderDetailPageView:
         assert "R course" not in response.content.decode()
         assert "Unrelated course" not in response.content.decode()
 
+    def test_filter_form(self, soup_factory, learning_provider_view_data):
+        """Render the resource search with its original input-group styling."""
+        provider, _ = learning_provider_view_data
+        soup = soup_factory(slug=provider.slug, q="Python")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Python"
+        assert form.find("label", attrs={"for": "provider-resource-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
+
     def test_page_hides_provider_column(self, client, learning_provider_view_data):
         """Test that the detail resource table hides the provider column."""
         provider, _ = learning_provider_view_data
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": provider.slug})
-        )
+        response = client.get(self._get_url(slug=provider.slug))
 
         table = response.context["learning_resources"]
         column_names = table.columns.names()
@@ -533,9 +386,7 @@ class TestLearningProviderDetailPageView:
 
     def test_page_returns_404_for_unknown_provider(self, client):
         """Test that an unknown provider returns HTTP 404 Not Found."""
-        response = client.get(
-            reverse("learning_provider_detail", kwargs={"slug": "does-not-exist"})
-        )
+        response = client.get(self._get_url(slug="does-not-exist"))
 
         assert response.status_code == HTTPStatus.NOT_FOUND
 
@@ -588,6 +439,87 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
         assert 'value="Python"' in response.content.decode()
 
     @pytest.mark.django_db
+    def test_filter_form(self, client):
+        """Render the original search input group and preserve sorting."""
+        response = client.get(self._get_url(), {"q": "Provider", "sort": "-name"})
+        soup = BeautifulSoup(response.content, "html.parser")
+        search_input = soup.find("input", attrs={"name": "q"})
+        form = search_input.find_parent("form")
+        input_group = form.find("div", class_="input-group")
+
+        assert form["method"] == "get"
+        assert input_group["class"] == ["input-group", "w-auto"]
+        assert search_input.parent == input_group
+        assert search_input["id"] == "resource-filter"
+        assert search_input["type"] == "search"
+        assert search_input["value"] == "Provider"
+        assert search_input["class"] == ["form-control"]
+        assert search_input["size"] == "25"
+        assert search_input["placeholder"] == "Filter learning resources"
+        assert len(form.select('input:not([type="hidden"])')) == 1
+        assert not form.find("input", attrs={"name": "name"})
+        label = input_group.find("label", attrs={"for": "resource-filter"})
+        assert label["class"] == ["visually-hidden"]
+        assert label.get_text(strip=True) == "Search learning resources"
+        assert (
+            input_group.find("button", class_="btn-primary").get_text(strip=True)
+            == "Search"
+        )
+        sort_input = form.find("input", attrs={"name": "sort"})
+        assert sort_input["value"] == "-name"
+        assert sort_input.parent == form
+        assert not form.find("a")
+        assert not form.find("input", attrs={"name": "page"})
+
+    @pytest.mark.django_db
+    def test_empty_search_restores_resources(self, client, learning_provider_view_data):
+        """Clearing the search restores the unfiltered table."""
+        response = client.get(self._get_url(), {"q": "", "sort": "-name"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert [row.record.name for row in response.context["table"].rows] == [
+            "Unrelated course",
+            "R course",
+            "Python course",
+        ]
+
+    @pytest.mark.django_db
+    def test_page_with_no_matches(self, client, learning_provider_view_data):
+        """Nonmatching filters display the existing empty-results message."""
+        response = client.get(self._get_url(), {"q": "Missing"})
+
+        assert response.status_code == HTTPStatus.OK
+        assert "No learning resources found." in response.content.decode()
+
+    @pytest.mark.django_db
+    def test_filter_sorting_and_pagination(self, client, learning_provider_view_data):
+        """Sort and paginate filtered results while preserving the search."""
+        provider, _ = learning_provider_view_data
+        for index in range(25):
+            LearningResource.objects.create(
+                name=f"Course {index:02}", provider=provider
+            )
+        response = client.get(
+            self._get_url(),
+            {"q": "Provider One", "sort": "-name", "page": 2},
+        )
+        table = response.context["table"]
+
+        assert response.status_code == HTTPStatus.OK
+        assert table.paginator.per_page == 20
+        assert table.paginator.count == 27
+        assert [row.record.name for row in table.page.object_list] == [
+            f"Course {index:02}" for index in range(6, -1, -1)
+        ]
+        soup = BeautifulSoup(response.content, "html.parser")
+        for link in [
+            *soup.select("th.orderable a"),
+            *soup.select(".pagination a"),
+        ]:
+            params = parseUrl.parse_qs(parseUrl.urlparse(link["href"]).query)
+            assert params["q"] == ["Provider One"]
+
+    @pytest.mark.django_db
     def test_page_content(self, learning_resource, skill, soup):
         """Test that the learning page contains a table with learning resources."""
         assert "Learning resources" == soup.find("h1").text
@@ -616,6 +548,65 @@ class TestLearningResourcesPageView(TemplateOkMixin, BS4Mixin):
             tag_with_text_filter("a", "Skill"),
             class_="btn",
             href=reverse("skill_detail", args=(skill.slug,)),
+        )
+
+
+@pytest.mark.django_db
+class TestToolsLanguagesMethodologiesPageView(TemplateOkMixin, BS4Mixin):
+    """Test the tools, languages, and methodologies page."""
+
+    _template_name = "main/pages/tools-languages-methodologies.html"
+
+    def _get_url(self, **kwargs):
+        url = reverse("tools_languages_methodologies")
+        params = parseUrl.urlencode(kwargs)
+        return f"{url}?{params}" if params else url
+
+    def test_page_lists_tools(self, client, tool):
+        """List framework tools in a table."""
+        response = client.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.OK
+        assert "Tool" in response.content.decode()
+        assert response.context["table"].rows
+
+    def test_page_filters_tools(self, client, tool):
+        """Filter the table by tool details."""
+        ToolLanguageMethodology.objects.create(
+            name="Unrelated methodology",
+            description="Not a match",
+            kind="methodology",
+        )
+        response = client.get(
+            self._get_url(),
+            {"q": "Tool"},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert "Tool" in response.content.decode()
+        assert "Unrelated methodology" not in response.content.decode()
+
+    def test_filter_form(self, soup_factory, tool):
+        """Render a labeled search field with the shared filter styling."""
+        soup = soup_factory(q="Tool")
+        form = soup.find("input", attrs={"name": "q"}).find_parent("form")
+
+        assert form.find("div", class_="input-group")
+        assert form.find("input", class_="form-control")["value"] == "Tool"
+        assert form.find("label", attrs={"for": "tool-filter"})
+        assert form.find("button", string="Search")
+        assert not form.find("a")
+
+    def test_page_with_no_matches(self, client, tool):
+        """Show the empty-results message when no tool matches."""
+        response = client.get(
+            self._get_url(),
+            {"q": "Missing"},
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert (
+            "No tools, languages or methodologies found." in response.content.decode()
         )
 
 
@@ -661,29 +652,6 @@ class TestTeamPageView(TemplateOkMixin):
         assert isinstance(response.context["team_members"], list)
         assert "contributors" in response.context
         assert isinstance(response.context["contributors"], list)
-
-
-class TestAccountOverviewView(LoginRequiredMixin):
-    """Test suite for the account_overview view."""
-
-    def _get_url(self):
-        return reverse("account-overview")
-
-    def test_redirects_to_self_assess_when_no_skills(self, client, user):
-        """Test that users with no skills are redirected to self-assess."""
-        client.force_login(user)
-        response = client.get(self._get_url())
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("self_assess")
-
-    @pytest.mark.django_db
-    def test_redirects_to_skill_profile_when_skills_exist(self, client, skill_profile):
-        """Test that users with skills are redirected to their skill profile."""
-        client.force_login(skill_profile.profile.user)
-
-        response = client.get(self._get_url())
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("skills_profile")
 
 
 class TestSkillsAndCompetenciesPageView(TemplateOkMixin):

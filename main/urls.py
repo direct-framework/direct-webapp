@@ -46,6 +46,7 @@ accounts_patterns = [
     path("skills-profile/", views.SkillProfileView.as_view(), name="skills_profile"),
     path("profile/", views.UserUpdateView.as_view(), name="profile"),
     path("overview/", views.AccountOverviewView.as_view(), name="account-overview"),
+    path("teams/", views.MyTeamsPageView.as_view(), name="my_teams"),
     path(
         "download-skills-data/csv/",
         views.DownloadSkillProfileDataCsvView.as_view(),
@@ -75,6 +76,16 @@ urlpatterns = [
     path("accounts/", include("django_registration.backends.one_step.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include(accounts_patterns)),
+    path(
+        "teams/<slug:team_slug>/invitation-link/",
+        views.TeamInvitationLinkView.as_view(),
+        name="team-invitation-link",
+    ),
+    path(
+        "teams/<slug:team_slug>/invitations/<str:token>/",
+        views.TeamInvitationAcceptView.as_view(),
+        name="team-invitation-accept",
+    ),
     path("about/", views.AboutPageView.as_view(), name="about"),
     path(
         "terms-acceptance/",

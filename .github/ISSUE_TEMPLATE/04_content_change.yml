@@ -1,0 +1,37 @@
+name: Framework or content change
+description: Propose adding, changing or removing DIRECT framework content
+labels: [content, triage]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if a similar content change has already been proposed.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: dropdown
+    attributes:
+      label: Content type
+      description: What kind of content does this concern?
+      options:
+        - Skill
+        - Learning provider
+        - Learning resource
+        - Tool
+        - Language
+        - Methodology
+        - Role
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed change
+      description: Which item is affected, and what should be added, changed or removed?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Justification or source
+      description: Why is this change needed? Link to any supporting source, such as the upstream DIRECT framework documentation.
+    validations:
+      required: true

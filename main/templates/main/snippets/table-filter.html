@@ -1,0 +1,11 @@
+<form method="get" class="d-flex justify-content-end mb-4">
+    {% if table.order_by %}
+        <input type="hidden" name="sort" value="{{ table.order_by }}">
+    {% endif %}
+    <div class="input-group w-auto">
+        <label for="{{ filter.form.q.id_for_label }}"
+               class="visually-hidden">{{ filter.form.q.label }}</label>
+        {{ filter.form.q }}
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>

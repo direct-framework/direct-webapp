@@ -1,0 +1,15 @@
+{% extends "main/base.account.html" %}
+{% block content %}
+    <h1 class="h2">Join {{ team.name }}</h1>
+    {% if accepted %}
+        <p>You have joined this team as a member.</p>
+    {% elif already_member %}
+        <p>You are already a member of this team.</p>
+    {% else %}
+        <p>Accept this invitation to join the team as a member.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Accept invitation</button>
+        </form>
+    {% endif %}
+{% endblock content %}

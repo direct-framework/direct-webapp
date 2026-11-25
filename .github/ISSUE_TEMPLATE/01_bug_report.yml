@@ -1,7 +1,6 @@
 name: Bug report
-description: File a bug report as an issue
-title: '[BUG] <title>'
-labels: [bug]
+description: Something isn't working as expected
+labels: [bug, triage]
 body:
   - type: checkboxes
     attributes:
@@ -15,31 +14,44 @@ body:
       label: Describe the bug
       description: A clear and concise description of what the bug is.
     validations:
-      required: false
+      required: true
   - type: textarea
     attributes:
-      label: Expected Behavior
+      label: Expected behaviour
       description: A clear and concise description of what you expected to happen.
     validations:
       required: false
   - type: textarea
     attributes:
-      label: Steps To Reproduce
-      description: Steps to reproduce the behavior.
+      label: Steps to reproduce
+      description: Steps to reproduce the behaviour.
       placeholder: |
         1. Go to '...'
         1. Click on '...'
         1. Scroll down to '...'
         1. See error '...'
     validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Area
+      description: Which part of the application do you think is affected?
+      options:
+        - Frontend (what you see in the browser)
+        - Backend (server-side logic)
+        - Database (data or migrations)
+        - Not sure
+      default: 3
+    validations:
       required: false
   - type: textarea
     attributes:
-      label: Environment (if applicable)
+      label: Environment
       description: |
         Provide details about your environment to help us reproduce the issue.
 
         **For all users:**
+        - **Where**: The deployed site or a local setup
         - **OS**: The operating system you're using (e.g., Windows, macOS, Linux, iOS, Android)
         - **Browser**: The browser you're using (e.g., Chrome 124, Safari 17, Firefox 123)
 
@@ -47,6 +59,7 @@ body:
         - **Python version**: The Python version running the server (e.g., 3.14)
         - **Software versions**: The release, branch, or commit you're running (e.g., main, v0.1.0)
       value: |
+        - **Where** (deployed site / local):
         - **OS**:
         - **Browser**:
         - **Python version** (developers only):
@@ -56,9 +69,9 @@ body:
       required: false
   - type: textarea
     attributes:
-      label: Anything else?
+      label: Logs or screenshots
       description: |
-        Links? References? Please add anything that will give us more context about your problem.
+        Paste any relevant logs or error messages, or attach screenshots.
 
         Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
     validations:
