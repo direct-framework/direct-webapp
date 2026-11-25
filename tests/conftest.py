@@ -1,6 +1,12 @@
 """Pytest configuration file."""
 
+import os
+
 import pytest
+
+# This allows using playwright in tests. See:
+# https://github.com/microsoft/playwright-pytest/issues/29#issuecomment-731515676
+os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "true")
 
 
 @pytest.fixture
