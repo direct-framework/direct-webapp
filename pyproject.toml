@@ -41,6 +41,10 @@ dev = [
     "types-Markdown",
     "types-requests",
     "beautifulsoup4",
+    "playwright",
+    "pytest-playwright",
+    "pytest-playwright-axe",
+
 ]
 prod = [
     "mysqlclient",
