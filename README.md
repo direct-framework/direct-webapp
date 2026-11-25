@@ -98,6 +98,7 @@ To get started:
 7. Run the tests:
 
    ```bash
+   python -m playwright install --with-deps chromium
    pytest
    ```
 
