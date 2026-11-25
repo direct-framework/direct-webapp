@@ -58,19 +58,33 @@
       .choice { display: flex; gap: 9px; align-items: flex-start; padding: 8px 0; border-top: 1px solid #edf1f3; }
       .choice input { margin-top: 3px; accent-color: var(--blue); }
       .choice small { display: block; margin-top: 2px; color: var(--muted); }
+      .group-parent { margin: 14px 0 6px; padding: 8px 9px; border-radius: 4px; background: #edf3f6; font-weight: 700; }
+      .group-parent small { display: block; color: var(--muted); font-size: 11px; font-weight: 500; text-transform: uppercase; }
+      .domain-link { display: block; width: calc(100% - 12px); margin: 2px 0 2px 12px; padding: 8px 10px; border: 0; border-left: 2px solid #b7c8d1; background: #fff; color: var(--ink); text-align: left; }
+      .domain-link[aria-current="page"] { border-left: 4px solid var(--blue); background: var(--blue-light); font-weight: 700; }
+      .group-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+      .group-tabs button { padding: 9px 12px; border: 1px solid #9aadb8; border-radius: 5px 5px 0 0; background: #f4f7f8; color: var(--ink); }
+      .group-tabs button[aria-current="true"] { border-bottom: 3px solid var(--blue); background: #fff; font-weight: 700; }
+      .domain-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px 14px; padding: 8px; border-left: 3px solid #9aadb8; background: #f7f9fa; }
+      .domain-tabs button { padding: 7px 10px; border: 1px solid #b6c4cb; border-radius: 4px; background: #fff; color: var(--ink); }
+      .domain-tabs button[aria-current="page"] { border-color: var(--blue); background: var(--blue-light); font-weight: 700; }
       .inline-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
       .notice { padding: 11px 13px; border-radius: 5px; background: var(--blue-light); margin: 12px 0; line-height: 1.45; }
       .notice.empty { background: #fff5dc; color: #5e490f; }
       .notice.success { background: #e8f5ed; color: #20583b; }
       .layout { display: grid; gap: 16px; }
-      .layout-a { grid-template-columns: minmax(0, 1fr); }
+      .layout-a { grid-template-columns: 220px minmax(0, 1fr); align-items: start; }
       .layout-b { grid-template-columns: 260px minmax(0, 1fr); align-items: start; }
-      .layout-c { grid-template-columns: minmax(0, 1fr) 290px; align-items: start; }
+      .layout-c { grid-template-columns: minmax(0, 1fr); align-items: start; }
       .side-nav { position: sticky; top: 16px; }
       .side-nav button, .page-tabs button { width: 100%; padding: 10px 12px; text-align: left; border: 0; border-radius: 4px; background: transparent; color: var(--ink); }
       .side-nav button[aria-current="page"], .page-tabs button[aria-current="page"] { background: var(--blue-light); color: #123f5c; font-weight: 700; }
       .page-tabs { display: flex; flex-wrap: wrap; gap: 5px; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 14px; }
       .page-tabs button { width: auto; }
+      .assessment-tools { display: flex; align-items: center; gap: 16px; margin: 0 0 16px; }
+      .assessment-tools > div { flex: 1; }
+      .assessment-tools .progress { max-width: 430px; margin: 6px 0 3px; }
+      .assessment-tools .btn { flex: 0 0 auto; }
       .step { display: flex; gap: 8px; align-items: center; color: var(--muted); margin-bottom: 18px; }
       .step strong { color: var(--blue); }
       .step-dot { display: inline-grid; place-items: center; width: 25px; height: 25px; border: 1px solid var(--line); border-radius: 50%; background: #fff; }
@@ -105,7 +119,7 @@
       .bottom-switcher .switch-label { min-width: 220px; }
       .bottom-switcher button { width: auto; min-width: 48px; padding: 0 10px; font-size: 13px; font-weight: 700; }
       @media (max-width: 760px) {
-        .layout-b, .layout-c { grid-template-columns: 1fr; }
+        .layout-a, .layout-b, .layout-c { grid-template-columns: 1fr; }
         .review-grid { grid-template-columns: 1fr; }
         .side-nav { position: static; }
         .side-nav button { display: inline-block; width: auto; }
@@ -123,7 +137,7 @@
         <header class="site-header">
             <strong>DIRECT</strong><span>Framework&nbsp;&nbsp; Account v</span>
         </header>
-        <div class="crumbs">Home / Profile / Assessment</div>
+        <div class="crumbs">Home / Self-assessment</div>
         <main id="review-tools" class="review-tools">
         </main>
         <section class="candidate-frame">
@@ -143,7 +157,7 @@
         { id: "s2", name: "Apply metadata standards", domain: "Research data practice", description: "Select and apply appropriate metadata standards.", roles: ["steward"], specialities: ["metadata"] },
         { id: "s3", name: "Evaluate data quality", domain: "Data analysis", description: "Assess data for accuracy, completeness and consistency.", roles: ["analyst"], specialities: [] },
         { id: "s4", name: "Communicate findings", domain: "Data analysis", description: "Present findings for different audiences.", roles: ["analyst"], specialities: ["visualisation"] },
-        { id: "s5", name: "Plan secure storage", domain: "Research data practice", description: "Choose storage suited to sensitivity and access needs.", roles: [], specialities: ["security"] },
+        { id: "s5", name: "Plan secure storage", domain: "Research data practice", description: "Choose storage suited to sensitivity and access needs.", roles: ["analyst"], specialities: ["security"] },
         { id: "s6", name: "Use a version-control workflow", domain: "Digital practice", description: "Track and review changes to shared work.", roles: [], specialities: [] },
       ];
       const roles = [
@@ -156,14 +170,14 @@
         { id: "visualisation", name: "Data Visualisation" },
         { id: "security", name: "Data Security" },
       ];
-      const variantNames = { A: "Guided steps", B: "Section navigator", C: "Assessment workspace" };
+      const variantNames = { A: "Collapsible outline", B: "Always-open outline", C: "Selection + Domain tabs" };
       const variantDescriptions = {
-        A: "One assessment section at a time, with Previous and Continue buttons. Progress appears below the current section.",
-        B: "A persistent list on the left lets the user jump directly to any Role, Speciality, or Remaining Skills section.",
-        C: "Tabs above the questionnaire switch sections; a right-hand panel summarizes selections and assessment progress."
+        A: "A collapsible outline on the left. Each Role, Speciality, or Remaining Skills heading contains indented Domain pages.",
+        B: "An always-open outline on the left. Every Role, Speciality, and Remaining Skills group and its Domain pages stay visible.",
+        C: "A row of tabs for each Role, Speciality, and Remaining Skills group, with indented Domain tabs underneath."
       };
       const scenarioDescriptions = {
-        overlap: "Starts with two Roles and one Speciality selected. Two Skills appear in more than one selected section; the repeated rows should show the same level and name the other relevant selection.",
+        overlap: "Starts with two Roles and one Speciality selected. Research Data Analyst spans two Domains; two Skills also appear in more than one selected section. Check that the parent selection and each nested Domain stay clear.",
         none: "Starts with no selections. The user should still see all Skills in Remaining Skills; one existing level is retained.",
         empty: "Selects a Role with no mapped Skills. Its empty state should explain that, while all Skills remain reachable.",
         changed: "Starts with a saved level for a Skill that is no longer relevant to the selected Role. That Skill should appear in Remaining Skills with its old level."
@@ -173,18 +187,21 @@
       const reviewTools = document.querySelector("#review-tools");
       const params = new URLSearchParams(location.search);
       let variant = ["A", "B", "C"].includes(params.get("variant")) ? params.get("variant") : "A";
-      let screen = params.get("screen") === "profile" ? "profile" : "assessment";
       let scenario = "overlap";
       let selectedRoles = ["steward", "analyst"];
       let selectedSpecialities = ["metadata"];
-      let pageIndex = 0;
+      let pageIndex = -1;
+      let returnPageIndex = 0;
+      let assessmentStarted = false;
       let searchTerm = "";
       let assessments = { s1: "3", s2: "0", s3: "2", s4: "", s5: "", s6: "1" };
       let savedMessage = "";
 
       function setScenario(next) {
         scenario = next;
-        pageIndex = 0;
+        pageIndex = -1;
+        returnPageIndex = 0;
+        assessmentStarted = false;
         searchTerm = "";
         savedMessage = "";
         if (next === "overlap") {
@@ -207,10 +224,6 @@
         render();
       }
 
-      function selectedNames(ids, source) {
-        return ids.map(id => source.find(item => item.id === id)?.name).filter(Boolean);
-      }
-
       function allRelevantIds() {
         const ids = new Set();
         skills.forEach(skill => {
@@ -228,8 +241,8 @@
             if (!byDomain.has(skill.domain)) byDomain.set(skill.domain, []);
             byDomain.get(skill.domain).push(skill);
           });
-          if (!matching.length) result.push({ key: `${kind}-${id}`, kind, id, label, domain: "", items: [] });
-          byDomain.forEach((items, domain) => result.push({ key: `${kind}-${id}-${domain}`, kind, id, label, domain, items }));
+          if (!matching.length) result.push({ key: `${kind}-${id}`, groupKey: `${kind}-${id}`, kind, id, label, domain: "", items: [] });
+          byDomain.forEach((items, domain) => result.push({ key: `${kind}-${id}-${domain}`, groupKey: `${kind}-${id}`, kind, id, label, domain, items }));
         };
         selectedRoles.forEach(id => addGroup("role", id, roles.find(x => x.id === id).name, skills.filter(skill => skill.roles.includes(id))));
         selectedSpecialities.forEach(id => addGroup("speciality", id, specialities.find(x => x.id === id).name, skills.filter(skill => skill.specialities.includes(id))));
@@ -265,7 +278,7 @@
               <p id="scenario-description" class="small">${scenarioDescriptions[scenario]}</p>
             </section>
           </div>
-          <p><strong>What to do:</strong> Compare A, B and C in the blue-bordered area. Use "Open my Roles &amp; Specialities" there to see how someone chooses them, then "Open self-assessment" to return. Tell me which option works best (or what to combine) and what you would change.</p>`;
+          <p><strong>What to do:</strong> Compare A, B and C in the blue-bordered area. The first page in every layout is where the person selects Roles and Specialities; continue to the grouped Skill sections. Tell me which navigation is clearest and what you would change.</p>`;
       }
 
       function selectionControls() {
@@ -280,21 +293,17 @@
           ${checkGroup("Roles", roles, selectedRoles, "role")}
           ${checkGroup("Specialities", specialities, selectedSpecialities, "speciality")}
         </div>
-        <p class="small muted">Selections are optional, independent, and can be changed at either entry point. They group the questionnaire; they do not limit access to Skills.</p>`;
+        <p class="small muted">Selections are optional and independent. Revise them here before starting or later with Edit selections. They group the questionnaire; they do not limit access to Skills.</p>`;
       }
 
       function renderSelectionScreen() {
-        const profile = screen === "profile";
-        const title = profile ? "My Roles &amp; Specialities" : "Choose before you assess";
-        const intro = profile
-          ? "Choose Roles and Specialities that describe your practice or areas you are exploring. These saved selections also guide your questionnaire."
-          : "Your saved selections are ready to use. Change them here before starting, or continue with all Skills.";
         return `<section class="card">
-          <div class="step"><span class="step-dot active">1</span><strong>Choose your Roles &amp; Specialities</strong><span>to</span><span class="step-dot">2</span> Assess Skills</div>
-          <h1 class="page-heading">${title}</h1><p class="lede">${intro}</p>
+          <div class="step"><span class="step-dot active">1</span><strong>Selections</strong><span>then</span><span class="step-dot">2</span> Skill assessment</div>
+          <h2>Choose your Roles and Specialities</h2>
+          <p class="lede">This is the first page of the self-assessment questionnaire, not a separate Profile page. Select any combination, or none. These choices group relevant Skills but never restrict which Skills you can assess.</p>
           ${selectionControls()}
-          <div class="inline-actions"><span class="small muted">Saved for this prototype: ${selectedRoles.length} Roles, ${selectedSpecialities.length} Specialities</span>
-            <button class="btn" id="continue">${profile ? "Save selections" : "Continue to assessment"}</button></div>
+          <div class="inline-actions"><span class="small muted">${selectedRoles.length} Roles and ${selectedSpecialities.length} Specialities selected</span>
+            <button class="btn" id="continue">${assessmentStarted ? "Save selections and return to assessment" : "Save selections and start assessment"}</button></div>
         </section>`;
       }
 
@@ -311,60 +320,85 @@
         </tr>`;
       }
 
+      function pageGroups(list) {
+        const groups = [];
+        list.forEach((page, index) => {
+          let group = groups.find(item => item.key === page.groupKey);
+          if (!group) {
+            group = { key: page.groupKey, kind: page.kind, label: page.label, pages: [] };
+            groups.push(group);
+          }
+          group.pages.push({ page, index });
+        });
+        return groups;
+      }
+
+      function groupType(kind) {
+        return kind === "role" ? "Role" : kind === "speciality" ? "Speciality" : "Remaining Skills";
+      }
+
+      function renderGroupOutline(list, collapsible) {
+        return `<nav class="card side-nav" aria-label="Assessment sections"><h3>Sections by selection</h3>
+          ${pageGroups(list).map(group => {
+            const active = group.pages.some(item => item.index === pageIndex);
+            const heading = `<span class="group-parent"><small>${groupType(group.kind)}</small>${group.label}</span>`;
+            const links = group.pages.map(item => `<button class="domain-link" data-page="${item.index}" ${item.index === pageIndex ? 'aria-current="page"' : ""}>${item.page.domain || "No mapped Skills"}${item.page.items.length === 0 ? `<small class="association">Empty selection</small>` : ""}</button>`).join("");
+            return collapsible
+              ? `<details ${active ? "open" : ""}><summary>${heading}</summary>${links}</details>`
+              : `<div>${heading}${links}</div>`;
+          }).join("")}
+        </nav>`;
+      }
+
+      function renderGroupTabs(list) {
+        const groups = pageGroups(list);
+        const activeGroup = list[pageIndex].groupKey;
+        const active = groups.find(group => group.key === activeGroup);
+        return `<nav aria-label="Selection groups">
+          <div class="group-tabs">${groups.map(group => `<button type="button" data-group="${group.key}" aria-current="${group.key === activeGroup}"><small>${groupType(group.kind)}:</small> ${group.label}</button>`).join("")}</div>
+          <div class="small muted">Domains within ${groupType(active.kind)}: ${active.label}</div>
+          <div class="domain-tabs" aria-label="Domains within current selection">${active.pages.map(item => `<button type="button" data-page="${item.index}" ${item.index === pageIndex ? 'aria-current="page"' : ""}>${item.page.domain || "No mapped Skills"}</button>`).join("")}</div>
+        </nav>`;
+      }
+
       function renderQuestionnaire(contentStyle) {
         const list = pages();
         pageIndex = Math.min(pageIndex, Math.max(0, list.length - 1));
         const current = list[pageIndex];
-        const assessed = Object.values(assessments).filter(value => value !== "").length;
+        const progress = `<div class="assessment-tools"><div><strong class="small">Questionnaire progress</strong>
+          <div class="progress"><span style="width:${Math.round((pageIndex + 1) / list.length * 100)}%"></span></div>
+          <span class="small muted">Section ${pageIndex + 1} of ${list.length}</span></div>
+          <button class="btn secondary" id="edit-selections">Edit selections</button></div>`;
         const search = `<label class="small" for="skill-search">Filter Skills on this page</label>
           <input id="skill-search" type="search" value="${searchTerm}" placeholder="Search this page...">`;
         const matches = current.items.filter(skill => `${skill.name} ${skill.description}`.toLowerCase().includes(searchTerm.toLowerCase()));
-        const body = `<div class="page-title"><div><p class="small muted">${current.kind === "remaining" ? "Open to everyone" : current.kind === "role" ? "Role section" : "Speciality section"}</p>
-            <h2>${current.label}${current.domain ? ` <span class="muted">/ ${current.domain}</span>` : ""}</h2></div><div class="small muted">Page ${pageIndex + 1} of ${list.length}</div></div>
-          ${current.items.length === 0 ? `<div class="notice empty">No Skills are mapped to this selection yet. You can still assess every Skill from Remaining Skills.</div>` : ""}
-          ${search}
-          ${current.items.length ? `<div style="overflow-x:auto"><table class="skill-table"><thead><tr><th>Skill</th><th>Description</th><th>Level</th></tr></thead><tbody>${matches.map(skill => row(skill, current)).join("") || `<tr><td colspan="3" class="muted">No Skills match this filter. Clear it to see this page again.</td></tr>`}</tbody></table></div>` : ""}
-          <div class="inline-actions"><button class="btn secondary" id="back" ${pageIndex === 0 ? "disabled" : ""}>Previous</button>
-            <span class="small muted">Changes save when you navigate; blank values leave saved levels unchanged.</span>
-            <button class="btn" id="forward">${pageIndex === list.length - 1 ? "Finish" : "Save & continue"}</button></div>
-          ${savedMessage ? `<div class="notice success" role="status">${savedMessage}</div>` : ""}`;
+        const body = `<section class="card"><p class="small muted">${groupType(current.kind)}: ${current.label}</p>
+            <h2>${current.domain || "No mapped Skills"}</h2>
+            <p class="small muted">This Domain is nested within the ${groupType(current.kind)} section above.</p>
+            ${current.items.length === 0 ? `<div class="notice empty">No Skills are mapped to this selection yet. You can still assess every Skill from Remaining Skills.</div>` : ""}
+            ${search}
+            ${current.items.length ? `<div style="overflow-x:auto"><table class="skill-table"><thead><tr><th>Skill</th><th>Description</th><th>Level</th></tr></thead><tbody>${matches.map(skill => row(skill, current)).join("") || `<tr><td colspan="3" class="muted">No Skills match this filter. Clear it to see this page again.</td></tr>`}</tbody></table></div>` : ""}
+            <div class="inline-actions"><button class="btn secondary" id="back" ${pageIndex === 0 ? "disabled" : ""}>Previous Domain</button>
+              <span class="small muted">Changes save when you navigate; blank values leave saved levels unchanged.</span>
+              <button class="btn" id="forward">${pageIndex === list.length - 1 ? "Finish" : "Next Domain"}</button></div>
+            ${savedMessage ? `<div class="notice success" role="status">${savedMessage}</div>` : ""}
+          </section>`;
         if (contentStyle === "a") {
-          return `<div class="layout layout-a"><section class="card">${body}</section><section class="card">
-            <h3>Questionnaire progress</h3><div class="progress"><span style="width:${Math.round(assessed / skills.length * 100)}%"></span></div>
-            <p class="small">${assessed} of ${skills.length} Skills have a saved level, including valid level 0.</p>
-            <button class="btn tertiary" id="edit-selections">Edit selections</button></section></div>`;
+          return `${progress}<div class="layout layout-a">${renderGroupOutline(list, true)}${body}</div>`;
         }
-        const nav = `<nav class="card side-nav" aria-label="Assessment sections"><h3>Sections</h3>${list.map((page, index) => `<button data-page="${index}" ${index === pageIndex ? 'aria-current="page"' : ""}>${page.label}${page.domain ? `<small class="association">${page.domain}</small>` : ""}${page.items.length === 0 ? `<small class="association">No mapped Skills</small>` : ""}</button>`).join("")}
-            <button class="btn tertiary" id="edit-selections">Edit selections</button></nav>`;
-        if (contentStyle === "b") return `<div class="layout layout-b">${nav}<section class="card">${body}</section></div>`;
-        const tabs = `<nav class="page-tabs" aria-label="Assessment pages">${list.map((page, index) => `<button data-page="${index}" ${index === pageIndex ? 'aria-current="page"' : ""}>${page.label}${page.domain ? ` - ${page.domain}` : ""}</button>`).join("")}</nav>`;
-        return `<div class="layout layout-c"><section class="card">${tabs}${body}</section>
-          <aside class="card"><h3>At a glance</h3><p class="small muted">Saved selections shape this order, not what you can assess.</p>
-            <div class="chips">${selectedNames(selectedRoles, roles).concat(selectedNames(selectedSpecialities, specialities)).map(name => `<span class="chip">${name}</span>`).join("") || `<span class="muted small">No selections</span>`}</div>
-            <div class="progress"><span style="width:${Math.round(assessed / skills.length * 100)}%"></span></div><p class="small">${assessed} of ${skills.length} Skills assessed</p>
-            <div class="state-panel"><h3>Assessment remains yours</h3><p class="small">Changing selections moves Skills between sections; existing levels stay saved. All Skills remain available under Remaining Skills.</p></div>
-            <button class="btn tertiary" id="edit-selections">Edit selections</button></aside></div>`;
-      }
-
-      function selectionState() {
-        const roleNames = selectedNames(selectedRoles, roles);
-        const specNames = selectedNames(selectedSpecialities, specialities);
-        return `<section class="state-panel" aria-live="polite"><h3>Current prototype state</h3>
-          <div class="small"><strong>Roles:</strong> ${roleNames.join(", ") || "none"}<br>
-          <strong>Specialities:</strong> ${specNames.join(", ") || "none"}<br>
-          <strong>Saved levels:</strong> ${skills.filter(skill => assessments[skill.id] !== "").map(skill => `${skill.name}: ${assessments[skill.id]}`).join(" / ") || "none"}<br>
-          <strong>Unassessed:</strong> ${skills.filter(skill => assessments[skill.id] === "").map(skill => skill.name).join(", ") || "none"}</div></section>`;
+        if (contentStyle === "b") {
+          return `${progress}<div class="layout layout-b">${renderGroupOutline(list, false)}${body}</div>`;
+        }
+        return `${progress}<div class="layout layout-c">${renderGroupTabs(list)}${body}</div>`;
       }
 
       function render() {
-        const title = screen === "profile" ? "My Roles &amp; Specialities" : "Self-assessment questionnaire";
-        let content;
-        if (screen === "profile" || pageIndex === -1) content = renderSelectionScreen();
-        else content = renderQuestionnaire(variant.toLowerCase());
+        const content = pageIndex === -1
+          ? renderSelectionScreen()
+          : renderQuestionnaire(variant.toLowerCase());
         reviewTools.innerHTML = renderReviewTools();
-        app.innerHTML = `<div class="page-title"><div><h1 class="page-heading">${title}</h1><p class="lede">Selections guide the order of this questionnaire. They do not limit which Skills can be assessed.</p></div>
-          <button class="btn secondary" id="switch-screen">${screen === "profile" ? "Open self-assessment" : "Open my Roles &amp; Specialities"}</button></div>
-          ${content}<div style="margin-top:16px">${selectionState()}</div>
+        app.innerHTML = `<div class="page-title"><div><h1 class="page-heading">Self-assessment questionnaire</h1><p class="lede">Selections guide the order of this questionnaire. They do not limit which Skills can be assessed.</p></div></div>
+          ${content}
           <p class="footer-note">Illustrative screen only. No selections or assessments are saved.</p>`;
         document.querySelector("#variant-label").textContent = `Layout ${variant}: ${variantNames[variant]}`;
         bind();
@@ -385,25 +419,27 @@
           else selectedSpecialities = updated;
           render();
         }));
-        document.querySelector("#switch-screen").addEventListener("click", () => {
-          screen = screen === "profile" ? "assessment" : "profile";
-          pageIndex = 0;
-          render();
-        });
         document.querySelector("#continue")?.addEventListener("click", () => {
-          savedMessage = screen === "profile" ? "Selections saved for this prototype." : "Selections saved. Your questionnaire is grouped below.";
-          screen = "assessment";
-          pageIndex = 0;
+          pageIndex = assessmentStarted ? returnPageIndex : 0;
+          assessmentStarted = true;
+          savedMessage = "Selections saved in prototype memory.";
           render();
         });
         document.querySelector("#edit-selections")?.addEventListener("click", () => {
+          returnPageIndex = pageIndex;
           pageIndex = -1;
-          screen = "assessment";
           render();
         });
         document.querySelectorAll("[data-page]").forEach(button => button.addEventListener("click", () => {
           pageIndex = Number(button.dataset.page);
+          assessmentStarted = true;
           savedMessage = "Page changed. Shared Skill levels remain visible wherever a Skill appears.";
+          render();
+        }));
+        document.querySelectorAll("[data-group]").forEach(button => button.addEventListener("click", () => {
+          pageIndex = pages().findIndex(page => page.groupKey === button.dataset.group);
+          assessmentStarted = true;
+          savedMessage = "Selection group changed; the Domain page stays nested within that group.";
           render();
         }));
         document.querySelector("#back")?.addEventListener("click", () => {
@@ -413,8 +449,8 @@
         });
         document.querySelector("#forward")?.addEventListener("click", () => {
           const last = pages().length - 1;
-          pageIndex = pageIndex === last ? 0 : pageIndex + 1;
-          savedMessage = pageIndex === 0 ? "Assessment complete in this prototype; all saved levels remain." : "Current page saved in prototype memory.";
+          if (pageIndex < last) pageIndex += 1;
+          savedMessage = pageIndex === last ? "Assessment sections complete; you can revisit any group." : "Current Domain saved in prototype memory.";
           render();
         });
         document.querySelector("#skill-search")?.addEventListener("input", event => {
