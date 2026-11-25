@@ -3,6 +3,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.forms import modelform_factory
 
 from main.models import (
     Competency,
@@ -36,7 +37,7 @@ def test_named_model(mocker) -> None:
     mock_full_clean.assert_called_once_with(instance)
 
 
-def test_slugged_model(mocker) -> None:
+def test_slugged_model() -> None:
     """Test the abstract SluggedModel provides correct behaviour to children."""
 
     class TestModel(SluggedModel):
@@ -48,26 +49,55 @@ def test_slugged_model(mocker) -> None:
     assert instance.description == "Test Description"
     assert instance.slug == ""
 
-    # Test save method calls validate_unique to auto-generate slug
-    mock_save = mocker.patch.object(NamedModel, "save", autospec=True)
-    mock_val_unique = mocker.patch.object(NamedModel, "validate_unique", autospec=True)
-    instance.save()
-    assert instance.slug == "test-name"
-    mock_save.assert_called_once()
-    mock_val_unique.assert_called_once_with(
-        instance, exclude=["id", "name", "description"]
+
+@pytest.mark.django_db
+def test_slug_collision_is_numbered(competency_domain: CompetencyDomain) -> None:
+    """Test that a generated slug that is already taken gets a number appended."""
+    second = CompetencyDomain.objects.create(
+        name="Competency-Domain", description="Description"
     )
+    third = CompetencyDomain.objects.create(
+        name="Competency Domain!", description="Description"
+    )
+    second.refresh_from_db()
+    third.refresh_from_db()
+    assert second.slug == "competency-domain-2"
+    assert third.slug == "competency-domain-3"
 
 
 @pytest.mark.django_db
-def test_slug_collision(competency_domain: CompetencyDomain) -> None:
-    """Test that slug collision edge cases are handled by validate_unique."""
-    with pytest.raises(
-        ValidationError, match=r"Auto-generated slug 'competency-domain' already exists"
-    ):
-        CompetencyDomain(
-            name="Competency-Domain", description="Description"
-        ).validate_unique()
+def test_explicit_slug_is_kept() -> None:
+    """Test that a provided slug is not replaced by a generated one."""
+    domain = CompetencyDomain.objects.create(
+        name="Some Name", description="Description", slug="custom"
+    )
+    domain.refresh_from_db()
+    assert domain.slug == "custom"
+
+
+@pytest.mark.django_db
+def test_slug_optional_in_model_form() -> None:
+    """Test that a form without a slug saves with one generated from the name."""
+    form_class = modelform_factory(CompetencyDomain, fields=("name", "description"))
+    form = form_class(data={"name": "Data Management", "description": "Desc"})
+    assert form.is_valid(), form.errors
+    domain = form.save()
+    domain.refresh_from_db()
+    assert domain.slug == "data-management"
+
+    form_class = modelform_factory(
+        CompetencyDomain, fields=("name", "description", "slug")
+    )
+    form = form_class(data={"name": "Research Software", "description": "Desc"})
+    assert form.is_valid(), form.errors
+    assert form.save().slug == "research-software"
+
+
+@pytest.mark.django_db
+def test_slug_cannot_be_generated() -> None:
+    """Test that a blank slug is rejected when the name cannot be slugified."""
+    with pytest.raises(ValidationError, match="could not be generated"):
+        CompetencyDomain(name="???", description="Description").save()
 
 
 @pytest.mark.django_db
