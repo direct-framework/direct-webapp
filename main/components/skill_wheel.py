@@ -41,6 +41,7 @@ class SkillWheelView(UnicornView):
         else:
             self.chart_data = self._load_list("chart_data")
             self.skill_levels = self._load_list("skill_levels")
+        self.call("reloadSkillWheel")
 
     def _load_sample(self, sample_id: str):
         sample_data = _extract_and_combine_roles(
@@ -68,3 +69,8 @@ class SkillWheelView(UnicornView):
             raise TypeError(f"Component argument {key} must be a list of objects")
 
         return value
+
+    def set_profile_id(self, profile_id: str) -> None:
+        """Set the profile ID and reload the sample data."""
+        self._load_sample(profile_id)
+        self.call("reloadSkillWheel")

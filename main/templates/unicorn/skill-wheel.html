@@ -38,8 +38,7 @@ function renderRadialBarChart(target, data, levels) {
         config: radialBarChartConfig,
     });
 }
-
-document.addEventListener('DOMContentLoaded', function () {
+function reloadSkillWheel() {
     const skillLevels = JSON.parse(
         document.getElementById('skill-wheel-skill-levels').textContent
     );
@@ -60,6 +59,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         renderRadialBarChart(target, charts[i].skill_profile_data, skillLevels);
     }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    reloadSkillWheel();
 });
     </script>
+    <button type="button"
+            unicorn:click="set_profile_id('sample_profile_41')">Switch profile</button>
 </div>

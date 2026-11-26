@@ -148,6 +148,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5-responsive.html"
 
+UNICORN = {"ALLOWED_JS_CALL_LIST": ["Unicorn", "reloadSkillWheel"]}
+
 # Ensure the logs directory exists
 LOGS_DIR = BASE_DIR / "logs"
 os.makedirs(LOGS_DIR, exist_ok=True)
