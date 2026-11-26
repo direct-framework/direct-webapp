@@ -104,6 +104,11 @@ ignore_missing_imports = true
 module = ["django_filters.*"]
 ignore_missing_imports = true
 
+# Not installed in the pre-commit mypy env: playwright exceeds pre-commit.ci's size limit.
+[[tool.mypy.overrides]]
+module = ["playwright.*", "pytest_playwright_axe.*"]
+ignore_missing_imports = true
+
 [[tool.mypy.overrides]]
 module = ["main.io_resources"]
 disallow_any_generics = false
