@@ -2,6 +2,7 @@
 
 import json
 from http import HTTPStatus
+from pathlib import Path
 from urllib import parse as parseUrl
 
 import pytest
@@ -60,11 +61,17 @@ class TestIndex(TemplateOkMixin, BS4Mixin):
     def test_provides_required_context(self, admin_client, skill_level):
         """Test the view provides skill_levels and sample_data context."""
         response = admin_client.get(self._get_url())
-        assert "chart_data" in response.context
-        assert isinstance(response.context["chart_data"], str)
-        assert response.context["skill_levels"] == json.dumps(
-            [{"level": skill_level.level, "name": skill_level.name}]
-        )
+        assert "profile_sample_id" in response.context
+        assert isinstance(response.context["profile_sample_id"], str)
+        soup = BeautifulSoup(response.content, "html.parser")
+        chart_data = soup.find("script", id="skill-wheel-chart-data")
+        skill_levels = soup.find("script", id="skill-wheel-skill-levels")
+        sample_id = response.context["profile_sample_id"]
+        with Path(f"main/static/assets/sample_data/{sample_id}.json").open() as f:
+            chart_data_expected = json.load(f)
+        skill_levels_expected = list(SkillLevel.objects.values("level", "name"))
+        assert chart_data and json.loads(chart_data.string) == chart_data_expected
+        assert skill_levels and json.loads(skill_levels.string) == skill_levels_expected
 
     @pytest.mark.django_db
     def test_navbar_contents(self, soup, auth_soup, admin_soup):
@@ -232,6 +239,12 @@ class TestRolesPageView(TemplateOkMixin):
         assert isinstance(response.context["chart_data"], list)
         assert response.context["skill_levels"] == json.dumps(
             [{"level": skill_level.level, "name": skill_level.name}]
+        )
+        soup = BeautifulSoup(response.content, "html.parser")
+        chart_data = soup.find("script", id="skill-wheel-chart-data")
+        assert (
+            chart_data
+            and json.loads(chart_data.string) == response.context["chart_data"]
         )
 
 
@@ -843,15 +856,15 @@ class TestViewSkillProfilePageView(TemplateOkMixin, BS4Mixin):
         }
         chart_data = [{"user_id": "root", "skill_profile_data": [skill_profile_dict]}]
 
-        assert card.find(
-            tag_with_text_filter("script", f"const skillLevels = {skill_level_list};")
-        )
-        assert card.find(
-            tag_with_text_filter("script", f"const charts = {chart_data};")
-        )
+        skill_levels_script = card.find("script", id="skill-wheel-skill-levels")
+        chart_data_script = card.find("script", id="skill-wheel-chart-data")
+        assert skill_levels_script
+        assert chart_data_script
+        assert json.loads(skill_levels_script.string) == skill_level_list
+        assert json.loads(chart_data_script.string) == chart_data
         assert card.find(
             tag_with_text_filter(
                 "script",
-                "renderRadialBarChart(target, charts[i].skill_profile_data, skillLevels);",  # noqa: E501
+                "main().RadialBarChart({",
             )
         )

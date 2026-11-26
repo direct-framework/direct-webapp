@@ -1,4 +1,5 @@
 {% load static %}
+{% load unicorn %}
 <section class="position-relative pt-5 pb-4">
     <div class="position-absolute top-0 start-0 w-100" style="height: 79%;">
         <div class="bg-primary position-absolute top-0 start-0 w-100 h-100"
@@ -75,4 +76,4 @@
         </div>
     </div>
 </section>
-{% include "main/snippets/skill-wheel.html" %}
+{% unicorn 'skill-wheel' profile_sample_id=profile_sample_id %}

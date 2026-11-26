@@ -102,6 +102,10 @@ module = ["django_filters.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = ["django_unicorn.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = ["main.io_resources"]
 disallow_any_generics = false
 

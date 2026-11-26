@@ -1,4 +1,8 @@
-<script>
+<div id="skill-wheel-component"
+     class="container mx-auto text-center mt-xl-4">
+    {{ skill_levels|json_script:"skill-wheel-skill-levels" }}
+    {{ chart_data|json_script:"skill-wheel-chart-data" }}
+    <script>
 const radialBarChartConfig = {
     width: 900,
     height: 700,
@@ -36,12 +40,26 @@ function renderRadialBarChart(target, data, levels) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const skillLevels = {{ skill_levels|safe }};
-    const charts = {{ chart_data|safe }};
+    const skillLevels = JSON.parse(
+        document.getElementById('skill-wheel-skill-levels').textContent
+    );
+    const charts = JSON.parse(
+        document.getElementById('skill-wheel-chart-data').textContent
+    );
+    const componentRoot = document.getElementById('skill-wheel-component');
 
     for (let i = 0; i < charts.length; i++) {
-        const target = document.getElementById('dataviz_' + charts[i].user_id);
+        const targetId = 'dataviz_' + charts[i].user_id;
+        let target = document.getElementById(targetId);
+
+        if (!target) {
+            target = document.createElement('div');
+            target.id = targetId;
+            componentRoot.appendChild(target);
+        }
+
         renderRadialBarChart(target, charts[i].skill_profile_data, skillLevels);
     }
 });
-</script>
+    </script>
+</div>

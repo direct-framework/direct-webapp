@@ -1,5 +1,6 @@
 {% extends "main/base.page.html" %}
 {% load static %}
+{% load unicorn %}
 {% block title %}
     Roles
 {% endblock title %}
@@ -43,5 +44,5 @@
             No profiles
         {% endif %}
     </section>
-    {% include "main/snippets/skill-wheel.html" %}
+    {% unicorn 'skill-wheel' chart_data=chart_data skill_levels=skill_levels %}
 {% endblock content %}
