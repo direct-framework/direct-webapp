@@ -98,7 +98,14 @@ To get started:
 7. Run the tests:
 
    ```bash
+   python -m playwright install --with-deps chromium
    pytest
+   ```
+
+   To run the accessibility tests without a headless browser you can run the following command:
+
+   ```bash
+   PWDEBUG=1 python -m pytest tests/test_accessibility.py --no-cov
    ```
 
 8. Create an admin account to access admin backend:

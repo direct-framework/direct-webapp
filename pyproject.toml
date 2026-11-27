@@ -41,6 +41,10 @@ dev = [
     "types-Markdown",
     "types-requests",
     "beautifulsoup4",
+    "playwright",
+    "pytest-playwright",
+    "pytest-playwright-axe",
+
 ]
 prod = [
     "mysqlclient",
@@ -98,6 +102,11 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["django_filters.*"]
+ignore_missing_imports = true
+
+# Not installed in the pre-commit mypy env: playwright exceeds pre-commit.ci's size limit.
+[[tool.mypy.overrides]]
+module = ["playwright.*", "pytest_playwright_axe.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
