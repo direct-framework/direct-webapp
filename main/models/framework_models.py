@@ -1,10 +1,11 @@
 """Models for the core framework."""
 
-from typing import Any, cast
+from collections.abc import Collection
+from typing import Any
 
 from django.conf.global_settings import LANGUAGES
 from django.core.exceptions import ValidationError
-from django.db import models, transaction
+from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from multiselectfield import MultiSelectField
@@ -46,40 +47,30 @@ class SluggedModel(NamedModel):
 
         abstract = True
 
-    def clean(self) -> None:
-        """Reject a blank slug when one cannot be generated from the name."""
-        super().clean()
-        if not self.slug and not slugify(self.name):
-            raise ValidationError(
-                {
-                    "slug": _(
-                        "A slug could not be generated from the name; "
-                        "please provide one."
-                    )
-                }
-            )
+    def validate_unique(self, exclude: Collection[str] | None = None) -> None:
+        """Validate the auto-generated slug field."""
+        if not self.slug:
+            self.slug = slugify(self.name)
+        try:
+            super().validate_unique(exclude=exclude)
+        except ValidationError as e:
+            message_dict = {k: "".join(v) for k, v in e.message_dict.items()}
+            if "slug" in message_dict:
+                message_dict["slug"] = (
+                    _(message_dict["slug"])
+                    + f" Auto-generated slug '{self.slug}' already exists"
+                )
+
+            raise ValidationError(message_dict) from e
 
     def save(self, **kwargs: Any) -> None:
-        """Save atomically, so the post_save slug generation commits together."""
-        with transaction.atomic():
-            super().save(**kwargs)
+        """Override save method to auto-generate slug from name if not provided."""
+        if not self.slug:
+            all_fields = [f.name for f in self._meta.get_fields()]
+            all_fields.remove("slug")
+            self.validate_unique(exclude=all_fields)
 
-    def generate_unique_slug(self) -> str:
-        """Return a slug from the name, numbered if needed to make it unique.
-
-        For example, a second "Data Management" becomes ``data-management-2``.
-        """
-        slug_field = cast(models.SlugField[Any, Any], self._meta.get_field("slug"))
-        max_length = slug_field.max_length or 200
-        base = slugify(self.name)[:max_length]
-        others = type(self)._default_manager.exclude(pk=self.pk)
-        candidate = base
-        number = 2
-        while others.filter(slug=candidate).exists():
-            suffix = f"-{number}"
-            candidate = base[: max_length - len(suffix)] + suffix
-            number += 1
-        return candidate
+        super().save(**kwargs)
 
 
 class CompetencyDomain(SluggedModel):
