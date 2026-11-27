@@ -35,7 +35,12 @@ class NamedModel(models.Model):
 class SluggedModel(NamedModel):
     """Abstract base model with slug field."""
 
-    slug = models.SlugField(unique=True, max_length=200)
+    slug = models.SlugField(
+        unique=True,
+        max_length=200,
+        blank=True,
+        help_text=_("Leave blank to generate automatically from the name."),
+    )
 
     class Meta:
         """Meta options to define SluggedModel as abstract."""
