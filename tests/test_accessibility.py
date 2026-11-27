@@ -1,14 +1,16 @@
 """Scan the application's HTML pages with Playwright and axe-core."""
 
+from collections.abc import Iterable, Iterator
 from json import dumps
 from pprint import pformat
 from urllib.parse import urlencode
 
 import pytest
 from django.conf import settings
+from django.contrib.auth.mixins import AccessMixin
 from django.core.management import call_command
 from django.test import Client
-from django.urls import reverse
+from django.urls import URLPattern, URLResolver, get_resolver, reverse
 from playwright.sync_api import Page, expect
 from pytest_playwright_axe import Axe
 
@@ -27,6 +29,57 @@ known_violations = pytest.mark.xfail(
     raises=AccessibilityViolation,
     strict=True,
 )
+
+# Argument-free routes that are not scanned by the discovered-page tests.
+EXCLUDED_URL_NAMES = {
+    # Non-HTML responses or POST-only endpoints.
+    "logout",
+    "framework_json",
+    "framework_csv",
+    "download-csv-data-link",
+    "download-json-data-link",
+    # Redirects to self_assess or skills_profile.
+    "account-overview",
+    # Scanned with representative query data in test_shared_skill_profile.
+    "view_skill_profile",
+}
+
+# Django auth views protected by the login_required decorator, not AccessMixin.
+LOGIN_REQUIRED_URL_NAMES = {"password_change", "password_change_done"}
+
+
+def _url_patterns(
+    patterns: Iterable[URLPattern | URLResolver],
+) -> Iterator[URLPattern]:
+    """Yield non-namespaced URL patterns, skipping namespaced apps like admin."""
+    for pattern in patterns:
+        if isinstance(pattern, URLResolver):
+            if not pattern.namespace:
+                yield from _url_patterns(pattern.url_patterns)
+        elif isinstance(pattern, URLPattern):
+            yield pattern
+
+
+def _discover_page_names() -> tuple[list[str], list[str]]:
+    """Split named, argument-free routes into public and login-required pages."""
+    public: set[str] = set()
+    login_required: set[str] = set()
+    for pattern in _url_patterns(get_resolver().url_patterns):
+        if (
+            not pattern.name
+            or pattern.name in EXCLUDED_URL_NAMES
+            or pattern.pattern.regex.groups
+        ):
+            continue
+        view_class = getattr(pattern.callback, "view_class", None)
+        requires_login = pattern.name in LOGIN_REQUIRED_URL_NAMES or (
+            view_class is not None and issubclass(view_class, AccessMixin)
+        )
+        (login_required if requires_login else public).add(pattern.name)
+    return sorted(public), sorted(login_required)
+
+
+PUBLIC_PAGES, ACCOUNT_PAGES = _discover_page_names()
 
 
 @pytest.fixture
@@ -98,41 +151,14 @@ def check_accessibility(page: Page, url: str, filename: str) -> None:
 
 
 @known_violations
-@pytest.mark.parametrize(
-    "page_url",
-    [
-        "index",
-        "about",
-        "framework",
-        "framework_overview",
-        "skills_and_competencies",
-        "skill_levels",
-        "learning_providers",
-        "learning_resources",
-        "tools_languages_methodologies",
-        "roles",
-        "privacy",
-        "terms",
-        "governance",
-        "licensing",
-        "our_team",
-        "get_involved",
-        "events",
-        "django_registration_register",
-        "login",
-        "password_reset",
-    ],
-)
+@pytest.mark.parametrize("page_url", PUBLIC_PAGES)
 def test_public_pages(live_server, page: Page, page_url):
-    """Scan public pages, including the custom registration form."""
+    """Scan public pages discovered from the URL configuration."""
     check_accessibility(page, live_server.url + reverse(page_url), page_url)
 
 
 @known_violations
-@pytest.mark.parametrize(
-    "page_url",
-    ["self_assess", "skills_profile", "profile", "terms_acceptance", "my_teams"],
-)
+@pytest.mark.parametrize("page_url", ACCOUNT_PAGES)
 def test_account_pages(live_server, page: Page, login, user, page_url):
     """Scan account forms, a populated skill profile, and team memberships."""
     SkillProfile.objects.create(
