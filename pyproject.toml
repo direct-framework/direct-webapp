@@ -23,6 +23,7 @@ dependencies = [
     "requests",
     "django-filter",
     "django-guardian",
+    "django-unicorn",
 ]
 
 [project.optional-dependencies]
@@ -107,6 +108,10 @@ ignore_missing_imports = true
 # Not installed in the pre-commit mypy env: playwright exceeds pre-commit.ci's size limit.
 [[tool.mypy.overrides]]
 module = ["playwright.*", "pytest_playwright_axe.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["django_unicorn.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

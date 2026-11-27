@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     "django_tables2",
     "django_filters",
     "guardian",
+    "django_unicorn",
 ]
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # this is default
@@ -146,6 +147,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5-responsive.html"
+
+UNICORN = {"ALLOWED_JS_CALL_LIST": ["Unicorn", "reloadSkillWheel"]}
 
 # Ensure the logs directory exists
 LOGS_DIR = BASE_DIR / "logs"

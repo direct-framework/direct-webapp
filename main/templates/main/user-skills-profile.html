@@ -5,6 +5,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% load django_bootstrap5 %}
+{% load unicorn %}
 {% block breadcrumb_items %}
     <li class="breadcrumb-item">
         <a href="{% url 'profile' %}">Profile</a>
@@ -38,7 +39,7 @@
                                 with size according to your self-assessed level.
                             </p>
                             <div id="dataviz_root" style="width:100%"></div>
-                            {% include "main/snippets/skill-wheel.html" %}
+                            {% unicorn 'skill-wheel' chart_data=chart_data skill_levels=skill_levels %}
                         </div>
                     </div>
                 </section>

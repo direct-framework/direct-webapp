@@ -66,14 +66,7 @@ class IndexPageView(TemplateView):
         """Add skill levels and sample profile data to the template context."""
         context = super().get_context_data(**kwargs)
         logger.info("Rendering index page.")
-
-        sample_data = _extract_and_combine_roles(
-            ["main/static/assets/sample_data/sample_profile_1.json"]
-        )
-        context["chart_data"] = dumps(sample_data)
-        context["skill_levels"] = dumps(
-            list(SkillLevel.objects.values("level", "name"))
-        )
+        context["profile_sample_id"] = "sample_profile_1"
         return context
 
 

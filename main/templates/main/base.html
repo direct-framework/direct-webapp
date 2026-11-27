@@ -1,3 +1,4 @@
+{% load unicorn %}
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
     <head>
@@ -5,6 +6,7 @@
         {% include "main/snippets/head.html" %}
     </head>
     <body class="{% block body_class %}{% endblock body_class %}">
+        {% csrf_token %}
         {% include "main/snippets/page-loading.html" %}
         {% include "main/snippets/navbar.html" %}
         <main class="page-wrapper">

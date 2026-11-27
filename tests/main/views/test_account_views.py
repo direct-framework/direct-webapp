@@ -178,16 +178,16 @@ class TestSkillProfile(TemplateOkMixin, BS4Mixin):
         }
         chart_data = [{"user_id": "root", "skill_profile_data": [skill_profile_dict]}]
 
+        skill_levels_script = card.find("script", id="skill-wheel-skill-levels")
+        chart_data_script = card.find("script", id="skill-wheel-chart-data")
+        assert skill_levels_script
+        assert chart_data_script
+        assert json.loads(skill_levels_script.string) == skill_level_list
+        assert json.loads(chart_data_script.string) == chart_data
         assert card.find(
             tag_with_text_filter(
                 "script",
-                f"const skillLevels = {json.dumps(skill_level_list)};",
-            )
-        )
-        assert card.find(
-            tag_with_text_filter(
-                "script",
-                f"const charts = {json.dumps(chart_data)};",
+                "renderRadialBarChart(target, charts[i].skill_profile_data, skillLevels);",  # noqa: E501
             )
         )
         assert card.find(

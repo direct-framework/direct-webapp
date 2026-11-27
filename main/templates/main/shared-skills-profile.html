@@ -5,6 +5,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% load django_bootstrap5 %}
+{% load unicorn %}
 {% block title %}
     Skill Profile (Anonymous)
 {% endblock title %}
@@ -34,7 +35,7 @@
                                 <div class="alert alert-danger"
                                      role="alert">{{ error_message }}</div>
                             {% else %}
-                                {% include "main/snippets/skill-wheel.html" %}
+                                {% unicorn 'skill-wheel' chart_data=chart_data skill_levels=skill_levels %}
                             {% endif %}
                         </div>
                     </div>
