@@ -6,9 +6,10 @@ from django.contrib.auth import get_user_model
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Count, Sum
 
 from .models.team_models import Team, TeamMembership
-from .models.user_models import User
+from .models.user_models import SkillProfile, User
 
 TEAM_INVITATION_LINK_MAX_AGE = 24 * 60 * 60
 TEAM_INVITATION_LINK_SALT = "main.team_invitation"
@@ -62,6 +63,46 @@ def create_team(*, user: User, name: str, description: str) -> Team:
     team = Team.objects.create(name=name, description=description)
     TeamMembership.objects.create(user=user, team=team, manager=True)
     return team
+
+
+def aggregate_team_skill_profile(*, team: Team) -> list[dict[str, str | int]]:
+    """Return each assessed skill's average level across the current team.
+
+    A selected level 0 counts, while members who have not assessed a skill are
+    left out. Averages are rounded to whole levels, with halves rounded up,
+    because the competency wheel can only show whole levels. Rows use the same
+    keys as a personal competency wheel, in framework order.
+    """
+    domain = "skill__competency__competency_domain"
+    rows = (
+        SkillProfile.objects.filter(profile__user__teams__team=team)
+        .values(
+            "skill",
+            "skill__name",
+            "skill__competency__name",
+            f"{domain}__name",
+        )
+        .annotate(contributors=Count("id"), level_total=Sum("skill_level__level"))
+        .order_by(
+            f"{domain}__rank",
+            f"{domain}__name",
+            "skill__competency__rank",
+            "skill__competency__name",
+            "skill__rank",
+            "skill__name",
+        )
+    )
+    return [
+        {
+            "skill": row["skill__name"],
+            "category": row[f"{domain}__name"],
+            "subcategory": row["skill__competency__name"],
+            # Integer form of rounding total / contributors, halves up.
+            "skill_level": (2 * row["level_total"] + row["contributors"])
+            // (2 * row["contributors"]),
+        }
+        for row in rows
+    ]
 
 
 @transaction.atomic

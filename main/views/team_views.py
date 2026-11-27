@@ -1,19 +1,21 @@
 """Views for team membership actions."""
 
 from http import HTTPStatus
+from json import dumps
 from typing import TYPE_CHECKING, Any, cast
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.views.generic import TemplateView
+from django.views.generic import DetailView, TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
-from ..models import Team, TeamMembership
+from ..models import SkillLevel, Team, TeamMembership
+from ..tables import TeamMembershipTable
 from ..team_services import (
     accept_invitation,
+    aggregate_team_skill_profile,
     generate_invitation_token,
     resolve_invitation_token,
 )
@@ -23,12 +25,38 @@ if TYPE_CHECKING:
     from ..models import User as UserType
 
 
+class TeamDetailView(TermsAcceptedMixin, PermissionRequiredMixin, DetailView[Team]):
+    """Show a team to its members."""
+
+    model = Team
+    request: AuthenticatedHttpRequest
+    template_name = "main/team-detail.html"
+    login_url: str
+    permission_required = "main.view_team"
+    return_404 = True
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Add the team, its roster and its aggregate skill profile."""
+        context = super().get_context_data(**kwargs)
+        memberships = self.object.members.select_related("user")
+        context["membership_table"] = TeamMembershipTable(memberships)
+        aggregate = aggregate_team_skill_profile(team=self.object)
+        context["has_aggregate"] = bool(aggregate)
+        context["chart_data"] = dumps(
+            [{"user_id": "team", "skill_profile_data": aggregate}]
+        )
+        context["skill_levels"] = dumps(
+            list(SkillLevel.objects.values("level", "name"))
+        )
+        return context
+
+
 class TeamInvitationLinkView(TermsAcceptedMixin, PermissionRequiredMixin, TemplateView):
     """Let team managers generate links to share outside the application."""
 
     request: AuthenticatedHttpRequest
     template_name = "main/team_invitation_link.html"
-    login_url: str = str(settings.LOGIN_URL)
+    login_url: str
     permission_required = "main.manage_team_members"
     accept_global_perms = False
     return_404 = True

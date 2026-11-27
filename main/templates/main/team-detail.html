@@ -1,0 +1,25 @@
+{% extends "main/base.account.html" %}
+{% load render_table from django_tables2 %}
+{% block title %}
+    {{ team.name }}
+{% endblock title %}
+{% block content %}
+    <h1>{{ team.name }}</h1>
+    <p class="lead">{{ team.description }}</p>
+    <section>
+        <h2 class="h4">Team members</h2>
+        {% render_table membership_table %}
+    </section>
+    <section class="mt-5">
+        <h2 class="h4">Team competency wheel</h2>
+        {% if has_aggregate %}
+            <p>
+                Each skill shows the average level of the team members who have assessed it, rounded to the nearest whole level (halves round up).
+            </p>
+            <div id="dataviz_team" style="width:100%"></div>
+            {% include "main/snippets/skill-wheel.html" %}
+        {% else %}
+            <p>No team members have assessed their skills yet.</p>
+        {% endif %}
+    </section>
+{% endblock content %}

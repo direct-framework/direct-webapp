@@ -296,11 +296,12 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
 
         soup = soup_factory(authenticated=True)
         for visible_team in (other_team, imaging_team, team):
-            heading = soup.find("h2", string=visible_team.name)
+            heading = soup.find("a", string=visible_team.name)
             assert heading is not None
             team_card = heading.find_parent("article")
             assert team_card is not None
-            assert {"card-hover-primary", "bg-secondary"}.issubset(team_card["class"])
+            assert "bg-secondary" in team_card["class"]
+            assert "card-hover-primary" not in team_card["class"]
             assert visible_team.description in team_card.get_text(" ", strip=True)
 
         team_grid = soup.find("div", class_="row-cols-xl-3")
@@ -317,8 +318,8 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
     ):
         """Show the manager label only on teams the current user manages."""
         soup = soup_factory(authenticated=True)
-        managed_card = soup.find("h2", string="Research team").find_parent("article")
-        member_card = soup.find("h2", string="Astronomy team").find_parent("article")
+        managed_card = soup.find("a", string="Research team").find_parent("article")
+        member_card = soup.find("a", string="Astronomy team").find_parent("article")
 
         assert managed_card is not None
         assert member_card is not None
@@ -330,6 +331,20 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
         assert member_badge.get_text(strip=True) == "Member"
         assert "bg-primary" in manager_badge["class"]
         assert "bg-secondary" in member_badge["class"]
+
+    @pytest.mark.django_db
+    def test_each_team_name_links_to_its_team_page(
+        self, team, other_team, member_membership, soup_factory
+    ):
+        """Let the user open the page of every team they belong to."""
+        soup = soup_factory(authenticated=True)
+
+        for visible_team in (team, other_team):
+            link = soup.find("a", string=visible_team.name)
+            assert link is not None
+            assert link["href"] == reverse(
+                "team-detail", kwargs={"slug": visible_team.slug}
+            )
 
     @pytest.mark.django_db
     def test_shows_an_empty_state_when_the_user_has_no_teams(
@@ -362,7 +377,7 @@ class TestMyTeamsPageView(LoginRequiredMixin, BS4Mixin):
         )
 
         soup = soup_factory(authenticated=True)
-        assert len(soup.find_all("h2", string="Shared team")) == 1
+        assert len(soup.find_all("a", string="Shared team")) == 1
         page_html = str(soup)
 
         assert other_user.username not in page_html

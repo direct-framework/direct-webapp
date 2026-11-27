@@ -7,9 +7,12 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
         {% for membership in memberships %}
             <div class="col">
-                <article class="card bg-secondary card-hover-primary h-100">
+                <article class="card bg-secondary h-100">
                     <div class="card-body">
-                        <h2 class="h5 card-title">{{ membership.team.name }}</h2>
+                        <h2 class="h5 card-title">
+                            <a class="stretched-link"
+                               href="{% url 'team-detail' membership.team.slug %}">{{ membership.team.name }}</a>
+                        </h2>
                         <p class="card-text">{{ membership.team.description }}</p>
                         {% if membership.manager %}
                             <span class="badge bg-primary">Manager</span>

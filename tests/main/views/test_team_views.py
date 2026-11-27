@@ -1,15 +1,21 @@
 """Test suite for team views."""
 
+import json
 from http import HTTPStatus
 from urllib import parse as parseUrl
 
 import pytest
 from django.urls import reverse
 
-from main.models import TeamMembership
+from main.models import SkillProfile, TeamMembership, User
 from main.team_services import create_team, generate_invitation_token
 
-from .view_utils import LoginRequiredMixin, TemplateOkMixin
+from .view_utils import (
+    BS4Mixin,
+    LoginRequiredMixin,
+    TemplateOkMixin,
+    tag_with_text_filter,
+)
 
 
 @pytest.mark.django_db
@@ -76,8 +82,13 @@ class TestTeamInvitationLinkView(LoginRequiredMixin, TemplateOkMixin):
         TeamMembership.objects.create(user=member, team=self.team)
         client.force_login(member)
 
-        assert client.get(self._get_url()).status_code == HTTPStatus.NOT_FOUND
-        assert client.post(self._get_url()).status_code == HTTPStatus.NOT_FOUND
+        get_response = client.get(self._get_url())
+        post_response = client.post(self._get_url())
+
+        assert get_response.status_code == HTTPStatus.NOT_FOUND
+        assert post_response.status_code == HTTPStatus.NOT_FOUND
+        assert b"404 - Page Not Found" in get_response.content
+        assert b"404 - Page Not Found" in post_response.content
 
     def test_unknown_team_slug_returns_not_found(self, client, user) -> None:
         """A missing team slug does not expose a manager-only page."""
@@ -178,3 +189,159 @@ class TestTeamInvitationAcceptanceView(LoginRequiredMixin, TemplateOkMixin):
         assert response.status_code == HTTPStatus.BAD_REQUEST
         assert response.templates[0].name == "main/team_invitation_invalid.html"
         assert not TeamMembership.objects.filter(team=self.team, user=invitee).exists()
+
+
+@pytest.mark.django_db
+class TestTeamDetailView(LoginRequiredMixin, TemplateOkMixin, BS4Mixin):
+    """Test the team page shown to team members."""
+
+    _template_name = "main/team-detail.html"
+
+    @pytest.fixture(autouse=True)
+    def create_team_for_view(self, user) -> None:
+        """Create a team managed by the default user."""
+        self.team = create_team(
+            user=user, name="Research team", description="Team page tests"
+        )
+
+    @pytest.fixture
+    def members(self, django_user_model) -> list[User]:
+        """Add two regular members, who have accepted the terms, to the team."""
+        members = []
+        for index in range(2):
+            member = django_user_model.objects.create_user(
+                username=f"member-{index}", agreed_to_tos=True
+            )
+            TeamMembership.objects.create(user=member, team=self.team)
+            members.append(member)
+        return members
+
+    def _get_url(self, **kwargs) -> str:
+        return reverse("team-detail", kwargs={"slug": self.team.slug})
+
+    def test_member_sees_the_team_page(self, client, members) -> None:
+        """A regular member can open their team's page."""
+        client.force_login(members[0])
+
+        response = client.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["team"] == self.team
+        assert "<h1>Research team</h1>" in response.content.decode()
+
+    def test_non_member_and_unknown_team_are_not_found(
+        self, client, django_user_model
+    ) -> None:
+        """People outside a team cannot tell whether it exists."""
+        outsider = django_user_model.objects.create_user(
+            username="outsider", agreed_to_tos=True
+        )
+        client.force_login(outsider)
+        unknown_url = reverse("team-detail", kwargs={"slug": "no-such-team"})
+
+        response = client.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+        assert b"404 - Page Not Found" in response.content
+        assert client.get(unknown_url).status_code == HTTPStatus.NOT_FOUND
+
+    def test_page_address_is_unchanged_when_team_is_renamed(self, client, user) -> None:
+        """Renaming a team keeps its slug, so existing links keep working."""
+        url = self._get_url()
+        self.team.name = "Renamed team"
+        self.team.save()
+        client.force_login(user)
+
+        response = client.get(url)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["team"].name == "Renamed team"
+
+    def test_user_must_accept_terms_before_viewing_team(self, client, user) -> None:
+        """Terms acceptance gates the team page."""
+        user.agreed_to_tos = False
+        user.save(update_fields=["agreed_to_tos"])
+        client.force_login(user)
+
+        response = client.get(self._get_url())
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("terms_acceptance")
+
+    def test_lists_team_members_with_their_role_by_name(
+        self, django_user_model, soup_factory
+    ) -> None:
+        """List every team member by name with a manager or member badge."""
+        for username, first, last, manager in (
+            ("Zed", "", "", False),
+            ("bob", "Bob", "Carter", False),
+            ("brown", "Alice", "Brown", True),
+        ):
+            person = django_user_model.objects.create_user(
+                username=username, first_name=first, last_name=last
+            )
+            TeamMembership.objects.create(user=person, team=self.team, manager=manager)
+
+        soup = soup_factory(authenticated=True)
+
+        roster = soup.find("table")
+        assert roster is not None
+        headings = [
+            heading.get_text(strip=True) for heading in roster.select("thead th")
+        ]
+        assert headings == ["Name", "Role"]
+        rows = [
+            [cell.get_text(" ", strip=True) for cell in row.select("td")]
+            for row in roster.select("tbody tr")
+        ]
+        assert rows == [
+            ["Alice Brown", "Manager"],
+            ["Bob Carter", "Member"],
+            ["test user", "Manager"],
+            ["Zed", "Member"],
+        ]
+        assert roster.select_one("tbody tr .badge.bg-primary") is not None
+        assert roster.select_one("tbody tr .badge.bg-secondary") is not None
+
+    def test_team_wheel_shows_the_rounded_average_of_each_skill(
+        self, user, members, competency, skill, skill_levels, soup_factory
+    ) -> None:
+        """The wheel gets each skill's average, rounded to a whole level."""
+        for person, level in zip([user, *members], (1, 2, 2), strict=True):
+            SkillProfile.objects.create(
+                profile=person.profile, skill=skill, skill_level=skill_levels[level]
+            )
+
+        soup = soup_factory(authenticated=True)
+
+        chart_data = [
+            {
+                "user_id": "team",
+                "skill_profile_data": [
+                    {
+                        "skill": skill.name,
+                        "category": competency.competency_domain.name,
+                        "subcategory": competency.name,
+                        "skill_level": 2,
+                    }
+                ],
+            }
+        ]
+        wheel_script = soup.find(tag_with_text_filter("script", "const charts"))
+        assert wheel_script is not None
+        assert f"const charts = {json.dumps(chart_data)};" in wheel_script.text
+        assert soup.find(id="dataviz_team") is not None
+        assert (
+            soup.find(tag_with_text_filter("p", "rounded to the nearest")) is not None
+        )
+
+    def test_shows_a_message_when_no_member_has_assessed_their_skills(
+        self, members, soup_factory
+    ) -> None:
+        """Explain why there is no wheel instead of showing an empty one."""
+        soup = soup_factory(authenticated=True)
+
+        message = "No team members have assessed their skills yet."
+        assert soup.find(tag_with_text_filter("p", message)) is not None
+        assert soup.find(id="dataviz_team") is None
+        assert soup.find(tag_with_text_filter("script", "const charts")) is None
