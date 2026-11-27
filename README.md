@@ -102,13 +102,19 @@ To get started:
    pytest
    ```
 
-8. Create an admin account to access admin backend:
+To run the accessibility tests without a headless browser you can run the following command:
+
+```bash
+PWDEBUG=1 python -m pytest tests/test_accessibility.py --no-cov
+```
+
+1. Create an admin account to access admin backend:
 
    ```bash
    python manage.py createsuperuser
    ```
 
-9. Populate the database using a snapshot of v2.0 of the framework (this is not necessarily the latest live version, so this is only used for development).
+2. Populate the database using a snapshot of v2.0 of the framework (this is not necessarily the latest live version, so this is only used for development).
 
    ```bash
    python manage.py loaddata direct_webapp/fixtures/framework-2-0.json
